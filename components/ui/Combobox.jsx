@@ -92,7 +92,8 @@ export function Combobox({
                                     No results found.
                                 </div>
                             ) : (
-                                filteredOptions.map((option) => (
+                                // Limit to 100 items to prevent UI lag with large lists like cities
+                                filteredOptions.slice(0, 100).map((option) => (
                                     <button
                                         key={option.value}
                                         onClick={() => handleSelect(option)}
@@ -110,6 +111,11 @@ export function Combobox({
                                         {value === option.value && <Check className="w-3.5 h-3.5" />}
                                     </button>
                                 ))
+                            )}
+                            {filteredOptions.length > 100 && (
+                                <div className="px-2 py-2 text-[10px] text-white/30 text-center italic border-t border-white/5">
+                                    Type to narrow down results...
+                                </div>
                             )}
                         </div>
                     </motion.div>

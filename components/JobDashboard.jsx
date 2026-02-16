@@ -7,7 +7,8 @@ import { Input } from './ui/Input';
 import { Combobox } from './ui/Combobox';
 import { JobCard } from './JobCard';
 import { ResumeStrength } from './ResumeStrength';
-import { getAllCountries, getCitiesByCountry, getCountryName } from '../lib/location-data';
+import { ScanningRadar } from './ScanningRadar';
+import { getAllCountries, getStatesByCountry, getCitiesByState, getCountryName } from '../lib/location-data';
 
 export function JobDashboard({ apiKeys, onBack }) {
     const [profile, setProfile] = useState(null);
@@ -19,11 +20,12 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [activeTab, setActiveTab] = useState('matches'); // 'matches' | 'saved'
 
     // Preferences State
-    const [preferences, setPreferences] = useState({ country: 'US', city: '', remoteOnly: false });
+    const [preferences, setPreferences] = useState({ country: 'US', state: '', city: '', remoteOnly: false });
     const [newSkill, setNewSkill] = useState('');
 
     // Data State
     const [countries, setCountries] = useState([]);
+    const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
 
     const fileInputRef = useRef(null);
@@ -31,30 +33,47 @@ export function JobDashboard({ apiKeys, onBack }) {
     // Load countries on mount
     useEffect(() => {
         setCountries(getAllCountries());
-        // Load saved jobs from local storage
         const saved = localStorage.getItem('jobbot_saved_jobs');
         if (saved) {
             setSavedJobIds(new Set(JSON.parse(saved)));
         }
     }, []);
 
-    // Load cities when country changes
+    // Load states when country changes
     useEffect(() => {
         if (preferences.country) {
-            setCities(getCitiesByCountry(preferences.country));
-            // Reset city if country changes
-            setPreferences(prev => ({ ...prev, city: '' }));
+            const countryStates = getStatesByCountry(preferences.country);
+            setStates(countryStates);
+
+            // If no states available, load cities directly for the country
+            if (countryStates.length === 0) {
+                setCities(getCitiesByState(preferences.country, null));
+            } else {
+                setCities([]);
+            }
+
+            // Reset state and city selection
+            setPreferences(prev => ({ ...prev, state: '', city: '' }));
         } else {
+            setStates([]);
             setCities([]);
         }
     }, [preferences.country]);
+
+    // Load cities when state changes
+    useEffect(() => {
+        if (preferences.state) {
+            setCities(getCitiesByState(preferences.country, preferences.state));
+            setPreferences(prev => ({ ...prev, city: '' }));
+        }
+    }, [preferences.state]);
 
     const addLog = (msg) => setLogs(prev => [...prev, msg]);
 
     // ---- Bookmarking Logic ----
     const toggleSaveJob = (job) => {
         const newSaved = new Set(savedJobIds);
-        const jobId = job.apply_url; // Use URL as unique ID for now
+        const jobId = job.apply_url;
 
         if (newSaved.has(jobId)) {
             newSaved.delete(jobId);
@@ -69,7 +88,6 @@ export function JobDashboard({ apiKeys, onBack }) {
     // ---- Skill Editing Logic ----
     const handleAddSkill = () => {
         if (!newSkill.trim() || !profile) return;
-        // avoid duplicates
         if (profile.skills.includes(newSkill.trim())) {
             setNewSkill('');
             return;
@@ -125,7 +143,7 @@ export function JobDashboard({ apiKeys, onBack }) {
     const findJobs = async () => {
         if (!profile) return;
         setIsMatching(true);
-        setLogs([]); // Clear previous logs
+        setLogs([]);
         addLog("Starting job search agent...");
         setActiveTab('matches');
 
@@ -133,11 +151,13 @@ export function JobDashboard({ apiKeys, onBack }) {
         let locationQuery = '';
         if (!preferences.remoteOnly) {
             const countryName = getCountryName(preferences.country);
-            if (preferences.city) {
-                locationQuery = `${preferences.city}, ${countryName}`;
-            } else {
-                locationQuery = countryName;
-            }
+            // Construct query: "City, State, Country" or "City, Country"
+            const queryParts = [];
+            if (preferences.city) queryParts.push(preferences.city);
+            else if (preferences.state) queryParts.push(preferences.state); // Use state code if no city
+            queryParts.push(countryName);
+
+            locationQuery = queryParts.join(', ');
         }
 
         try {
@@ -189,10 +209,8 @@ export function JobDashboard({ apiKeys, onBack }) {
                     transition={{ delay: 0.1 }}
                     className="lg:col-span-4 space-y-6"
                 >
-                    {/* Resume Strength Gauge */}
                     <ResumeStrength profile={profile} />
 
-                    {/* Glassmorphic Control Card */}
                     <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl overflow-hidden relative group">
                         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
@@ -224,17 +242,14 @@ export function JobDashboard({ apiKeys, onBack }) {
                                     <div className="text-sm text-white/60 truncate">{profile.headline}</div>
                                 </div>
 
-                                {/* Skills Editor */}
+                                {/* Skills */}
                                 <div>
                                     <label className="text-[10px] tracking-widest text-indigo-300/70 uppercase font-semibold mb-2 block">Skills Matrix</label>
                                     <div className="flex flex-wrap gap-2 mb-3 max-h-40 overflow-y-auto custom-scrollbar p-1 -m-1">
                                         {profile.skills.map(s => (
                                             <span key={s} className="text-xs px-2.5 py-1 rounded-md bg-white/10 border border-white/10 flex items-center gap-1.5 group/skill hover:bg-white/15 hover:border-white/20 transition-all">
                                                 {s}
-                                                <button
-                                                    onClick={() => handleRemoveSkill(s)}
-                                                    className="text-white/40 hover:text-red-400 transition-colors"
-                                                >
+                                                <button onClick={() => handleRemoveSkill(s)} className="text-white/40 hover:text-red-400 transition-colors">
                                                     <X size={12} />
                                                 </button>
                                             </span>
@@ -249,11 +264,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                                             placeholder="Add skill..."
                                             className="w-full bg-transparent border-none text-xs px-3 py-2 focus:outline-none text-white placeholder:text-white/20"
                                         />
-                                        <button
-                                            onClick={handleAddSkill}
-                                            disabled={!newSkill.trim()}
-                                            className="p-1 rounded-md bg-white/5 hover:bg-white/10 text-indigo-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                                        >
+                                        <button onClick={handleAddSkill} disabled={!newSkill.trim()} className="p-1 rounded-md bg-white/5 hover:bg-white/10 text-indigo-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
                                             <Plus size={14} />
                                         </button>
                                     </div>
@@ -261,7 +272,7 @@ export function JobDashboard({ apiKeys, onBack }) {
 
                                 <div className="h-px bg-white/10" />
 
-                                {/* Search Targets */}
+                                {/* Targeting */}
                                 <div>
                                     <h3 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
                                         <Globe className="w-4 h-4 text-indigo-400" />
@@ -276,22 +287,32 @@ export function JobDashboard({ apiKeys, onBack }) {
                                             placeholder="Select Country..."
                                         />
 
+                                        {!preferences.remoteOnly && states.length > 0 && (
+                                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                                                <Combobox
+                                                    options={states}
+                                                    value={preferences.state}
+                                                    onChange={(val) => setPreferences(prev => ({ ...prev, state: val }))}
+                                                    placeholder="Select State/Province..."
+                                                    searchPlaceholder="Search states..."
+                                                />
+                                            </motion.div>
+                                        )}
+
                                         {!preferences.remoteOnly && cities.length > 0 && (
-                                            <Combobox
-                                                options={cities}
-                                                value={preferences.city}
-                                                onChange={(val) => setPreferences(prev => ({ ...prev, city: val }))}
-                                                placeholder="Select City (Optional)"
-                                            />
+                                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                                                <Combobox
+                                                    options={cities}
+                                                    value={preferences.city}
+                                                    onChange={(val) => setPreferences(prev => ({ ...prev, city: val }))}
+                                                    placeholder="Select City (Optional)"
+                                                    searchPlaceholder="Search cities..."
+                                                />
+                                            </motion.div>
                                         )}
 
                                         <div
-                                            className={
-                                                `flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${preferences.remoteOnly
-                                                    ? 'bg-indigo-500/10 border-indigo-500/30'
-                                                    : 'bg-white/5 border-white/5 hover:bg-white/10'
-                                                }`
-                                            }
+                                            className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${preferences.remoteOnly ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-white/5 border-white/5 hover:bg-white/10'}`}
                                             onClick={() => setPreferences(prev => ({ ...prev, remoteOnly: !prev.remoteOnly }))}
                                         >
                                             <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${preferences.remoteOnly ? 'bg-indigo-500 border-indigo-500' : 'border-white/30'}`}>
@@ -312,9 +333,8 @@ export function JobDashboard({ apiKeys, onBack }) {
                         )}
                     </div>
 
-                    {/* Terminal Logs */}
+                    {/* Logs */}
                     <div className="bg-black/80 backdrop-blur border border-white/10 rounded-xl p-4 h-48 overflow-y-auto font-mono text-[10px] shadow-inner relative">
-                        {/* ...logs... */}
                         <div className="text-white/20 mb-2 uppercase tracking-widest sticky top-0 bg-black/80 backdrop-blur pb-2 flex justify-between items-center">
                             <span>System Logs</span>
                             <div className="flex gap-1">
@@ -335,7 +355,6 @@ export function JobDashboard({ apiKeys, onBack }) {
 
                 {/* ---- Right Col: Results ---- */}
                 <div className="lg:col-span-8">
-                    {/* Sticky Header */}
                     <div className="sticky top-20 z-30 bg-[#050511]/80 backdrop-blur-xl border border-white/10 rounded-xl p-2 mb-6 flex items-center justify-between shadow-xl">
                         <div className="flex gap-1">
                             <button
@@ -361,19 +380,7 @@ export function JobDashboard({ apiKeys, onBack }) {
 
                     <div className="space-y-4">
                         {isMatching && (
-                            // Skeleton Loader
-                            <div className="space-y-4">
-                                {[1, 2, 3].map(i => (
-                                    <div key={i} className="bg-[#0A0A0A] border border-white/5 rounded-xl p-6 animate-pulse">
-                                        <div className="h-6 w-1/3 bg-white/10 rounded mb-4" />
-                                        <div className="h-4 w-1/2 bg-white/5 rounded mb-6" />
-                                        <div className="space-y-2">
-                                            <div className="h-3 w-full bg-white/5 rounded" />
-                                            <div className="h-3 w-5/6 bg-white/5 rounded" />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                            <ScanningRadar />
                         )}
 
                         {!isMatching && displayedJobs.length === 0 && (
@@ -410,7 +417,6 @@ export function JobDashboard({ apiKeys, onBack }) {
                 </div>
             </div>
 
-            {/* Background Gradients */}
             <div className="fixed top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent pointer-events-none" />
             <div className="fixed bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent pointer-events-none" />
         </div>

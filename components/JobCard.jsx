@@ -9,6 +9,20 @@ export function JobCard({ job, onSave, isSaved }) {
     // Formatting helpers
     const postedDate = job.date_posted ? new Date(job.date_posted).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'Recently';
 
+    // HTML Sanitization
+    const stripHtml = (html) => {
+        if (!html) return '';
+        // Replace <br> with newlines, then strip tags
+        const noTags = html.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>?/gm, '');
+        // Decode entities briefly if needed, but simplistic strip is usually enough for basic display
+        return noTags;
+    };
+
+    const cleanTitle = stripHtml(job.title);
+    const cleanCompany = stripHtml(job.company);
+    const cleanLocation = stripHtml(job.location);
+    const cleanSummary = stripHtml(job.summary || job.description);
+
     // Confidence color logic (Presentation layer only)
     const getMatchColor = (score) => {
         if (score >= 80) return "text-emerald-400";
@@ -39,7 +53,7 @@ export function JobCard({ job, onSave, isSaved }) {
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                             <h3 className="text-lg font-bold text-white group-hover:text-indigo-200 transition-colors truncate">
-                                {job.title}
+                                {cleanTitle}
                             </h3>
                             {job.date_posted && (
                                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-white/40 border border-white/5 whitespace-nowrap">
@@ -51,12 +65,12 @@ export function JobCard({ job, onSave, isSaved }) {
                         <div className="flex flex-wrap items-center gap-3 text-xs text-white/50 mb-3">
                             <span className="flex items-center gap-1.5 text-white/70 font-medium">
                                 <Building2 className="w-3.5 h-3.5 text-indigo-400" />
-                                {job.company}
+                                {cleanCompany}
                             </span>
                             <span className="w-1 h-1 rounded-full bg-white/20" />
                             <span className="flex items-center gap-1.5">
                                 <MapPin className="w-3.5 h-3.5" />
-                                {job.location || 'Remote'}
+                                {cleanLocation || 'Remote'}
                             </span>
                             <span className="w-1 h-1 rounded-full bg-white/20" />
                             <span className="bg-white/5 px-2 py-0.5 rounded text-white/40 border border-white/5">
@@ -66,7 +80,7 @@ export function JobCard({ job, onSave, isSaved }) {
 
                         {/* Summary */}
                         <p className={`text-sm text-white/60 leading-relaxed transition-all duration-300 ${isExpanded ? '' : 'line-clamp-2'}`}>
-                            {job.summary}
+                            {cleanSummary}
                         </p>
                     </div>
 
