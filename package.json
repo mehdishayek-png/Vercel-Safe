@@ -1,5 +1,6 @@
 {
-  "name": "jobbot",
+  "name": "jobbot-ai",
+  "description": "JobBot AI Vercel Edition",
   "version": "1.0.0",
   "private": true,
   "scripts": {
