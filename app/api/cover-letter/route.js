@@ -7,7 +7,7 @@ export async function POST(request) {
   try {
     const { job, profile, apiKey } = await request.json();
 
-    const effectiveKey = apiKey || process.env.OPENROUTER_KEY;
+    const effectiveKey = apiKey || process.env.OPENROUTER_API_KEY;
     if (!effectiveKey) return NextResponse.json({ error: 'No API key' }, { status: 400 });
 
     const skills = (profile.skills || []).slice(0, 20).join(', ');
