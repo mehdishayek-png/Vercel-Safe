@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, FileText, Search, Check, AlertCircle, Loader2 } from 'lucide-react';
+import { Upload, FileText, Search, Check, AlertCircle, Loader2, X, Plus } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 import { Input } from './ui/Input';
@@ -11,10 +11,36 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [isParsing, setIsParsing] = useState(false);
     const [isMatching, setIsMatching] = useState(false);
     const [logs, setLogs] = useState([]);
-    const [preferences, setPreferences] = useState({ location: '', remoteOnly: false });
+    const [preferences, setPreferences] = useState({ country: 'United States', state: '', remoteOnly: false });
     const fileInputRef = useRef(null);
 
+    const COUNTRIES = ["United States", "United Kingdom", "Canada", "India", "Germany", "France", "Australia", "Singapore", "Other"];
+    const US_STATES = [
+        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+        "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
+        "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+        "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
+        "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+    ];
+
     const addLog = (msg) => setLogs(prev => [...prev, msg]);
+
+    const handleAddSkill = () => {
+        if (!newSkill.trim() || !profile) return;
+        setProfile(prev => ({
+            ...prev,
+            skills: [...prev.skills, newSkill.trim()]
+        }));
+        setNewSkill('');
+    };
+
+    const handleRemoveSkill = (skillToRemove) => {
+        if (!profile) return;
+        setProfile(prev => ({
+            ...prev,
+            skills: prev.skills.filter(s => s !== skillToRemove)
+        }));
+    };
 
     const handleFileUpload = async (e) => {
         const file = e.target.files?.[0];
@@ -57,7 +83,16 @@ export function JobDashboard({ apiKeys, onBack }) {
             const res = await fetch('/api/match-jobs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ profile, apiKeys, preferences })
+                body: JSON.stringify({
+                    profile,
+                    apiKeys,
+                    preferences: {
+                        ...preferences,
+                        location: preferences.country === 'United States' && preferences.state
+                            ? `${preferences.state}, ${preferences.country}`
+                            : preferences.country
+                    }
+                })
             });
 
             if (!res.ok) throw new Error('Failed to fetch jobs');
@@ -121,15 +156,32 @@ export function JobDashboard({ apiKeys, onBack }) {
                                 {/* Search Preferences */}
                                 <div className="pt-4 border-t border-white/10 space-y-3">
                                     <h3 className="text-sm font-medium text-indigo-300">Search Preferences</h3>
+
                                     <div>
-                                        <label className="text-xs text-white/40 uppercase mb-1 block">Location</label>
-                                        <Input
-                                            placeholder="e.g. San Francisco, CA"
-                                            value={preferences.location}
-                                            onChange={(e) => setPreferences(prev => ({ ...prev, location: e.target.value }))}
-                                            className="h-9 text-sm"
-                                        />
+                                        <label className="text-xs text-white/40 uppercase mb-1 block">Country</label>
+                                        <select
+                                            className="w-full h-9 bg-white/5 border border-white/10 rounded-md px-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 appearance-none cursor-pointer"
+                                            value={preferences.country}
+                                            onChange={(e) => setPreferences(prev => ({ ...prev, country: e.target.value }))}
+                                        >
+                                            {COUNTRIES.map(c => <option key={c} value={c} className="bg-[#050511]">{c}</option>)}
+                                        </select>
                                     </div>
+
+                                    {preferences.country === 'United States' && (
+                                        <div>
+                                            <label className="text-xs text-white/40 uppercase mb-1 block">State</label>
+                                            <select
+                                                className="w-full h-9 bg-white/5 border border-white/10 rounded-md px-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 appearance-none cursor-pointer"
+                                                value={preferences.state}
+                                                onChange={(e) => setPreferences(prev => ({ ...prev, state: e.target.value }))}
+                                            >
+                                                <option value="" className="bg-[#050511]">Select State...</option>
+                                                {US_STATES.map(s => <option key={s} value={s} className="bg-[#050511]">{s}</option>)}
+                                            </select>
+                                        </div>
+                                    )}
+
                                     <div className="flex items-center gap-2 cursor-pointer" onClick={() => setPreferences(prev => ({ ...prev, remoteOnly: !prev.remoteOnly }))}>
                                         <div className={`w-4 h-4 rounded border ${preferences.remoteOnly ? 'bg-indigo-500 border-indigo-500' : 'border-white/30'} flex items-center justify-center transition-colors`}>
                                             {preferences.remoteOnly && <Check className="w-3 h-3 text-white" />}
