@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, FileText, Search, Check, AlertCircle, Loader2, X, Plus, MapPin, Globe, Sparkles } from 'lucide-react';
+import { Upload, FileText, Search, Check, AlertCircle, Loader2, X, Plus, MapPin, Globe, Sparkles, Bookmark, LayoutGrid, List } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 import { Input } from './ui/Input';
 import { Combobox } from './ui/Combobox';
+import { JobCard } from './JobCard';
+import { ResumeStrength } from './ResumeStrength';
 import { getAllCountries, getCitiesByCountry, getCountryName } from '../lib/location-data';
 
 export function JobDashboard({ apiKeys, onBack }) {
@@ -13,6 +15,8 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [isParsing, setIsParsing] = useState(false);
     const [isMatching, setIsMatching] = useState(false);
     const [logs, setLogs] = useState([]);
+    const [savedJobIds, setSavedJobIds] = useState(new Set());
+    const [activeTab, setActiveTab] = useState('matches'); // 'matches' | 'saved'
 
     // Preferences State
     const [preferences, setPreferences] = useState({ country: 'US', city: '', remoteOnly: false });
@@ -27,6 +31,11 @@ export function JobDashboard({ apiKeys, onBack }) {
     // Load countries on mount
     useEffect(() => {
         setCountries(getAllCountries());
+        // Load saved jobs from local storage
+        const saved = localStorage.getItem('jobbot_saved_jobs');
+        if (saved) {
+            setSavedJobIds(new Set(JSON.parse(saved)));
+        }
     }, []);
 
     // Load cities when country changes
@@ -41,6 +50,21 @@ export function JobDashboard({ apiKeys, onBack }) {
     }, [preferences.country]);
 
     const addLog = (msg) => setLogs(prev => [...prev, msg]);
+
+    // ---- Bookmarking Logic ----
+    const toggleSaveJob = (job) => {
+        const newSaved = new Set(savedJobIds);
+        const jobId = job.apply_url; // Use URL as unique ID for now
+
+        if (newSaved.has(jobId)) {
+            newSaved.delete(jobId);
+        } else {
+            newSaved.add(jobId);
+        }
+
+        setSavedJobIds(new Set(newSaved));
+        localStorage.setItem('jobbot_saved_jobs', JSON.stringify(Array.from(newSaved)));
+    };
 
     // ---- Skill Editing Logic ----
     const handleAddSkill = () => {
@@ -89,9 +113,6 @@ export function JobDashboard({ apiKeys, onBack }) {
 
             const data = await res.json();
             setProfile(data.profile);
-
-            // Auto-set country if detected (basic mapping)
-            // Just defaulting to US for now as safer default, or user's Resume country if we could map efficiently
             addLog(`Extracted profile for ${data.profile.name}`);
         } catch (err) {
             addLog(`Error: ${err.message}`);
@@ -106,6 +127,7 @@ export function JobDashboard({ apiKeys, onBack }) {
         setIsMatching(true);
         setLogs([]); // Clear previous logs
         addLog("Starting job search agent...");
+        setActiveTab('matches');
 
         // Format location string
         let locationQuery = '';
@@ -144,12 +166,16 @@ export function JobDashboard({ apiKeys, onBack }) {
         }
     };
 
+    const displayedJobs = activeTab === 'saved'
+        ? jobs.filter(j => savedJobIds.has(j.apply_url))
+        : jobs;
+
     return (
         <div className="min-h-screen pt-24 pb-12 px-4 container mx-auto text-white">
             <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="mb-8"
+                className="mb-8 flex justify-between items-center"
             >
                 <Button variant="ghost" onClick={onBack} className="text-white/60 hover:text-white">← Back to Home</Button>
             </motion.div>
@@ -163,7 +189,10 @@ export function JobDashboard({ apiKeys, onBack }) {
                     transition={{ delay: 0.1 }}
                     className="lg:col-span-4 space-y-6"
                 >
-                    {/* Glassmorphic Card */}
+                    {/* Resume Strength Gauge */}
+                    <ResumeStrength profile={profile} />
+
+                    {/* Glassmorphic Control Card */}
                     <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl overflow-hidden relative group">
                         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
@@ -191,7 +220,6 @@ export function JobDashboard({ apiKeys, onBack }) {
                             <div className="space-y-6 relative z-10">
                                 {/* Identity */}
                                 <div>
-                                    <label className="text-[10px] tracking-widest text-indigo-300/70 uppercase font-semibold mb-1 block">Identity</label>
                                     <div className="font-semibold text-lg text-white">{profile.name}</div>
                                     <div className="text-sm text-white/60 truncate">{profile.headline}</div>
                                 </div>
@@ -218,7 +246,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                                             value={newSkill}
                                             onChange={(e) => setNewSkill(e.target.value)}
                                             onKeyDown={(e) => e.key === 'Enter' && handleAddSkill()}
-                                            placeholder="Add a missing skill..."
+                                            placeholder="Add skill..."
                                             className="w-full bg-transparent border-none text-xs px-3 py-2 focus:outline-none text-white placeholder:text-white/20"
                                         />
                                         <button
@@ -231,8 +259,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                                     </div>
                                 </div>
 
-                                {/* Divider */}
-                                <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                                <div className="h-px bg-white/10" />
 
                                 {/* Search Targets */}
                                 <div>
@@ -241,32 +268,21 @@ export function JobDashboard({ apiKeys, onBack }) {
                                         Broadcasting Range
                                     </h3>
 
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="text-[10px] text-white/40 uppercase mb-1.5 block">Target Country</label>
-                                            <Combobox
-                                                options={countries}
-                                                value={preferences.country}
-                                                onChange={(val) => setPreferences(prev => ({ ...prev, country: val }))}
-                                                placeholder="Select Country..."
-                                                searchPlaceholder="Search countries..."
-                                            />
-                                        </div>
+                                    <div className="space-y-3">
+                                        <Combobox
+                                            options={countries}
+                                            value={preferences.country}
+                                            onChange={(val) => setPreferences(prev => ({ ...prev, country: val }))}
+                                            placeholder="Select Country..."
+                                        />
 
                                         {!preferences.remoteOnly && cities.length > 0 && (
-                                            <motion.div
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: 'auto' }}
-                                            >
-                                                <label className="text-[10px] text-white/40 uppercase mb-1.5 block">Target City</label>
-                                                <Combobox
-                                                    options={cities}
-                                                    value={preferences.city}
-                                                    onChange={(val) => setPreferences(prev => ({ ...prev, city: val }))}
-                                                    placeholder="Select City (Optional)"
-                                                    searchPlaceholder="Search cities..."
-                                                />
-                                            </motion.div>
+                                            <Combobox
+                                                options={cities}
+                                                value={preferences.city}
+                                                onChange={(val) => setPreferences(prev => ({ ...prev, city: val }))}
+                                                placeholder="Select City (Optional)"
+                                            />
                                         )}
 
                                         <div
@@ -298,6 +314,7 @@ export function JobDashboard({ apiKeys, onBack }) {
 
                     {/* Terminal Logs */}
                     <div className="bg-black/80 backdrop-blur border border-white/10 rounded-xl p-4 h-48 overflow-y-auto font-mono text-[10px] shadow-inner relative">
+                        {/* ...logs... */}
                         <div className="text-white/20 mb-2 uppercase tracking-widest sticky top-0 bg-black/80 backdrop-blur pb-2 flex justify-between items-center">
                             <span>System Logs</span>
                             <div className="flex gap-1">
@@ -318,16 +335,48 @@ export function JobDashboard({ apiKeys, onBack }) {
 
                 {/* ---- Right Col: Results ---- */}
                 <div className="lg:col-span-8">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-bold flex items-center gap-2">
-                            <Search className="w-5 h-5 text-indigo-400" />
-                            Matched Opportunities
-                            {jobs.length > 0 && <span className="bg-white/10 text-xs px-2 py-0.5 rounded-full text-white/60 font-normal">{jobs.length}</span>}
-                        </h2>
+                    {/* Sticky Header */}
+                    <div className="sticky top-20 z-30 bg-[#050511]/80 backdrop-blur-xl border border-white/10 rounded-xl p-2 mb-6 flex items-center justify-between shadow-xl">
+                        <div className="flex gap-1">
+                            <button
+                                onClick={() => setActiveTab('matches')}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'matches' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <LayoutGrid className="w-4 h-4" />
+                                    Matches <span className="opacity-50 text-xs">({jobs.length})</span>
+                                </div>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('saved')}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'saved' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <Bookmark className="w-4 h-4" />
+                                    Saved <span className="opacity-50 text-xs">({savedJobIds.size})</span>
+                                </div>
+                            </button>
+                        </div>
                     </div>
 
                     <div className="space-y-4">
-                        {jobs.length === 0 && !isMatching && (
+                        {isMatching && (
+                            // Skeleton Loader
+                            <div className="space-y-4">
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className="bg-[#0A0A0A] border border-white/5 rounded-xl p-6 animate-pulse">
+                                        <div className="h-6 w-1/3 bg-white/10 rounded mb-4" />
+                                        <div className="h-4 w-1/2 bg-white/5 rounded mb-6" />
+                                        <div className="space-y-2">
+                                            <div className="h-3 w-full bg-white/5 rounded" />
+                                            <div className="h-3 w-5/6 bg-white/5 rounded" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {!isMatching && displayedJobs.length === 0 && (
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -336,73 +385,25 @@ export function JobDashboard({ apiKeys, onBack }) {
                                 <div className="w-20 h-20 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
                                     <Search className="w-8 h-8 text-white/20" />
                                 </div>
-                                <h3 className="text-lg font-medium text-white/50 mb-2">Targeting System Offline</h3>
-                                <p className="text-sm text-white/30 max-w-sm mx-auto">Upload a resume dossier to begin the job matching sequence.</p>
+                                <h3 className="text-lg font-medium text-white/50 mb-2">
+                                    {activeTab === 'saved' ? 'No Saved Jobs' : 'Targeting System Offline'}
+                                </h3>
+                                <p className="text-sm text-white/30 max-w-sm mx-auto">
+                                    {activeTab === 'saved'
+                                        ? 'Bookmark jobs to view them here later.'
+                                        : 'Upload a resume dossier to begin the job matching sequence.'}
+                                </p>
                             </motion.div>
                         )}
 
                         <AnimatePresence>
-                            {jobs.map((job, i) => (
-                                <motion.div
+                            {displayedJobs.map((job, i) => (
+                                <JobCard
                                     key={i}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ delay: i * 0.05 }}
-                                >
-                                    <div className="group relative bg-[#0A0A0A] border border-white/10 hover:border-indigo-500/30 rounded-xl p-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.1)] hover:-translate-y-1">
-                                        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                                        <div className="flex justify-between items-start gap-4">
-                                            <div className="flex-1">
-                                                <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors mb-2">
-                                                    <a href={job.apply_url} target="_blank" rel="noopener noreferrer" className="hover:underline decoration-indigo-500/50 underline-offset-4">
-                                                        {job.title}
-                                                    </a>
-                                                </h3>
-
-                                                <div className="flex flex-wrap items-center gap-3 text-xs text-white/50 mb-4">
-                                                    <span className="flex items-center gap-1 text-white/70">
-                                                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-                                                        {job.company}
-                                                    </span>
-                                                    <span>•</span>
-                                                    <span className="flex items-center gap-1">
-                                                        <MapPin className="w-3 h-3" />
-                                                        {job.location || 'Remote'}
-                                                    </span>
-                                                    {job.date_posted && (
-                                                        <>
-                                                            <span>•</span>
-                                                            <span className="text-white/30">Posted {new Date(job.date_posted).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                                                        </>
-                                                    )}
-                                                </div>
-
-                                                <p className="text-sm text-white/60 line-clamp-2 leading-relaxed mb-4 pl-3 border-l-2 border-white/5 group-hover:border-indigo-500/30 transition-colors">
-                                                    {job.summary}
-                                                </p>
-
-                                                <div className="flex gap-2">
-                                                    <span className="text-[10px] font-bold px-2 py-1 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 uppercase tracking-wider">
-                                                        {job.match_score}% Compatibility
-                                                    </span>
-                                                    <span className="text-[10px] font-medium px-2 py-1 rounded bg-white/5 text-white/40 border border-white/5 uppercase tracking-wider">
-                                                        {job.source}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <Button
-                                                size="sm"
-                                                onClick={() => window.open(job.apply_url, '_blank')}
-                                                className="shrink-0 bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-white/20 rounded-lg backdrop-blur-sm"
-                                            >
-                                                Apply Now
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </motion.div>
+                                    job={job}
+                                    onSave={toggleSaveJob}
+                                    isSaved={savedJobIds.has(job.apply_url)}
+                                />
                             ))}
                         </AnimatePresence>
                     </div>
