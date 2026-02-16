@@ -29,6 +29,7 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [cities, setCities] = useState([]);
 
     const fileInputRef = useRef(null);
+    const resultsRef = useRef(null);
 
     // Load countries on mount
     useEffect(() => {
@@ -146,6 +147,11 @@ export function JobDashboard({ apiKeys, onBack }) {
         setLogs([]);
         addLog("Starting job search agent...");
         setActiveTab('matches');
+
+        // Scroll to results area so loading state is visible
+        setTimeout(() => {
+            resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
 
         // Format location string
         let locationQuery = '';
@@ -354,7 +360,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                 </motion.div>
 
                 {/* ---- Right Col: Results ---- */}
-                <div className="lg:col-span-8">
+                <div className="lg:col-span-8" ref={resultsRef}>
                     <div className="sticky top-20 z-30 bg-[#050511]/80 backdrop-blur-xl border border-white/10 rounded-xl p-2 mb-6 flex items-center justify-between shadow-xl">
                         <div className="flex gap-1">
                             <button
@@ -416,6 +422,31 @@ export function JobDashboard({ apiKeys, onBack }) {
                     </div>
                 </div>
             </div>
+
+            {/* Fixed Loading Toast - visible from any scroll position */}
+            <AnimatePresence>
+                {isMatching && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 80 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 80 }}
+                        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#0D0D12]/95 backdrop-blur-2xl border border-indigo-500/30 rounded-2xl px-6 py-4 shadow-[0_0_40px_rgba(99,102,241,0.2)] max-w-md w-[90vw]"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="relative">
+                                <div className="w-10 h-10 rounded-full border-2 border-indigo-500/30 border-t-indigo-400 animate-spin" />
+                                <Sparkles className="w-4 h-4 text-indigo-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="text-sm font-semibold text-white mb-1">Scanning Job Market...</div>
+                                <div className="text-[11px] text-white/50 truncate">
+                                    {logs.length > 0 ? logs[logs.length - 1] : 'Initializing search agent...'}
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <div className="fixed top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent pointer-events-none" />
             <div className="fixed bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent pointer-events-none" />

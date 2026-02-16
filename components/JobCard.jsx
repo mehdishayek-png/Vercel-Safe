@@ -103,7 +103,15 @@ export function JobCard({ job, onSave, isSaved }) {
                             </button>
                             <Button
                                 size="sm"
-                                onClick={() => window.open(job.apply_url, '_blank')}
+                                onClick={() => {
+                                    if (job.apply_url) {
+                                        window.open(job.apply_url, '_blank');
+                                    } else {
+                                        // Fallback: search Google for the job listing
+                                        const searchQuery = encodeURIComponent(`${job.title} ${job.company} apply`);
+                                        window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank');
+                                    }
+                                }}
                                 className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-sm"
                             >
                                 Apply <ExternalLink className="w-3 h-3 ml-1.5 opacity-50" />
