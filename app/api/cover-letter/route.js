@@ -7,7 +7,8 @@ export async function POST(request) {
   try {
     const { job, profile, apiKey } = await request.json();
 
-    if (!apiKey) return NextResponse.json({ error: 'No API key' }, { status: 400 });
+    const effectiveKey = apiKey || process.env.OPENROUTER_KEY;
+    if (!effectiveKey) return NextResponse.json({ error: 'No API key' }, { status: 400 });
 
     const skills = (profile.skills || []).slice(0, 20).join(', ');
 
@@ -35,7 +36,7 @@ Write the cover letter:`;
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': `Bearer ${effectiveKey}`,
       },
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',

@@ -8,8 +8,10 @@
   /* Cosmic Night Theme */
   --bg-deep: #050511;
   --bg-panel: rgba(20, 20, 35, 0.6);
-  --primary-accent: #6f42c1; /* Electric Purple */
-  --secondary-accent: #00d4ff; /* Cyan */
+  --primary-accent: #6f42c1;
+  /* Electric Purple */
+  --secondary-accent: #00d4ff;
+  /* Cyan */
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.7);
   --border-color: rgba(255, 255, 255, 0.1);
@@ -17,7 +19,9 @@
   --hover-bg: rgba(255, 255, 255, 0.05);
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   font-family: 'Poppins', sans-serif;
@@ -25,17 +29,29 @@ body {
   color: var(--text-primary);
   margin: 0;
   min-height: 100vh;
-  background-image: 
+  background-image:
     radial-gradient(circle at 15% 50%, rgba(111, 66, 193, 0.15) 0%, transparent 25%),
     radial-gradient(circle at 85% 30%, rgba(0, 212, 255, 0.15) 0%, transparent 25%);
   background-attachment: fixed;
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
 
 /* Glassmorphism Utilities */
 .glass-panel {
@@ -52,6 +68,7 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
 .text-gradient-accent {
   background: linear-gradient(135deg, var(--secondary-accent) 0%, var(--primary-accent) 100%);
   -webkit-background-clip: text;
@@ -65,95 +82,41 @@ body {
   font-weight: 600;
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 15px rgba(111, 66, 193, 0.4);
-}
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(111, 66, 193, 0.6);
-  filter: brightness(1.1);
-}
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  transition: all 0.2s;
-}
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-/* Inputs */
-.input-premium {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  color: white;
-  padding: 0.75rem 1rem;
-  width: 100%;
-  outline: none;
-  transition: border-color 0.2s, background 0.2s;
-}
-.input-premium:focus {
-  border-color: var(--secondary-accent);
-  background: rgba(0, 0, 0, 0.3);
-}
-.input-premium::placeholder {
-  color: rgba(255, 255, 255, 0.3);
-}
-
-/* Job Cards */
-.job-card {
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid transparent;
-  border-radius: 14px;
-  padding: 1.25rem;
-  transition: all 0.2s;
-  cursor: pointer;
-}
-.job-card:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: var(--glass-border);
-  transform: translateY(-1px);
-}
-.job-card.active {
-  background: rgba(111, 66, 193, 0.1);
-  border-color: var(--primary-accent);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Animations */
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
-.animate-slide-up {
-  animation: slideUp 0.4s ease-out forwards;
+
+::-webkit-scrollbar-track {
+  background: #050511;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
 }
 
 /* Upload Zone */
 .upload-zone-premium {
   border: 2px dashed var(--border-color);
-  background: rgba(255, 255, 255, 0.02);
   border-radius: 16px;
   transition: all 0.2s;
 }
+
 .upload-zone-premium:hover {
   border-color: var(--secondary-accent);
   background: rgba(0, 212, 255, 0.05);
 }
+
 .upload-zone-premium.dragging {
   border-color: var(--primary-accent);
   background: rgba(111, 66, 193, 0.1);

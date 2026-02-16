@@ -11,7 +11,7 @@ export async function POST(request) {
     const apiKey = formData.get('apiKey');
 
     if (!file) return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
-    if (!apiKey) return NextResponse.json({ error: 'No API key provided' }, { status: 400 });
+    // if (!apiKey) return NextResponse.json({ error: 'No API key provided' }, { status: 400 });
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const profile = await parseResumePDF(buffer, apiKey);
