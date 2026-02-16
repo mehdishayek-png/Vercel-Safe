@@ -64,6 +64,7 @@ export default function Home() {
         experience: prev.experience,
       }));
       setSkillsText((data.profile.skills || []).join('\n'));
+      alert('Resume parsed successfully! Profile updated.');
     } catch (e) {
       alert(`Parse error: ${e.message}`);
     } finally {
@@ -142,249 +143,220 @@ export default function Home() {
   }, [apiKeys.OPENROUTER_KEY]);
 
   return (
-    <div className="min-h-screen p-2 md:p-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4 px-2">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full border border-[var(--stroke)] bg-[rgba(255,255,255,0.06)] flex items-center justify-center text-lg">🔎</div>
-          <span className="text-lg font-extrabold">JobBot</span>
-        </div>
-        <div className="w-10 h-10 rounded-full border border-[var(--stroke)] bg-[rgba(255,255,255,0.06)] flex items-center justify-center text-sm">👤</div>
-      </div>
+    <div className="min-h-screen p-4 md:p-8 font-poppins">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <header className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+              <span className="text-2xl">⚡</span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-white">JobBot <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">AI</span></h1>
+              <p className="text-sm text-gray-400">Your Intelligent Career Copilot</p>
+            </div>
+          </div>
+          <div className="text-sm text-gray-400 bg-white/5 px-4 py-2 rounded-full border border-white/10">
+            {profile.name ? `Welcome, ${profile.name}` : 'Ready to search'}
+          </div>
+        </header>
 
-      {/* Main layout */}
-      <div className="flex gap-4 flex-col lg:flex-row">
-        {/* LEFT PANEL */}
-        <div className="lg:w-[30%] w-full">
-          <div className="panel">
-            <div className="p-4">
-              {/* Tabs */}
-              <div className="tab-bar mb-4">
-                <div className="tab-item active">My Profile</div>
-                <div className="tab-item">Tailor CV</div>
-              </div>
-
-              {/* Upload */}
-              <div
-                className={`upload-zone mb-4 ${dragOver ? 'dragging' : ''}`}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* LEFT PANEL - CONTROLS */}
+          <div className="lg:col-span-4 space-y-6">
+            
+            {/* Resume Upload Card */}
+            <div className="glass-panel p-6 rounded-2xl">
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <span>📄</span> Upload Resume
+              </h2>
+              
+              <div 
+                className={`upload-zone-premium p-6 text-center cursor-pointer ${dragOver ? 'dragging' : ''}`}
                 onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                 onDragLeave={() => setDragOver(false)}
                 onDrop={onDrop}
                 onClick={() => fileRef.current?.click()}
               >
-                <div className="w-14 h-14 mx-auto mb-3 rounded-xl border-2 border-[rgba(255,255,255,0.25)] flex items-center justify-center">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-6Z" stroke="rgba(255,255,255,0.55)" strokeWidth="2"/><path d="M14 2v6h6" stroke="rgba(255,255,255,0.55)" strokeWidth="2"/></svg>
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/5 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                 </div>
-                <div className="font-extrabold text-sm">{isParsing ? 'Parsing...' : 'Upload Resume (PDF)'}</div>
-                <div className="text-xs mt-1" style={{ color: 'var(--muted-2)' }}>Drop file or click to browse</div>
+                <p className="text-sm font-medium text-white mb-2">Click to Upload PDF</p>
+                <p className="text-xs text-gray-400 mb-4">or drag and drop here</p>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); fileRef.current?.click(); }}
+                  className="btn-primary w-full text-sm"
+                  disabled={isParsing}
+                >
+                  {isParsing ? 'Parsing Resume...' : 'Select PDF File'}
+                </button>
                 <input ref={fileRef} type="file" accept=".pdf" className="hidden" onChange={(e) => e.target.files?.[0] && handleParseResume(e.target.files[0])} />
               </div>
+            </div>
 
-              {/* Profile form */}
-              <div className="bezel p-3 mb-4">
-                <div className="space-y-3">
-                  <div>
-                    <label>Name</label>
-                    <input value={profile.name} onChange={e => updateProfile('name', e.target.value)} placeholder="Your name" />
-                  </div>
-                  <div>
-                    <label>Email</label>
-                    <input value={profile.email} onChange={e => updateProfile('email', e.target.value)} placeholder="you@example.com" />
-                  </div>
-                  <div>
-                    <label>Professional Headline</label>
-                    <input value={profile.headline} onChange={e => updateProfile('headline', e.target.value)} placeholder="e.g. Business Operations Lead" />
-                  </div>
-                  <div>
-                    <label>Years of Experience</label>
-                    <select value={profile.experience} onChange={e => updateProfile('experience', e.target.value)}>
-                      {EXP_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            {/* Profile Settings */}
+            <div className="glass-panel p-6 rounded-2xl">
+              <h2 className="text-lg font-semibold mb-4 text-white">Profile Details</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Full Name</label>
+                  <input className="input-premium" value={profile.name} onChange={e => updateProfile('name', e.target.value)} placeholder="Enter your name" />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Headline</label>
+                  <input className="input-premium" value={profile.headline} onChange={e => updateProfile('headline', e.target.value)} placeholder="Software Engineer, Product Manager..." />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Experience</label>
+                  <select className="input-premium" value={profile.experience} onChange={e => updateProfile('experience', e.target.value)}>
+                    {EXP_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Target Location</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <select className="input-premium" value={profile.country} onChange={e => { updateProfile('country', e.target.value); updateProfile('state', 'Any'); }}>
+                      {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                    <select className="input-premium" value={profile.state} onChange={e => updateProfile('state', e.target.value)}>
+                      {regions.map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
                   </div>
-                  <div>
-                    <label>Skills / Search Terms (one per line)</label>
-                    <textarea
-                      rows={5}
-                      value={skillsText}
-                      onChange={e => setSkillsText(e.target.value)}
-                      placeholder="payment operations&#10;fintech&#10;merchant onboarding&#10;API integration"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Job preferences */}
-              <div className="tab-bar mb-3">
-                <div className="tab-item active">Job Preferences</div>
-              </div>
-
-              <div className="space-y-3">
-                <div>
-                  <label>Country</label>
-                  <select value={profile.country} onChange={e => { updateProfile('country', e.target.value); updateProfile('state', 'Any'); }}>
-                    {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
                 </div>
                 <div>
-                  <label>City / Region</label>
-                  <select value={profile.state} onChange={e => updateProfile('state', e.target.value)}>
-                    {regions.map(r => <option key={r} value={r}>{r}</option>)}
-                  </select>
+                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Skills (Keywords)</label>
+                  <textarea
+                    rows={4}
+                    className="input-premium font-mono text-sm"
+                    value={skillsText}
+                    onChange={e => setSkillsText(e.target.value)}
+                    placeholder={'React\nNode.js\nPython\nProject Management'}
+                  />
                 </div>
               </div>
 
-              {/* API Keys */}
-              <details className="mt-4">
-                <summary className="cursor-pointer text-sm font-bold" style={{ color: 'var(--muted)' }}>🔑 API Keys</summary>
-                <div className="space-y-2 mt-2">
-                  <div>
-                    <label className="text-xs">OpenRouter API Key *</label>
-                    <input type="password" value={apiKeys.OPENROUTER_KEY} onChange={e => setApiKeys(k => ({ ...k, OPENROUTER_KEY: e.target.value }))} placeholder="sk-or-..." />
+              {/* API Keys Toggle */}
+              <div className="mt-6 pt-6 border-t border-white/10">
+                <details className="group">
+                  <summary className="cursor-pointer text-sm font-medium text-purple-300 hover:text-purple-200 flex items-center gap-2">
+                    <span>🔑</span> Configure API Keys
+                  </summary>
+                  <div className="space-y-3 mt-4 animate-slide-up">
+                    <div>
+                      <label className="text-xs text-gray-400">OpenRouter API Key (Required)</label>
+                      <input type="password" className="input-premium text-sm" value={apiKeys.OPENROUTER_KEY} onChange={e => setApiKeys(k => ({ ...k, OPENROUTER_KEY: e.target.value }))} placeholder="sk-or-..." />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-400">SerpAPI Key (Optional)</label>
+                      <input type="password" className="input-premium text-sm" value={apiKeys.SERPAPI_KEY} onChange={e => setApiKeys(k => ({ ...k, SERPAPI_KEY: e.target.value }))} />
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-xs">SerpAPI Key (optional)</label>
-                    <input type="password" value={apiKeys.SERPAPI_KEY} onChange={e => setApiKeys(k => ({ ...k, SERPAPI_KEY: e.target.value }))} placeholder="SerpAPI key" />
-                  </div>
-                  <div>
-                    <label className="text-xs">RapidAPI / JSearch (optional)</label>
-                    <input type="password" value={apiKeys.JSEARCH_KEY} onChange={e => setApiKeys(k => ({ ...k, JSEARCH_KEY: e.target.value }))} placeholder="RapidAPI key" />
-                  </div>
-                </div>
-              </details>
+                </details>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* RIGHT PANEL */}
-        <div className="lg:w-[70%] w-full">
-          <div className="panel">
-            <div className="bezel-big p-4">
-              {/* Header */}
-              <div className="flex items-start justify-between mb-3">
-                <h2 className="text-xl font-extrabold">Compiled Jobs According To Profile</h2>
-                <button
-                  className="btn-gradient px-6 py-3 text-sm"
-                  onClick={handleSearch}
-                  disabled={isSearching || !skillsText.trim()}
-                >
-                  {isSearching ? 'Searching...' : 'Search'}
-                </button>
+          {/* RIGHT PANEL - RESULTS */}
+          <div className="lg:col-span-8">
+            <div className="glass-panel p-6 rounded-2xl min-h-[600px] flex flex-col">
+              
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold">Job Matches</h2>
+                  <p className="text-sm text-gray-400">Found {totalJobs} potential opportunities</p>
+                </div>
+                <div className="flex gap-3">
+                  <select className="input-premium !w-auto text-sm" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                    <option value="score">Sort by Match %</option>
+                    <option value="date">Sort by Date</option>
+                  </select>
+                  <button
+                    className="btn-primary flex items-center gap-2"
+                    onClick={handleSearch}
+                    disabled={isSearching || !skillsText.trim()}
+                  >
+                    {isSearching ? <span className="animate-spin">🔄</span> : '🚀'}
+                    {isSearching ? 'Searching...' : 'Find Jobs'}
+                  </button>
+                </div>
               </div>
 
-              {/* Progress */}
-              <div className="mb-4">
-                <div className="flex justify-between text-sm mb-1" style={{ color: 'var(--muted-2)' }}>
-                  <span className="font-extrabold">Compiled {matches.length}/{totalJobs || '—'}</span>
-                  {sortedMatches.length > 0 && (
-                    <select
-                      className="text-xs !p-1 !w-auto !border-0 !bg-transparent"
-                      value={sortBy}
-                      onChange={e => setSortBy(e.target.value)}
-                    >
-                      <option value="score">Highest match %</option>
-                      <option value="date">Latest posted</option>
-                    </select>
-                  )}
+              {/* Progress Bar */}
+              {(isSearching || matches.length > 0) && (
+                <div className="mb-6 bg-black/20 rounded-full h-2 overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-purple-500 to-cyan-400 transition-all duration-500"
+                    style={{ width: `${progressPct}%` }}
+                  />
                 </div>
-                <div className="progress-track">
-                  <div className="progress-fill" style={{ width: `${progressPct}%` }} />
-                </div>
-                {progress && <div className="text-xs mt-1" style={{ color: 'var(--muted)' }}>{progress}</div>}
-              </div>
+              )}
 
-              {/* Results */}
-              <div className="space-y-3">
-                {sortedMatches.length > 0 ? sortedMatches.map((job, idx) => {
-                  const score = job.match_score || 0;
-                  const isExpanded = expandedJob === idx;
+              {/* Results List */}
+              <div className="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                {matches.length > 0 ? (
+                  sortedMatches.map((job, idx) => {
+                    const score = job.match_score || 0;
+                    const isExpanded = expandedJob === idx;
 
-                  return (
-                    <div key={idx} className="animate-slide-up" style={{ animationDelay: `${idx * 0.03}s` }}>
-                      <div className="flex gap-3 items-start">
-                        <div className="flex-1">
-                          <div
-                            className="job-card"
-                            onClick={() => setExpandedJob(isExpanded ? null : idx)}
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className="font-extrabold text-[0.95rem]">{job.title}</span>
-                              <span className="score-pill">{score}%</span>
-                            </div>
-                            <div className="text-sm mt-1" style={{ color: 'var(--muted)' }}>
-                              {[job.company, job.location].filter(Boolean).join(' · ')}
-                            </div>
+                    return (
+                      <div key={idx} className="job-card animate-slide-up" style={{ animationDelay: `${idx * 0.05}s` }} onClick={() => setExpandedJob(isExpanded ? null : idx)}>
+                        <div className="flex items-start gap-4">
+                          {/* Score Badge */}
+                          <div className={`flex flex-col items-center justify-center w-14 h-14 rounded-xl font-bold text-sm ${score >= 80 ? 'bg-green-500/20 text-green-300' : score >= 60 ? 'bg-yellow-500/20 text-yellow-300' : 'bg-gray-700 text-gray-400'}`}>
+                            <span>{score}%</span>
+                            <span className="text-[10px] opacity-60">MATCH</span>
                           </div>
 
-                          {isExpanded && (
-                            <div className="bezel p-4 mt-1 animate-slide-up">
-                              <div className="font-extrabold mb-1">{job.title}</div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className="font-bold text-sm" style={{ color: 'var(--muted)' }}>{job.company}</span>
-                                <span className="badge">{(job.source || 'SOURCE').toUpperCase()}</span>
-                              </div>
-                              <div className="flex gap-4 text-sm mb-3 flex-wrap" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                                {job.location && <span>📍 {job.location}</span>}
-                                {job.date_posted && <span>📅 {job.date_posted}</span>}
-                              </div>
-                              {job.summary && (
-                                <div className="text-sm leading-relaxed mb-3 desc-clamp" style={{ color: 'rgba(255,255,255,0.78)' }}>
-                                  {job.summary}
-                                </div>
-                              )}
-                              <div className="flex gap-2 flex-wrap">
-                                {job.apply_url && (
-                                  <a href={job.apply_url} target="_blank" rel="noopener noreferrer" className="btn-gradient px-4 py-2 text-xs inline-block no-underline">
-                                    Apply →
-                                  </a>
-                                )}
-                                <button
-                                  className="px-4 py-2 text-xs rounded-xl border border-[var(--stroke)] bg-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.08)] transition"
-                                  onClick={(e) => { e.stopPropagation(); handleGenerateLetter(job, idx); }}
-                                  disabled={generatingLetter === idx}
-                                >
-                                  {generatingLetter === idx ? '✍️ Writing...' : '📝 Cover Letter'}
-                                </button>
-                              </div>
-                              {coverLetters[idx] && (
-                                <div className="mt-3 p-3 rounded-xl border border-[var(--stroke)] bg-[rgba(255,255,255,0.02)] text-sm whitespace-pre-wrap" style={{ color: 'rgba(255,255,255,0.8)' }}>
-                                  {coverLetters[idx]}
-                                </div>
-                              )}
+                          <div className="flex-1">
+                            <h3 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">{job.title}</h3>
+                            <div className="text-sm text-gray-400 mb-2">{job.company} • {job.location || 'Remote'}</div>
+                            
+                            <div className="flex flex-wrap gap-2">
+                              {job.date_posted && <span className="text-xs bg-white/5 px-2 py-1 rounded border border-white/5">📅 {job.date_posted}</span>}
+                              <span className="text-xs bg-white/5 px-2 py-1 rounded border border-white/5">🏷️ {job.source || 'Aggregator'}</span>
                             </div>
-                          )}
-                        </div>
 
-                        <div className="flex-shrink-0 w-20">
-                          {job.apply_url ? (
-                            <a href={job.apply_url} target="_blank" rel="noopener noreferrer" className="btn-gradient w-full py-2.5 text-xs text-center block no-underline">
-                              Apply
-                            </a>
-                          ) : (
-                            <button disabled className="btn-gradient w-full py-2.5 text-xs opacity-40 cursor-not-allowed">Apply</button>
-                          )}
+                            {/* Expanded Content */}
+                            {isExpanded && (
+                              <div className="mt-4 pt-4 border-t border-white/10 animate-slide-up">
+                                <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line mb-4">{job.summary}</p>
+                                <div className="flex gap-3">
+                                  {job.apply_url && (
+                                    <a href={job.apply_url} target="_blank" rel="noopener noreferrer" className="btn-primary text-sm no-underline !px-6 !py-2">
+                                      Apply Now
+                                    </a>
+                                  )}
+                                  <button
+                                    className="btn-secondary flex items-center gap-2"
+                                    onClick={(e) => { e.stopPropagation(); handleGenerateLetter(job, idx); }}
+                                    disabled={generatingLetter === idx}
+                                  >
+                                    {generatingLetter === idx ? '✍️ Writing...' : '📝 Generate Cover Letter'}
+                                  </button>
+                                </div>
+                                {coverLetters[idx] && (
+                                  <div className="mt-4 p-4 bg-black/20 rounded-xl border border-white/10 text-sm whitespace-pre-wrap font-mono text-gray-300">
+                                    {coverLetters[idx]}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
+                    );
+                  })
+                ) : (
+                  !isSearching && (
+                    <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                      <div className="text-4xl mb-4">🔍</div>
+                      <p>No jobs found yet. Try adjusting your search.</p>
                     </div>
-                  );
-                }) : (
-                  // Empty slots
-                  Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="slot" />
-                  ))
+                  )
                 )}
               </div>
 
-              {/* Actions */}
-              {matches.length > 0 && (
-                <div className="mt-4">
-                  <button
-                    className="text-xs px-4 py-2 rounded-xl border border-[var(--stroke)] bg-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.08)] transition"
-                    onClick={() => { setMatches([]); setTotalJobs(0); setProgress(''); setProgressPct(0); }}
-                  >
-                    Clear Results
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         </div>
