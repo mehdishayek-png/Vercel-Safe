@@ -31,7 +31,10 @@ export function JobDashboard({ apiKeys, onBack }) {
                 body: formData
             });
 
-            if (!res.ok) throw new Error('Failed to parse resume');
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || `Failed to parse resume (${res.status})`);
+            }
 
             const data = await res.json();
             setProfile(data.profile);
