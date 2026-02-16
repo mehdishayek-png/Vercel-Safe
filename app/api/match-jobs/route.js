@@ -7,7 +7,7 @@ export const maxDuration = 60;
 
 export async function POST(request) {
   try {
-    const { profile, apiKeys } = await request.json();
+    const { profile, apiKeys, preferences } = await request.json();
 
     if (!profile || !profile.skills?.length) {
       return NextResponse.json({ error: 'Profile with skills required' }, { status: 400 });
@@ -16,8 +16,8 @@ export async function POST(request) {
     const logs = [];
     const onProgress = (msg) => logs.push(msg);
 
-    // Fetch jobs
-    const { jobs, sources } = await fetchAllJobs(profile, apiKeys, onProgress);
+    // Fetch jobs with preferences
+    const { jobs, sources } = await fetchAllJobs(profile, apiKeys, onProgress, preferences);
 
     // Match
     const matches = await matchJobs(jobs, profile, apiKeys, onProgress);

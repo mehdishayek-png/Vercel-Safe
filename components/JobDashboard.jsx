@@ -11,6 +11,7 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [isParsing, setIsParsing] = useState(false);
     const [isMatching, setIsMatching] = useState(false);
     const [logs, setLogs] = useState([]);
+    const [preferences, setPreferences] = useState({ location: '', remoteOnly: false });
     const fileInputRef = useRef(null);
 
     const addLog = (msg) => setLogs(prev => [...prev, msg]);
@@ -56,7 +57,7 @@ export function JobDashboard({ apiKeys, onBack }) {
             const res = await fetch('/api/match-jobs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ profile, apiKeys })
+                body: JSON.stringify({ profile, apiKeys, preferences })
             });
 
             if (!res.ok) throw new Error('Failed to fetch jobs');
@@ -97,28 +98,51 @@ export function JobDashboard({ apiKeys, onBack }) {
                                 <input ref={fileInputRef} type="file" accept=".pdf" className="hidden" onChange={handleFileUpload} />
                             </div>
                         ) : (
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="text-xs text-white/40 uppercase">Name</label>
-                                    <div className="font-medium">{profile.name}</div>
-                                </div>
-                                <div>
-                                    <label className="text-xs text-white/40 uppercase">Headline</label>
-                                    <div className="font-medium">{profile.headline}</div>
-                                </div>
-                                <div>
-                                    <label className="text-xs text-white/40 uppercase">Skills</label>
-                                    <div className="flex flex-wrap gap-2 mt-2">
-                                        {profile.skills.slice(0, 8).map(s => (
-                                            <span key={s} className="text-xs px-2 py-1 rounded bg-white/10 border border-white/10">{s}</span>
-                                        ))}
+                            <>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-xs text-white/40 uppercase">Name</label>
+                                        <div className="font-medium">{profile.name}</div>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-white/40 uppercase">Headline</label>
+                                        <div className="font-medium">{profile.headline}</div>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-white/40 uppercase">Skills</label>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {profile.skills.slice(0, 8).map(s => (
+                                                <span key={s} className="text-xs px-2 py-1 rounded bg-white/10 border border-white/10">{s}</span>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="pt-4 flex gap-2">
-                                    <Button onClick={() => setProfile(null)} variant="outline" size="sm" className="w-full">Reset</Button>
-                                    <Button onClick={findJobs} isLoading={isMatching} size="sm" className="w-full">Find Jobs</Button>
+
+                                {/* Search Preferences */}
+                                <div className="pt-4 border-t border-white/10 space-y-3">
+                                    <h3 className="text-sm font-medium text-indigo-300">Search Preferences</h3>
+                                    <div>
+                                        <label className="text-xs text-white/40 uppercase mb-1 block">Location</label>
+                                        <Input
+                                            placeholder="e.g. San Francisco, CA"
+                                            value={preferences.location}
+                                            onChange={(e) => setPreferences(prev => ({ ...prev, location: e.target.value }))}
+                                            className="h-9 text-sm"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-2 cursor-pointer" onClick={() => setPreferences(prev => ({ ...prev, remoteOnly: !prev.remoteOnly }))}>
+                                        <div className={`w-4 h-4 rounded border ${preferences.remoteOnly ? 'bg-indigo-500 border-indigo-500' : 'border-white/30'} flex items-center justify-center transition-colors`}>
+                                            {preferences.remoteOnly && <Check className="w-3 h-3 text-white" />}
+                                        </div>
+                                        <span className="text-sm text-white/70 select-none">Remote / Worldwide only</span>
+                                    </div>
+
+                                    <div className="pt-2 flex gap-2">
+                                        <Button onClick={() => setProfile(null)} variant="outline" size="sm" className="w-full">Reset</Button>
+                                        <Button onClick={findJobs} isLoading={isMatching} size="sm" className="w-full">Find Jobs</Button>
+                                    </div>
                                 </div>
-                            </div>
+                            </>
                         )}
                     </Card>
 
@@ -164,7 +188,17 @@ export function JobDashboard({ apiKeys, onBack }) {
                                                         {job.title}
                                                     </a>
                                                 </h3>
-                                                <div className="text-sm text-white/60 mb-2">{job.company} • {job.location || 'Remote'}</div>
+                                                <div className="text-sm text-white/60 mb-2 flex flex-wrap gap-x-3 gap-y-1">
+                                                    <span>{job.company}</span>
+                                                    <span className="text-white/20">•</span>
+                                                    <span>{job.location || 'Remote'}</span>
+                                                    {job.date_posted && (
+                                                        <>
+                                                            <span className="text-white/20">•</span>
+                                                            <span className="text-white/40">{new Date(job.date_posted).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                                                        </>
+                                                    )}
+                                                </div>
                                                 <div className="flex gap-2 mb-3">
                                                     <span className="text-xs px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
                                                         {job.match_score}% Match
