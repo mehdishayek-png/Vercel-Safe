@@ -7,9 +7,9 @@ export function Card({ children, className, hover = false, ...props }) {
             initial={hover ? { y: 0 } : undefined}
             whileHover={hover ? { y: -5 } : undefined}
             className={cn(
-                "relative rounded-2xl border border-white/10 bg-[#0A0A0A]/60 backdrop-blur-xl transition-colors duration-300",
-                "shadow-[0_4px_20px_-1px_rgba(0,0,0,0.2)]",
-                "before:absolute before:inset-0 before:-z-10 before:rounded-2xl before:bg-gradient-to-b before:from-white/5 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity",
+                "relative rounded-2xl border border-gray-200 bg-white/80 backdrop-blur-xl transition-all duration-300",
+                "shadow-sm hover:shadow-lg hover:border-blue-200",
+                "before:absolute before:inset-0 before:-z-10 before:rounded-2xl before:bg-gradient-to-b before:from-white before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity",
                 className
             )}
             {...props}

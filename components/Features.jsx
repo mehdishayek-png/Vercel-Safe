@@ -40,20 +40,20 @@ export function Features() {
         <section className="py-32 relative">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-20">
-                    <h2 className="text-4xl md:text-5xl font-bold mb-6">Supercharge your job search</h2>
-                    <p className="text-white/60 text-xl max-w-2xl mx-auto">
+                    <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">Supercharge your job search</h2>
+                    <p className="text-gray-500 text-xl max-w-2xl mx-auto">
                         Everything you need to land your next role, powered by next-gen AI.
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {features.map((f, i) => (
-                        <Card key={i} hover className="p-8 group">
-                            <div className="mb-6 p-4 rounded-2xl bg-white/5 w-fit group-hover:bg-indigo-500/20 transition-colors">
-                                <f.icon className="w-8 h-8 text-indigo-400" />
+                        <Card key={i} hover className="p-8 group bg-white border-gray-200 hover:border-blue-300">
+                            <div className="mb-6 p-4 rounded-2xl bg-blue-50 w-fit group-hover:bg-blue-100 transition-colors">
+                                <f.icon className="w-8 h-8 text-blue-600" />
                             </div>
-                            <h3 className="text-2xl font-semibold mb-3">{f.title}</h3>
-                            <p className="text-white/60 leading-relaxed">{f.desc}</p>
+                            <h3 className="text-2xl font-semibold mb-3 text-gray-900">{f.title}</h3>
+                            <p className="text-gray-500 leading-relaxed text-lg">{f.desc}</p>
                         </Card>
                     ))}
                 </div>

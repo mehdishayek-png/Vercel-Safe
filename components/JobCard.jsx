@@ -25,9 +25,9 @@ export function JobCard({ job, onSave, isSaved }) {
 
     // Confidence color logic (Presentation layer only)
     const getMatchColor = (score) => {
-        if (score >= 80) return "text-emerald-400";
-        if (score >= 60) return "text-indigo-400";
-        return "text-white/60";
+        if (score >= 80) return "text-emerald-600";
+        if (score >= 60) return "text-blue-600";
+        return "text-gray-400";
     };
 
     const getMatchGradient = (score) => {

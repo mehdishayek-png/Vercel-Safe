@@ -29,7 +29,7 @@ export function HowItWorks() {
 
                 <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12">
                     {/* Connector Line */}
-                    <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
+                    <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
 
                     {steps.map((s, i) => (
                         <motion.div
@@ -40,11 +40,11 @@ export function HowItWorks() {
                             transition={{ delay: i * 0.2 }}
                             className="relative text-center"
                         >
-                            <div className="relative mx-auto w-24 h-24 rounded-full bg-[#0A0A0A] border border-indigo-500/30 flex items-center justify-center mb-8 z-10 shadow-[0_0_30px_-5px_rgba(99,102,241,0.3)]">
-                                <s.icon className="w-10 h-10 text-indigo-400" />
+                            <div className="relative mx-auto w-24 h-24 rounded-full bg-white border border-blue-100 flex items-center justify-center mb-8 z-10 shadow-[0_0_30px_-5px_rgba(59,130,246,0.2)]">
+                                <s.icon className="w-10 h-10 text-blue-500" />
                             </div>
-                            <h3 className="text-2xl font-bold mb-4">{s.title}</h3>
-                            <p className="text-white/60 max-w-xs mx-auto">{s.desc}</p>
+                            <h3 className="text-2xl font-bold mb-4 text-gray-900">{s.title}</h3>
+                            <p className="text-gray-500 max-w-xs mx-auto text-lg">{s.desc}</p>
                         </motion.div>
                     ))}
                 </div>
