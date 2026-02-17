@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, FileText, Search, Check, AlertCircle, Loader2, X, Plus, MapPin, Globe, Sparkles, Bookmark, LayoutGrid, List } from 'lucide-react';
+import { Upload, FileText, Search, Check, AlertCircle, Loader2, X, Plus, MapPin, Globe, Sparkles, Bookmark, LayoutGrid, List, ShieldCheck, Clock } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 import { Input } from './ui/Input';
@@ -215,9 +215,21 @@ export function JobDashboard({ apiKeys, onBack }) {
                     transition={{ delay: 0.1 }}
                     className="lg:col-span-4 space-y-6"
                 >
+                    {/* Privacy & Timing Badge */}
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2 text-[11px] text-white/40 bg-white/5 p-2 rounded-lg border border-white/5">
+                            <ShieldCheck className="w-3.5 h-3.5 text-green-400" />
+                            <span>Anonymous & Secure: No email, no stored resume.</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[11px] text-white/40 bg-white/5 p-2 rounded-lg border border-white/5">
+                            <Clock className="w-3.5 h-3.5 text-blue-400" />
+                            <span>Deep Scan: Takes 1-2 mins for best results.</span>
+                        </div>
+                    </div>
+
                     <ResumeStrength profile={profile} />
 
-                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl overflow-hidden relative group">
+                    <div className="glass-panel p-6 overflow-hidden relative group">
                         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
                         <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">
