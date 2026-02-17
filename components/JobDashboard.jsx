@@ -26,6 +26,7 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [preferences, setPreferences] = useState({ country: 'US', state: '', city: '', remoteOnly: false });
     const [newSkill, setNewSkill] = useState('');
     const [experienceYears, setExperienceYears] = useState(2);
+    const [jobTitle, setJobTitle] = useState('');
 
     // Data State
     const [countries, setCountries] = useState([]);
@@ -158,6 +159,9 @@ export function JobDashboard({ apiKeys, onBack }) {
             if (typeof data.profile.experience_years === 'number') {
                 setExperienceYears(data.profile.experience_years);
             }
+            if (data.profile.headline) {
+                setJobTitle(data.profile.headline);
+            }
             addLog(`Extracted profile for ${data.profile.name}`);
         } catch (err) {
             addLog(`Error: ${err.message}`);
@@ -197,7 +201,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    profile: { ...profile, experience_years: experienceYears },
+                    profile: { ...profile, experience_years: experienceYears, headline: jobTitle },
                     apiKeys,
                     preferences: {
                         ...preferences,
@@ -280,7 +284,16 @@ export function JobDashboard({ apiKeys, onBack }) {
                                 {/* Identity */}
                                 <div>
                                     <div className="font-semibold text-lg text-gray-900">{profile.name}</div>
-                                    <div className="text-sm text-gray-500 truncate">{profile.headline}</div>
+                                    <div className="mt-1">
+                                        <label className="text-[10px] tracking-widest text-gray-400 uppercase font-semibold block mb-1">Target Role</label>
+                                        <input
+                                            type="text"
+                                            value={jobTitle}
+                                            onChange={(e) => setJobTitle(e.target.value)}
+                                            className="w-full text-sm font-medium text-gray-900 border-b border-gray-200 focus:border-blue-500 focus:outline-none py-1 bg-transparent placeholder:text-gray-300"
+                                            placeholder="e.g. Senior Frontend Engineer"
+                                        />
+                                    </div>
                                 </div>
 
                                 {/* Skills */}

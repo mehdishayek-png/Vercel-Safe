@@ -30,7 +30,7 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-[#050511] text-white overflow-x-hidden selection:bg-indigo-500/30">
+    <main className="min-h-screen bg-white text-gray-900 overflow-x-hidden selection:bg-blue-100">
       <Header />
       <Hero onStart={() => setView('dashboard')} onDemo={() => document.getElementById('preview')?.scrollIntoView({ behavior: 'smooth' })} />
 

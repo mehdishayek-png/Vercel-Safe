@@ -6,8 +6,11 @@ export async function POST(request) {
         const apiKey = apiKeys?.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
 
         if (!apiKey) {
-            return NextResponse.json({ error: 'OpenAI API key required' }, { status: 400 });
+            console.error('Analysis failed: Missing OpenAI API Key');
+            return NextResponse.json({ error: 'OpenAI API key required. Please check your settings.' }, { status: 400 });
         }
+
+        console.log(`[Analysis] Starting analysis for job: ${job.title} at ${job.company}`);
 
         const prompt = `
         Role: Expert Career Coach & Recruiter.
