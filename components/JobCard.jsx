@@ -211,6 +211,17 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved }) {
                     </div>
                 </div>
 
+                {/* Deep Analysis Trigger - Clean & Simple */}
+                <div className="mt-4 pt-3 border-t border-gray-100 flex justify-center">
+                    <button
+                        onClick={handleExpandWrapper}
+                        className="group flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-blue-600 transition-colors py-1 px-3 rounded-full hover:bg-blue-50"
+                    >
+                        <BrainCircuit className="w-3.5 h-3.5 group-hover:text-blue-500 transition-colors" />
+                        {isExpanded ? 'Hide Analysis' : 'Generate Deep Analysis'}
+                        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+                    </button>
+                </div>
             </div>
 
             {/* Expanded Analysis Panel */}
