@@ -74,14 +74,22 @@ export async function POST(request) {
         }
         `;
 
+
+        // Build request body
+        const requestBody = {
+            model: model,
+            messages: [{ role: 'user', content: prompt }]
+        };
+
+        // Only add response_format for OpenAI models (Gemini doesn't support it)
+        if (!openRouterKey || model.includes('gpt')) {
+            requestBody.response_format = { type: "json_object" };
+        }
+
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: headers,
-            body: JSON.stringify({
-                model: model,
-                messages: [{ role: 'user', content: prompt }],
-                response_format: { type: "json_object" }
-            })
+            body: JSON.stringify(requestBody)
         });
 
         if (!response.ok) {
