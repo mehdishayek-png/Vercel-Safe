@@ -18,8 +18,14 @@ export default function Home() {
     if (stored) setApiKeys(JSON.parse(stored));
   }, []);
 
+  import { ErrorBoundary } from '@/components/ErrorBoundary';
+
   if (view === 'dashboard') {
-    return <JobDashboard apiKeys={apiKeys} onBack={() => setView('landing')} />;
+    return (
+      <ErrorBoundary>
+        <JobDashboard apiKeys={apiKeys} onBack={() => setView('landing')} />
+      </ErrorBoundary>
+    );
   }
 
   return (
