@@ -18,9 +18,11 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [isParsing, setIsParsing] = useState(false);
     const [isMatching, setIsMatching] = useState(false);
     const [logs, setLogs] = useState([]);
+    const [searchError, setSearchError] = useState(null);
     const [savedJobIds, setSavedJobIds] = useState(new Set());
     const [activeTab, setActiveTab] = useState('matches'); // 'matches' | 'saved'
     const [showGuide, setShowGuide] = useState(false);
+    const [sortBy, setSortBy] = useState('score'); // 'score' | 'latest'
 
     // Preferences State
     const [preferences, setPreferences] = useState({ country: 'US', state: '', city: '', remoteOnly: false });
@@ -225,7 +227,17 @@ export function JobDashboard({ apiKeys, onBack }) {
             }
             addLog(`Extracted profile for ${data.profile.name}`);
         } catch (err) {
-            addLog(`Error: ${err.message}`);
+            const msg = err.message.toLowerCase();
+            let userMessage;
+            if (msg.includes('pdf') || msg.includes('parse')) {
+                userMessage = "We couldn't read this PDF. Try saving it as a simpler PDF (no scans) or paste your info manually.";
+            } else if (msg.includes('network') || msg.includes('fetch')) {
+                userMessage = 'Network error. Check your connection and try again.';
+            } else {
+                userMessage = `Resume upload failed: ${err.message}`;
+            }
+            addLog(`⚠️ ${userMessage}`);
+            setSearchError({ type: 'resume', message: userMessage });
         } finally {
             setIsParsing(false);
         }
@@ -236,6 +248,7 @@ export function JobDashboard({ apiKeys, onBack }) {
         if (!profile) return;
         setIsMatching(true);
         setLogs([]);
+        setSearchError(null);
         addLog("Starting job search agent...");
         addLog("Scanning job market... This may take ~1 minute for high-quality matches.");
         setActiveTab('matches');
@@ -347,7 +360,12 @@ export function JobDashboard({ apiKeys, onBack }) {
             // ---- END DEEP ANALYSIS ----
 
         } catch (err) {
-            addLog(`Error: ${err.message}`);
+            const hasPartialResults = jobs.length > 0;
+            const userMessage = hasPartialResults
+                ? `Search partially failed: ${err.message}. Showing ${jobs.length} results found so far.`
+                : `Job search failed: ${err.message}. Please try again.`;
+            addLog(`⚠️ ${userMessage}`);
+            setSearchError({ type: 'search', message: userMessage, canRetry: true });
         } finally {
             setIsMatching(false);
         }
@@ -368,9 +386,32 @@ export function JobDashboard({ apiKeys, onBack }) {
         }
     };
 
-    const displayedJobs = activeTab === 'saved'
-        ? jobs.filter(j => savedJobIds.has(j.apply_url))
-        : jobs;
+    const displayedJobs = (() => {
+        let list = activeTab === 'saved'
+            ? jobs.filter(j => savedJobIds.has(j.apply_url))
+            : [...jobs];
+
+        if (sortBy === 'latest') {
+            list.sort((a, b) => {
+                const parseDate = (d) => {
+                    if (!d) return 0;
+                    const parsed = new Date(d);
+                    if (!isNaN(parsed)) return parsed.getTime();
+                    // Handle relative dates like "3 days ago"
+                    const rel = String(d).match(/(\d+)\s*(day|hour|minute|week|month)/i);
+                    if (rel) {
+                        const units = { minute: 60000, hour: 3600000, day: 86400000, week: 604800000, month: 2592000000 };
+                        return Date.now() - (parseInt(rel[1]) * (units[rel[2].toLowerCase()] || 86400000));
+                    }
+                    return 0;
+                };
+                return parseDate(b.date_posted || b.posted_date) - parseDate(a.date_posted || a.posted_date);
+            });
+        } else {
+            list.sort((a, b) => (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0));
+        }
+        return list;
+    })();
 
     return (
         <div className="min-h-screen pt-24 pb-12 px-4 container mx-auto text-gray-900">
@@ -422,6 +463,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                                     </div>
                                     <p className="text-base font-medium text-gray-900">Upload Resume</p>
                                     <p className="text-xs text-gray-400 mt-1">PDF Only • Max 10MB</p>
+                                    <p className="text-[10px] text-gray-400 mt-3 leading-relaxed">🔒 Your resume is processed by AI to extract skills. We never store your file.</p>
                                 </div>
                                 <input ref={fileInputRef} type="file" accept=".pdf" className="hidden" onChange={handleFileUpload} />
                             </div>
@@ -621,11 +663,56 @@ export function JobDashboard({ apiKeys, onBack }) {
                                 </div>
                             </button>
                         </div>
+                        {jobs.length > 0 && (
+                            <div className="flex gap-1 bg-gray-100/80 rounded-lg p-0.5">
+                                <button
+                                    onClick={() => setSortBy('score')}
+                                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${sortBy === 'score' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                                >
+                                    Top Score
+                                </button>
+                                <button
+                                    onClick={() => setSortBy('latest')}
+                                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${sortBy === 'latest' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                                >
+                                    Latest
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="space-y-4">
                         {isMatching && (
                             <ScanningRadar />
+                        )}
+
+                        {searchError && !isMatching && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3"
+                            >
+                                <div className="text-amber-500 mt-0.5 text-lg">{searchError.type === 'resume' ? '📄' : '⚠️'}</div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-amber-800 font-medium">{searchError.message}</p>
+                                    <div className="flex gap-2 mt-3">
+                                        {searchError.canRetry && (
+                                            <button
+                                                onClick={() => { setSearchError(null); findJobs(); }}
+                                                className="text-xs px-3 py-1.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium"
+                                            >
+                                                Retry Search
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => setSearchError(null)}
+                                            className="text-xs px-3 py-1.5 text-amber-700 hover:bg-amber-100 rounded-lg transition-colors"
+                                        >
+                                            Dismiss
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
                         )}
 
                         {!isMatching && displayedJobs.length === 0 && (
