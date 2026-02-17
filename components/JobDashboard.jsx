@@ -176,6 +176,7 @@ export function JobDashboard({ apiKeys, onBack }) {
         setIsMatching(true);
         setLogs([]);
         addLog("Starting job search agent...");
+        addLog("Scanning job market... This may take ~1 minute for high-quality matches.");
         setActiveTab('matches');
 
         // Scroll to results area so loading state is visible

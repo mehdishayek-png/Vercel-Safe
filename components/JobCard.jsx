@@ -7,7 +7,9 @@ import { MatchRing } from './ui/MatchRing';
 
 export function JobCard({ job, profile, apiKeys, onSave, isSaved }) {
     const [isExpanded, setIsExpanded] = useState(false);
+    const [showFullDescription, setShowFullDescription] = useState(false);
     const [analysis, setAnalysis] = useState(null);
+    const [analysisError, setAnalysisError] = useState(null);
     const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
 
     // 3D Tilt Logic
@@ -86,16 +88,24 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved }) {
         // Fetch analysis only if opening and not yet fetched
         if (nextState && !analysis && !isLoadingAnalysis) {
             setIsLoadingAnalysis(true);
+            setAnalysisError(null);
             try {
                 const res = await fetch('/api/analyze-job', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ job, profile, apiKeys })
                 });
+
                 const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to analyze');
+                }
+
                 if (data.analysis) setAnalysis(data.analysis);
             } catch (err) {
                 console.error("Analysis failed", err);
+                setAnalysisError(err.message || "Unable to generate analysis");
             } finally {
                 setIsLoadingAnalysis(false);
             }
@@ -152,9 +162,20 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved }) {
                         </div>
 
                         {/* Summary */}
-                        <p className={`text-sm text-gray-600 leading-relaxed transition-all duration-300 ${isExpanded ? '' : 'line-clamp-6'}`}>
-                            {cleanSummary}
-                        </p>
+                        {/* Summary */}
+                        <div className="relative">
+                            <p className={`text-sm text-gray-600 leading-relaxed transition-all duration-300 ${showFullDescription ? '' : 'line-clamp-3'}`}>
+                                {cleanSummary}
+                            </p>
+                            {cleanSummary.length > 150 && (
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setShowFullDescription(!showFullDescription); }}
+                                    className="text-xs font-medium text-blue-600 hover:text-blue-800 mt-1 focus:outline-none"
+                                >
+                                    {showFullDescription ? 'Show Less' : 'Read More'}
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     {/* Actions & Score */}
@@ -190,82 +211,61 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved }) {
                     </div>
                 </div>
 
-                {/* Match DNA Bar (Explainability Visualization) */}
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                    <div className="flex items-center justify-between text-[10px] text-gray-400 uppercase tracking-wider mb-2">
-                        <span className="flex items-center gap-1.5">
-                            <BrainCircuit className="w-3 h-3 text-blue-500" />
-                            AI Match Analysis
-                        </span>
-                        <button
-                            onClick={handleExpandWrapper}
-                            className="flex items-center gap-1 hover:text-blue-600 transition-colors"
-                        >
-                            {isExpanded ? 'Hide Details' : 'View Deep Analysis'}
-                            <ChevronDown className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-                        </button>
-                    </div>
-
-                    <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden flex">
-                        {/* Visualizing score components without changing logic */}
-                        <div className="h-full bg-blue-500" style={{ width: `${job.match_score * 0.6}%` }} />
-                        <div className="h-full bg-purple-500" style={{ width: `${job.match_score * 0.3}%` }} />
-                        <div className="h-full bg-emerald-500" style={{ width: `${job.match_score * 0.1}%` }} />
-                    </div>
-                </div>
-
-                {/* Expanded Analysis Panel */}
-                <AnimatePresence>
-                    {isExpanded && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden"
-                        >
-                            <div className="pt-4 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                                {isLoadingAnalysis ? (
-                                    <div className="col-span-2 space-y-2 p-4">
-                                        <div className="flex items-center gap-2 text-gray-500 animate-pulse">
-                                            <BrainCircuit className="w-4 h-4" />
-                                            <span>Analyzing job details against your profile...</span>
-                                        </div>
-                                        <div className="h-2 bg-gray-100 rounded-full w-3/4 animate-pulse" />
-                                        <div className="h-2 bg-gray-100 rounded-full w-1/2 animate-pulse" />
-                                    </div>
-                                ) : analysis ? (
-                                    <>
-                                        <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
-                                            <h4 className="text-emerald-800 font-medium mb-2 flex items-center gap-2">
-                                                <Check className="w-3.5 h-3.5" />
-                                                Strong Signals
-                                            </h4>
-                                            <ul className="list-disc list-inside space-y-1 text-emerald-700/80">
-                                                {analysis.strong_signals?.map((s, i) => <li key={i}>{s}</li>)}
-                                            </ul>
-                                        </div>
-                                        <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                                            <h4 className="text-blue-800 font-medium mb-2 flex items-center gap-2">
-                                                <Sparkles className="w-3.5 h-3.5" />
-                                                AI Verdict
-                                            </h4>
-                                            <p className="text-blue-700/80 mb-2">{analysis.verdict}</p>
-                                            <div className="pt-2 border-t border-blue-100 mt-2">
-                                                <span className="text-[10px] uppercase tracking-wider text-blue-500 font-bold">Est. Salary: </span>
-                                                <span className="text-blue-900 font-medium">{analysis.salary_estimate}</span>
-                                            </div>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <div className="col-span-2 text-center text-gray-400 py-4">
-                                        Unable to generate analysis.
-                                    </div>
-                                )}
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
             </div>
-        </motion.div>
+
+            {/* Expanded Analysis Panel */}
+            <AnimatePresence>
+                {isExpanded && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden border-t border-gray-100 mt-4"
+                    >
+                        <div className="pt-4 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            {isLoadingAnalysis ? (
+                                <div className="col-span-2 space-y-2 p-4">
+                                    <div className="flex items-center gap-2 text-gray-500 animate-pulse">
+                                        <BrainCircuit className="w-4 h-4" />
+                                        <span>Analyzing job details against your profile...</span>
+                                    </div>
+                                    <div className="h-2 bg-gray-100 rounded-full w-3/4 animate-pulse" />
+                                    <div className="h-2 bg-gray-100 rounded-full w-1/2 animate-pulse" />
+                                </div>
+                            ) : analysis ? (
+                                <>
+                                    <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+                                        <h4 className="text-emerald-800 font-medium mb-2 flex items-center gap-2">
+                                            <Check className="w-3.5 h-3.5" />
+                                            Strong Signals
+                                        </h4>
+                                        <ul className="list-disc list-inside space-y-1 text-emerald-700/80">
+                                            {analysis.strong_signals?.map((s, i) => <li key={i}>{s}</li>)}
+                                        </ul>
+                                    </div>
+                                    <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                        <h4 className="text-blue-800 font-medium mb-2 flex items-center gap-2">
+                                            <Sparkles className="w-3.5 h-3.5" />
+                                            AI Verdict
+                                        </h4>
+                                        <p className="text-blue-700/80 mb-2">{analysis.verdict}</p>
+                                        <div className="pt-2 border-t border-blue-100 mt-2">
+                                            <span className="text-[10px] uppercase tracking-wider text-blue-500 font-bold">Est. Salary: </span>
+                                            <span className="text-blue-900 font-medium">{analysis.salary_estimate}</span>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="col-span-2 text-center text-red-400 py-4 bg-red-50 rounded-lg border border-red-100">
+                                    <AlertCircle className="w-4 h-4 inline mr-2" />
+                                    {analysisError || "Unable to generate analysis."}
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+        </motion.div >
     );
 }
