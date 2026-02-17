@@ -239,8 +239,8 @@ export function JobDashboard({ apiKeys, onBack }) {
                             return j;
                         })
                             .filter(j => {
-                                // FILTER OUT: Hide jobs with AI score < 50 (irrelevant/mismatch)
-                                if (j.analysis?.fit_score && j.analysis.fit_score < 50) {
+                                // FILTER OUT: Only hide jobs with AI score < 35 (truly irrelevant/extreme experience gap)
+                                if (j.analysis?.fit_score && j.analysis.fit_score < 35) {
                                     return false; // Remove from feed
                                 }
                                 return true;

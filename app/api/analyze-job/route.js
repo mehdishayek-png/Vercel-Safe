@@ -49,20 +49,25 @@ export async function POST(request) {
         
         CRITICAL INSTRUCTIONS - READ CAREFULLY:
         
-        1. **BRUTAL EXPERIENCE GAP RULE**: 
+        1. **BRUTAL EXPERIENCE GAP RULE** (STRICT): 
            - If job requires MORE than 5 years beyond candidate's experience, set "fit_score" = 20.
-           - Example: Job needs "15+ years", candidate has 4 years → fit_score = 20.
+           - Example: Job needs "15+ years", candidate has 6 years → fit_score = 20.
            - Example: Job needs "10+ years", candidate has 5 years → fit_score = 30.
-           - Example: Job needs "8+ years", candidate has 5 years → fit_score = 50.
+           - Example: Job needs "8+ years", candidate has 6 years → fit_score = 55.
         
-        2. **SENIORITY CHECK**: 
+        2. **SENIORITY CHECK** (STRICT): 
            - If job title contains "Senior", "Sr.", "Lead", "Director", "VP", "Principal" AND candidate has <8 years → fit_score MUST be <40.
         
-        3. **FIT SCORE SCALE**: 
-           - 80-100: Perfect match (Skills + Experience aligned).
-           - 60-79: Good match (Minor gaps, 1-2 year experience difference OK).
-           - 40-59: Weak match (Noticeable gaps).
-           - 0-39: REJECT (Experience gap >5 years, wrong seniority, or irrelevant).
+        3. **SKILL GAPS** (LENIENT - VERY IMPORTANT):
+           - Missing 1-3 skills? **Ignore it.** People learn on the job.
+           - Only penalize if candidate is from a COMPLETELY different domain (e.g. construction → software).
+           - Focus scoring on **experience match**, not skill match.
+        
+        4. **FIT SCORE SCALE**: 
+           - 80-100: Perfect match (Experience aligned, domain correct).
+           - 60-79: Good match (Minor experience gap OR different tech stack in same domain).
+           - 40-59: Weak match (Noticeable experience gap).
+           - 0-39: REJECT (Experience gap >5 years, wrong seniority tier).
 
         Output JSON ONLY:
         {
