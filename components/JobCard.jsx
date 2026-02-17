@@ -85,8 +85,14 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved }) {
         const nextState = !isExpanded;
         setIsExpanded(nextState);
 
+        // Usage: If parent provided analysis (pre-curated), use it.
+        if (job.analysis && !analysis) {
+            setAnalysis(job.analysis);
+            return;
+        }
+
         // Fetch analysis only if opening and not yet fetched
-        if (nextState && !analysis && !isLoadingAnalysis) {
+        if (nextState && !analysis && !isLoadingAnalysis && !job.analysis) {
             setIsLoadingAnalysis(true);
             setAnalysisError(null);
             try {

@@ -38,6 +38,7 @@ export async function POST(request) {
         
         Candidate Profile:
         Headline: ${profile.headline}
+        Experience Years: ${profile.experience_years || 'Not specified'}
         Skills: ${profile.skills.join(', ')}
         
         Job Description:
@@ -46,13 +47,21 @@ export async function POST(request) {
         Location: ${job.location}
         Summary: ${job.summary || job.description}
         
+        CRITICAL INSTRUCTIONS:
+        1. EXPERIENCE CHECK: If the job requires significantly more experience than the candidate has (e.g. Job needs 10+ years, candidate has 5), you MUST set "fit_score" BELOW 40.
+        2. SENIORITY CHECK: If candidate is Junior/Mid but job is "Senior", "Lead", "Director", "VP", penalize heavily unless they have 8+ years.
+        3. FIT SCORE: 0-100. 
+           - 90-100: Perfect match (Skills + Experience correct).
+           - 70-89: Good match (Minor gaps).
+           - <50: Mismatch (Experience gap, wrong domain, or wrong location).
+
         Output JSON ONLY:
         {
-            "fit_score": 85, // Integer 0-100. How well they fit (80+ is strong, 90+ is perfect).
+            "fit_score": 85, // Integer 0-100.
             "strong_signals": ["Signal 1", "Signal 2"], // Specific skills/exp that match well
             "gaps": ["Gap 1"], // Missing skills or requirements (be gentle but honest)
             "salary_estimate": "Estimated Ranges (e.g. $120k - $150k)", // Estimate based on role/location/company tiers
-            "verdict": "One sentence summary of why they should apply."
+            "verdict": "One sentence summary of why they should apply (or why NOT)."
         }
         `;
 
