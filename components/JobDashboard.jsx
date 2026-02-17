@@ -36,10 +36,24 @@ export function JobDashboard({ apiKeys, onBack }) {
 
     // Load countries on mount
     useEffect(() => {
-        setCountries(getAllCountries());
-        const saved = localStorage.getItem('jobbot_saved_jobs');
-        if (saved) {
-            setSavedJobIds(new Set(JSON.parse(saved)));
+        try {
+            const data = getAllCountries();
+            if (data && Array.isArray(data)) {
+                setCountries(data);
+            }
+        } catch (err) {
+            console.error("Failed to load countries:", err);
+        }
+
+        try {
+            const saved = localStorage.getItem('jobbot_saved_jobs');
+            if (saved) {
+                setSavedJobIds(new Set(JSON.parse(saved)));
+            }
+        } catch (err) {
+            console.error("Failed to load saved jobs:", err);
+            // Initialize with empty set if failed
+            setSavedJobIds(new Set());
         }
     }, []);
 
