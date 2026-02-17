@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, HelpCircle } from 'lucide-react';
 import { GuideModal } from './GuideModal';
 
-export function Header({ onShowGuide }) {
+export function Header({ onShowGuide, onClearData }) {
     const [scrolled, setScrolled] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
 
@@ -27,8 +27,8 @@ export function Header({ onShowGuide }) {
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
                 className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-                        ? 'bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-sm py-3'
-                        : 'bg-transparent py-5'
+                    ? 'bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-sm py-3'
+                    : 'bg-transparent py-5'
                     }`}
             >
                 <div className="container mx-auto px-4 flex items-center justify-between">
@@ -41,13 +41,23 @@ export function Header({ onShowGuide }) {
                         </span>
                     </div>
 
-                    <button
-                        onClick={handleGuideClick}
-                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 bg-white/50 hover:bg-white border border-transparent hover:border-gray-200 rounded-full transition-all"
-                    >
-                        <HelpCircle className="w-4 h-4" />
-                        <span className="hidden sm:inline">How it Works</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {onClearData && (
+                            <button
+                                onClick={onClearData}
+                                className="px-3 py-2 text-xs font-medium text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-full transition-all"
+                            >
+                                Clear Data
+                            </button>
+                        )}
+                        <button
+                            onClick={handleGuideClick}
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 bg-white/50 hover:bg-white border border-transparent hover:border-gray-200 rounded-full transition-all"
+                        >
+                            <HelpCircle className="w-4 h-4" />
+                            <span className="hidden sm:inline">How it Works</span>
+                        </button>
+                    </div>
                 </div>
             </motion.header>
 

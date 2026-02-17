@@ -36,7 +36,7 @@ export function JobDashboard({ apiKeys, onBack }) {
     const fileInputRef = useRef(null);
     const resultsRef = useRef(null);
 
-    // Load countries on mount
+    // P0-2: LocalStorage Persistence - Load on mount
     useEffect(() => {
         try {
             const data = getAllCountries();
@@ -54,10 +54,71 @@ export function JobDashboard({ apiKeys, onBack }) {
             }
         } catch (err) {
             console.error("Failed to load saved jobs:", err);
-            // Initialize with empty set if failed
             setSavedJobIds(new Set());
         }
+
+        // Restore profile from localStorage
+        try {
+            const storedProfile = localStorage.getItem('jobbot_profile');
+            if (storedProfile) {
+                const parsed = JSON.parse(storedProfile);
+                setProfile(parsed);
+                if (parsed.experience_years) setExperienceYears(parsed.experience_years);
+                if (parsed.headline) setJobTitle(parsed.headline);
+            }
+        } catch (err) {
+            console.error("Failed to restore profile:", err);
+        }
+
+        // Restore search results if recent (less than 1 hour old)
+        try {
+            const storedResults = localStorage.getItem('jobbot_results');
+            if (storedResults) {
+                const { jobs: savedJobs, timestamp } = JSON.parse(storedResults);
+                const ageInMinutes = (Date.now() - timestamp) / 1000 / 60;
+
+                if (ageInMinutes < 60) {
+                    setJobs(savedJobs);
+                    addLog(`Restored ${savedJobs.length} jobs from last search (${Math.floor(ageInMinutes)} min ago)`);
+                } else {
+                    // Clear stale results
+                    localStorage.removeItem('jobbot_results');
+                }
+            }
+        } catch (err) {
+            console.error("Failed to restore results:", err);
+        }
     }, []);
+
+    // P0-2: Save profile to localStorage whenever it changes
+    useEffect(() => {
+        if (profile) {
+            try {
+                const profileToSave = {
+                    ...profile,
+                    experience_years: experienceYears,
+                    headline: jobTitle
+                };
+                localStorage.setItem('jobbot_profile', JSON.stringify(profileToSave));
+            } catch (err) {
+                console.error("Failed to save profile:", err);
+            }
+        }
+    }, [profile, experienceYears, jobTitle]);
+
+    // P0-2: Save search results after successful search
+    useEffect(() => {
+        if (jobs.length > 0 && !isMatching) {
+            try {
+                localStorage.setItem('jobbot_results', JSON.stringify({
+                    jobs,
+                    timestamp: Date.now()
+                }));
+            } catch (err) {
+                console.error("Failed to save results:", err);
+            }
+        }
+    }, [jobs, isMatching]);
 
     // Load states when country changes
     useEffect(() => {
@@ -292,13 +353,28 @@ export function JobDashboard({ apiKeys, onBack }) {
         }
     };
 
+    // P0-2: Clear all data function
+    const clearAllData = () => {
+        if (confirm('Clear all saved data including profile and results?')) {
+            localStorage.removeItem('jobbot_profile');
+            localStorage.removeItem('jobbot_results');
+            localStorage.removeItem('jobbot_saved_jobs');
+            setProfile(null);
+            setJobs([]);
+            setSavedJobIds(new Set());
+            setExperienceYears(2);
+            setJobTitle('');
+            addLog('All data cleared');
+        }
+    };
+
     const displayedJobs = activeTab === 'saved'
         ? jobs.filter(j => savedJobIds.has(j.apply_url))
         : jobs;
 
     return (
         <div className="min-h-screen pt-24 pb-12 px-4 container mx-auto text-gray-900">
-            <Header onShowGuide={() => setShowGuide(true)} />
+            <Header onShowGuide={() => setShowGuide(true)} onClearData={clearAllData} />
             <AnimatePresence>
                 {showGuide && <GuideModal onClose={() => setShowGuide(false)} />}
             </AnimatePresence>
