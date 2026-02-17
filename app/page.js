@@ -6,6 +6,7 @@ import { Features } from '@/components/Features';
 import { HowItWorks } from '@/components/HowItWorks';
 import { DashboardPreview } from '@/components/DashboardPreview';
 import { JobDashboard } from '@/components/JobDashboard';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 export default function Home() {
   const [view, setView] = useState('landing'); // landing | dashboard
@@ -18,7 +19,7 @@ export default function Home() {
     if (stored) setApiKeys(JSON.parse(stored));
   }, []);
 
-  import { ErrorBoundary } from '@/components/ErrorBoundary';
+
 
   if (view === 'dashboard') {
     return (
