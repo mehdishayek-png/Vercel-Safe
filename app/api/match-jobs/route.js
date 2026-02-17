@@ -3,11 +3,32 @@ import { NextResponse } from 'next/server';
 import { fetchAllJobs } from '@/lib/job-fetcher';
 import { matchJobs } from '@/lib/matcher';
 import { matchJobsEnhanced } from '@/lib/matcher-enhanced';
+import { checkRateLimit, getClientIP } from '@/lib/rate-limiter';
 
 export const maxDuration = 60;
 
+// Rate limit: 2 searches per hour per IP
+const SEARCH_LIMIT = 2;
+const SEARCH_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
 export async function POST(request) {
   try {
+    // Rate limiting
+    const ip = getClientIP(request);
+    const { allowed, remaining, retryAfterSeconds } = checkRateLimit(ip, 'search', SEARCH_LIMIT, SEARCH_WINDOW_MS);
+
+    if (!allowed) {
+      const minutes = Math.ceil(retryAfterSeconds / 60);
+      return NextResponse.json({
+        error: `Rate limit reached. You can search again in ${minutes} minute${minutes !== 1 ? 's' : ''}. This helps us keep JobBot free for everyone.`,
+        retryAfter: retryAfterSeconds,
+        rateLimited: true
+      }, {
+        status: 429,
+        headers: { 'Retry-After': String(retryAfterSeconds) }
+      });
+    }
+
     const { profile, apiKeys, preferences, useEnhanced } = await request.json();
 
     if (!profile || !profile.skills?.length) {

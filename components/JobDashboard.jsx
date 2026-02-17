@@ -285,7 +285,13 @@ export function JobDashboard({ apiKeys, onBack }) {
                 })
             });
 
-            if (!res.ok) throw new Error('Failed to fetch jobs');
+            if (!res.ok) {
+                if (res.status === 429) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || 'Rate limit reached. Please wait before searching again.');
+                }
+                throw new Error('Failed to fetch jobs');
+            }
 
             const data = await res.json();
             const initialMatches = data.matches || [];
