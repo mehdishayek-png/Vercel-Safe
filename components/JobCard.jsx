@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Calendar, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles, BrainCircuit } from 'lucide-react';
 import { Button } from './ui/Button';
 
-export function JobCard({ job, onSave, isSaved }) {
+export function JobCard({ job, profile, apiKeys, onSave, isSaved }) {
     const [isExpanded, setIsExpanded] = useState(false);
+    const [analysis, setAnalysis] = useState(null);
+    const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
 
     // Formatting helpers
     const postedDate = job.date_posted ? new Date(job.date_posted).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'Recently';
@@ -34,6 +36,29 @@ export function JobCard({ job, onSave, isSaved }) {
         if (score >= 80) return "from-emerald-500 to-teal-500";
         if (score >= 60) return "from-indigo-500 to-purple-500";
         return "from-slate-500 to-slate-600";
+    };
+
+    const handleExpandWrapper = async () => {
+        const nextState = !isExpanded;
+        setIsExpanded(nextState);
+
+        // Fetch analysis only if opening and not yet fetched
+        if (nextState && !analysis && !isLoadingAnalysis) {
+            setIsLoadingAnalysis(true);
+            try {
+                const res = await fetch('/api/analyze-job', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ job, profile, apiKeys })
+                });
+                const data = await res.json();
+                if (data.analysis) setAnalysis(data.analysis);
+            } catch (err) {
+                console.error("Analysis failed", err);
+            } finally {
+                setIsLoadingAnalysis(false);
+            }
+        }
     };
 
     return (
@@ -128,10 +153,10 @@ export function JobCard({ job, onSave, isSaved }) {
                             AI Match Analysis
                         </span>
                         <button
-                            onClick={() => setIsExpanded(!isExpanded)}
+                            onClick={handleExpandWrapper}
                             className="flex items-center gap-1 hover:text-blue-600 transition-colors"
                         >
-                            {isExpanded ? 'Hide Details' : 'View Analysis'}
+                            {isExpanded ? 'Hide Details' : 'View Deep Analysis'}
                             <ChevronDown className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                         </button>
                     </div>
@@ -153,29 +178,44 @@ export function JobCard({ job, onSave, isSaved }) {
                             exit={{ height: 0, opacity: 0 }}
                             className="overflow-hidden"
                         >
-                            <div className="pt-4 mt-2 grid grid-cols-2 gap-4 text-xs">
-                                <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                    <h4 className="text-gray-700 font-medium mb-2 flex items-center gap-2">
-                                        <Check className="w-3.5 h-3.5 text-emerald-500" />
-                                        Strong Signals
-                                    </h4>
-                                    <p className="text-gray-500">
-                                        This role strongly aligns with your headline and primary skills. The location matches your preference pattern.
-                                    </p>
-                                </div>
-                                <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                    <h4 className="text-gray-700 font-medium mb-2 flex items-center gap-2">
-                                        <BrainCircuit className="w-3.5 h-3.5 text-purple-500" />
-                                        Keyword Overlap
-                                    </h4>
-                                    <div className="flex flex-wrap gap-1.5">
-                                        {['React', 'Development', 'Engineering'].map(k => (
-                                            <span key={k} className="bg-white text-purple-600 px-1.5 py-0.5 rounded text-[10px] border border-purple-100 shadow-sm">
-                                                {k}
-                                            </span>
-                                        ))}
+                            <div className="pt-4 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                {isLoadingAnalysis ? (
+                                    <div className="col-span-2 space-y-2 p-4">
+                                        <div className="flex items-center gap-2 text-gray-500 animate-pulse">
+                                            <BrainCircuit className="w-4 h-4" />
+                                            <span>Analyzing job details against your profile...</span>
+                                        </div>
+                                        <div className="h-2 bg-gray-100 rounded-full w-3/4 animate-pulse" />
+                                        <div className="h-2 bg-gray-100 rounded-full w-1/2 animate-pulse" />
                                     </div>
-                                </div>
+                                ) : analysis ? (
+                                    <>
+                                        <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+                                            <h4 className="text-emerald-800 font-medium mb-2 flex items-center gap-2">
+                                                <Check className="w-3.5 h-3.5" />
+                                                Strong Signals
+                                            </h4>
+                                            <ul className="list-disc list-inside space-y-1 text-emerald-700/80">
+                                                {analysis.strong_signals?.map((s, i) => <li key={i}>{s}</li>)}
+                                            </ul>
+                                        </div>
+                                        <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                            <h4 className="text-blue-800 font-medium mb-2 flex items-center gap-2">
+                                                <Sparkles className="w-3.5 h-3.5" />
+                                                AI Verdict
+                                            </h4>
+                                            <p className="text-blue-700/80 mb-2">{analysis.verdict}</p>
+                                            <div className="pt-2 border-t border-blue-100 mt-2">
+                                                <span className="text-[10px] uppercase tracking-wider text-blue-500 font-bold">Est. Salary: </span>
+                                                <span className="text-blue-900 font-medium">{analysis.salary_estimate}</span>
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="col-span-2 text-center text-gray-400 py-4">
+                                        Unable to generate analysis.
+                                    </div>
+                                )}
                             </div>
                         </motion.div>
                     )}

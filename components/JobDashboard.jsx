@@ -6,6 +6,8 @@ import { Card } from './ui/Card';
 import { Input } from './ui/Input';
 import { Combobox } from './ui/Combobox';
 import { JobCard } from './JobCard';
+import { Header } from './Header';
+import { GuideModal } from './GuideModal';
 import { ResumeStrength } from './ResumeStrength';
 import { ScanningRadar } from './ScanningRadar';
 import { getAllCountries, getStatesByCountry, getCitiesByState, getCountryName } from '../lib/location-data';
@@ -18,6 +20,7 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [logs, setLogs] = useState([]);
     const [savedJobIds, setSavedJobIds] = useState(new Set());
     const [activeTab, setActiveTab] = useState('matches'); // 'matches' | 'saved'
+    const [showGuide, setShowGuide] = useState(false);
 
     // Preferences State
     const [preferences, setPreferences] = useState({ country: 'US', state: '', city: '', remoteOnly: false });
@@ -198,13 +201,10 @@ export function JobDashboard({ apiKeys, onBack }) {
 
     return (
         <div className="min-h-screen pt-24 pb-12 px-4 container mx-auto text-gray-900">
-            <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="mb-8 flex justify-between items-center"
-            >
-                <Button variant="ghost" onClick={onBack} className="text-gray-500 hover:text-gray-900">← Back to Home</Button>
-            </motion.div>
+            <Header onShowGuide={() => setShowGuide(true)} />
+            <AnimatePresence>
+                {showGuide && <GuideModal onClose={() => setShowGuide(false)} />}
+            </AnimatePresence>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
@@ -351,23 +351,46 @@ export function JobDashboard({ apiKeys, onBack }) {
                         )}
                     </div>
 
-                    {/* Logs */}
-                    <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-xl p-4 h-48 overflow-y-auto font-mono text-[10px] shadow-sm relative">
-                        <div className="text-gray-400 mb-2 uppercase tracking-widest sticky top-0 bg-white/95 backdrop-blur pb-2 flex justify-between items-center border-b border-gray-100">
-                            <span>System Logs</span>
-                            <div className="flex gap-1">
-                                <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                                <div className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-                                <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                    {/* Agent Activity Feed */}
+                    <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-xl p-0 h-48 overflow-hidden flex flex-col shadow-sm relative group hover:shadow-md transition-shadow">
+                        <div className="px-4 py-3 bg-white/50 border-b border-gray-100 flex justify-between items-center backdrop-blur-sm sticky top-0 z-10">
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+                                <span className="text-xs font-semibold text-gray-700 uppercase tracking-wider">Agent Activity</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                </span>
+                                <span className="text-[10px] font-medium text-emerald-600">Live</span>
                             </div>
                         </div>
-                        {logs.length === 0 && <div className="text-gray-400 italic mt-4 text-center">System standby...</div>}
-                        {logs.map((log, i) => (
-                            <div key={i} className="mb-1 text-gray-600 break-words border-l-2 border-green-500/30 pl-2">
-                                <span className="opacity-50 mr-2">[{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' })}]</span>
-                                {log}
-                            </div>
-                        ))}
+
+                        <div className="flex-1 overflow-y-auto p-4 space-y-3 font-mono text-[11px]">
+                            {logs.length === 0 && (
+                                <div className="h-full flex flex-col items-center justify-center text-gray-400 opacity-60">
+                                    <BrainCircuit className="w-8 h-8 mb-2 stroke-1" />
+                                    <span>Waiting for instructions...</span>
+                                </div>
+                            )}
+                            {logs.map((log, i) => (
+                                <motion.div
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    key={i}
+                                    className="flex gap-3 text-gray-600"
+                                >
+                                    <span className="opacity-40 shrink-0">
+                                        {new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' })}
+                                    </span>
+                                    <span className="border-l-2 border-blue-100 pl-3 break-words">
+                                        {log}
+                                    </span>
+                                </motion.div>
+                            ))}
+                            <div ref={el => el?.scrollIntoView({ behavior: 'smooth' })} />
+                        </div>
                     </div>
                 </motion.div>
 
@@ -403,20 +426,24 @@ export function JobDashboard({ apiKeys, onBack }) {
 
                         {!isMatching && displayedJobs.length === 0 && (
                             <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="text-center py-32 bg-white/40 rounded-3xl border border-white/50 dashed-border shadow-sm"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="text-center py-20 px-6 rounded-3xl border border-dashed border-gray-200 bg-gray-50/50"
                             >
-                                <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <Search className="w-8 h-8 text-blue-300" />
+                                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-100">
+                                    {activeTab === 'saved' ? (
+                                        <Bookmark className="w-8 h-8 text-gray-300" />
+                                    ) : (
+                                        <Search className="w-8 h-8 text-gray-300" />
+                                    )}
                                 </div>
-                                <h3 className="text-lg font-medium text-gray-500 mb-2">
-                                    {activeTab === 'saved' ? 'No Saved Jobs' : 'Targeting System Offline'}
+                                <h3 className="text-gray-900 font-medium mb-1">
+                                    {activeTab === 'saved' ? 'No Saved Jobs Yet' : 'Ready to Hunt'}
                                 </h3>
-                                <p className="text-sm text-gray-400 max-w-sm mx-auto">
+                                <p className="text-sm text-gray-500 max-w-xs mx-auto mb-6">
                                     {activeTab === 'saved'
-                                        ? 'Bookmark jobs to view them here later.'
-                                        : 'Upload a resume dossier to begin the job matching sequence.'}
+                                        ? 'Jobs you bookmark will appear here for easy access.'
+                                        : 'Upload your resume context above to activate the autonomous agent.'}
                                 </p>
                             </motion.div>
                         )}
@@ -426,6 +453,8 @@ export function JobDashboard({ apiKeys, onBack }) {
                                 <JobCard
                                     key={i}
                                     job={job}
+                                    profile={profile}
+                                    apiKeys={apiKeys}
                                     onSave={toggleSaveJob}
                                     isSaved={savedJobIds.has(job.apply_url)}
                                 />

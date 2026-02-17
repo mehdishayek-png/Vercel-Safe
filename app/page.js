@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Hero } from '@/components/Hero';
+import { Header } from '@/components/Header';
 import { Features } from '@/components/Features';
 import { HowItWorks } from '@/components/HowItWorks';
 import { DashboardPreview } from '@/components/DashboardPreview';
@@ -23,6 +24,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#050511] text-white overflow-x-hidden selection:bg-indigo-500/30">
+      <Header />
       <Hero onStart={() => setView('dashboard')} onDemo={() => document.getElementById('preview')?.scrollIntoView({ behavior: 'smooth' })} />
 
       <div id="preview">
