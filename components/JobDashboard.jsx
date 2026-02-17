@@ -263,7 +263,11 @@ export function JobDashboard({ apiKeys, onBack }) {
                         fetch('/api/analyze-job', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ job, profile, apiKeys })
+                            body: JSON.stringify({
+                                job,
+                                profile: { ...profile, experience_years: experienceYears, headline: jobTitle },
+                                apiKeys
+                            })
                         })
                             .then(r => r.json())
                             .then(d => {
