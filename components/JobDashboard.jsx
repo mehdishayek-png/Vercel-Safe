@@ -179,9 +179,9 @@ export function JobDashboard({ apiKeys, onBack }) {
         setActiveTab('matches');
 
         // Scroll to results area so loading state is visible
-        setTimeout(() => {
-            resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+        // setTimeout(() => {
+        //     resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // }, 100);
 
         // Format location string
         let locationQuery = '';

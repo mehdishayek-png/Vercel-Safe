@@ -152,7 +152,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved }) {
                         </div>
 
                         {/* Summary */}
-                        <p className={`text-sm text-gray-600 leading-relaxed transition-all duration-300 ${isExpanded ? '' : 'line-clamp-2'}`}>
+                        <p className={`text-sm text-gray-600 leading-relaxed transition-all duration-300 ${isExpanded ? '' : 'line-clamp-6'}`}>
                             {cleanSummary}
                         </p>
                     </div>
