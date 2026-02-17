@@ -3,14 +3,34 @@ import { NextResponse } from 'next/server';
 export async function POST(request) {
     try {
         const { job, profile, apiKeys } = await request.json();
-        const apiKey = apiKeys?.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
 
-        if (!apiKey) {
-            console.error('Analysis failed: Missing OpenAI API Key');
-            return NextResponse.json({ error: 'OpenAI API key required. Please check your settings.' }, { status: 400 });
+        // Check for OpenRouter Key First
+        const openRouterKey = apiKeys?.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY;
+        const openAiKey = apiKeys?.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+
+        let apiUrl = 'https://api.openai.com/v1/chat/completions';
+        let apiKey = openAiKey;
+        let model = 'gpt-4o-mini';
+        let headers = {
+            'Content-Type': 'application/json',
+        };
+
+        if (openRouterKey) {
+            apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
+            apiKey = openRouterKey;
+            model = 'openai/gpt-4o-mini'; // Explicit OpenRouter model ID
+            headers['HTTP-Referer'] = 'https://jobbot.vercel.app'; // Required by OpenRouter
+            headers['X-Title'] = 'JobBot';
         }
 
-        console.log(`[Analysis] Starting analysis for job: ${job.title} at ${job.company}`);
+        if (!apiKey) {
+            console.error('Analysis failed: Missing API Key (OpenAI or OpenRouter)');
+            return NextResponse.json({ error: 'API key missing. Please check your settings.' }, { status: 400 });
+        }
+
+        headers['Authorization'] = `Bearer ${apiKey}`;
+
+        console.log(`[Analysis] Starting analysis using ${openRouterKey ? 'OpenRouter' : 'OpenAI'} for job: ${job.title}`);
 
         const prompt = `
         Role: Expert Career Coach & Recruiter.
@@ -35,14 +55,11 @@ export async function POST(request) {
         }
         `;
 
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        const response = await fetch(apiUrl, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
-            },
+            headers: headers,
             body: JSON.stringify({
-                model: 'gpt-4o-mini', // Faster/Cheaper model for UI interactions
+                model: model,
                 messages: [{ role: 'user', content: prompt }],
                 response_format: { type: "json_object" }
             })
