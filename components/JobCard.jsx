@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { MapPin, Calendar, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles, BrainCircuit } from 'lucide-react';
+import { MapPin, Calendar, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles, BrainCircuit, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Button } from './ui/Button';
 import { MatchRing } from './ui/MatchRing';
