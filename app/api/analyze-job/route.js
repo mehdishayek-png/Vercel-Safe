@@ -18,7 +18,7 @@ export async function POST(request) {
         if (openRouterKey) {
             apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
             apiKey = openRouterKey;
-            model = 'openai/gpt-4o-mini'; // Explicit OpenRouter model ID
+            model = 'google/gemini-1.5-pro'; // Gemini Pro 1.5 - Fast & cheap (~$0.125/1M)
             headers['HTTP-Referer'] = 'https://jobbot.vercel.app'; // Required by OpenRouter
             headers['X-Title'] = 'JobBot';
         }
@@ -47,13 +47,22 @@ export async function POST(request) {
         Location: ${job.location}
         Summary: ${job.summary || job.description}
         
-        CRITICAL INSTRUCTIONS:
-        1. EXPERIENCE CHECK: If the job requires significantly more experience than the candidate has (e.g. Job needs 10+ years, candidate has 5), you MUST set "fit_score" BELOW 40.
-        2. SENIORITY CHECK: If candidate is Junior/Mid but job is "Senior", "Lead", "Director", "VP", penalize heavily unless they have 8+ years.
-        3. FIT SCORE: 0-100. 
-           - 90-100: Perfect match (Skills + Experience correct).
-           - 70-89: Good match (Minor gaps).
-           - <50: Mismatch (Experience gap, wrong domain, or wrong location).
+        CRITICAL INSTRUCTIONS - READ CAREFULLY:
+        
+        1. **BRUTAL EXPERIENCE GAP RULE**: 
+           - If job requires MORE than 5 years beyond candidate's experience, set "fit_score" = 20.
+           - Example: Job needs "15+ years", candidate has 4 years → fit_score = 20.
+           - Example: Job needs "10+ years", candidate has 5 years → fit_score = 30.
+           - Example: Job needs "8+ years", candidate has 5 years → fit_score = 50.
+        
+        2. **SENIORITY CHECK**: 
+           - If job title contains "Senior", "Sr.", "Lead", "Director", "VP", "Principal" AND candidate has <8 years → fit_score MUST be <40.
+        
+        3. **FIT SCORE SCALE**: 
+           - 80-100: Perfect match (Skills + Experience aligned).
+           - 60-79: Good match (Minor gaps, 1-2 year experience difference OK).
+           - 40-59: Weak match (Noticeable gaps).
+           - 0-39: REJECT (Experience gap >5 years, wrong seniority, or irrelevant).
 
         Output JSON ONLY:
         {

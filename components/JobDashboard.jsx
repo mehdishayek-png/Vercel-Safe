@@ -237,12 +237,20 @@ export function JobDashboard({ apiKeys, onBack }) {
                                 return { ...j, analysis, match_score: analysis.fit_score || j.match_score };
                             }
                             return j;
-                        }).sort((a, b) => {
-                            // Sort by AI score if available, else standard score
-                            const scoreA = a.analysis?.fit_score || a.match_score;
-                            const scoreB = b.analysis?.fit_score || b.match_score;
-                            return scoreB - scoreA;
-                        });
+                        })
+                            .filter(j => {
+                                // FILTER OUT: Hide jobs with AI score < 50 (irrelevant/mismatch)
+                                if (j.analysis?.fit_score && j.analysis.fit_score < 50) {
+                                    return false; // Remove from feed
+                                }
+                                return true;
+                            })
+                            .sort((a, b) => {
+                                // Sort by AI score if available, else standard score
+                                const scoreA = a.analysis?.fit_score || a.match_score;
+                                const scoreB = b.analysis?.fit_score || b.match_score;
+                                return scoreB - scoreA;
+                            });
                     });
                 };
 
