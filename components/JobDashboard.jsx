@@ -311,6 +311,28 @@ export function JobDashboard({ apiKeys, onBack }) {
                                     </div>
                                 </div>
 
+                                {/* Experience Level */}
+                                <div>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label className="text-[10px] tracking-widest text-gray-400 uppercase font-semibold">Experience Level</label>
+                                        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{experienceYears} Years</span>
+                                    </div>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="30"
+                                        step="1"
+                                        value={experienceYears}
+                                        onChange={(e) => setExperienceYears(parseInt(e.target.value))}
+                                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                                    />
+                                    <div className="flex justify-between text-[10px] text-gray-400 mt-1">
+                                        <span>Entry Level</span>
+                                        <span>Mid-Senior</span>
+                                        <span>Executive</span>
+                                    </div>
+                                </div>
+
                                 <div className="h-px bg-gray-100" />
 
                                 {/* Targeting */}
