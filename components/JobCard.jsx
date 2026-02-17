@@ -212,13 +212,24 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved }) {
                 </div>
 
                 {/* Deep Analysis Trigger - Clean & Simple */}
-                <div className="mt-4 pt-3 border-t border-gray-100 flex justify-center">
+                {/* Deep Analysis Trigger - Clean & Simple */}
+                <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+                    {/* AI Score Badge */}
+                    {job.match_score && job.analysis?.fit_score ? (
+                        <div className={`text-xs font-bold px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 flex items-center gap-1`}>
+                            <Sparkles className="w-3 h-3" />
+                            AI Score: {job.match_score}
+                        </div>
+                    ) : (
+                        <div className="text-xs text-gray-400">Heuristic Match</div>
+                    )}
+
                     <button
                         onClick={handleExpandWrapper}
                         className="group flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-blue-600 transition-colors py-1 px-3 rounded-full hover:bg-blue-50"
                     >
                         <BrainCircuit className="w-3.5 h-3.5 group-hover:text-blue-500 transition-colors" />
-                        {isExpanded ? 'Hide Analysis' : 'Generate Deep Analysis'}
+                        {isExpanded ? 'Hide Analysis' : (job.analysis ? 'View AI Verdict' : 'Generate Deep Analysis')}
                         <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
                     </button>
                 </div>

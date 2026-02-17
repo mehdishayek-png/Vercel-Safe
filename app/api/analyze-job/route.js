@@ -48,6 +48,7 @@ export async function POST(request) {
         
         Output JSON ONLY:
         {
+            "fit_score": 85, // Integer 0-100. How well they fit (80+ is strong, 90+ is perfect).
             "strong_signals": ["Signal 1", "Signal 2"], // Specific skills/exp that match well
             "gaps": ["Gap 1"], // Missing skills or requirements (be gentle but honest)
             "salary_estimate": "Estimated Ranges (e.g. $120k - $150k)", // Estimate based on role/location/company tiers

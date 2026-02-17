@@ -214,8 +214,65 @@ export function JobDashboard({ apiKeys, onBack }) {
             if (!res.ok) throw new Error('Failed to fetch jobs');
 
             const data = await res.json();
-            setJobs(data.matches || []);
-            addLog(`Found ${data.total} jobs, ${data.matches?.length} matches`);
+            const initialMatches = data.matches || [];
+
+            // Set initial jobs immediately (Heuristic match)
+            setJobs(initialMatches);
+            addLog(`Found ${data.total} jobs, ${initialMatches.length} heuristic matches`);
+
+            // ---- START DEEP ANALYSIS (Top 20) ----
+            if (initialMatches.length > 0) {
+                const top20 = initialMatches.slice(0, 20);
+                addLog(`🤖 AI Agent: Starting deep analysis on top ${top20.length} candidates...`);
+
+                // Process in chunks of 4 to avoid rate limits/timeouts
+                const chunkSize = 4;
+                let processedJobs = [...initialMatches]; // Clone to update
+
+                // Helper to update state safely
+                const updateJobWithAnalysis = (jobId, analysis) => {
+                    setJobs(currentJobs => {
+                        return currentJobs.map(j => {
+                            if (j.id === jobId || j.apply_url === jobId) {
+                                return { ...j, analysis, match_score: analysis.fit_score || j.match_score };
+                            }
+                            return j;
+                        }).sort((a, b) => {
+                            // Sort by AI score if available, else standard score
+                            const scoreA = a.analysis?.fit_score || a.match_score;
+                            const scoreB = b.analysis?.fit_score || b.match_score;
+                            return scoreB - scoreA;
+                        });
+                    });
+                };
+
+                // Process chunks
+                for (let i = 0; i < top20.length; i += chunkSize) {
+                    const chunk = top20.slice(i, i + chunkSize);
+                    addLog(`Analyzing batch ${i / chunkSize + 1}/${Math.ceil(top20.length / chunkSize)}...`);
+
+                    const promises = chunk.map(job =>
+                        fetch('/api/analyze-job', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ job, profile, apiKeys })
+                        })
+                            .then(r => r.json())
+                            .then(d => {
+                                if (d.analysis) {
+                                    updateJobWithAnalysis(job.id || job.apply_url, d.analysis);
+                                }
+                            })
+                            .catch(err => console.error(`Failed to analyze ${job.title}`, err))
+                    );
+
+                    await Promise.all(promises); // Wait for chunk to finish before next (pacing)
+                }
+
+                addLog("✨ AI Curation Complete. Jobs sorted by Fit Score.");
+            }
+            // ---- END DEEP ANALYSIS ----
+
         } catch (err) {
             addLog(`Error: ${err.message}`);
         } finally {
