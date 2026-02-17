@@ -5,7 +5,7 @@ import { matchJobs } from '@/lib/matcher';
 import { matchJobsEnhanced } from '@/lib/matcher-enhanced';
 import { checkRateLimit, getClientIP } from '@/lib/rate-limiter';
 
-export const maxDuration = 60;
+export const maxDuration = 300; // Vercel Pro limit
 
 export async function POST(request) {
   try {
