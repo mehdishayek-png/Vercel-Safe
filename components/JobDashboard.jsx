@@ -25,6 +25,7 @@ export function JobDashboard({ apiKeys, onBack }) {
     // Preferences State
     const [preferences, setPreferences] = useState({ country: 'US', state: '', city: '', remoteOnly: false });
     const [newSkill, setNewSkill] = useState('');
+    const [experienceYears, setExperienceYears] = useState(2);
 
     // Data State
     const [countries, setCountries] = useState([]);
@@ -154,6 +155,9 @@ export function JobDashboard({ apiKeys, onBack }) {
 
             const data = await res.json();
             setProfile(data.profile);
+            if (typeof data.profile.experience_years === 'number') {
+                setExperienceYears(data.profile.experience_years);
+            }
             addLog(`Extracted profile for ${data.profile.name}`);
         } catch (err) {
             addLog(`Error: ${err.message}`);
@@ -193,7 +197,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    profile,
+                    profile: { ...profile, experience_years: experienceYears },
                     apiKeys,
                     preferences: {
                         ...preferences,
