@@ -18,7 +18,7 @@ export async function POST(request) {
         if (openRouterKey) {
             apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
             apiKey = openRouterKey;
-            model = 'google/gemini-1.5-pro'; // Gemini Pro 1.5 - Fast & cheap (~$0.125/1M)
+            model = 'anthropic/claude-3.5-sonnet'; // Claude 3.5 Sonnet - Best reasoning for career-critical decisions
             headers['HTTP-Referer'] = 'https://jobbot.vercel.app'; // Required by OpenRouter
             headers['X-Title'] = 'JobBot';
         }
