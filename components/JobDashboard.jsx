@@ -387,10 +387,10 @@ export function JobDashboard({ apiKeys, onBack }) {
                                     className="flex gap-3 text-gray-600"
                                 >
                                     <span className="opacity-40 shrink-0">
-                                        {new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' })}
+                                        {log.time}
                                     </span>
                                     <span className="border-l-2 border-blue-100 pl-3 break-words">
-                                        {log}
+                                        {log.message}
                                     </span>
                                 </motion.div>
                             ))}
