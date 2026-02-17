@@ -7,15 +7,11 @@ import { checkRateLimit, getClientIP } from '@/lib/rate-limiter';
 
 export const maxDuration = 60;
 
-// Rate limit: 2 searches per hour per IP
-const SEARCH_LIMIT = 2;
-const SEARCH_WINDOW_MS = 60 * 60 * 1000; // 1 hour
-
 export async function POST(request) {
   try {
-    // Rate limiting
+    // Rate limiting (persistent via Upstash Redis)
     const ip = getClientIP(request);
-    const { allowed, remaining, retryAfterSeconds } = checkRateLimit(ip, 'search', SEARCH_LIMIT, SEARCH_WINDOW_MS);
+    const { allowed, remaining, retryAfterSeconds } = await checkRateLimit(ip, 'search');
 
     if (!allowed) {
       const minutes = Math.ceil(retryAfterSeconds / 60);
