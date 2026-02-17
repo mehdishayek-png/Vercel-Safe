@@ -30,16 +30,16 @@ export function ResumeStrength({ profile }) {
     };
 
     return (
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 mb-6 relative overflow-hidden group">
+        <div className="bg-white backdrop-blur-xl border border-gray-200 rounded-2xl p-5 mb-6 relative overflow-hidden group shadow-sm">
             <div className={`absolute top-0 left-0 w-1 h-full ${getBgColor(score)} opacity-50`} />
 
             <div className="flex items-start justify-between mb-4">
                 <div>
-                    <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
                         <Zap className={`w-4 h-4 ${getColor(score)}`} />
                         Profile Strength
                     </h3>
-                    <p className="text-xs text-white/50 mt-1">
+                    <p className="text-xs text-gray-500 mt-1">
                         {score >= 80 ? "Your profile is match-ready!" : "Improve your profile for better matches."}
                     </p>
                 </div>
@@ -47,7 +47,7 @@ export function ResumeStrength({ profile }) {
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full h-1.5 bg-white/10 rounded-full mb-4 overflow-hidden">
+            <div className="w-full h-1.5 bg-gray-100 rounded-full mb-4 overflow-hidden">
                 <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${score}%` }}
@@ -60,22 +60,22 @@ export function ResumeStrength({ profile }) {
             <div className="space-y-2">
                 {checks.map((check, i) => (
                     <div key={i} className="flex items-center justify-between text-xs">
-                        <span className={`flex items-center gap-2 ${check.passed ? 'text-white/80' : 'text-white/40'}`}>
+                        <span className={`flex items-center gap-2 ${check.passed ? 'text-gray-700' : 'text-gray-400'}`}>
                             {check.passed ?
-                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500/80" /> :
-                                <AlertCircle className="w-3.5 h-3.5 text-white/20" />
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> :
+                                <AlertCircle className="w-3.5 h-3.5 text-gray-300" />
                             }
                             {check.label}
                         </span>
-                        {check.passed && <span className="text-[10px] text-emerald-500/50 font-mono">+{check.points}</span>}
+                        {check.passed && <span className="text-[10px] text-emerald-600 font-mono">+{check.points}</span>}
                     </div>
                 ))}
             </div>
 
             {score < 100 && (
-                <div className="mt-4 pt-3 border-t border-white/5">
-                    <p className="text-[10px] uppercase tracking-wider text-indigo-300 font-semibold mb-2">Recommendation</p>
-                    <p className="text-xs text-white/60">
+                <div className="mt-4 pt-3 border-t border-gray-100">
+                    <p className="text-[10px] uppercase tracking-wider text-blue-500 font-semibold mb-2">Recommendation</p>
+                    <p className="text-xs text-gray-500">
                         Add more specific skills (e.g., "React", "Node.js") to increase match precision.
                     </p>
                 </div>

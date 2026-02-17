@@ -9,13 +9,13 @@ export function ScanningRadar() {
                 <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-0 border-2 border-indigo-500/30 rounded-full"
+                    className="absolute inset-0 border-2 border-blue-400/30 rounded-full"
                     style={{ borderTopColor: 'transparent', borderRightColor: 'transparent' }}
                 />
                 <motion.div
                     animate={{ rotate: -360 }}
                     transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-4 border-2 border-purple-500/30 rounded-full"
+                    className="absolute inset-4 border-2 border-purple-400/30 rounded-full"
                     style={{ borderBottomColor: 'transparent', borderLeftColor: 'transparent' }}
                 />
 
@@ -23,20 +23,20 @@ export function ScanningRadar() {
                 <motion.div
                     animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute inset-0 bg-indigo-500/10 rounded-full"
+                    className="absolute inset-0 bg-blue-400/10 rounded-full"
                 />
 
                 {/* Center Icon */}
-                <div className="relative z-10 bg-[#0A0A0A] p-4 rounded-full border border-indigo-500/50 shadow-[0_0_30px_rgba(99,102,241,0.3)]">
-                    <Target className="w-8 h-8 text-indigo-400" />
+                <div className="relative z-10 bg-white p-4 rounded-full border border-blue-100 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+                    <Target className="w-8 h-8 text-blue-500" />
                 </div>
             </div>
 
             <div className="space-y-2 text-center">
-                <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
+                <h3 className="text-xl font-bold text-gray-900">
                     Scanning Global Networks...
                 </h3>
-                <p className="text-white/40 text-sm">Targeting relevant opportunities based on your profile DNA.</p>
+                <p className="text-gray-500 text-sm">Targeting relevant opportunities based on your profile DNA.</p>
             </div>
         </div>
     );

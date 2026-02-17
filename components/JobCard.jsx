@@ -42,7 +42,7 @@ export function JobCard({ job, onSave, isSaved }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="group relative bg-[#0D0D12] border border-white/5 hover:border-indigo-500/30 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.05)]"
+            className="group relative bg-white border border-gray-200 hover:border-blue-300 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg shadow-sm"
         >
             {/* Top Glow Line */}
             <div className={`absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r ${getMatchGradient(job.match_score)} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
@@ -52,34 +52,34 @@ export function JobCard({ job, onSave, isSaved }) {
                     {/* Main Content */}
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-lg font-bold text-white group-hover:text-indigo-200 transition-colors truncate">
+                            <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
                                 {cleanTitle}
                             </h3>
                             {job.date_posted && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-white/40 border border-white/5 whitespace-nowrap">
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 border border-gray-200 whitespace-nowrap">
                                     {postedDate}
                                 </span>
                             )}
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-3 text-xs text-white/50 mb-3">
-                            <span className="flex items-center gap-1.5 text-white/70 font-medium">
-                                <Building2 className="w-3.5 h-3.5 text-indigo-400" />
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 mb-3">
+                            <span className="flex items-center gap-1.5 text-gray-700 font-medium">
+                                <Building2 className="w-3.5 h-3.5 text-blue-500" />
                                 {cleanCompany}
                             </span>
-                            <span className="w-1 h-1 rounded-full bg-white/20" />
+                            <span className="w-1 h-1 rounded-full bg-gray-300" />
                             <span className="flex items-center gap-1.5">
-                                <MapPin className="w-3.5 h-3.5" />
+                                <MapPin className="w-3.5 h-3.5 text-gray-400" />
                                 {cleanLocation || 'Remote'}
                             </span>
-                            <span className="w-1 h-1 rounded-full bg-white/20" />
-                            <span className="bg-white/5 px-2 py-0.5 rounded text-white/40 border border-white/5">
+                            <span className="w-1 h-1 rounded-full bg-gray-300" />
+                            <span className="bg-gray-100 px-2 py-0.5 rounded text-gray-500 border border-gray-200">
                                 {job.source}
                             </span>
                         </div>
 
                         {/* Summary */}
-                        <p className={`text-sm text-white/60 leading-relaxed transition-all duration-300 ${isExpanded ? '' : 'line-clamp-2'}`}>
+                        <p className={`text-sm text-gray-600 leading-relaxed transition-all duration-300 ${isExpanded ? '' : 'line-clamp-2'}`}>
                             {cleanSummary}
                         </p>
                     </div>
@@ -91,15 +91,15 @@ export function JobCard({ job, onSave, isSaved }) {
                                 {job.match_score}%
                                 {job.match_score >= 80 && <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />}
                             </div>
-                            <div className="text-[10px] text-white/30 uppercase tracking-widest font-medium">Match Fit</div>
+                            <div className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">Match Fit</div>
                         </div>
 
                         <div className="flex gap-2">
                             <button
                                 onClick={() => onSave(job)}
-                                className={`p-2 rounded-lg border transition-all ${isSaved ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-300' : 'bg-white/5 border-white/10 text-white/40 hover:text-white hover:bg-white/10'}`}
+                                className={`p-2 rounded-lg border transition-all ${isSaved ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-white border-gray-200 text-gray-400 hover:text-gray-700 hover:bg-gray-50'}`}
                             >
-                                <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-indigo-300' : ''}`} />
+                                <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-blue-600' : ''}`} />
                             </button>
                             <Button
                                 size="sm"
@@ -112,7 +112,7 @@ export function JobCard({ job, onSave, isSaved }) {
                                         window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank');
                                     }
                                 }}
-                                className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-sm"
+                                className="bg-gray-900 hover:bg-black text-white border border-transparent shadow-sm"
                             >
                                 Apply <ExternalLink className="w-3 h-3 ml-1.5 opacity-50" />
                             </Button>
@@ -121,24 +121,24 @@ export function JobCard({ job, onSave, isSaved }) {
                 </div>
 
                 {/* Match DNA Bar (Explainability Visualization) */}
-                <div className="mt-4 pt-4 border-t border-white/5">
-                    <div className="flex items-center justify-between text-[10px] text-white/40 uppercase tracking-wider mb-2">
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between text-[10px] text-gray-400 uppercase tracking-wider mb-2">
                         <span className="flex items-center gap-1.5">
-                            <BrainCircuit className="w-3 h-3 text-indigo-400" />
+                            <BrainCircuit className="w-3 h-3 text-blue-500" />
                             AI Match Analysis
                         </span>
                         <button
                             onClick={() => setIsExpanded(!isExpanded)}
-                            className="flex items-center gap-1 hover:text-indigo-300 transition-colors"
+                            className="flex items-center gap-1 hover:text-blue-600 transition-colors"
                         >
                             {isExpanded ? 'Hide Details' : 'View Analysis'}
                             <ChevronDown className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                         </button>
                     </div>
 
-                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden flex">
+                    <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden flex">
                         {/* Visualizing score components without changing logic */}
-                        <div className="h-full bg-indigo-500" style={{ width: `${job.match_score * 0.6}%` }} />
+                        <div className="h-full bg-blue-500" style={{ width: `${job.match_score * 0.6}%` }} />
                         <div className="h-full bg-purple-500" style={{ width: `${job.match_score * 0.3}%` }} />
                         <div className="h-full bg-emerald-500" style={{ width: `${job.match_score * 0.1}%` }} />
                     </div>
@@ -154,23 +154,23 @@ export function JobCard({ job, onSave, isSaved }) {
                             className="overflow-hidden"
                         >
                             <div className="pt-4 mt-2 grid grid-cols-2 gap-4 text-xs">
-                                <div className="bg-white/5 p-3 rounded-lg border border-white/5">
-                                    <h4 className="text-white/70 font-medium mb-2 flex items-center gap-2">
-                                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                    <h4 className="text-gray-700 font-medium mb-2 flex items-center gap-2">
+                                        <Check className="w-3.5 h-3.5 text-emerald-500" />
                                         Strong Signals
                                     </h4>
-                                    <p className="text-white/40">
+                                    <p className="text-gray-500">
                                         This role strongly aligns with your headline and primary skills. The location matches your preference pattern.
                                     </p>
                                 </div>
-                                <div className="bg-white/5 p-3 rounded-lg border border-white/5">
-                                    <h4 className="text-white/70 font-medium mb-2 flex items-center gap-2">
-                                        <BrainCircuit className="w-3.5 h-3.5 text-purple-400" />
+                                <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                    <h4 className="text-gray-700 font-medium mb-2 flex items-center gap-2">
+                                        <BrainCircuit className="w-3.5 h-3.5 text-purple-500" />
                                         Keyword Overlap
                                     </h4>
                                     <div className="flex flex-wrap gap-1.5">
                                         {['React', 'Development', 'Engineering'].map(k => (
-                                            <span key={k} className="bg-purple-500/10 text-purple-300 px-1.5 py-0.5 rounded text-[10px] border border-purple-500/20">
+                                            <span key={k} className="bg-white text-purple-600 px-1.5 py-0.5 rounded text-[10px] border border-purple-100 shadow-sm">
                                                 {k}
                                             </span>
                                         ))}

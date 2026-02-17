@@ -197,13 +197,13 @@ export function JobDashboard({ apiKeys, onBack }) {
         : jobs;
 
     return (
-        <div className="min-h-screen pt-24 pb-12 px-4 container mx-auto text-white">
+        <div className="min-h-screen pt-24 pb-12 px-4 container mx-auto text-gray-900">
             <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 className="mb-8 flex justify-between items-center"
             >
-                <Button variant="ghost" onClick={onBack} className="text-white/60 hover:text-white">← Back to Home</Button>
+                <Button variant="ghost" onClick={onBack} className="text-gray-500 hover:text-gray-900">← Back to Home</Button>
             </motion.div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -217,12 +217,12 @@ export function JobDashboard({ apiKeys, onBack }) {
                 >
                     {/* Privacy & Timing Badge */}
                     <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2 text-[11px] text-white/40 bg-white/5 p-2 rounded-lg border border-white/5">
-                            <ShieldCheck className="w-3.5 h-3.5 text-green-400" />
+                        <div className="flex items-center gap-2 text-[11px] text-gray-500 bg-white/60 p-2 rounded-lg border border-gray-100 shadow-sm">
+                            <ShieldCheck className="w-3.5 h-3.5 text-green-600" />
                             <span>Anonymous & Secure: No email, no stored resume.</span>
                         </div>
-                        <div className="flex items-center gap-2 text-[11px] text-white/40 bg-white/5 p-2 rounded-lg border border-white/5">
-                            <Clock className="w-3.5 h-3.5 text-blue-400" />
+                        <div className="flex items-center gap-2 text-[11px] text-gray-500 bg-white/60 p-2 rounded-lg border border-gray-100 shadow-sm">
+                            <Clock className="w-3.5 h-3.5 text-blue-600" />
                             <span>Deep Scan: Takes 1-2 mins for best results.</span>
                         </div>
                     </div>
@@ -230,25 +230,25 @@ export function JobDashboard({ apiKeys, onBack }) {
                     <ResumeStrength profile={profile} />
 
                     <div className="glass-panel p-6 overflow-hidden relative group">
-                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">
-                            <Sparkles className="w-5 h-5 text-indigo-400" />
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-gray-900">
+                            <Sparkles className="w-5 h-5 text-blue-500" />
                             Commander Profile
                         </h2>
 
                         {!profile ? (
                             <div
                                 onClick={() => fileInputRef.current?.click()}
-                                className="border-2 border-dashed border-white/20 rounded-xl p-10 text-center cursor-pointer hover:border-indigo-500/50 hover:bg-white/5 transition-all group/upload relative overflow-hidden"
+                                className="border-2 border-dashed border-gray-200 rounded-xl p-10 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-all group/upload relative overflow-hidden"
                             >
-                                <div className="absolute inset-0 bg-indigo-500/5 scale-0 group-hover/upload:scale-100 transition-transform duration-500 rounded-xl origin-center" />
+                                <div className="absolute inset-0 bg-blue-50/30 scale-0 group-hover/upload:scale-100 transition-transform duration-500 rounded-xl origin-center" />
                                 <div className="relative z-10">
-                                    <div className="w-14 h-14 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover/upload:shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all">
-                                        {isParsing ? <Loader2 className="animate-spin text-indigo-400" /> : <Upload className="text-indigo-400 w-6 h-6" />}
+                                    <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover/upload:shadow-lg transition-all">
+                                        {isParsing ? <Loader2 className="animate-spin text-blue-600" /> : <Upload className="text-blue-600 w-6 h-6" />}
                                     </div>
-                                    <p className="text-base font-medium text-white">Upload Resume</p>
-                                    <p className="text-xs text-white/40 mt-1">PDF Only • Max 10MB</p>
+                                    <p className="text-base font-medium text-gray-900">Upload Resume</p>
+                                    <p className="text-xs text-gray-400 mt-1">PDF Only • Max 10MB</p>
                                 </div>
                                 <input ref={fileInputRef} type="file" accept=".pdf" className="hidden" onChange={handleFileUpload} />
                             </div>
@@ -256,44 +256,44 @@ export function JobDashboard({ apiKeys, onBack }) {
                             <div className="space-y-6 relative z-10">
                                 {/* Identity */}
                                 <div>
-                                    <div className="font-semibold text-lg text-white">{profile.name}</div>
-                                    <div className="text-sm text-white/60 truncate">{profile.headline}</div>
+                                    <div className="font-semibold text-lg text-gray-900">{profile.name}</div>
+                                    <div className="text-sm text-gray-500 truncate">{profile.headline}</div>
                                 </div>
 
                                 {/* Skills */}
                                 <div>
-                                    <label className="text-[10px] tracking-widest text-indigo-300/70 uppercase font-semibold mb-2 block">Skills Matrix</label>
+                                    <label className="text-[10px] tracking-widest text-gray-400 uppercase font-semibold mb-2 block">Skills Matrix</label>
                                     <div className="flex flex-wrap gap-2 mb-3 max-h-40 overflow-y-auto custom-scrollbar p-1 -m-1">
                                         {profile.skills.map(s => (
-                                            <span key={s} className="text-xs px-2.5 py-1 rounded-md bg-white/10 border border-white/10 flex items-center gap-1.5 group/skill hover:bg-white/15 hover:border-white/20 transition-all">
+                                            <span key={s} className="text-xs px-2.5 py-1 rounded-md bg-white border border-gray-200 shadow-sm text-gray-700 flex items-center gap-1.5 group/skill hover:border-blue-300 transition-all">
                                                 {s}
-                                                <button onClick={() => handleRemoveSkill(s)} className="text-white/40 hover:text-red-400 transition-colors">
+                                                <button onClick={() => handleRemoveSkill(s)} className="text-gray-400 hover:text-red-500 transition-colors">
                                                     <X size={12} />
                                                 </button>
                                             </span>
                                         ))}
                                     </div>
-                                    <div className="flex items-center gap-2 bg-black/20 rounded-lg pr-1 border border-white/5 focus-within:border-indigo-500/50 transition-colors">
+                                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg pr-1 border border-gray-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
                                         <input
                                             type="text"
                                             value={newSkill}
                                             onChange={(e) => setNewSkill(e.target.value)}
                                             onKeyDown={(e) => e.key === 'Enter' && handleAddSkill()}
                                             placeholder="Add skill..."
-                                            className="w-full bg-transparent border-none text-xs px-3 py-2 focus:outline-none text-white placeholder:text-white/20"
+                                            className="w-full bg-transparent border-none text-xs px-3 py-2 focus:outline-none text-gray-900 placeholder:text-gray-400"
                                         />
-                                        <button onClick={handleAddSkill} disabled={!newSkill.trim()} className="p-1 rounded-md bg-white/5 hover:bg-white/10 text-indigo-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                                        <button onClick={handleAddSkill} disabled={!newSkill.trim()} className="p-1 rounded-md bg-white border border-gray-200 hover:bg-blue-50 hover:text-blue-600 text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm">
                                             <Plus size={14} />
                                         </button>
                                     </div>
                                 </div>
 
-                                <div className="h-px bg-white/10" />
+                                <div className="h-px bg-gray-100" />
 
                                 {/* Targeting */}
                                 <div>
-                                    <h3 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
-                                        <Globe className="w-4 h-4 text-indigo-400" />
+                                    <h3 className="text-sm font-medium text-gray-900 mb-3 flex items-center gap-2">
+                                        <Globe className="w-4 h-4 text-blue-500" />
                                         Broadcasting Range
                                     </h3>
 
@@ -330,19 +330,19 @@ export function JobDashboard({ apiKeys, onBack }) {
                                         )}
 
                                         <div
-                                            className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${preferences.remoteOnly ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-white/5 border-white/5 hover:bg-white/10'}`}
+                                            className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${preferences.remoteOnly ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}
                                             onClick={() => setPreferences(prev => ({ ...prev, remoteOnly: !prev.remoteOnly }))}
                                         >
-                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${preferences.remoteOnly ? 'bg-indigo-500 border-indigo-500' : 'border-white/30'}`}>
+                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${preferences.remoteOnly ? 'bg-blue-500 border-blue-500' : 'border-gray-300 bg-white'}`}>
                                                 {preferences.remoteOnly && <Check className="w-3.5 h-3.5 text-white" />}
                                             </div>
-                                            <span className="text-xs font-medium text-white/80 select-none">Global Remote Only</span>
+                                            <span className={`text-xs font-medium select-none ${preferences.remoteOnly ? 'text-blue-700' : 'text-gray-600'}`}>Global Remote Only</span>
                                         </div>
                                     </div>
 
                                     <div className="pt-4 flex gap-3">
-                                        <Button onClick={() => setProfile(null)} variant="outline" size="sm" className="w-1/3 text-xs">Reset</Button>
-                                        <Button onClick={findJobs} isLoading={isMatching} className="w-2/3 text-xs bg-indigo-600 hover:bg-indigo-500 border-none shadow-[0_0_15px_rgba(79,70,229,0.4)]">
+                                        <Button onClick={() => setProfile(null)} variant="outline" size="sm" className="w-1/3 text-xs border-gray-200 text-gray-600 hover:bg-gray-50">Reset</Button>
+                                        <Button onClick={findJobs} isLoading={isMatching} className="w-2/3 text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/30">
                                             Initialize Scan
                                         </Button>
                                     </div>
@@ -352,18 +352,18 @@ export function JobDashboard({ apiKeys, onBack }) {
                     </div>
 
                     {/* Logs */}
-                    <div className="bg-black/80 backdrop-blur border border-white/10 rounded-xl p-4 h-48 overflow-y-auto font-mono text-[10px] shadow-inner relative">
-                        <div className="text-white/20 mb-2 uppercase tracking-widest sticky top-0 bg-black/80 backdrop-blur pb-2 flex justify-between items-center">
+                    <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-xl p-4 h-48 overflow-y-auto font-mono text-[10px] shadow-sm relative">
+                        <div className="text-gray-400 mb-2 uppercase tracking-widest sticky top-0 bg-white/95 backdrop-blur pb-2 flex justify-between items-center border-b border-gray-100">
                             <span>System Logs</span>
                             <div className="flex gap-1">
-                                <div className="w-1.5 h-1.5 rounded-full bg-red-500/50" />
-                                <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/50" />
-                                <div className="w-1.5 h-1.5 rounded-full bg-green-500/50" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
                             </div>
                         </div>
-                        {logs.length === 0 && <div className="text-white/20 italic mt-4 text-center">System standby...</div>}
+                        {logs.length === 0 && <div className="text-gray-400 italic mt-4 text-center">System standby...</div>}
                         {logs.map((log, i) => (
-                            <div key={i} className="mb-1 text-green-400/80 break-words border-l border-green-500/20 pl-2">
+                            <div key={i} className="mb-1 text-gray-600 break-words border-l-2 border-green-500/30 pl-2">
                                 <span className="opacity-50 mr-2">[{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' })}]</span>
                                 {log}
                             </div>
@@ -373,11 +373,11 @@ export function JobDashboard({ apiKeys, onBack }) {
 
                 {/* ---- Right Col: Results ---- */}
                 <div className="lg:col-span-8" ref={resultsRef}>
-                    <div className="sticky top-20 z-30 bg-[#050511]/80 backdrop-blur-xl border border-white/10 rounded-xl p-2 mb-6 flex items-center justify-between shadow-xl">
+                    <div className="sticky top-20 z-30 bg-white/80 backdrop-blur-xl border border-white/20 rounded-xl p-2 mb-6 flex items-center justify-between shadow-sm">
                         <div className="flex gap-1">
                             <button
                                 onClick={() => setActiveTab('matches')}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'matches' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'matches' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
                             >
                                 <div className="flex items-center gap-2">
                                     <LayoutGrid className="w-4 h-4" />
@@ -386,7 +386,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                             </button>
                             <button
                                 onClick={() => setActiveTab('saved')}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'saved' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'saved' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
                             >
                                 <div className="flex items-center gap-2">
                                     <Bookmark className="w-4 h-4" />
@@ -405,15 +405,15 @@ export function JobDashboard({ apiKeys, onBack }) {
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="text-center py-32 bg-white/5 rounded-3xl border border-white/5 dashed-border"
+                                className="text-center py-32 bg-white/40 rounded-3xl border border-white/50 dashed-border shadow-sm"
                             >
-                                <div className="w-20 h-20 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <Search className="w-8 h-8 text-white/20" />
+                                <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Search className="w-8 h-8 text-blue-300" />
                                 </div>
-                                <h3 className="text-lg font-medium text-white/50 mb-2">
+                                <h3 className="text-lg font-medium text-gray-500 mb-2">
                                     {activeTab === 'saved' ? 'No Saved Jobs' : 'Targeting System Offline'}
                                 </h3>
-                                <p className="text-sm text-white/30 max-w-sm mx-auto">
+                                <p className="text-sm text-gray-400 max-w-sm mx-auto">
                                     {activeTab === 'saved'
                                         ? 'Bookmark jobs to view them here later.'
                                         : 'Upload a resume dossier to begin the job matching sequence.'}
@@ -442,16 +442,16 @@ export function JobDashboard({ apiKeys, onBack }) {
                         initial={{ opacity: 0, y: 80 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 80 }}
-                        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#0D0D12]/95 backdrop-blur-2xl border border-indigo-500/30 rounded-2xl px-6 py-4 shadow-[0_0_40px_rgba(99,102,241,0.2)] max-w-md w-[90vw]"
+                        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/80 backdrop-blur-2xl border border-white/50 rounded-2xl px-6 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.12)] max-w-md w-[90vw]"
                     >
                         <div className="flex items-center gap-4">
                             <div className="relative">
-                                <div className="w-10 h-10 rounded-full border-2 border-indigo-500/30 border-t-indigo-400 animate-spin" />
-                                <Sparkles className="w-4 h-4 text-indigo-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                                <div className="w-10 h-10 rounded-full border-2 border-blue-100 border-t-blue-500 animate-spin" />
+                                <Sparkles className="w-4 h-4 text-blue-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <div className="text-sm font-semibold text-white mb-1">Scanning Job Market...</div>
-                                <div className="text-[11px] text-white/50 truncate">
+                                <div className="text-sm font-semibold text-gray-900 mb-1">Scanning Job Market...</div>
+                                <div className="text-[11px] text-gray-500 truncate">
                                     {logs.length > 0 ? logs[logs.length - 1] : 'Initializing search agent...'}
                                 </div>
                             </div>
