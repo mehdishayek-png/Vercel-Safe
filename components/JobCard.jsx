@@ -1,12 +1,53 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { MapPin, Calendar, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles, BrainCircuit } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { Button } from './ui/Button';
+import { MatchRing } from './ui/MatchRing';
 
 export function JobCard({ job, profile, apiKeys, onSave, isSaved }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [analysis, setAnalysis] = useState(null);
     const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
+
+    // 3D Tilt Logic
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+
+    const mouseX = useSpring(x, { stiffness: 500, damping: 100 });
+    const mouseY = useSpring(y, { stiffness: 500, damping: 100 });
+
+    const rotateX = useTransform(mouseY, [-0.5, 0.5], ["7deg", "-7deg"]);
+    const rotateY = useTransform(mouseX, [-0.5, 0.5], ["-7deg", "7deg"]);
+
+    const handleMouseMove = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+        const mouseXVal = e.clientX - rect.left;
+        const mouseYVal = e.clientY - rect.top;
+        const xPct = mouseXVal / width - 0.5;
+        const yPct = mouseYVal / height - 0.5;
+        x.set(xPct);
+        y.set(yPct);
+    };
+
+    const handleMouseLeave = () => {
+        x.set(0);
+        y.set(0);
+    };
+
+    const handleSaveWrapper = () => {
+        onSave(job);
+        if (!isSaved && job.match_score >= 80) {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#10b981', '#3b82f6', '#fbbf24']
+            });
+        }
+    };
 
     // Formatting helpers
     const postedDate = job.date_posted ? new Date(job.date_posted).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'Recently';
@@ -67,7 +108,14 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="group relative bg-white border border-gray-200 hover:border-blue-300 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg shadow-sm"
+            style={{
+                rotateX,
+                rotateY,
+                transformStyle: "preserve-3d",
+            }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            className="group relative bg-white border border-gray-200 hover:border-blue-300 rounded-xl transition-all duration-300 hover:shadow-xl shadow-sm perspective-1000"
         >
             {/* Top Glow Line */}
             <div className={`absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r ${getMatchGradient(job.match_score)} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
@@ -110,18 +158,15 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved }) {
                     </div>
 
                     {/* Actions & Score */}
-                    <div className="flex flex-col items-end gap-3 shrink-0">
-                        <div className="text-right">
-                            <div className={`text-2xl font-black ${getMatchColor(job.match_score)} tracking-tight flex items-center justify-end gap-1`}>
-                                {job.match_score}%
-                                {job.match_score >= 80 && <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />}
-                            </div>
-                            <div className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">Match Fit</div>
+                    <div className="flex flex-col items-end gap-3 shrink-0" style={{ transform: "translateZ(20px)" }}>
+                        <div className="flex flex-col items-center">
+                            <MatchRing score={job.match_score} />
+                            <div className="text-[9px] text-gray-400 uppercase tracking-widest font-medium mt-1">Match Fit</div>
                         </div>
 
                         <div className="flex gap-2">
                             <button
-                                onClick={() => onSave(job)}
+                                onClick={handleSaveWrapper}
                                 className={`p-2 rounded-lg border transition-all ${isSaved ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-white border-gray-200 text-gray-400 hover:text-gray-700 hover:bg-gray-50'}`}
                             >
                                 <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-blue-600' : ''}`} />
