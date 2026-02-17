@@ -72,7 +72,12 @@ export function JobDashboard({ apiKeys, onBack }) {
         }
     }, [preferences.state]);
 
-    const addLog = (msg) => setLogs(prev => [...prev, msg]);
+    const addLog = (msg) => {
+        setLogs(prev => [...prev, {
+            message: msg,
+            time: new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' })
+        }]);
+    };
 
     // ---- Bookmarking Logic ----
     const toggleSaveJob = (job) => {
@@ -481,7 +486,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                             <div className="flex-1 min-w-0">
                                 <div className="text-sm font-semibold text-gray-900 mb-1">Scanning Job Market...</div>
                                 <div className="text-[11px] text-gray-500 truncate">
-                                    {logs.length > 0 ? logs[logs.length - 1] : 'Initializing search agent...'}
+                                    {logs.length > 0 ? logs[logs.length - 1].message : 'Initializing search agent...'}
                                 </div>
                             </div>
                         </div>
