@@ -978,7 +978,9 @@ export function JobDashboard({ apiKeys, onBack }) {
                         )}
                     </div>
                 </div>
+            </div>
 
+            <div className="space-y-4 mt-4">
                 <AnimatePresence>
                     {displayedJobs.map((job, i) => {
                         const shouldBlur = isPaywalled && activeTab === 'matches' && i >= FREE_VISIBLE_JOBS;
@@ -1064,6 +1066,6 @@ export function JobDashboard({ apiKeys, onBack }) {
 
             <div className="fixed top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent pointer-events-none" />
             <div className="fixed bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent pointer-events-none" />
-        </div>
+        </div >
     );
 }
