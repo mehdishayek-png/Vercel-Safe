@@ -44,12 +44,14 @@ export async function POST(request) {
     }
 
     // Deduct: free scan or token
-    if (scanCheck.isFree) {
-      await incrementDailyScan(userId);
-    } else {
-      const deducted = await deductToken(userId, scanCheck.tokenCost || 1);
-      if (!deducted.success) {
-        return NextResponse.json({ error: 'Failed to deduct token' }, { status: 403 });
+    if (!scanCheck.adminPass) {
+      if (scanCheck.isFree) {
+        await incrementDailyScan(userId);
+      } else {
+        const deducted = await deductToken(userId, scanCheck.tokenCost || 1);
+        if (!deducted.success) {
+          return NextResponse.json({ error: 'Failed to deduct token' }, { status: 403 });
+        }
       }
     }
 
