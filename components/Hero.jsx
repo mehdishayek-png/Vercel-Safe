@@ -28,7 +28,7 @@ export function Hero({ onStart, onDemo }) {
                     transition={{ duration: 0.8, delay: 0.2 }}
                     className="text-6xl md:text-8xl font-bold tracking-tight mb-6 text-gray-900"
                 >
-                    Stop Applying <br />
+                    Stop Searching <br />
                     <span className="text-gradient-accent">Manually.</span>
                 </motion.h1>
 
@@ -38,7 +38,7 @@ export function Hero({ onStart, onDemo }) {
                     transition={{ duration: 0.8, delay: 0.4 }}
                     className="text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed font-light"
                 >
-                    Let our autonomous agent find relevant jobs, tailor your resume, and apply to 100+ positions while you sleep.
+                    We built a highly-targeted Search Agent, not a spammy auto-apply bot. Upload your resume and let our LLMs semantically curate a shortlist of high-signal opportunities matching your true experience level.
                 </motion.p>
 
                 <motion.div
@@ -48,7 +48,7 @@ export function Hero({ onStart, onDemo }) {
                     className="flex flex-col md:flex-row items-center justify-center gap-4"
                 >
                     <Button size="xl" onClick={onStart} icon={ArrowRight}>
-                        Start Applying Automatically
+                        Find Your Next Role
                     </Button>
                     <Button variant="secondary" size="xl" onClick={onDemo} icon={Play}>
                         Watch Demo
@@ -67,6 +67,13 @@ export function Hero({ onStart, onDemo }) {
                         {['Google', 'Netflix', 'Spotify', 'Stripe', 'Airbnb'].map((company) => (
                             <span key={company} className="text-xl font-bold font-mono text-gray-800">{company}</span>
                         ))}
+                    </div>
+
+                    {/* InfoSec Trust Strip */}
+                    <div className="mt-8 flex flex-wrap justify-center gap-6">
+                        <span className="text-[11px] text-gray-400 flex items-center gap-1.5">🔒 In-memory processing only</span>
+                        <span className="text-[11px] text-gray-400 flex items-center gap-1.5">🛡️ Resume never stored on servers</span>
+                        <span className="text-[11px] text-gray-400 flex items-center gap-1.5">🚫 Not used for AI model training</span>
                     </div>
                 </motion.div>
             </div>

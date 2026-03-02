@@ -20,7 +20,7 @@ export function DashboardPreview() {
                         </div>
 
                         {/* Dashboard Content */}
-                        <div className="p-8 grid grid-cols-3 gap-6">
+                        <div className="p-4 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                             {/* Sidebar */}
                             <div className="col-span-1 space-y-4">
                                 <div className="h-24 rounded-xl bg-blue-50 border border-blue-100 p-4">

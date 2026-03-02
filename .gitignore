@@ -3,3 +3,15 @@ node_modules
 .env
 .env.local
 temp_ref
+
+# clerk configuration (can include secrets)
+/.clerk/
+
+# recordings and logs
+*.mp4
+*.webp
+git_log_utf8.txt
+
+# test artifacts
+/cypress/videos/
+/cypress/screenshots/

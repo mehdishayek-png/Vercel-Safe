@@ -21,7 +21,7 @@ const steps = [
 
 export function HowItWorks() {
     return (
-        <section className="py-32 bg-white/0 relative overflow-hidden">
+        <section className="py-32 bg-gradient-to-b from-gray-50/80 to-white relative overflow-hidden">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-20">
                     <h2 className="text-4xl md:text-5xl font-bold mb-6">How it works</h2>

@@ -1,17 +1,49 @@
-// app/api/match-jobs/route.js
 import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { fetchAllJobs } from '@/lib/job-fetcher';
 import { matchJobs } from '@/lib/matcher';
-import { matchJobsEnhanced } from '@/lib/matcher-enhanced';
+import { canScan, incrementDailyScan, deductToken } from '@/lib/tokens';
+import { rateLimit } from '@/lib/rate-limit';
 
 export const maxDuration = 60;
 
 export async function POST(request) {
   try {
-    const { profile, apiKeys, preferences, useEnhanced } = await request.json();
+    const { userId } = await auth();
+
+    // Rate limiting — 10 requests per minute per user
+    const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
+    const rl = await rateLimit(rateLimitId, 10, 60);
+    if (!rl.allowed) {
+      return NextResponse.json({
+        error: `Too many requests. Try again in ${rl.retryAfter} seconds.`
+      }, { status: 429 });
+    }
+
+    const { profile, apiKeys, preferences } = await request.json();
 
     if (!profile || !profile.skills?.length) {
       return NextResponse.json({ error: 'Profile with skills required' }, { status: 400 });
+    }
+
+    // Server-side scan limit enforcement — applies to ALL users
+    const scanCheck = await canScan(userId, preferences?.superSearch);
+    if (!scanCheck.allowed) {
+      return NextResponse.json({
+        error: scanCheck.error,
+        requiresAuth: scanCheck.requiresAuth || false,
+        paywalled: !scanCheck.requiresAuth,
+      }, { status: scanCheck.requiresAuth ? 401 : 403 });
+    }
+
+    // Deduct: free scan or token
+    if (scanCheck.isFree) {
+      await incrementDailyScan(userId);
+    } else {
+      const deducted = await deductToken(userId, scanCheck.tokenCost || 1);
+      if (!deducted.success) {
+        return NextResponse.json({ error: 'Failed to deduct token' }, { status: 403 });
+      }
     }
 
     const logs = [];
@@ -20,19 +52,8 @@ export async function POST(request) {
     // Fetch jobs with preferences
     const { jobs, sources } = await fetchAllJobs(profile, apiKeys, onProgress, preferences);
 
-    // Match - use enhanced matcher if requested and OpenAI key is available
-    let matches;
-    const hasOpenAI = apiKeys.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
-
-    if (useEnhanced && hasOpenAI) {
-      onProgress('Using enhanced matching engine (semantic + multi-signal scoring)...');
-      matches = await matchJobsEnhanced(jobs, profile, apiKeys, onProgress);
-    } else {
-      if (useEnhanced && !hasOpenAI) {
-        onProgress('⚠️ Enhanced matching requires OPENAI_API_KEY, falling back to standard matcher');
-      }
-      matches = await matchJobs(jobs, profile, apiKeys, onProgress);
-    }
+    // Match using the reliable pipeline (keyword + LLM hybrid)
+    const matches = await matchJobs(jobs, profile, apiKeys, onProgress, preferences);
 
     return NextResponse.json({
       matches,
