@@ -7,6 +7,7 @@ import { Features } from '@/components/Features';
 import { HowItWorks } from '@/components/HowItWorks';
 import { DashboardPreview } from '@/components/DashboardPreview';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import * as Sentry from "@sentry/nextjs";
 
 // Lazy-load the massive dashboard (~62KB source) only when user enters dashboard view
 const JobDashboard = dynamic(() => import('@/components/JobDashboard').then(m => ({ default: m.JobDashboard })), {
@@ -24,6 +25,11 @@ const JobDashboard = dynamic(() => import('@/components/JobDashboard').then(m =>
 export default function Home() {
   const [view, setView] = useState('landing'); // landing | dashboard
   const [apiKeys, setApiKeys] = useState({});
+
+  useEffect(() => {
+    // Trigger test log on client mount
+    Sentry.logger.info('User triggered test log', { log_source: 'sentry_test' });
+  }, []);
 
   useEffect(() => {
     // Check if user has keys in localStorage, or rely on server
