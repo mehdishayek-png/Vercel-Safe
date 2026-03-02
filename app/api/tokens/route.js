@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { getTokenBalance, getDailyScanCount, getDeepScanCount, FREE_DAILY_SCANS, FREE_DEEP_SCANS } from '@/lib/tokens';
 
+export const dynamic = 'force-dynamic';
 /**
  * GET /api/tokens — Returns user's token balance and usage info
  * Used by the frontend to display accurate, server-verified balances
