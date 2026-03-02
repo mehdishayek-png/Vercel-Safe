@@ -1,7 +1,7 @@
-# JobBot AI Platform - Project Overview
+# Scout AI Platform - Project Overview
 
 ## 📌 Project Summary
-JobBot AI is a Next.js-based application that serves as an intelligent job search and curation agent. Rather than serving as an automated "auto-apply" bot, it functions as a highly targeted **Search Agent** that accepts user preferences (skills, experience, location, remote preferences) and pulls in matching job listings from multiple data sources. It then uses LLMs (OpenAI / OpenRouter) to semantically score, rank, and filter those jobs, presenting users with a highly curated list of opportunities.
+Scout AI is a Next.js-based application that serves as an intelligent job search and curation agent. Rather than serving as an automated "auto-apply" bot, it functions as a highly targeted **Search Agent** that accepts user preferences (skills, experience, location, remote preferences) and pulls in matching job listings from multiple data sources. It then uses LLMs (OpenAI / OpenRouter) to semantically score, rank, and filter those jobs, presenting users with a highly curated list of opportunities.
 
 The project recently pivoted from an open local tool to a **SaaS architectural model**, protecting routes with authentication and managing expensive API usage per user.
 

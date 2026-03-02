@@ -1,4 +1,4 @@
-# JobBot Matching Engine — Changelog
+# Scout Matching Engine — Changelog
 
 ## Overview
 

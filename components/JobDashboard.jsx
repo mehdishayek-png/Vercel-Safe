@@ -49,13 +49,13 @@ export function JobDashboard({ apiKeys, onBack }) {
                 setTokenBalance(data.tokens);
                 setDailyScanCount(data.dailyScansUsed);
                 // Sync to localStorage as display cache
-                localStorage.setItem('jobbot_tokens', data.tokens.toString());
+                localStorage.setItem('midas_tokens', data.tokens.toString());
             } else {
                 // Fallback to localStorage for anonymous users
-                setTokenBalance(parseInt(localStorage.getItem('jobbot_tokens') || '0', 10));
+                setTokenBalance(parseInt(localStorage.getItem('midas_tokens') || '0', 10));
             }
         } catch {
-            setTokenBalance(parseInt(localStorage.getItem('jobbot_tokens') || '0', 10));
+            setTokenBalance(parseInt(localStorage.getItem('midas_tokens') || '0', 10));
         }
     }, []);
 
@@ -99,11 +99,11 @@ export function JobDashboard({ apiKeys, onBack }) {
         }
 
         try {
-            const saved = localStorage.getItem('jobbot_saved_jobs');
+            const saved = localStorage.getItem('midas_saved_jobs');
             if (saved) {
                 setSavedJobIds(new Set(JSON.parse(saved)));
             }
-            const savedData = localStorage.getItem('jobbot_saved_jobs_data');
+            const savedData = localStorage.getItem('midas_saved_jobs_data');
             if (savedData) {
                 setSavedJobsData(JSON.parse(savedData));
             }
@@ -115,7 +115,7 @@ export function JobDashboard({ apiKeys, onBack }) {
 
         // Restore profile from localStorage
         try {
-            const storedProfile = localStorage.getItem('jobbot_profile');
+            const storedProfile = localStorage.getItem('midas_profile');
             if (storedProfile) {
                 const parsed = JSON.parse(storedProfile);
                 setProfile(parsed);
@@ -128,7 +128,7 @@ export function JobDashboard({ apiKeys, onBack }) {
 
         // Restore search results if recent (less than 1 hour old)
         try {
-            const storedResults = localStorage.getItem('jobbot_results');
+            const storedResults = localStorage.getItem('midas_results');
             if (storedResults) {
                 const { jobs: savedJobs, timestamp } = JSON.parse(storedResults);
                 const ageInMinutes = (Date.now() - timestamp) / 1000 / 60;
@@ -138,7 +138,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                     addLog(`Restored ${savedJobs.length} jobs from last search (${Math.floor(ageInMinutes)} min ago)`);
                 } else {
                     // Clear stale results
-                    localStorage.removeItem('jobbot_results');
+                    localStorage.removeItem('midas_results');
                 }
             }
         } catch (err) {
@@ -155,7 +155,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                     experience_years: experienceYears,
                     headline: jobTitle
                 };
-                localStorage.setItem('jobbot_profile', JSON.stringify(profileToSave));
+                localStorage.setItem('midas_profile', JSON.stringify(profileToSave));
             } catch (err) {
                 console.error("Failed to save profile:", err);
             }
@@ -166,7 +166,7 @@ export function JobDashboard({ apiKeys, onBack }) {
     useEffect(() => {
         if (jobs.length > 0 && !isMatching) {
             try {
-                localStorage.setItem('jobbot_results', JSON.stringify({
+                localStorage.setItem('midas_results', JSON.stringify({
                     jobs,
                     timestamp: Date.now()
                 }));
@@ -228,8 +228,8 @@ export function JobDashboard({ apiKeys, onBack }) {
 
         setSavedJobIds(new Set(newSavedIds));
         setSavedJobsData(newSavedData);
-        localStorage.setItem('jobbot_saved_jobs', JSON.stringify(Array.from(newSavedIds)));
-        localStorage.setItem('jobbot_saved_jobs_data', JSON.stringify(newSavedData));
+        localStorage.setItem('midas_saved_jobs', JSON.stringify(Array.from(newSavedIds)));
+        localStorage.setItem('midas_saved_jobs_data', JSON.stringify(newSavedData));
     };
 
     // ---- Skill Editing Logic ----
@@ -547,10 +547,10 @@ export function JobDashboard({ apiKeys, onBack }) {
             return;
         }
         setConfirmClear(false);
-        localStorage.removeItem('jobbot_profile');
-        localStorage.removeItem('jobbot_results');
-        localStorage.removeItem('jobbot_saved_jobs');
-        localStorage.removeItem('jobbot_saved_jobs_data');
+        localStorage.removeItem('midas_profile');
+        localStorage.removeItem('midas_results');
+        localStorage.removeItem('midas_saved_jobs');
+        localStorage.removeItem('midas_saved_jobs_data');
         setProfile(null);
         setJobs([]);
         setSavedJobIds(new Set());
@@ -630,7 +630,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                         <div className="flex items-center justify-between mb-2">
                             <div className="text-xs font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-1.5">
                                 <Sparkles className="w-3.5 h-3.5" />
-                                JobBot Tokens
+                                Scout Tokens
                             </div>
                             <div className="text-2xl font-black text-indigo-600">{tokenBalance}</div>
                         </div>

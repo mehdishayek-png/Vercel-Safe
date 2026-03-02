@@ -110,7 +110,7 @@ export function ResumeStrength({ profile, onTokensUpdated }) {
                 <div className="flex items-center justify-between mb-3">
                     <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5 text-purple-500" />
-                        JobBot Tokens
+                        Scout Tokens
                     </h4>
                     {isProcessing ? (
                         <span className="text-[9px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded uppercase flex items-center gap-1">

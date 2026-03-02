@@ -1,6 +1,6 @@
 {
-  "name": "jobbot-ai",
-  "description": "JobBot AI Vercel Edition",
+  "name": "midas-match",
+  "description": "Midas Match",
   "version": "1.0.0",
   "private": true,
   "scripts": {

@@ -1,4 +1,4 @@
-# JobBot AI — Premium Vercel Edition
+# Scout AI — Premium Vercel Edition
 
 An autonomous AI agent that finds jobs, tailors resumes, and applies for you. Rebuilt with a premium "Cosmic Night" UI and secure server-side architecture.
 

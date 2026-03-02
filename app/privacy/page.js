@@ -2,7 +2,7 @@ export default function PrivacyPolicy() {
     return (
         <main className="min-h-screen bg-white py-16 px-4" style={{ fontFamily: "'Inter', sans-serif" }}>
             <div className="max-w-3xl mx-auto">
-                <a href="/" className="text-sm text-indigo-600 hover:underline mb-8 block">&larr; Back to JobBot</a>
+                <a href="/" className="text-sm text-indigo-600 hover:underline mb-8 block">&larr; Back to Scout</a>
                 <h1 className="text-4xl font-bold text-gray-900 mb-2">Privacy Policy</h1>
                 <p className="text-sm text-gray-400 mb-8">Last updated: March 2, 2026</p>
 
@@ -10,7 +10,7 @@ export default function PrivacyPolicy() {
                     <section>
                         <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Information We Collect</h2>
                         <p className="text-gray-600 text-sm leading-relaxed">
-                            When you use JobBot AI, we process the following data:
+                            When you use Scout AI, we process the following data:
                         </p>
                         <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1 mt-2">
                             <li><strong>Resume Data:</strong> Your uploaded PDF is parsed in-memory to extract skills, experience, and job preferences. We do NOT store your resume file on our servers.</li>
@@ -70,7 +70,7 @@ export default function PrivacyPolicy() {
                     <section>
                         <h2 className="text-xl font-semibold text-gray-900 mb-3">7. Contact</h2>
                         <p className="text-gray-600 text-sm leading-relaxed">
-                            For privacy-related inquiries, contact us at <a href="mailto:privacy@jobbot.ai" className="text-indigo-600 hover:underline">privacy@jobbot.ai</a>.
+                            For privacy-related inquiries, contact us at <a href="mailto:privacy@midasmatch.com" className="text-indigo-600 hover:underline">privacy@midasmatch.com</a>.
                         </p>
                     </section>
                 </div>

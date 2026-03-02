@@ -3,28 +3,28 @@ import './globals.css';
 import { ToastProvider } from '@/components/ui/Toast';
 
 export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://jobbot.vercel.app'),
-  title: 'JobBot AI — AI-Powered Job Matching Engine',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://midasmatch.com'),
+  title: 'Scout AI — AI-Powered Job Matching Engine',
   description: 'Upload your resume and instantly match with jobs from 8+ sources. AI-powered scoring, deep analysis, and location-aware matching across India, US, UK, and 190+ countries.',
   keywords: ['job matching', 'AI job search', 'resume matching', 'job finder', 'career', 'job search engine', 'AI resume'],
-  authors: [{ name: 'JobBot AI' }],
+  authors: [{ name: 'Scout AI' }],
   openGraph: {
-    title: 'JobBot AI — Find Your Perfect Job with AI',
+    title: 'Scout AI — Find Your Perfect Job with AI',
     description: 'Upload your resume and get matched with thousands of jobs from Google, LinkedIn, and 8+ sources. AI scoring + deep analysis.',
-    siteName: 'JobBot AI',
+    siteName: 'Scout AI',
     type: 'website',
     images: [
       {
         url: '/og-image.png', // Must be an absolute URL in production, Next.js handles relative in app router if metadataBase is set or transforms it. Let's use metadataBase just in case or absolute via env
         width: 1200,
         height: 630,
-        alt: 'JobBot AI Preview',
+        alt: 'Scout AI Preview',
       }
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'JobBot AI — AI Job Matching',
+    title: 'Scout AI — AI Job Matching',
     description: 'Upload your resume and get AI-matched with jobs from 8+ sources.',
     images: ['/og-image.png'],
   },

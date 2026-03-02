@@ -18,7 +18,7 @@ export async function POST(request) {
     if (!rl.allowed) {
       const minutes = Math.ceil(rl.retryAfter / 60);
       return NextResponse.json({
-        error: `Rate limit reached. You can search again in ${minutes} minute${minutes !== 1 ? 's' : ''}. This helps us keep JobBot free for everyone.`,
+        error: `Rate limit reached. You can search again in ${minutes} minute${minutes !== 1 ? 's' : ''}. This helps us keep Scout free for everyone.`,
         retryAfter: rl.retryAfter,
         rateLimited: true
       }, {

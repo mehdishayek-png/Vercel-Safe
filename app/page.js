@@ -28,7 +28,7 @@ export default function Home() {
   useEffect(() => {
     // Check if user has keys in localStorage, or rely on server
     // For this version we rely on server env vars, but we keep this flexibility
-    const stored = localStorage.getItem('jobbot_keys');
+    const stored = localStorage.getItem('midas_keys');
     if (stored) setApiKeys(JSON.parse(stored));
   }, []);
 
@@ -97,11 +97,11 @@ export default function Home() {
             <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
             <a href="/refund" className="hover:text-white transition-colors">Refund Policy</a>
-            <a href="mailto:support@jobbot.ai" className="hover:text-white transition-colors">Contact Support</a>
+            <a href="mailto:support@midasmatch.com" className="hover:text-white transition-colors">Contact Support</a>
           </div>
 
           <p className="text-gray-600">
-            &copy; 2026 JobBot AI. All rights reserved.
+            &copy; 2026 Scout AI. All rights reserved.
           </p>
         </div>
       </footer>

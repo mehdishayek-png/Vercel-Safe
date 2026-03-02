@@ -112,11 +112,11 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
             if (!analysis && !isLoadingAnalysis) {
 
                 // --- PREMIUM TOKEN LOGIC: Deep Scans ---
-                const usedCount = parseInt(localStorage.getItem('jobbot_ds_count') || '0', 10);
+                const usedCount = parseInt(localStorage.getItem('midas_ds_count') || '0', 10);
 
                 if (usedCount >= 3) {
                     // Check if user has purchased tokens
-                    const tokenBalance = parseInt(localStorage.getItem('jobbot_tokens') || '0', 10);
+                    const tokenBalance = parseInt(localStorage.getItem('midas_tokens') || '0', 10);
                     if (tokenBalance <= 0) {
                         // Paywalled -> Show Blur Teaser
                         setAnalysis({
@@ -298,7 +298,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
                         className="group flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-blue-600 transition-colors py-1 px-3 rounded-full hover:bg-blue-50"
                     >
                         {(() => {
-                            const usedCount = typeof window !== 'undefined' ? parseInt(localStorage.getItem('jobbot_ds_count') || '0', 10) : 0;
+                            const usedCount = typeof window !== 'undefined' ? parseInt(localStorage.getItem('midas_ds_count') || '0', 10) : 0;
                             const isPaywalled = usedCount >= 3 && !analysis;
 
                             if (isPaywalled) {

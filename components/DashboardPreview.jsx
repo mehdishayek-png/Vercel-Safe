@@ -16,7 +16,7 @@ export function DashboardPreview() {
                             <div className="w-3 h-3 rounded-full bg-red-400" />
                             <div className="w-3 h-3 rounded-full bg-yellow-400" />
                             <div className="w-3 h-3 rounded-full bg-green-400" />
-                            <div className="ml-4 px-3 py-1 bg-white border border-gray-200 rounded text-xs text-gray-500 flex-1 font-mono shadow-sm">jobbot.ai/dashboard</div>
+                            <div className="ml-4 px-3 py-1 bg-white border border-gray-200 rounded text-xs text-gray-500 flex-1 font-mono shadow-sm">midasmatch.com/dashboard</div>
                         </div>
 
                         {/* Dashboard Content */}

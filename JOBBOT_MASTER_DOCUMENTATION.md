@@ -1,12 +1,12 @@
-# 🌌 JobBot AI - Master Project Documentation
+# 🌌 Scout AI - Master Project Documentation
 
-Welcome to the central intelligence hub for **JobBot AI Vercel Edition**. This document breaks down the entire project architecture, the core matching logic, Go-Live critical operations, and the specialized AI agents (workflows) driving continuous development and stability.
+Welcome to the central intelligence hub for **Midas Match**. This document breaks down the entire project architecture, the core matching logic, Go-Live critical operations, and the specialized AI agents (workflows) driving continuous development and stability.
 
 ---
 
 ## 📅 1. Project Overview & Architecture
 
-JobBot AI is a Next.js-based application that serves as an autonomous, intelligent job search and curation agent. It has transitioned from a local script to a fully-fledged **SaaS (Software as a Service) platform** hosted on Vercel.
+Scout AI is a Next.js-based application that serves as an autonomous, intelligent job search and curation agent. It has transitioned from a local script to a fully-fledged **SaaS (Software as a Service) platform** hosted on Vercel.
 
 Rather than being a simple "auto-apply" bot, it functions as a highly targeted **Search Agent**. It accepts user preferences (skills, domain, experience level, remote toggles, location constraints) and fetches relevant roles from premium job data providers. Then, utilizing advanced LLMs (via OpenRouter), it scores, semantically filters, and curates only the most relevant opportunities.
 
@@ -72,7 +72,7 @@ To go live, Vercel requires these specific variables to be active:
 
 ## 🤖 4. Autonomous Agents & Specialized Workflows
 
-The JobBot platform utilizes a highly collaborative, specialized team of workflow agents (located in `.agents/workflows`). You can summon these personas to step in and fix code, audit strategy, or run tests with expert precision:
+The Scout platform utilizes a highly collaborative, specialized team of workflow agents (located in `.agents/workflows`). You can summon these personas to step in and fix code, audit strategy, or run tests with expert precision:
 
 1. **CEO & Head of Product** (`/ceo-head-of-product`)
    - **Role:** Visionary leadership and roadmap planner.
@@ -91,7 +91,7 @@ The JobBot platform utilizes a highly collaborative, specialized team of workflo
    - **Function:** Focuses on conversion rate optimization, SaaS tier planning (tokens/credits logic), and optimizing the user journey from free trial to paid subscriber.
 6. **Growth Hacker / SEO Specialist** (`/growth-seo-specialist`)
    - **Role:** Organic traffic driver.
-   - **Function:** Manages meta tags, semantic HTML, schema logic, and load times to rank JobBot high naturally.
+   - **Function:** Manages meta tags, semantic HTML, schema logic, and load times to rank Scout high naturally.
 7. **Legal & Compliance Auditor** (`/legal-compliance-auditor`)
    - **Role:** Data and privacy safety node.
    - **Function:** Reviews Stripe/Razorpay handling, guarantees GDPR compliance for scraped candidate resumes, and evaluates Terms of Service.
