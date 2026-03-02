@@ -39,6 +39,8 @@ export function JobDashboard({ apiKeys, onBack }) {
     const FREE_DAILY_SCANS = 3;
     const FREE_VISIBLE_JOBS = 5;
     const [superSearch, setSuperSearch] = useState(false);
+    const [isAdminUser, setIsAdminUser] = useState(false);
+    const [tokensLoading, setTokensLoading] = useState(true);
 
     // Fetch token balance from server
     const refreshTokens = useCallback(async () => {
@@ -48,6 +50,7 @@ export function JobDashboard({ apiKeys, onBack }) {
             if (data.source !== 'anonymous' && data.source !== 'local') {
                 setTokenBalance(data.tokens);
                 setDailyScanCount(data.dailyScansUsed);
+                if (data.isAdmin) setIsAdminUser(true);
                 // Sync to localStorage as display cache
                 localStorage.setItem('midas_tokens', data.tokens.toString());
             } else {
@@ -56,6 +59,8 @@ export function JobDashboard({ apiKeys, onBack }) {
             }
         } catch {
             setTokenBalance(parseInt(localStorage.getItem('midas_tokens') || '0', 10));
+        } finally {
+            setTokensLoading(false);
         }
     }, []);
 
@@ -796,25 +801,32 @@ export function JobDashboard({ apiKeys, onBack }) {
                                         </div>
 
                                         {/* Super Search Toggle */}
-                                        <div
-                                            className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${tokenBalance < 2
-                                                ? 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'
-                                                : superSearch
-                                                    ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 cursor-pointer'
-                                                    : 'bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer'
-                                                }`}
-                                            onClick={() => tokenBalance >= 2 && setSuperSearch(!superSearch)}
-                                        >
-                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${superSearch ? 'bg-amber-500 border-amber-500' : 'border-gray-300 bg-white'}`}>
-                                                {superSearch && <Check className="w-3.5 h-3.5 text-white" />}
+                                        {tokensLoading ? (
+                                            <div className="flex items-center gap-3 p-3 rounded-lg border bg-gray-50 border-gray-200 animate-pulse">
+                                                <div className="w-5 h-5 rounded border border-gray-200 bg-gray-200" />
+                                                <div className="h-3 bg-gray-200 rounded w-24" />
                                             </div>
-                                            <div className="flex-1">
-                                                <span className={`text-xs font-medium select-none ${superSearch ? 'text-amber-700' : 'text-gray-600'}`}>⚡ Super Search</span>
-                                                <span className="text-[10px] text-gray-400 ml-1">
-                                                    {tokenBalance < 2 ? '(need 2 tokens)' : '(2 tokens per scan, 3× sources)'}
-                                                </span>
+                                        ) : (
+                                            <div
+                                                className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${(!isAdminUser && tokenBalance < 2)
+                                                        ? 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'
+                                                        : superSearch
+                                                            ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 cursor-pointer'
+                                                            : 'bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer'
+                                                    }`}
+                                                onClick={() => (isAdminUser || tokenBalance >= 2) && setSuperSearch(!superSearch)}
+                                            >
+                                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${superSearch ? 'bg-amber-500 border-amber-500' : 'border-gray-300 bg-white'}`}>
+                                                    {superSearch && <Check className="w-3.5 h-3.5 text-white" />}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <span className={`text-xs font-medium select-none ${superSearch ? 'text-amber-700' : 'text-gray-600'}`}>⚡ Super Search</span>
+                                                    <span className="text-[10px] text-gray-400 ml-1">
+                                                        {isAdminUser ? '(admin — unlimited)' : tokenBalance < 2 ? '(need 2 tokens)' : '(2 tokens per scan, 3× sources)'}
+                                                    </span>
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
                                     </div>
 
                                     <div className="pt-4 flex gap-3">
