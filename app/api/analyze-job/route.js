@@ -58,7 +58,7 @@ export async function POST(request) {
             apiKey = openRouterKey;
             model = 'anthropic/claude-3.5-sonnet'; // Claude 3.5 Sonnet - Best reasoning for career-critical decisions
             headers['HTTP-Referer'] = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://midasmatch.com'; // Required by OpenRouter
-            headers['X-Title'] = 'Scout';
+            headers['X-Title'] = 'Midas';
         }
 
         if (!apiKey) {

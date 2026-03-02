@@ -48,7 +48,7 @@ export function GuideModal({ onClose }) {
 
                 <div className="p-8">
                     <div className="text-center mb-10">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">How Scout AI Works</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-2">How Midas Works</h2>
                         <p className="text-gray-500">Autonomous job hunting in 3 simple steps</p>
                     </div>
 

@@ -101,7 +101,7 @@ export default function Home() {
           </div>
 
           <p className="text-gray-600">
-            &copy; 2026 Scout AI. All rights reserved.
+            &copy; 2026 Midas. All rights reserved.
           </p>
         </div>
       </footer>

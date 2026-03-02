@@ -2,7 +2,7 @@ export default function RefundPolicy() {
     return (
         <main className="min-h-screen bg-white py-16 px-4" style={{ fontFamily: "'Inter', sans-serif" }}>
             <div className="max-w-3xl mx-auto">
-                <a href="/" className="text-sm text-indigo-600 hover:underline mb-8 block">&larr; Back to Scout</a>
+                <a href="/" className="text-sm text-indigo-600 hover:underline mb-8 block">&larr; Back to Midas</a>
                 <h1 className="text-4xl font-bold text-gray-900 mb-2">Refund & Cancellation Policy</h1>
                 <p className="text-sm text-gray-400 mb-8">Last updated: March 2, 2026</p>
 
@@ -10,7 +10,7 @@ export default function RefundPolicy() {
                     <section>
                         <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Token Purchases</h2>
                         <p className="text-gray-600 text-sm leading-relaxed">
-                            Scout AI operates on a prepaid token system. Tokens are purchased in packs of 50 for ₹399 (or equivalent) via Razorpay.
+                            Midas operates on a prepaid token system. Tokens are purchased in packs of 50 for ₹399 (or equivalent) via Razorpay.
                         </p>
                     </section>
 
@@ -42,7 +42,7 @@ export default function RefundPolicy() {
                     <section>
                         <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Cancellation</h2>
                         <p className="text-gray-600 text-sm leading-relaxed">
-                            Scout AI does not have recurring subscriptions. Token purchases are one-time transactions. There is nothing to cancel. Unused tokens remain in your account indefinitely and do not expire.
+                            Midas does not have recurring subscriptions. Token purchases are one-time transactions. There is nothing to cancel. Unused tokens remain in your account indefinitely and do not expire.
                         </p>
                     </section>
 

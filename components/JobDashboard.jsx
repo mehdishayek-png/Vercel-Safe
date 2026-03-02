@@ -635,7 +635,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                         <div className="flex items-center justify-between mb-2">
                             <div className="text-xs font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-1.5">
                                 <Sparkles className="w-3.5 h-3.5" />
-                                Scout Tokens
+                                Midas Tokens
                             </div>
                             <div className="text-2xl font-black text-indigo-600">{tokenBalance}</div>
                         </div>

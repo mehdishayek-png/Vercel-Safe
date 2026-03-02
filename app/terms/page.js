@@ -2,7 +2,7 @@ export default function TermsOfService() {
     return (
         <main className="min-h-screen bg-white py-16 px-4" style={{ fontFamily: "'Inter', sans-serif" }}>
             <div className="max-w-3xl mx-auto">
-                <a href="/" className="text-sm text-indigo-600 hover:underline mb-8 block">&larr; Back to Scout</a>
+                <a href="/" className="text-sm text-indigo-600 hover:underline mb-8 block">&larr; Back to Midas</a>
                 <h1 className="text-4xl font-bold text-gray-900 mb-2">Terms of Service</h1>
                 <p className="text-sm text-gray-400 mb-8">Last updated: March 2, 2026</p>
 
@@ -10,7 +10,7 @@ export default function TermsOfService() {
                     <section>
                         <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Service Description</h2>
                         <p className="text-gray-600 text-sm leading-relaxed">
-                            Scout AI is an AI-powered job matching platform that analyzes your resume and preferences to find relevant job opportunities from multiple sources including Google Jobs, WeWorkRemotely, Lever, RemoteOK, and others.
+                            Midas is an AI-powered job matching platform that analyzes your resume and preferences to find relevant job opportunities from multiple sources including Google Jobs, WeWorkRemotely, Lever, RemoteOK, and others.
                         </p>
                     </section>
 
@@ -44,7 +44,7 @@ export default function TermsOfService() {
                     <section>
                         <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Limitation of Liability</h2>
                         <p className="text-gray-600 text-sm leading-relaxed">
-                            Scout AI is provided &quot;as is&quot; without warranties of any kind. We are not liable for any damages arising from the use of this service, including but not limited to missed job opportunities, inaccurate match scores, or service interruptions.
+                            Midas is provided &quot;as is&quot; without warranties of any kind. We are not liable for any damages arising from the use of this service, including but not limited to missed job opportunities, inaccurate match scores, or service interruptions.
                         </p>
                     </section>
 

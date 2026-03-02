@@ -38,7 +38,7 @@ export function Header({ onShowGuide, onClearData }) {
                             <Sparkles className="w-4 h-4 text-white" />
                         </div>
                         <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
-                            Scout AI
+                            Midas
                         </span>
                     </div>
 

@@ -1,4 +1,4 @@
-# 🌌 Scout AI - Master Project Documentation
+# 🌌 Midas - Master Project Documentation
 
 Welcome to the central intelligence hub for **Midas Match**. This document breaks down the entire project architecture, the core matching logic, Go-Live critical operations, and the specialized AI agents (workflows) driving continuous development and stability.
 
@@ -6,7 +6,7 @@ Welcome to the central intelligence hub for **Midas Match**. This document break
 
 ## 📅 1. Project Overview & Architecture
 
-Scout AI is a Next.js-based application that serves as an autonomous, intelligent job search and curation agent. It has transitioned from a local script to a fully-fledged **SaaS (Software as a Service) platform** hosted on Vercel.
+Midas is a Next.js-based application that serves as an autonomous, intelligent job search and curation agent. It has transitioned from a local script to a fully-fledged **SaaS (Software as a Service) platform** hosted on Vercel.
 
 Rather than being a simple "auto-apply" bot, it functions as a highly targeted **Search Agent**. It accepts user preferences (skills, domain, experience level, remote toggles, location constraints) and fetches relevant roles from premium job data providers. Then, utilizing advanced LLMs (via OpenRouter), it scores, semantically filters, and curates only the most relevant opportunities.
 
@@ -91,7 +91,7 @@ The Scout platform utilizes a highly collaborative, specialized team of workflow
    - **Function:** Focuses on conversion rate optimization, SaaS tier planning (tokens/credits logic), and optimizing the user journey from free trial to paid subscriber.
 6. **Growth Hacker / SEO Specialist** (`/growth-seo-specialist`)
    - **Role:** Organic traffic driver.
-   - **Function:** Manages meta tags, semantic HTML, schema logic, and load times to rank Scout high naturally.
+   - **Function:** Manages meta tags, semantic HTML, schema logic, and load times to rank Midas high naturally.
 7. **Legal & Compliance Auditor** (`/legal-compliance-auditor`)
    - **Role:** Data and privacy safety node.
    - **Function:** Reviews Stripe/Razorpay handling, guarantees GDPR compliance for scraped candidate resumes, and evaluates Terms of Service.
