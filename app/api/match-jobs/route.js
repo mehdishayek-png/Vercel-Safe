@@ -5,7 +5,7 @@ import { matchJobs } from '@/lib/matcher';
 import { canScan, incrementDailyScan, deductToken } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 
-export const maxDuration = 300; // Vercel Pro limit
+export const maxDuration = 90; // Generous enough for batching, tight enough to catch hangs
 
 export async function POST(request) {
   try {

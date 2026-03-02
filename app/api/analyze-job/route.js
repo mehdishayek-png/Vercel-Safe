@@ -57,7 +57,7 @@ export async function POST(request) {
             apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
             apiKey = openRouterKey;
             model = 'anthropic/claude-3.5-sonnet'; // Claude 3.5 Sonnet - Best reasoning for career-critical decisions
-            headers['HTTP-Referer'] = 'https://jobbot.vercel.app'; // Required by OpenRouter
+            headers['HTTP-Referer'] = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://jobbot.vercel.app'; // Required by OpenRouter
             headers['X-Title'] = 'JobBot';
         }
 
