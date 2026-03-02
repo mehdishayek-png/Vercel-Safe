@@ -977,62 +977,62 @@ export function JobDashboard({ apiKeys, onBack }) {
                             </motion.div>
                         )}
                     </div>
-                </div>
-            </div>
 
-            <div className="space-y-4 mt-4">
-                <AnimatePresence>
-                    {displayedJobs.map((job, i) => {
-                        const shouldBlur = isPaywalled && activeTab === 'matches' && i >= FREE_VISIBLE_JOBS;
-                        if (shouldBlur && i === FREE_VISIBLE_JOBS) {
-                            // Show paywall CTA once at the blur boundary
-                            return (
-                                <div key="paywall-cta">
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="relative rounded-2xl overflow-hidden mb-4"
-                                    >
-                                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white z-10 flex flex-col items-center justify-center">
-                                            <Lock className="w-8 h-8 text-indigo-500 mb-3" />
-                                            <h3 className="text-lg font-bold text-gray-900 mb-1">+{displayedJobs.length - FREE_VISIBLE_JOBS} more matches found</h3>
-                                            <p className="text-sm text-gray-500 mb-4">Unlock all results with tokens</p>
-                                            <button
-                                                onClick={initiatePayment}
-                                                disabled={isPaymentProcessing}
-                                                className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-bold rounded-full hover:from-indigo-500 hover:to-purple-500 transition-all shadow-lg shadow-indigo-500/25 disabled:opacity-50"
+                    <div className="space-y-4 mt-4">
+                        <AnimatePresence>
+                            {displayedJobs.map((job, i) => {
+                                const shouldBlur = isPaywalled && activeTab === 'matches' && i >= FREE_VISIBLE_JOBS;
+                                if (shouldBlur && i === FREE_VISIBLE_JOBS) {
+                                    // Show paywall CTA once at the blur boundary
+                                    return (
+                                        <div key="paywall-cta">
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="relative rounded-2xl overflow-hidden mb-4"
                                             >
-                                                {isPaymentProcessing ? 'Processing...' : 'Unlock All — Get 50 Tokens for ₹399'}
-                                            </button>
+                                                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white z-10 flex flex-col items-center justify-center">
+                                                    <Lock className="w-8 h-8 text-indigo-500 mb-3" />
+                                                    <h3 className="text-lg font-bold text-gray-900 mb-1">+{displayedJobs.length - FREE_VISIBLE_JOBS} more matches found</h3>
+                                                    <p className="text-sm text-gray-500 mb-4">Unlock all results with tokens</p>
+                                                    <button
+                                                        onClick={initiatePayment}
+                                                        disabled={isPaymentProcessing}
+                                                        className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-bold rounded-full hover:from-indigo-500 hover:to-purple-500 transition-all shadow-lg shadow-indigo-500/25 disabled:opacity-50"
+                                                    >
+                                                        {isPaymentProcessing ? 'Processing...' : 'Unlock All — Get 50 Tokens for ₹399'}
+                                                    </button>
+                                                </div>
+                                                <div className="filter blur-md pointer-events-none">
+                                                    <JobCard
+                                                        job={job}
+                                                        profile={profile}
+                                                        apiKeys={apiKeys}
+                                                        onSave={toggleSaveJob}
+                                                        isSaved={false}
+                                                        onTokensUpdated={refreshTokens}
+                                                    />
+                                                </div>
+                                            </motion.div>
                                         </div>
-                                        <div className="filter blur-md pointer-events-none">
-                                            <JobCard
-                                                job={job}
-                                                profile={profile}
-                                                apiKeys={apiKeys}
-                                                onSave={toggleSaveJob}
-                                                isSaved={false}
-                                                onTokensUpdated={refreshTokens}
-                                            />
-                                        </div>
-                                    </motion.div>
-                                </div>
-                            );
-                        }
-                        if (shouldBlur) return null; // Hide remaining blurred cards
-                        return (
-                            <JobCard
-                                key={job.id || job.apply_url || `job-${i}`}
-                                job={job}
-                                profile={profile}
-                                apiKeys={apiKeys}
-                                onSave={toggleSaveJob}
-                                isSaved={savedJobIds.has(job.apply_url)}
-                                onTokensUpdated={refreshTokens}
-                            />
-                        );
-                    })}
-                </AnimatePresence>
+                                    );
+                                }
+                                if (shouldBlur) return null; // Hide remaining blurred cards
+                                return (
+                                    <JobCard
+                                        key={job.id || job.apply_url || `job-${i}`}
+                                        job={job}
+                                        profile={profile}
+                                        apiKeys={apiKeys}
+                                        onSave={toggleSaveJob}
+                                        isSaved={savedJobIds.has(job.apply_url)}
+                                        onTokensUpdated={refreshTokens}
+                                    />
+                                );
+                            })}
+                        </AnimatePresence>
+                    </div>
+                </div>
             </div>
 
             {/* Fixed Loading Toast - visible from any scroll position */}
