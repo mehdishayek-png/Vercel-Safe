@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, HelpCircle } from 'lucide-react';
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { GuideModal } from './GuideModal';
 
 export function Header({ onShowGuide, onClearData }) {
@@ -52,11 +53,24 @@ export function Header({ onShowGuide, onClearData }) {
                         )}
                         <button
                             onClick={handleGuideClick}
+                            aria-label="How it Works"
                             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 bg-white/50 hover:bg-white border border-transparent hover:border-gray-200 rounded-full transition-all"
                         >
                             <HelpCircle className="w-4 h-4" />
                             <span className="hidden sm:inline">How it Works</span>
                         </button>
+                        <SignedOut>
+                            <SignInButton mode="modal">
+                                <button className="px-5 py-2 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-full shadow-sm transition-all ml-2">
+                                    Sign In
+                                </button>
+                            </SignInButton>
+                        </SignedOut>
+                        <SignedIn>
+                            <div className="ml-2 flex flex-col justify-center">
+                                <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: "w-9 h-9" } }} />
+                            </div>
+                        </SignedIn>
                     </div>
                 </div>
             </motion.header>

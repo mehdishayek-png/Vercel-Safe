@@ -1,0 +1,60 @@
+﻿5b1f881 fix: Resolve Matcher ReferenceError & Optimize Performance (Timeout Prevention)
+56e9f07 feat: Upgrade to Upstash Redis persistent rate limiting
+6511008 feat: Rate limiting (2 searches/hr per IP) + fix 429 handler syntax
+e54679f feat: P0 fixes - disclosure, sort by latest, error handling, ErrorBoundary
+07da2fe fix: Remove SerpAPI 50-job gate - free sources lack quality matches
+b937f79 feat: P0 launch fixes - localStorage persistence + optimized job fetcher\n\n- Add localStorage persistence for profile and search results (1hr cache)\n- Add Clear Data button in header\n- Parallelize Lever API fetches (5 concurrent, cuts 10-15s)\n- Only call SerpAPI if free sources return <50 jobs\n- Reduce SerpAPI queries from 3 to 2 tokens\n- Increase rate limit to 800ms (leveraging Vercel Pro 60s timeout)
+3258e1b Fix: Experience slider now properly updates AI analysis
+67b6fe4 Refine: Strict Experience, Lenient Skills (Lower filter to 35)
+7087f0b Upgrade: Claude 3.5 Sonnet for Premium Job Analysis
+6e8de66 Fix: Remove response_format for Gemini (400 error fix)
+c2553f0 Feat: Switch to Gemini Pro 1.5 + Brutal Experience Filter (Score <50 = Hidden)
+f4ea9e0 Fix: Top 30 Batch, Strict Experience Rule, JobCard Re-fetch Fix
+efac67f Feat: Simultaneous AI Batch Analysis (Top 20) & AI Scoring
+ac781e6 Fix: Add OpenRouter support for Deep Analysis
+aa89827 Fix: Treat 'Senior/Sr.' as Senior seniority (enforce 8y+)
+dfdc480 Fix: Locations Dedup (Logic Fix), Strict Seniority, Crash Fix
+425e6ba Fix: Locations Dedup (Map), Strict Seniority, Crash Fix
+831df94 Fix: Syntax error in JobCard.jsx
+cbc9c1e Fix: Restore Deep Analysis button, refine UI layout
+b6fa805 Refactor: UI Cleanup, Seniority Logic, and Analysis Error Handling
+b388f18 Fix: UI/UX issues (Auto-scroll, Duplicates, Visibility)
+ca48424 Feat: Light Theme, Custom Job Title, Analysis Debugging
+ecce345 Fix: Prioritize direct apply links in SerpAPI fetcher
+585f14e Feat: Add Experience Slider UI
+7d6d2be Feat: Add Manual Experience Input and Stricter Matching Logic
+3bc8058 Fix: Add missing BrainCircuit import to JobDashboard
+2d8eabb Fix: Correct ErrorBoundary import placement
+ac2cbcd Fix: Add ErrorBoundary to catch client-side crashes
+5b06e15 Fix: Add defensive try-catch to JobDashboard data loading
+696c722 Fix: Render loop log access (Absolute Final)
+6642157 Fix: Hydration mismatch in Dashboard logs timestamp
+200938d Feat: Add Gamification (MatchRing, 3D Tilt, Confetti)
+0aef9f5 Feat: Add Premium UI (Header, Guide, Deep Analysis, Polish)
+25afbc0 Fix: UI contrast issues (white text) in components
+fad073a Perf: Limit queries & queries+timeout. UI: Brilliant White Theme Overhaul
+49cee6a Feat: Mac aesthetic UI, privacy notices, and experience filtering
+5e46a8e Fix: Improve SerpAPI location mapping for Bangalore
+69215d6 Fix: Remove per-job listing calls to prevent Vercel 60s timeout
+6a4ac34 Fix: Use google_jobs_listing API for real apply URLs + add SimplyHired
+08c9756 Fix: Apply button fallback + sticky loading toast
+4cef430 Fix: Universal location normalization for SerpAPI (all countries)
+a72e58d Fix: Normalize location format for SerpAPI and add error body logging
+03b1140 Add comprehensive SerpAPI diagnostic logging
+22bbadc Add diagnostic logging for SerpAPI integration audit
+e6a41c2 Fix: Update SerpAPI env var to SERP_API_KEY
+72c941b Fix: Simplify vercel.json configuration
+9f9185c Fix: Remove temp_ref submodule and update gitignore
+7b09ae7 Feat: Port Python matching engine with semantic embeddings
+d72ab03 Feat: Add State selection, Scrolling Radar, HTML Stripping
+5e83b25 Fix: Overwrite JobDashboard.jsx to use new JobCard and ResumeStrength components
+e5633bf Feat: Add Match DNA, Explainability, and Resume Insights (Product 2.0)
+73ca05c Fix: Overwrite JobDashboard with new UI code (previous commit failed)
+bf2b028 Feat: Dashboard 2.0 with Cosmic Night UI, Combobox Location, and Editable Skills
+ccbce57 Feat: Add editable skills and dropdown location selector
+c9ec5ba Feat: Add location filtering, date display, and UI polish
+a6e6e48 Fix: Update env var name to OPENROUTER_API_KEY
+c2d270b Fix: Add vercel.json to force nextjs framework
+4660680 Fix: Add pdf-parse config and error handling
+a316f8f Fix: Update metadata to trigger fresh Vercel build
+6a1385a Feat: Complete Premium AI-Native UI Rebuild & Secure Backend

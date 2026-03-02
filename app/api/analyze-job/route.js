@@ -1,7 +1,45 @@
 import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { getDeepScanCount, incrementDeepScan, deductToken, FREE_DEEP_SCANS } from '@/lib/tokens';
+import { rateLimit } from '@/lib/rate-limit';
+
+export const maxDuration = 30;
 
 export async function POST(request) {
     try {
+        const { userId } = await auth();
+
+        // Rate limiting — 10 requests per minute per user
+        const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
+        const rl = await rateLimit(rateLimitId, 10, 60);
+        if (!rl.allowed) {
+            return NextResponse.json({
+                error: `Too many requests. Try again in ${rl.retryAfter} seconds.`
+            }, { status: 429 });
+        }
+
+        // Server-side deep scan enforcement — applies to ALL users
+        if (!userId) {
+            return NextResponse.json({
+                error: 'Sign in to use Deep Scan.',
+                requiresAuth: true
+            }, { status: 401 });
+        }
+
+        const usedCount = await getDeepScanCount(userId);
+        if (usedCount >= FREE_DEEP_SCANS) {
+            // Past free limit — need tokens
+            const deducted = await deductToken(userId, 1);
+            if (!deducted.success) {
+                return NextResponse.json({
+                    error: 'No tokens remaining for deep scans. Purchase tokens to continue.',
+                    paywalled: true
+                }, { status: 403 });
+            }
+        } else {
+            await incrementDeepScan(userId);
+        }
+
         const { job, profile, apiKeys } = await request.json();
 
         // Check for OpenRouter Key First

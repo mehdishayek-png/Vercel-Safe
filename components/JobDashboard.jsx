@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, FileText, Search, Check, AlertCircle, Loader2, X, Plus, MapPin, Globe, Sparkles, Bookmark, LayoutGrid, List, ShieldCheck, Clock, BrainCircuit } from 'lucide-react';
+import { Upload, FileText, Search, Check, AlertCircle, Loader2, X, Plus, MapPin, Globe, Sparkles, Bookmark, LayoutGrid, List, ShieldCheck, Clock, BrainCircuit, Lock } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 import { Input } from './ui/Input';
@@ -11,18 +11,64 @@ import { GuideModal } from './GuideModal';
 import { ResumeStrength } from './ResumeStrength';
 import { ScanningRadar } from './ScanningRadar';
 import { getAllCountries, getStatesByCountry, getCitiesByState, getCountryName } from '../lib/location-data';
+import { Country, State, City } from 'country-state-city';
+import { useRazorpay } from '../lib/useRazorpay';
+import { useToast } from './ui/Toast';
+import { useAuth } from '@clerk/nextjs';
 
 export function JobDashboard({ apiKeys, onBack }) {
+    const { isSignedIn } = useAuth();
     const [profile, setProfile] = useState(null);
     const [jobs, setJobs] = useState([]);
     const [isParsing, setIsParsing] = useState(false);
     const [isMatching, setIsMatching] = useState(false);
-    const [logs, setLogs] = useState([]);
     const [searchError, setSearchError] = useState(null);
+    const [logs, setLogs] = useState([]);
     const [savedJobIds, setSavedJobIds] = useState(new Set());
+    const [savedJobsData, setSavedJobsData] = useState([]);
     const [activeTab, setActiveTab] = useState('matches'); // 'matches' | 'saved'
     const [showGuide, setShowGuide] = useState(false);
     const [sortBy, setSortBy] = useState('score'); // 'score' | 'latest'
+    const [deepAnalysisProgress, setDeepAnalysisProgress] = useState(null);
+    const [confirmClear, setConfirmClear] = useState(false);
+    const toast = useToast();
+
+    // Token / Credit System — server-verified with localStorage fallback for display
+    const [tokenBalance, setTokenBalance] = useState(0);
+    const [dailyScanCount, setDailyScanCount] = useState(0);
+    const FREE_DAILY_SCANS = 3;
+    const FREE_VISIBLE_JOBS = 5;
+    const [superSearch, setSuperSearch] = useState(false);
+
+    // Fetch token balance from server
+    const refreshTokens = useCallback(async () => {
+        try {
+            const res = await fetch('/api/tokens');
+            const data = await res.json();
+            if (data.source !== 'anonymous' && data.source !== 'local') {
+                setTokenBalance(data.tokens);
+                setDailyScanCount(data.dailyScansUsed);
+                // Sync to localStorage as display cache
+                localStorage.setItem('jobbot_tokens', data.tokens.toString());
+            } else {
+                // Fallback to localStorage for anonymous users
+                setTokenBalance(parseInt(localStorage.getItem('jobbot_tokens') || '0', 10));
+            }
+        } catch {
+            setTokenBalance(parseInt(localStorage.getItem('jobbot_tokens') || '0', 10));
+        }
+    }, []);
+
+    // Razorpay hook — replaces inline payment code
+    const { initiatePayment, isProcessing: isPaymentProcessing } = useRazorpay({
+        onSuccess: async (verifyData) => {
+            await refreshTokens();
+            toast('✅ 50 tokens credited! Happy hunting.', 'success');
+        },
+        onError: (err) => {
+            toast(`Payment error: ${err.message}`, 'error');
+        }
+    });
 
     // Preferences State
     const [preferences, setPreferences] = useState({ country: 'US', state: '', city: '', remoteOnly: false });
@@ -40,6 +86,9 @@ export function JobDashboard({ apiKeys, onBack }) {
 
     // P0-2: LocalStorage Persistence - Load on mount
     useEffect(() => {
+        // Fetch token balance from server on mount
+        refreshTokens();
+
         try {
             const data = getAllCountries();
             if (data && Array.isArray(data)) {
@@ -54,9 +103,14 @@ export function JobDashboard({ apiKeys, onBack }) {
             if (saved) {
                 setSavedJobIds(new Set(JSON.parse(saved)));
             }
+            const savedData = localStorage.getItem('jobbot_saved_jobs_data');
+            if (savedData) {
+                setSavedJobsData(JSON.parse(savedData));
+            }
         } catch (err) {
             console.error("Failed to load saved jobs:", err);
             setSavedJobIds(new Set());
+            setSavedJobsData([]);
         }
 
         // Restore profile from localStorage
@@ -160,17 +214,22 @@ export function JobDashboard({ apiKeys, onBack }) {
 
     // ---- Bookmarking Logic ----
     const toggleSaveJob = (job) => {
-        const newSaved = new Set(savedJobIds);
+        const newSavedIds = new Set(savedJobIds);
         const jobId = job.apply_url;
+        let newSavedData = [...savedJobsData];
 
-        if (newSaved.has(jobId)) {
-            newSaved.delete(jobId);
+        if (newSavedIds.has(jobId)) {
+            newSavedIds.delete(jobId);
+            newSavedData = newSavedData.filter(j => j.apply_url !== jobId);
         } else {
-            newSaved.add(jobId);
+            newSavedIds.add(jobId);
+            newSavedData.push(job);
         }
 
-        setSavedJobIds(new Set(newSaved));
-        localStorage.setItem('jobbot_saved_jobs', JSON.stringify(Array.from(newSaved)));
+        setSavedJobIds(new Set(newSavedIds));
+        setSavedJobsData(newSavedData);
+        localStorage.setItem('jobbot_saved_jobs', JSON.stringify(Array.from(newSavedIds)));
+        localStorage.setItem('jobbot_saved_jobs_data', JSON.stringify(newSavedData));
     };
 
     // ---- Skill Editing Logic ----
@@ -225,6 +284,67 @@ export function JobDashboard({ apiKeys, onBack }) {
             if (data.profile.headline) {
                 setJobTitle(data.profile.headline);
             }
+
+            // Intelligent Location Pre-Population
+            if (data.profile.location) {
+                addLog(`Detected location: ${data.profile.location}. Attempting to map...`);
+                let matchedCountry = '';
+                let matchedState = '';
+                let matchedCity = '';
+
+                const locLower = data.profile.location.toLowerCase();
+
+                // 1. Try to match Country
+                const allCountries = Country.getAllCountries();
+                const foundCountry = allCountries.find(c =>
+                    locLower.includes(c.name.toLowerCase()) ||
+                    locLower.includes(c.isoCode.toLowerCase()) ||
+                    (c.isoCode === 'US' && locLower.includes('usa')) ||
+                    (c.isoCode === 'GB' && locLower.includes('uk'))
+                );
+
+                if (foundCountry) {
+                    matchedCountry = foundCountry.isoCode;
+
+                    // 2. Try to match State within that Country
+                    const countryStates = State.getStatesOfCountry(matchedCountry);
+                    const foundState = countryStates.find(s =>
+                        locLower.includes(s.name.toLowerCase()) ||
+                        // Only match short state codes if they are bounded by commas/spaces to avoid false positives
+                        new RegExp(`\\b${s.isoCode.toLowerCase()}\\b`).test(locLower)
+                    );
+
+                    if (foundState) {
+                        matchedState = foundState.isoCode;
+
+                        // 3. Try to match City within that State
+                        const stateCities = City.getCitiesOfState(matchedCountry, matchedState);
+                        const foundCity = stateCities.find(c => locLower.includes(c.name.toLowerCase()));
+                        if (foundCity) {
+                            matchedCity = foundCity.name;
+                        }
+                    } else {
+                        // Fallback: Try to find City just within the Country
+                        const countryCities = City.getCitiesOfCountry(matchedCountry);
+                        const foundCity = countryCities.find(c => locLower.includes(c.name.toLowerCase()));
+                        if (foundCity) {
+                            matchedCity = foundCity.name;
+                            // If we found a city but no state, we can reverse lookup its state if needed, 
+                            // but setting just Country & City is often enough for the UI.
+                        }
+                    }
+
+                    // Apply the matching location to preferences
+                    setPreferences(prev => ({
+                        ...prev,
+                        country: matchedCountry,
+                        state: matchedState,
+                        city: matchedCity
+                    }));
+                    addLog(`Successfully mapped location to ${foundCountry.name}`);
+                }
+            }
+
             addLog(`Extracted profile for ${data.profile.name}`);
         } catch (err) {
             const msg = err.message.toLowerCase();
@@ -252,11 +372,26 @@ export function JobDashboard({ apiKeys, onBack }) {
         addLog("Starting job search agent...");
         addLog("Scanning job market... This may take ~1 minute for high-quality matches.");
         setActiveTab('matches');
+        setSearchError(null);
 
         // Scroll to results area so loading state is visible
-        // setTimeout(() => {
-        //     resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        // }, 100);
+        setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
+
+        // Token / scan limit check — server enforces limits too,
+        // but we check client-side first for instant feedback
+        if (superSearch && tokenBalance < 2) {
+            setSearchError('Super Search requires 2 tokens. Purchase tokens or disable Super Search.');
+            setIsMatching(false);
+            return;
+        }
+        const isFreeScan = !superSearch && dailyScanCount < FREE_DAILY_SCANS;
+        if (!isFreeScan && !superSearch && tokenBalance <= 0) {
+            setSearchError('You\'ve used your 3 free daily scans. Purchase tokens to continue searching.');
+            setIsMatching(false);
+            return;
+        }
 
         // Format location string
         let locationQuery = '';
@@ -280,7 +415,8 @@ export function JobDashboard({ apiKeys, onBack }) {
                     apiKeys,
                     preferences: {
                         ...preferences,
-                        location: locationQuery
+                        location: locationQuery,
+                        superSearch
                     }
                 })
             });
@@ -290,7 +426,16 @@ export function JobDashboard({ apiKeys, onBack }) {
                     const errData = await res.json().catch(() => ({}));
                     throw new Error(errData.error || 'Rate limit reached. Please wait before searching again.');
                 }
-                throw new Error('Failed to fetch jobs');
+                const errData = await res.json().catch(() => ({}));
+                if (res.status === 401 && errData.requiresAuth) {
+                    setSearchError('⚡ Sign in to scan for jobs. Free users get 3 scans per day!');
+                } else if (res.status === 403) {
+                    setSearchError(errData.error || 'No tokens remaining. Purchase tokens to continue.');
+                } else {
+                    setSearchError(errData.error || 'Failed to fetch jobs');
+                }
+                setIsMatching(false);
+                return;
             }
 
             const data = await res.json();
@@ -303,13 +448,14 @@ export function JobDashboard({ apiKeys, onBack }) {
             // ---- START DEEP ANALYSIS (Top 20) ----
             if (initialMatches.length > 0) {
                 const top20 = initialMatches.slice(0, 20);
+                const totalBatches = Math.ceil(top20.length / 4);
                 addLog(`🤖 AI Agent: Starting deep analysis on top ${top20.length} candidates...`);
+                setDeepAnalysisProgress({ current: 0, total: totalBatches });
 
                 // Process in chunks of 4 to avoid rate limits/timeouts
                 const chunkSize = 4;
-                let processedJobs = [...initialMatches]; // Clone to update
 
-                // Helper to update state safely
+                // Helper to update a single job WITHOUT re-sorting (prevents scroll jumps)
                 const updateJobWithAnalysis = (jobId, analysis) => {
                     setJobs(currentJobs => {
                         return currentJobs.map(j => {
@@ -319,25 +465,22 @@ export function JobDashboard({ apiKeys, onBack }) {
                             return j;
                         })
                             .filter(j => {
-                                // FILTER OUT: Only hide jobs with AI score < 35 (truly irrelevant/extreme experience gap)
+                                // FILTER OUT: Only hide jobs with AI score < 35 (truly irrelevant)
                                 if (j.analysis?.fit_score && j.analysis.fit_score < 35) {
-                                    return false; // Remove from feed
+                                    return false;
                                 }
                                 return true;
-                            })
-                            .sort((a, b) => {
-                                // Sort by AI score if available, else standard score
-                                const scoreA = a.analysis?.fit_score || a.match_score;
-                                const scoreB = b.analysis?.fit_score || b.match_score;
-                                return scoreB - scoreA;
                             });
+                        // NOTE: No .sort() here — deferred to end to prevent scroll jumps
                     });
                 };
 
                 // Process chunks
                 for (let i = 0; i < top20.length; i += chunkSize) {
                     const chunk = top20.slice(i, i + chunkSize);
-                    addLog(`Analyzing batch ${i / chunkSize + 1}/${Math.ceil(top20.length / chunkSize)}...`);
+                    const batchNum = Math.floor(i / chunkSize) + 1;
+                    addLog(`Analyzing batch ${batchNum}/${totalBatches}...`);
+                    setDeepAnalysisProgress({ current: batchNum, total: totalBatches });
 
                     const promises = chunk.map(job =>
                         fetch('/api/analyze-job', {
@@ -358,12 +501,31 @@ export function JobDashboard({ apiKeys, onBack }) {
                             .catch(err => console.error(`Failed to analyze ${job.title}`, err))
                     );
 
-                    await Promise.all(promises); // Wait for chunk to finish before next (pacing)
+                    await Promise.all(promises);
                 }
 
+                // Final sort ONCE after all batches complete (prevents scroll jumps)
+                setJobs(currentJobs => {
+                    return [...currentJobs].sort((a, b) => {
+                        const scoreA = a.analysis?.fit_score || a.match_score;
+                        const scoreB = b.analysis?.fit_score || b.match_score;
+                        return scoreB - scoreA;
+                    });
+                });
+
+                setDeepAnalysisProgress(null);
                 addLog("✨ AI Curation Complete. Jobs sorted by Fit Score.");
+                // Refresh token balance from server after AI analysis
+                refreshTokens();
             }
             // ---- END DEEP ANALYSIS ----
+
+            // Refresh tokens after search (server deducted during scan)
+            refreshTokens();
+
+            if (initialMatches.length === 0) {
+                setSearchError('No matching jobs found in your specified location or remote. Try broadening your search or adjusting your skills.');
+            }
 
         } catch (err) {
             const hasPartialResults = jobs.length > 0;
@@ -379,22 +541,36 @@ export function JobDashboard({ apiKeys, onBack }) {
 
     // P0-2: Clear all data function
     const clearAllData = () => {
-        if (confirm('Clear all saved data including profile and results?')) {
-            localStorage.removeItem('jobbot_profile');
-            localStorage.removeItem('jobbot_results');
-            localStorage.removeItem('jobbot_saved_jobs');
-            setProfile(null);
-            setJobs([]);
-            setSavedJobIds(new Set());
-            setExperienceYears(2);
-            setJobTitle('');
-            addLog('All data cleared');
+        if (!confirmClear) {
+            setConfirmClear(true);
+            setTimeout(() => setConfirmClear(false), 3000); // Reset after 3s
+            return;
         }
+        setConfirmClear(false);
+        localStorage.removeItem('jobbot_profile');
+        localStorage.removeItem('jobbot_results');
+        localStorage.removeItem('jobbot_saved_jobs');
+        localStorage.removeItem('jobbot_saved_jobs_data');
+        setProfile(null);
+        setJobs([]);
+        setSavedJobIds(new Set());
+        setSavedJobsData([]);
+        setExperienceYears(2);
+        setJobTitle('');
+        setActiveTab('matches');
+        setSearchError(null);
+        setLogs([{
+            message: 'All data cleared. Waiting for new instructions.',
+            time: new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' })
+        }]);
+        toast('All data cleared.', 'success');
     };
+
+    const isPaywalled = dailyScanCount > FREE_DAILY_SCANS && tokenBalance <= 0;
 
     const displayedJobs = (() => {
         let list = activeTab === 'saved'
-            ? jobs.filter(j => savedJobIds.has(j.apply_url))
+            ? savedJobsData
             : [...jobs];
 
         if (sortBy === 'latest') {
@@ -439,15 +615,40 @@ export function JobDashboard({ apiKeys, onBack }) {
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2 text-[11px] text-gray-500 bg-white/60 p-2 rounded-lg border border-gray-100 shadow-sm">
                             <ShieldCheck className="w-3.5 h-3.5 text-green-600" />
-                            <span>Anonymous & Secure: No email, no stored resume.</span>
+                            <span>Privacy First: Resumes are processed in-memory and not used for AI training.</span>
                         </div>
                         <div className="flex items-center gap-2 text-[11px] text-gray-500 bg-white/60 p-2 rounded-lg border border-gray-100 shadow-sm">
                             <Clock className="w-3.5 h-3.5 text-blue-600" />
-                            <span>Deep Scan: Takes 1-2 mins for best results.</span>
+                            <span>AI Analysis: Semantic matching takes 1-2 mins to process 10,000+ jobs.</span>
                         </div>
                     </div>
 
-                    <ResumeStrength profile={profile} />
+                    <ResumeStrength profile={profile} onTokensUpdated={refreshTokens} />
+
+                    {/* Token Balance Card */}
+                    <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-4 shadow-sm">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="text-xs font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5" />
+                                JobBot Tokens
+                            </div>
+                            <div className="text-2xl font-black text-indigo-600">{tokenBalance}</div>
+                        </div>
+                        <div className="text-[11px] text-indigo-500 mb-3">
+                            {dailyScanCount < FREE_DAILY_SCANS
+                                ? `${FREE_DAILY_SCANS - dailyScanCount} free scans remaining today`
+                                : tokenBalance > 0
+                                    ? `${tokenBalance} tokens remaining`
+                                    : 'No tokens — purchase to continue scanning'}
+                        </div>
+                        <button
+                            onClick={initiatePayment}
+                            disabled={isPaymentProcessing}
+                            className="w-full py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold rounded-lg hover:from-indigo-500 hover:to-purple-500 transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isPaymentProcessing ? 'Processing...' : 'Get 50 Tokens — ₹399'}
+                        </button>
+                    </div>
 
                     <div className="glass-panel p-6 overflow-hidden relative group">
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
@@ -557,28 +758,31 @@ export function JobDashboard({ apiKeys, onBack }) {
                                             placeholder="Select Country..."
                                         />
 
-                                        {!preferences.remoteOnly && states.length > 0 && (
-                                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
-                                                <Combobox
-                                                    options={states}
-                                                    value={preferences.state}
-                                                    onChange={(val) => setPreferences(prev => ({ ...prev, state: val }))}
-                                                    placeholder="Select State/Province..."
-                                                    searchPlaceholder="Search states..."
-                                                />
-                                            </motion.div>
-                                        )}
-
-                                        {!preferences.remoteOnly && cities.length > 0 && (
-                                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
-                                                <Combobox
-                                                    options={cities}
-                                                    value={preferences.city}
-                                                    onChange={(val) => setPreferences(prev => ({ ...prev, city: val }))}
-                                                    placeholder="Select City (Optional)"
-                                                    searchPlaceholder="Search cities..."
-                                                />
-                                            </motion.div>
+                                        {!preferences.remoteOnly && (states.length > 0 || cities.length > 0) && (
+                                            <div className="flex gap-3">
+                                                {states.length > 0 && (
+                                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="flex-1">
+                                                        <Combobox
+                                                            options={states}
+                                                            value={preferences.state}
+                                                            onChange={(val) => setPreferences(prev => ({ ...prev, state: val }))}
+                                                            placeholder="Select State..."
+                                                            searchPlaceholder="Search states..."
+                                                        />
+                                                    </motion.div>
+                                                )}
+                                                {cities.length > 0 && (
+                                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="flex-1">
+                                                        <Combobox
+                                                            options={cities}
+                                                            value={preferences.city}
+                                                            onChange={(val) => setPreferences(prev => ({ ...prev, city: val }))}
+                                                            placeholder="City (Optional)"
+                                                            searchPlaceholder="Search cities..."
+                                                        />
+                                                    </motion.div>
+                                                )}
+                                            </div>
                                         )}
 
                                         <div
@@ -590,12 +794,41 @@ export function JobDashboard({ apiKeys, onBack }) {
                                             </div>
                                             <span className={`text-xs font-medium select-none ${preferences.remoteOnly ? 'text-blue-700' : 'text-gray-600'}`}>Global Remote Only</span>
                                         </div>
+
+                                        {/* Super Search Toggle */}
+                                        <div
+                                            className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${tokenBalance < 2
+                                                ? 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'
+                                                : superSearch
+                                                    ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 cursor-pointer'
+                                                    : 'bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer'
+                                                }`}
+                                            onClick={() => tokenBalance >= 2 && setSuperSearch(!superSearch)}
+                                        >
+                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${superSearch ? 'bg-amber-500 border-amber-500' : 'border-gray-300 bg-white'}`}>
+                                                {superSearch && <Check className="w-3.5 h-3.5 text-white" />}
+                                            </div>
+                                            <div className="flex-1">
+                                                <span className={`text-xs font-medium select-none ${superSearch ? 'text-amber-700' : 'text-gray-600'}`}>⚡ Super Search</span>
+                                                <span className="text-[10px] text-gray-400 ml-1">
+                                                    {tokenBalance < 2 ? '(need 2 tokens)' : '(2 tokens per scan, 3× sources)'}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div className="pt-4 flex gap-3">
                                         <Button onClick={() => setProfile(null)} variant="outline" size="sm" className="w-1/3 text-xs border-gray-200 text-gray-600 hover:bg-gray-50">Reset</Button>
                                         <Button onClick={findJobs} isLoading={isMatching} className="w-2/3 text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/30">
-                                            Initialize Scan
+                                            {!isSignedIn
+                                                ? '🔒 Sign in to Scan'
+                                                : superSearch
+                                                    ? tokenBalance >= 2 ? 'Super Scan (2 tokens)' : '🔒 Need 2 Tokens'
+                                                    : dailyScanCount < FREE_DAILY_SCANS
+                                                        ? `Initialize Scan (${FREE_DAILY_SCANS - dailyScanCount} free)`
+                                                        : tokenBalance > 0
+                                                            ? `Scan (1 token)`
+                                                            : '🔒 Get Tokens to Scan'}
                                         </Button>
                                     </div>
                                 </div>
@@ -688,77 +921,116 @@ export function JobDashboard({ apiKeys, onBack }) {
                     </div>
 
                     <div className="space-y-4">
-                        {isMatching && (
+                        {isMatching && !deepAnalysisProgress && (
                             <ScanningRadar />
                         )}
 
-                        {searchError && !isMatching && (
+                        {
+                            searchError && !isMatching && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3"
+                                >
+                                    <div className="text-amber-500 mt-0.5 text-lg">{searchError.type === 'resume' ? '📄' : '⚠️'}</div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm text-amber-800 font-medium">{searchError.message || searchError}</p>
+                                        <div className="flex gap-2 mt-3">
+                                            {searchError.canRetry && (
+                                                <button
+                                                    onClick={() => { setSearchError(null); findJobs(); }}
+                                                    className="text-xs px-3 py-1.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium"
+                                                >
+                                                    Retry Search
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={() => setSearchError(null)}
+                                                className="text-xs px-3 py-1.5 text-amber-700 hover:bg-amber-100 rounded-lg transition-colors"
+                                            >
+                                                Dismiss
+                                            </button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )
+                        }
+
+                        {/* Deep Analysis Progress Banner */}
+                        {deepAnalysisProgress && (
                             <motion.div
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3"
+                                className="sticky top-2 z-40 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl px-5 py-3.5 shadow-lg shadow-indigo-500/25 flex items-center gap-4"
                             >
-                                <div className="text-amber-500 mt-0.5 text-lg">{searchError.type === 'resume' ? '📄' : '⚠️'}</div>
+                                <div className="relative">
+                                    <div className="w-8 h-8 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                                    <Sparkles className="w-3.5 h-3.5 text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                                </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-amber-800 font-medium">{searchError.message}</p>
-                                    <div className="flex gap-2 mt-3">
-                                        {searchError.canRetry && (
-                                            <button
-                                                onClick={() => { setSearchError(null); findJobs(); }}
-                                                className="text-xs px-3 py-1.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium"
-                                            >
-                                                Retry Search
-                                            </button>
-                                        )}
-                                        <button
-                                            onClick={() => setSearchError(null)}
-                                            className="text-xs px-3 py-1.5 text-amber-700 hover:bg-amber-100 rounded-lg transition-colors"
-                                        >
-                                            Dismiss
-                                        </button>
-                                    </div>
+                                    <div className="text-sm font-semibold">AI Deep Analysis in Progress...</div>
+                                    <div className="text-xs text-white/70">Batch {deepAnalysisProgress.current} of {deepAnalysisProgress.total} — Scores will re-sort when complete</div>
+                                </div>
+                                <div className="text-xs font-mono bg-white/20 rounded-lg px-2.5 py-1">
+                                    {deepAnalysisProgress.current}/{deepAnalysisProgress.total}
                                 </div>
                             </motion.div>
                         )}
-
-                        {!isMatching && displayedJobs.length === 0 && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="text-center py-20 px-6 rounded-3xl border border-dashed border-gray-200 bg-gray-50/50"
-                            >
-                                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-100">
-                                    {activeTab === 'saved' ? (
-                                        <Bookmark className="w-8 h-8 text-gray-300" />
-                                    ) : (
-                                        <Search className="w-8 h-8 text-gray-300" />
-                                    )}
-                                </div>
-                                <h3 className="text-gray-900 font-medium mb-1">
-                                    {activeTab === 'saved' ? 'No Saved Jobs Yet' : 'Ready to Hunt'}
-                                </h3>
-                                <p className="text-sm text-gray-500 max-w-xs mx-auto mb-6">
-                                    {activeTab === 'saved'
-                                        ? 'Jobs you bookmark will appear here for easy access.'
-                                        : 'Upload your resume context above to activate the autonomous agent.'}
-                                </p>
-                            </motion.div>
-                        )}
-
-                        <AnimatePresence>
-                            {displayedJobs.map((job, i) => (
-                                <JobCard
-                                    key={i}
-                                    job={job}
-                                    profile={profile}
-                                    apiKeys={apiKeys}
-                                    onSave={toggleSaveJob}
-                                    isSaved={savedJobIds.has(job.apply_url)}
-                                />
-                            ))}
-                        </AnimatePresence>
                     </div>
                 </div>
+
+                <AnimatePresence>
+                    {displayedJobs.map((job, i) => {
+                        const shouldBlur = isPaywalled && activeTab === 'matches' && i >= FREE_VISIBLE_JOBS;
+                        if (shouldBlur && i === FREE_VISIBLE_JOBS) {
+                            // Show paywall CTA once at the blur boundary
+                            return (
+                                <div key="paywall-cta">
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="relative rounded-2xl overflow-hidden mb-4"
+                                    >
+                                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white z-10 flex flex-col items-center justify-center">
+                                            <Lock className="w-8 h-8 text-indigo-500 mb-3" />
+                                            <h3 className="text-lg font-bold text-gray-900 mb-1">+{displayedJobs.length - FREE_VISIBLE_JOBS} more matches found</h3>
+                                            <p className="text-sm text-gray-500 mb-4">Unlock all results with tokens</p>
+                                            <button
+                                                onClick={initiatePayment}
+                                                disabled={isPaymentProcessing}
+                                                className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-bold rounded-full hover:from-indigo-500 hover:to-purple-500 transition-all shadow-lg shadow-indigo-500/25 disabled:opacity-50"
+                                            >
+                                                {isPaymentProcessing ? 'Processing...' : 'Unlock All — Get 50 Tokens for ₹399'}
+                                            </button>
+                                        </div>
+                                        <div className="filter blur-md pointer-events-none">
+                                            <JobCard
+                                                job={job}
+                                                profile={profile}
+                                                apiKeys={apiKeys}
+                                                onSave={toggleSaveJob}
+                                                isSaved={false}
+                                                onTokensUpdated={refreshTokens}
+                                            />
+                                        </div>
+                                    </motion.div>
+                                </div>
+                            );
+                        }
+                        if (shouldBlur) return null; // Hide remaining blurred cards
+                        return (
+                            <JobCard
+                                key={job.id || job.apply_url || `job-${i}`}
+                                job={job}
+                                profile={profile}
+                                apiKeys={apiKeys}
+                                onSave={toggleSaveJob}
+                                isSaved={savedJobIds.has(job.apply_url)}
+                                onTokensUpdated={refreshTokens}
+                            />
+                        );
+                    })}
+                </AnimatePresence>
             </div>
 
             {/* Fixed Loading Toast - visible from any scroll position */}
@@ -776,9 +1048,13 @@ export function JobDashboard({ apiKeys, onBack }) {
                                 <Sparkles className="w-4 h-4 text-blue-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <div className="text-sm font-semibold text-gray-900 mb-1">Scanning Job Market...</div>
+                                <div className="text-sm font-semibold text-gray-900 mb-1">
+                                    {deepAnalysisProgress ? 'AI Deep Analysis...' : 'Scanning Job Market...'}
+                                </div>
                                 <div className="text-[11px] text-gray-500 truncate">
-                                    {logs.length > 0 ? logs[logs.length - 1].message : 'Initializing search agent...'}
+                                    {deepAnalysisProgress
+                                        ? `Analyzing batch ${deepAnalysisProgress.current}/${deepAnalysisProgress.total}...`
+                                        : logs.length > 0 ? logs[logs.length - 1].message : 'Initializing search agent...'}
                                 </div>
                             </div>
                         </div>
