@@ -1,6 +1,8 @@
 import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css';
 import { ToastProvider } from '@/components/ui/Toast';
+import { Analytics } from '@vercel/analytics/react';
+
 
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://midasmatch.com'),
@@ -41,6 +43,7 @@ export default function RootLayout({ children }) {
         <body suppressHydrationWarning>
           <ToastProvider>
             {children}
+            <Analytics />
           </ToastProvider>
         </body>
       </html>
