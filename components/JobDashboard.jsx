@@ -37,7 +37,7 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [tokenBalance, setTokenBalance] = useState(0);
     const [dailyScanCount, setDailyScanCount] = useState(0);
     const FREE_DAILY_SCANS = 3;
-    const FREE_VISIBLE_JOBS = 5;
+    const FREE_VISIBLE_JOBS = 4;
     const [superSearch, setSuperSearch] = useState(false);
     const [isAdminUser, setIsAdminUser] = useState(false);
     const [tokensLoading, setTokensLoading] = useState(true);
@@ -571,7 +571,9 @@ export function JobDashboard({ apiKeys, onBack }) {
         toast('All data cleared.', 'success');
     };
 
-    const isPaywalled = dailyScanCount > FREE_DAILY_SCANS && tokenBalance <= 0;
+    // Paywall applies to ANY scan (even free ones) if the user has no tokens.
+    // This allows free users to see 4 jobs, proving value before asking them to pay for the rest.
+    const isPaywalled = !isAdminUser && tokenBalance <= 0;
 
     const displayedJobs = (() => {
         let list = activeTab === 'saved'
@@ -640,19 +642,22 @@ export function JobDashboard({ apiKeys, onBack }) {
                             <div className="text-2xl font-black text-indigo-600">{tokenBalance}</div>
                         </div>
                         <div className="text-[11px] text-indigo-500 mb-3">
-                            {dailyScanCount < FREE_DAILY_SCANS
-                                ? `${FREE_DAILY_SCANS - dailyScanCount} free scans remaining today`
-                                : tokenBalance > 0
-                                    ? `${tokenBalance} tokens remaining`
-                                    : 'No tokens — purchase to continue scanning'}
+                            {isAdminUser ? 'Unlimited access (Admin)' :
+                                dailyScanCount < FREE_DAILY_SCANS
+                                    ? `${FREE_DAILY_SCANS - dailyScanCount} free scans remaining today`
+                                    : tokenBalance > 0
+                                        ? `${tokenBalance} tokens remaining`
+                                        : 'No tokens — purchase to unlock full features'}
                         </div>
-                        <button
-                            onClick={initiatePayment}
-                            disabled={isPaymentProcessing}
-                            className="w-full py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold rounded-lg hover:from-indigo-500 hover:to-purple-500 transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isPaymentProcessing ? 'Processing...' : 'Get 50 Tokens — ₹399'}
-                        </button>
+                        {(!isAdminUser && (tokenBalance > 0 || dailyScanCount >= FREE_DAILY_SCANS)) && (
+                            <button
+                                onClick={initiatePayment}
+                                disabled={isPaymentProcessing}
+                                className="w-full py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold rounded-lg hover:from-indigo-500 hover:to-purple-500 transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isPaymentProcessing ? 'Processing...' : 'Get 50 Tokens — ₹399'}
+                            </button>
+                        )}
                     </div>
 
                     <div className="glass-panel p-6 overflow-hidden relative group">
@@ -809,10 +814,10 @@ export function JobDashboard({ apiKeys, onBack }) {
                                         ) : (
                                             <div
                                                 className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${(!isAdminUser && tokenBalance < 2)
-                                                        ? 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'
-                                                        : superSearch
-                                                            ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 cursor-pointer'
-                                                            : 'bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer'
+                                                    ? 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'
+                                                    : superSearch
+                                                        ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 cursor-pointer'
+                                                        : 'bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer'
                                                     }`}
                                                 onClick={() => (isAdminUser || tokenBalance >= 2) && setSuperSearch(!superSearch)}
                                             >
