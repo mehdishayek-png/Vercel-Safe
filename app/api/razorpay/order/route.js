@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
+import { auth } from '@clerk/nextjs/server';
 
 export async function POST(request) {
     try {
+        const { userId } = await auth();
+        if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         // Initialize Razorpay
         const razorpay = new Razorpay({
             key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
