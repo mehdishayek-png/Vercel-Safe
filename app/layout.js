@@ -1,7 +1,7 @@
 import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css';
 import { ToastProvider } from '@/components/ui/Toast';
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from '@vercel/analytics/next';
 
 
 export const metadata = {
