@@ -249,7 +249,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
                     {/* Actions & Score */}
                     <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-4 shrink-0 sm:border-0 border-t border-gray-100 sm:pt-0 pt-4" style={{ transform: "translateZ(20px)" }}>
                         <div className="flex items-center gap-3 sm:flex-col sm:items-center">
-                            <MatchRing score={job.match_score} />
+                            <MatchRing score={analysis?.fit_score || job.match_score} />
                             <div className="text-[10px] sm:text-[9px] text-gray-500 sm:text-gray-400 uppercase tracking-widest font-bold sm:font-medium sm:mt-1">Match Fit</div>
                         </div>
 
@@ -284,10 +284,10 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
                 {/* Deep Analysis Trigger - Clean & Simple */}
                 <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
                     {/* AI Score Badge */}
-                    {job.match_score && job.analysis?.fit_score ? (
+                    {analysis?.fit_score ? (
                         <div className={`text-xs font-bold px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 flex items-center gap-1`}>
                             <Sparkles className="w-3 h-3" />
-                            AI Score: {job.match_score}
+                            AI Score: {analysis.fit_score}
                         </div>
                     ) : (
                         <div className="text-xs text-gray-400">Heuristic Match</div>
