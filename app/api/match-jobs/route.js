@@ -46,7 +46,11 @@ export async function POST(request) {
     // Deduct: free scan or token
     if (!scanCheck.adminPass) {
       if (scanCheck.isFree) {
-        await incrementDailyScan(userId);
+        if (scanCheck.isSuperSearchFree) {
+          await import('@/lib/tokens').then(m => m.incrementWeeklySuperScan(userId));
+        } else {
+          await incrementDailyScan(userId);
+        }
       } else {
         const deducted = await deductToken(userId, scanCheck.tokenCost || 1);
         if (!deducted.success) {

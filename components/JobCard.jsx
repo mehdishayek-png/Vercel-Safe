@@ -114,7 +114,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
                 // --- PREMIUM TOKEN LOGIC: Deep Scans ---
                 const usedCount = parseInt(localStorage.getItem('midas_ds_count') || '0', 10);
 
-                if (usedCount >= 3) {
+                if (usedCount >= 100) { // Paywall removed for today (was 3)
                     // Check if user has purchased tokens
                     const tokenBalance = parseInt(localStorage.getItem('midas_tokens') || '0', 10);
                     if (tokenBalance <= 0) {

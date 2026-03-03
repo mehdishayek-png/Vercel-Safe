@@ -37,7 +37,7 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [tokenBalance, setTokenBalance] = useState(0);
     const [dailyScanCount, setDailyScanCount] = useState(0);
     const FREE_DAILY_SCANS = 3;
-    const FREE_VISIBLE_JOBS = 4;
+    const FREE_VISIBLE_JOBS = 100; // Removed paywall for today as requested
     const [superSearch, setSuperSearch] = useState(false);
     const [isAdminUser, setIsAdminUser] = useState(false);
     const [tokensLoading, setTokensLoading] = useState(true);
