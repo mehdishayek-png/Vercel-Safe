@@ -387,14 +387,14 @@ export function JobDashboard({ apiKeys, onBack }) {
 
         // Token / scan limit check — server enforces limits too,
         // but we check client-side first for instant feedback
-        if (superSearch && tokenBalance < 2) {
+        if (superSearch && tokenBalance < 2 && weeklySuperScanCount >= 1 && !isAdminUser) {
             setSearchError('Super Search requires 2 tokens. Purchase tokens or disable Super Search.');
             setIsMatching(false);
             return;
         }
         const isFreeScan = !superSearch && dailyScanCount < FREE_DAILY_SCANS;
-        if (!isFreeScan && !superSearch && tokenBalance <= 0) {
-            setSearchError('You\'ve used your 3 free daily scans. Purchase tokens to continue searching.');
+        if (!isFreeScan && !superSearch && tokenBalance <= 0 && !isAdminUser) {
+            setSearchError('You\'ve used your free daily scans. Purchase tokens to continue searching.');
             setIsMatching(false);
             return;
         }
