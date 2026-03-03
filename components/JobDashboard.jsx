@@ -33,10 +33,10 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [confirmClear, setConfirmClear] = useState(false);
     const toast = useToast();
 
-    // Token / Credit System — server-verified with localStorage fallback for display
     const [tokenBalance, setTokenBalance] = useState(0);
     const [dailyScanCount, setDailyScanCount] = useState(0);
-    const FREE_DAILY_SCANS = 3;
+    const [weeklySuperScanCount, setWeeklySuperScanCount] = useState(0);
+    const FREE_DAILY_SCANS = 100; // Paywall removed for today
     const FREE_VISIBLE_JOBS = 100; // Removed paywall for today as requested
     const [superSearch, setSuperSearch] = useState(false);
     const [isAdminUser, setIsAdminUser] = useState(false);
@@ -50,6 +50,7 @@ export function JobDashboard({ apiKeys, onBack }) {
             if (data.source !== 'anonymous' && data.source !== 'local') {
                 setTokenBalance(data.tokens);
                 setDailyScanCount(data.dailyScansUsed);
+                setWeeklySuperScanCount(data.weeklySuperScansUsed || 0);
                 if (data.isAdmin) setIsAdminUser(true);
                 // Sync to localStorage as display cache
                 localStorage.setItem('midas_tokens', data.tokens.toString());
@@ -813,13 +814,13 @@ export function JobDashboard({ apiKeys, onBack }) {
                                             </div>
                                         ) : (
                                             <div
-                                                className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${(!isAdminUser && tokenBalance < 2)
+                                                className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${(!isAdminUser && tokenBalance < 2 && weeklySuperScanCount >= 1)
                                                     ? 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'
                                                     : superSearch
                                                         ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 cursor-pointer'
                                                         : 'bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer'
                                                     }`}
-                                                onClick={() => (isAdminUser || tokenBalance >= 2) && setSuperSearch(!superSearch)}
+                                                onClick={() => (isAdminUser || tokenBalance >= 2 || weeklySuperScanCount < 1) && setSuperSearch(!superSearch)}
                                             >
                                                 <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${superSearch ? 'bg-amber-500 border-amber-500' : 'border-gray-300 bg-white'}`}>
                                                     {superSearch && <Check className="w-3.5 h-3.5 text-white" />}
@@ -827,7 +828,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                                                 <div className="flex-1">
                                                     <span className={`text-xs font-medium select-none ${superSearch ? 'text-amber-700' : 'text-gray-600'}`}>⚡ Super Search</span>
                                                     <span className="text-[10px] text-gray-400 ml-1">
-                                                        {isAdminUser ? '(admin — unlimited)' : tokenBalance < 2 ? '(need 2 tokens)' : '(2 tokens per scan, 3× sources)'}
+                                                        {isAdminUser ? '(admin — unlimited)' : weeklySuperScanCount < 1 ? '(1 free scan this week)' : tokenBalance < 2 ? '(need 2 tokens)' : '(2 tokens per scan, 3× sources)'}
                                                     </span>
                                                 </div>
                                             </div>
@@ -840,7 +841,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                                             {!isSignedIn
                                                 ? '🔒 Sign in to Scan'
                                                 : superSearch
-                                                    ? tokenBalance >= 2 ? 'Super Scan (2 tokens)' : '🔒 Need 2 Tokens'
+                                                    ? isAdminUser || weeklySuperScanCount < 1 ? 'Super Scan (Free)' : tokenBalance >= 2 ? 'Super Scan (2 tokens)' : '🔒 Need 2 Tokens'
                                                     : dailyScanCount < FREE_DAILY_SCANS
                                                         ? `Initialize Scan (${FREE_DAILY_SCANS - dailyScanCount} free)`
                                                         : tokenBalance > 0

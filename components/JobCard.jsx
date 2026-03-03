@@ -299,7 +299,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
                     >
                         {(() => {
                             const usedCount = typeof window !== 'undefined' ? parseInt(localStorage.getItem('midas_ds_count') || '0', 10) : 0;
-                            const isPaywalled = usedCount >= 3 && !analysis;
+                            const isPaywalled = usedCount >= 100 && !analysis;
 
                             if (isPaywalled) {
                                 return (
