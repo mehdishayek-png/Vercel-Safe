@@ -79,16 +79,24 @@ export function JobDashboard({ apiKeys, onBack }) {
     // Preferences State
     const [preferences, setPreferences] = useState({ country: 'US', state: '', city: '', remoteOnly: false });
     const [newSkill, setNewSkill] = useState('');
-    const [experienceYears, setExperienceYears] = useState(2);
+    const [experienceYears, setExperienceYears] = useState(0);
     const [jobTitle, setJobTitle] = useState('');
 
+    const resultsRef = useRef(null);
+    const logsEndRef = useRef(null);
+
+    useEffect(() => {
+        if (logsEndRef.current) {
+            logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [logs]);
     // Data State
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
 
     const fileInputRef = useRef(null);
-    const resultsRef = useRef(null);
+
 
     // P0-2: LocalStorage Persistence - Load on mount
     useEffect(() => {
@@ -901,7 +909,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                                     </span>
                                 </motion.div>
                             ))}
-                            <div ref={el => el?.scrollIntoView({ behavior: 'smooth' })} />
+                            <div ref={logsEndRef} />
                         </div>
                     </div>
                 </motion.div>
