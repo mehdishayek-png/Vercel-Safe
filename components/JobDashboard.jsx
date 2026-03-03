@@ -598,7 +598,16 @@ export function JobDashboard({ apiKeys, onBack }) {
                 return parseDate(b.date_posted || b.posted_date) - parseDate(a.date_posted || a.posted_date);
             });
         } else {
-            list.sort((a, b) => (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0));
+            // Preserve server-provided order (which includes location tie-breakers) when scores are tied
+            const listWithIndex = list.map((item, index) => ({ item, index }));
+            listWithIndex.sort((A, B) => {
+                const a = A.item;
+                const b = B.item;
+                const scoreDiff = (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0);
+                if (scoreDiff !== 0) return scoreDiff;
+                return A.index - B.index;
+            });
+            list = listWithIndex.map(x => x.item);
         }
         return list;
     })();
