@@ -65,7 +65,14 @@ export async function POST(request) {
     const onProgress = (msg) => logs.push(msg);
 
     // Fetch jobs with preferences
-    const { jobs: allJobs, sources } = await fetchAllJobs(profile, apiKeys, onProgress, preferences);
+    const {
+      jobs: allJobs,
+      sources,
+      queries,
+      roleAnchor,
+      dominantPlatform,
+      source: querySource
+    } = await fetchAllJobs(profile, apiKeys, onProgress, preferences);
 
     // =========================================================
     // PRE-FILTER: narrows the pool before Panda sees it.
@@ -92,6 +99,12 @@ export async function POST(request) {
       filterSummary,
       sources,
       logs,
+      queryMetadata: {
+        queries,
+        roleAnchor,
+        dominantPlatform,
+        source: querySource
+      }
     });
   } catch (e) {
     console.error('Match jobs error:', e);
