@@ -55,6 +55,31 @@ const job6_helpdesk = {
     date_posted: new Date().toISOString()
 };
 
+// These are the EXACT matches from the live app that should NOT rank highly
+const job7_staff_engineer = {
+    title: 'Staff Engineer',
+    summary: 'Get to know Okta. We free everyone to safely use any technology, anywhere, on any device or app. Our flexible and neutral products, Okta Platform and Auth0 Platform, provide secure access, authentication, and automation, placing identity at the core of business security and growth.',
+    company: 'Okta, Inc.',
+    location: 'Bengaluru, Karnataka, India',
+    date_posted: new Date(Date.now() - 17 * 86400000).toISOString()
+};
+
+const job8_swe_test = {
+    title: 'Staff Software Engineer in Test',
+    summary: 'Get to know Okta. We free everyone to safely use any technology, anywhere, on any device or app. Our flexible and neutral products, Okta Platform and Auth0 Platform, provide secure access, authentication, and automation.',
+    company: 'Okta, Inc.',
+    location: 'Bengaluru, Karnataka, India',
+    date_posted: new Date(Date.now() - 22 * 86400000).toISOString()
+};
+
+const job9_iam_engineer = {
+    title: 'Senior Okta IAM Engineer (Identity)',
+    summary: 'Senior Okta IAM Engineer Identity & Application Security. Responsible for designing, implementing, and supporting secure, scalable identity and access management solutions. SSO, SAML, authentication.',
+    company: 'Qwickly Ventures',
+    location: 'Hyderabad, Telangana, India',
+    date_posted: new Date(Date.now() - 8 * 86400000).toISOString()
+};
+
 const allJobs = [
     { label: 'Basic Support', job: job1_basic },
     { label: 'SaaS Integration Engineer', job: job2_saas_integration },
@@ -62,6 +87,9 @@ const allJobs = [
     { label: 'Strategic CSM (B2B SaaS)', job: job4_strategic_cx },
     { label: 'Technical Account Manager', job: job5_tam },
     { label: 'Help Desk Agent (L1)', job: job6_helpdesk },
+    { label: '❌ Staff Engineer @Okta', job: job7_staff_engineer },
+    { label: '❌ Staff SWE in Test @Okta', job: job8_swe_test },
+    { label: '❌ Sr IAM Engineer', job: job9_iam_engineer },
 ];
 
 async function run() {
