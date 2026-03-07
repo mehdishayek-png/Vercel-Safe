@@ -111,31 +111,8 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
             // Only fire the calculation if we haven't already fetched it
             if (!analysis && !isLoadingAnalysis) {
 
-                // --- PREMIUM TOKEN LOGIC: Deep Scans ---
-                const usedCount = parseInt(localStorage.getItem('midas_ds_count') || '0', 10);
-
-                if (usedCount >= 100) { // Paywall removed for today (was 3)
-                    // Check if user has purchased tokens
-                    const tokenBalance = parseInt(localStorage.getItem('midas_tokens') || '0', 10);
-                    if (tokenBalance <= 0) {
-                        // Paywalled -> Show Blur Teaser
-                        setAnalysis({
-                            isBlurredTeaser: true,
-                            fit_score: 85,
-                            strong_signals: [
-                                "Candidate possesses the exact domain experience required for the role.",
-                                "Shows strong potential and matches the seniority tier perfectly."
-                            ],
-                            gaps: [
-                                "Missing one or two tertiary skills that can easily be learned on the job."
-                            ],
-                            salary_estimate: "Analyzed based on local market factors...",
-                            verdict: "A very strong match for this position. The AI highly recommends prioritizing this application.",
-                        });
-                        setIsExpanded(true);
-                        return; // Do NOT call the API or charge a token
-                    }
-                }
+                // Auth/paywall is handled server-side (admin bypass included)
+                // No client-side localStorage check — server is the source of truth
 
                 // Proceed with deep scan
                 setIsLoadingAnalysis(true);
