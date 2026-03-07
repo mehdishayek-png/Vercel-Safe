@@ -10,11 +10,13 @@ import { Header } from './Header';
 import { GuideModal } from './GuideModal';
 import { ResumeStrength } from './ResumeStrength';
 import { ScanningRadar } from './ScanningRadar';
+import { FilterPanel } from './FilterPanel';
 import { getAllCountries, getStatesByCountry, getCitiesByState, getCountryName } from '../lib/location-data';
 import { Country, State, City } from 'country-state-city';
 import { useRazorpay } from '../lib/useRazorpay';
 import { useToast } from './ui/Toast';
 import { useAuth } from '@clerk/nextjs';
+import { useFilters } from '../hooks/use-filters';
 
 export function JobDashboard({ apiKeys, onBack }) {
     const { isSignedIn } = useAuth();
@@ -41,6 +43,14 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [superSearch, setSuperSearch] = useState(false);
     const [isAdminUser, setIsAdminUser] = useState(false);
     const [tokensLoading, setTokensLoading] = useState(true);
+
+    // Filter state (feature-flagged pre-filter system)
+    const {
+        filters, flags,
+        isActive: filtersActive, activeCount: filterCount, summary: filterSummary,
+        toggleWorkArrangement, toggleWorkType, toggleRegion, toggleCompanySize,
+        setSalaryMin, setSalaryCurrency, setIncludeMissingSalary, reset: resetFilters,
+    } = useFilters();
 
     // Fetch token balance from server
     const refreshTokens = useCallback(async () => {
@@ -430,7 +440,8 @@ export function JobDashboard({ apiKeys, onBack }) {
                     preferences: {
                         ...preferences,
                         location: locationQuery,
-                        superSearch
+                        superSearch,
+                        filters, // pre-filter config — passthrough when ADVANCED_FILTERS flag is off
                     }
                 })
             });
@@ -677,6 +688,23 @@ export function JobDashboard({ apiKeys, onBack }) {
                             </button>
                         )}
                     </div>
+
+                    {/* Filter Panel — feature-flagged pre-filter system */}
+                    <FilterPanel
+                        filters={filters}
+                        flags={flags}
+                        isActive={filtersActive}
+                        activeCount={filterCount}
+                        summary={filterSummary}
+                        toggleWorkArrangement={toggleWorkArrangement}
+                        toggleWorkType={toggleWorkType}
+                        toggleRegion={toggleRegion}
+                        toggleCompanySize={toggleCompanySize}
+                        setSalaryMin={setSalaryMin}
+                        setSalaryCurrency={setSalaryCurrency}
+                        setIncludeMissingSalary={setIncludeMissingSalary}
+                        reset={resetFilters}
+                    />
 
                     <div className="glass-panel p-6 overflow-hidden relative group">
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />

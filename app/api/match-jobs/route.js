@@ -4,6 +4,8 @@ import { fetchAllJobs } from '@/lib/job-fetcher';
 import { matchJobs } from '@/lib/matcher';
 import { canScan, incrementDailyScan, deductToken } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
+import { getFeatureFlags } from '@/lib/feature-flags';
+import { preFilterJobs, validateFilters } from '@/lib/pre-filter';
 
 export const maxDuration = 90; // Generous enough for batching, tight enough to catch hangs
 
@@ -63,14 +65,31 @@ export async function POST(request) {
     const onProgress = (msg) => logs.push(msg);
 
     // Fetch jobs with preferences
-    const { jobs, sources } = await fetchAllJobs(profile, apiKeys, onProgress, preferences);
+    const { jobs: allJobs, sources } = await fetchAllJobs(profile, apiKeys, onProgress, preferences);
+
+    // =========================================================
+    // PRE-FILTER: narrows the pool before Panda sees it.
+    // Safe revert: when ADVANCED_FILTERS=false this is a pure
+    // passthrough — Panda gets the full unfiltered pool.
+    // =========================================================
+    const flags = await getFeatureFlags();
+    const filterConfig = validateFilters(preferences?.filters);
+    const { jobs: filteredJobs, totalBefore, totalAfter, filtersApplied, filterSummary } =
+      preFilterJobs(allJobs, filterConfig, flags);
+
+    if (filtersApplied) {
+      onProgress(`🔍 Pre-filter: ${totalBefore} → ${totalAfter} jobs (${filterSummary})`);
+    }
 
     // Match using the reliable pipeline (keyword + LLM hybrid)
-    const matches = await matchJobs(jobs, profile, apiKeys, onProgress, preferences);
+    const matches = await matchJobs(filteredJobs, profile, apiKeys, onProgress, preferences);
 
     return NextResponse.json({
       matches,
-      total: jobs.length,
+      total: allJobs.length,
+      totalAfterFilters: totalAfter,
+      filtersApplied,
+      filterSummary,
       sources,
       logs,
     });
