@@ -351,18 +351,67 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
                                                     {analysis.strong_signals?.map((s, i) => <li key={i}>{s}</li>)}
                                                 </ul>
                                             </div>
-                                            <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                                                <h4 className="text-blue-800 font-medium mb-2 flex items-center gap-2">
-                                                    <Sparkles className="w-3.5 h-3.5" />
-                                                    AI Verdict
-                                                </h4>
-                                                <p className="text-blue-700/80 mb-2">{analysis.verdict}</p>
-                                                <div className="pt-2 border-t border-blue-100 mt-2">
+                                            <div className="bg-blue-50 p-3 rounded-lg border border-blue-100 flex flex-col justify-between">
+                                                <div>
+                                                    <h4 className="text-blue-800 font-medium mb-2 flex items-center gap-2">
+                                                        <Sparkles className="w-3.5 h-3.5" />
+                                                        AI Verdict
+                                                    </h4>
+                                                    <p className="text-blue-700/80 mb-2">{analysis.verdict}</p>
+                                                </div>
+                                                <div className="pt-2 border-t border-blue-100/50 mt-2">
                                                     <span className="text-[10px] uppercase tracking-wider text-blue-500 font-bold">Est. Salary: </span>
                                                     <span className="text-blue-900 font-medium">{analysis.salary_estimate}</span>
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {/* RPG Heuristic Math Breakdown (Scoring Architect) */}
+                                        {!analysis.isBlurredTeaser && job.heuristic_breakdown && (
+                                            <div className="mt-4 border-t border-dashed border-gray-200 pt-4 pb-2">
+                                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                                    <BrainCircuit className="w-4 h-4 text-indigo-400" />
+                                                    Panda Engine Math
+                                                </h4>
+
+                                                <div className="flex flex-col sm:flex-row gap-6">
+                                                    {/* Skill Hits */}
+                                                    <div className="flex-1">
+                                                        <div className="text-[10px] text-gray-400 uppercase font-bold mb-2">Raw Keyword Base ({job.heuristic_breakdown.raw} pts)</div>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {job.heuristic_breakdown.matches?.map((match, idx) => (
+                                                                <span key={idx} className="inline-flex items-center px-2 py-1 rounded bg-indigo-50 border border-indigo-100/50 text-[10px] text-indigo-700 font-medium shadow-sm">
+                                                                    {match.skill}
+                                                                    <span className="ml-1.5 text-indigo-400/80 font-mono">+{match.value}</span>
+                                                                </span>
+                                                            ))}
+                                                            {(!job.heuristic_breakdown.matches || job.heuristic_breakdown.matches.length === 0) && (
+                                                                <span className="text-xs text-gray-400 italic">No direct hard-skill overlaps found.</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Compounding Multipliers */}
+                                                    <div className="flex-1">
+                                                        <div className="text-[10px] text-gray-400 uppercase font-bold mb-2">Compounding Multipliers</div>
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            {Object.entries(job.heuristic_breakdown.multipliers || {}).map(([key, val]) => {
+                                                                const numVal = parseFloat(val);
+                                                                let colorClass = "bg-gray-50 text-gray-600 border-gray-200";
+                                                                if (numVal > 1.0) colorClass = "bg-emerald-50 text-emerald-700 border-emerald-200 shadow-sm";
+                                                                if (numVal < 1.0) colorClass = "bg-rose-50 text-rose-700 border-rose-200";
+                                                                return (
+                                                                    <div key={key} className={`flex justify-between items-center px-2 py-1 rounded border text-[10px] font-medium ${colorClass}`}>
+                                                                        <span className="capitalize">{key}</span>
+                                                                        <span className="font-mono font-bold">{val}x</span>
+                                                                    </div>
+                                                                )
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
 
                                         {analysis.isBlurredTeaser && (
                                             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center p-6 bg-white/40 rounded-xl backdrop-blur-[2px]">
