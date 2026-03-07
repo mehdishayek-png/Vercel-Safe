@@ -6,8 +6,23 @@ import { canScan, incrementDailyScan, deductToken } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 import { getFeatureFlags } from '@/lib/feature-flags';
 import { preFilterJobs, validateFilters } from '@/lib/pre-filter';
+import { z } from 'zod';
 
 export const maxDuration = 90; // Generous enough for batching, tight enough to catch hangs
+
+const ScanPayloadSchema = z.object({
+  profile: z.object({
+    headline: z.string().max(200, "Headline too long").optional().default(""),
+    skills: z.array(z.string().max(100)).max(50, "Maximum of 50 skills allowed"),
+    experience_years: z.number().min(0).max(100).optional().default(0),
+    location: z.string().max(200).optional().default(""),
+  }).passthrough(), // Allow other profile fields but strictly validate these
+  preferences: z.object({
+    superSearch: z.boolean().optional().default(false),
+    filters: z.any().optional(), // validated lower down by validateFilters
+  }).passthrough().optional().default({}),
+  apiKeys: z.any().optional()
+});
 
 export async function POST(request) {
   try {
@@ -29,9 +44,20 @@ export async function POST(request) {
       });
     }
 
-    const { profile, apiKeys, preferences } = await request.json();
+    const rawBody = await request.json();
 
-    if (!profile || !profile.skills?.length) {
+    // ZOD VALIDATION (Security against ReDoS / Payload bloat)
+    const validationResult = ScanPayloadSchema.safeParse(rawBody);
+    if (!validationResult.success) {
+      return NextResponse.json({
+        error: 'Invalid scan payload provided.',
+        details: validationResult.error.errors
+      }, { status: 400 });
+    }
+
+    const { profile, apiKeys, preferences } = validationResult.data;
+
+    if (!profile || !profile.skills || profile.skills.length === 0) {
       return NextResponse.json({ error: 'Profile with skills required' }, { status: 400 });
     }
 
