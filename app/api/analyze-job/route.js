@@ -26,18 +26,22 @@ export async function POST(request) {
             }, { status: 401 });
         }
 
-        const usedCount = await getDeepScanCount(userId);
-        if (usedCount >= FREE_DEEP_SCANS) {
-            // Past free limit — need tokens
-            const deducted = await deductToken(userId, 1);
-            if (!deducted.success) {
-                return NextResponse.json({
-                    error: 'No tokens remaining for deep scans. Purchase tokens to continue.',
-                    paywalled: true
-                }, { status: 403 });
+        const isAdmin = process.env.ADMIN_USER_ID && userId === process.env.ADMIN_USER_ID;
+
+        if (!isAdmin) {
+            const usedCount = await getDeepScanCount(userId);
+            if (usedCount >= FREE_DEEP_SCANS) {
+                // Past free limit — need tokens
+                const deducted = await deductToken(userId, 1);
+                if (!deducted.success) {
+                    return NextResponse.json({
+                        error: 'No tokens remaining for deep scans. Purchase tokens to continue.',
+                        paywalled: true
+                    }, { status: 403 });
+                }
+            } else {
+                await incrementDeepScan(userId);
             }
-        } else {
-            await incrementDeepScan(userId);
         }
 
         const { job, profile, apiKeys } = await request.json();
