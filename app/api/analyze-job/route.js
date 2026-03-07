@@ -9,13 +9,17 @@ export async function POST(request) {
     try {
         const { userId } = await auth();
 
-        // Rate limiting — 10 requests per minute per user
-        const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
-        const rl = await rateLimit(rateLimitId, 10, 60);
-        if (!rl.allowed) {
-            return NextResponse.json({
-                error: `Too many requests. Try again in ${rl.retryAfter} seconds.`
-            }, { status: 429 });
+        const isAdmin = process.env.ADMIN_USER_ID && userId === process.env.ADMIN_USER_ID;
+
+        // Rate limiting — 30 requests per minute per user
+        if (!isAdmin) {
+            const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
+            const rl = await rateLimit(rateLimitId, 30, 60);
+            if (!rl.allowed) {
+                return NextResponse.json({
+                    error: `Too many requests. Try again in ${rl.retryAfter} seconds.`
+                }, { status: 429 });
+            }
         }
 
         // Server-side deep scan enforcement — applies to ALL users
@@ -26,7 +30,6 @@ export async function POST(request) {
             }, { status: 401 });
         }
 
-        const isAdmin = process.env.ADMIN_USER_ID && userId === process.env.ADMIN_USER_ID;
 
         if (!isAdmin) {
             const usedCount = await getDeepScanCount(userId);
