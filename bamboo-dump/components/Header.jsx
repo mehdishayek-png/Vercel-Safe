@@ -1,0 +1,82 @@
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles, HelpCircle } from 'lucide-react';
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { GuideModal } from './GuideModal';
+
+export function Header({ onShowGuide, onClearData }) {
+    const [scrolled, setScrolled] = useState(false);
+    const [showGuide, setShowGuide] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 20);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const handleGuideClick = () => {
+        if (onShowGuide) {
+            onShowGuide();
+        } else {
+            setShowGuide(true);
+        }
+    };
+
+    return (
+        <>
+            <motion.header
+                initial={{ y: -100 }}
+                animate={{ y: 0 }}
+                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+                    ? 'bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-sm py-3'
+                    : 'bg-transparent py-5'
+                    }`}
+            >
+                <div className="container mx-auto px-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                            <Sparkles className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+                            JobBot AI
+                        </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        {onClearData && (
+                            <button
+                                onClick={onClearData}
+                                className="px-3 py-2 text-xs font-medium text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-full transition-all"
+                            >
+                                Clear Data
+                            </button>
+                        )}
+                        <button
+                            onClick={handleGuideClick}
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 bg-white/50 hover:bg-white border border-transparent hover:border-gray-200 rounded-full transition-all"
+                        >
+                            <HelpCircle className="w-4 h-4" />
+                            <span className="hidden sm:inline">How it Works</span>
+                        </button>
+                        <SignedOut>
+                            <SignInButton mode="modal">
+                                <button className="px-5 py-2 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-full shadow-sm transition-all ml-2">
+                                    Sign In
+                                </button>
+                            </SignInButton>
+                        </SignedOut>
+                        <SignedIn>
+                            <div className="ml-2 flex flex-col justify-center">
+                                <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: "w-9 h-9" } }} />
+                            </div>
+                        </SignedIn>
+                    </div>
+                </div>
+            </motion.header>
+
+            <AnimatePresence>
+                {showGuide && <GuideModal onClose={() => setShowGuide(false)} />}
+            </AnimatePresence>
+        </>
+    );
+}

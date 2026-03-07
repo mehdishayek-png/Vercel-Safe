@@ -1,0 +1,582 @@
+// lib/job-fetcher.js — Fetch jobs from all sources (ported from Python)
+
+import { getCachedJobs, cacheJobs, generateSerpCacheKey } from './cache';
+
+const NETWORK_TIMEOUT = 25000;
+
+// Lever companies (India-focused + global)
+const LEVER_COMPANIES = [
+  'meesho', 'cred', 'razorpay', 'groww', 'zerodha', 'phonepe',
+  'swiggy', 'zomato', 'ola', 'flipkart', 'paytm', 'dream11',
+  'slice', 'jupiter', 'fi-money', 'smallcase', 'cleartax',
+  'browserstack', 'postman', 'freshworks', 'zoho', 'chargebee',
+];
+
+const WWR_FEEDS = [
+  'https://weworkremotely.com/categories/remote-programming-jobs.rss',
+  'https://weworkremotely.com/categories/remote-customer-support-jobs.rss',
+  'https://weworkremotely.com/categories/remote-product-jobs.rss',
+  'https://weworkremotely.com/categories/remote-devops-sysadmin-jobs.rss',
+  'https://weworkremotely.com/categories/remote-finance-legal-jobs.rss',
+  'https://weworkremotely.com/categories/remote-business-exec-management-jobs.rss',
+];
+
+const REMOTEOK_FEED = 'https://remoteok.com/remote-jobs.rss';
+const JOBICY_FEED = 'https://jobicy.com/feed/newjobs';
+const SIMPLYHIRED_FEED = 'https://www.simplyhired.com/search/rss';
+
+// ---- RSS Parser (lightweight, no external dep) ----
+function parseRSSItems(xml) {
+  const items = [];
+  const itemRegex = /<item>([\s\S]*?)<\/item>/gi;
+  let match;
+  while ((match = itemRegex.exec(xml)) !== null) {
+    const block = match[1];
+    const get = (tag) => {
+      const m = block.match(new RegExp(`<${tag}[^>]*>(?:<!\\[CDATA\\[)?(.*?)(?:\\]\\]>)?<\\/${tag}>`, 's'));
+      return m ? m[1].trim() : '';
+    };
+    items.push({
+      title: get('title'),
+      link: get('link'),
+      description: get('description'),
+      pubDate: get('pubDate'),
+    });
+  }
+  return items;
+}
+
+function stripHtml(text) {
+  if (!text) return '';
+  return text
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ').trim();
+}
+
+function extractCompanyFromTitle(title) {
+  if (!title) return ['Unknown', title || ''];
+  // "Company: Job Title" or "Company - Job Title"
+  for (const sep of [':', ' - ', ' – ', ' | ']) {
+    const idx = title.indexOf(sep);
+    if (idx > 2 && idx < title.length - 3) {
+      return [title.slice(0, idx).trim(), title.slice(idx + sep.length).trim()];
+    }
+  }
+  return ['Unknown', title];
+}
+
+// ---- Location tagging ----
+const REGION_KEYWORDS = {
+  americas: ['americas', 'north america', 'est ', 'pst ', 'cst ', 'us only', 'usa only', 'eastern time', 'pacific time'],
+  europe: ['emea', 'europe', 'cet ', 'gmt', 'uk only', 'european hours'],
+  asia: ['apac', 'asia', 'ist ', 'india', 'singapore', 'bangalore', 'bengaluru', 'mumbai', 'delhi', 'hyderabad'],
+  global: ['anywhere', 'worldwide', 'global', 'any timezone', 'fully remote', 'work from anywhere'],
+};
+
+function extractLocationTags(text) {
+  if (!text) return ['global'];
+  const lower = text.toLowerCase();
+  const tags = new Set();
+  for (const [region, keywords] of Object.entries(REGION_KEYWORDS)) {
+    for (const kw of keywords) {
+      if (lower.includes(kw)) { tags.add(region); break; }
+    }
+  }
+  return tags.size ? [...tags].sort() : ['global'];
+}
+
+// ---- Fetch RSS ----
+async function fetchRSS(url, sourceName, maxItems = 50) {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), NETWORK_TIMEOUT);
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'JobBot/1.0' },
+    });
+    clearTimeout(timeout);
+
+    if (!res.ok) return [];
+    const xml = await res.text();
+    const items = parseRSSItems(xml);
+
+    return items.slice(0, maxItems).map(item => {
+      const [company, title] = extractCompanyFromTitle(item.title);
+      const summary = stripHtml(item.description).slice(0, 1000);
+      return {
+        title: title || item.title,
+        company,
+        summary,
+        apply_url: item.link,
+        source: sourceName,
+        date_posted: item.pubDate || '',
+        location: '',
+        location_tags: extractLocationTags(`${title} ${summary}`),
+      };
+    });
+  } catch (e) {
+    console.error(`RSS ${sourceName} failed:`, e.message);
+    return [];
+  }
+}
+
+// ---- Fetch Remotive API ----
+async function fetchRemotive() {
+  try {
+    const res = await fetch('https://remotive.com/api/remote-jobs?limit=30', {
+      signal: AbortSignal.timeout(NETWORK_TIMEOUT),
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.jobs || []).map(j => ({
+      title: j.title || '',
+      company: j.company_name || 'Unknown',
+      summary: stripHtml(j.description || '').slice(0, 1000),
+      apply_url: j.url || '',
+      source: 'Remotive',
+      date_posted: j.publication_date || '',
+      location: j.candidate_required_location || '',
+      location_tags: extractLocationTags(`${j.title} ${j.description} ${j.candidate_required_location}`),
+    }));
+  } catch (e) {
+    console.error('Remotive failed:', e.message);
+    return [];
+  }
+}
+
+// ---- Fetch Lever ----
+// Optimized: Parallel batches instead of sequential (cuts 10-15s)
+async function fetchLever(companies = LEVER_COMPANIES, maxPerCompany = 15) {
+  const allJobs = [];
+  const BATCH_SIZE = 5; // Fetch 5 companies in parallel
+
+  for (let i = 0; i < companies.length; i += BATCH_SIZE) {
+    const batch = companies.slice(i, i + BATCH_SIZE);
+    const batchResults = await Promise.allSettled(
+      batch.map(async (company) => {
+        try {
+          const res = await fetch(`https://api.lever.co/v0/postings/${company}?mode=json&limit=${maxPerCompany}`, {
+            signal: AbortSignal.timeout(10000),
+          });
+          if (!res.ok) return [];
+          const postings = await res.json();
+          if (!Array.isArray(postings)) return [];
+
+          return postings.map(p => ({
+            title: p.text || '',
+            company: company.charAt(0).toUpperCase() + company.slice(1),
+            summary: stripHtml(p.descriptionPlain || p.description || '').slice(0, 1000),
+            apply_url: p.hostedUrl || p.applyUrl || '',
+            source: 'Lever',
+            date_posted: p.createdAt ? new Date(p.createdAt).toISOString() : '',
+            location: (p.categories?.location) || '',
+            location_tags: extractLocationTags(`${p.text} ${p.categories?.location || ''}`),
+          }));
+        } catch {
+          return [];
+        }
+      })
+    );
+
+    // Collect successful results
+    for (const result of batchResults) {
+      if (result.status === 'fulfilled' && Array.isArray(result.value)) {
+        allJobs.push(...result.value);
+      }
+    }
+  }
+  return allJobs;
+}
+
+// ---- Fetch SerpAPI (Google Jobs) ----
+async function fetchSerpAPI(queries, location, apiKey) {
+  // DIAGNOSTIC LOG: Entry point
+  console.log('[SERP_DIAGNOSTIC] Entry:', {
+    serpTriggered: true,
+    hasApiKey: !!apiKey,
+    queryCount: queries.length,
+    location: location || 'global'
+  });
+
+  if (!apiKey) {
+    console.warn('[SERP_DIAGNOSTIC] SKIPPED: API key not configured (SERP_API_KEY missing)');
+    return [];
+  }
+
+  if (!queries.length) {
+    console.warn('[SERP_DIAGNOSTIC] SKIPPED: No queries generated');
+    return [];
+  }
+
+  const allJobs = [];
+  const seen = new Set();
+  let successfulQueries = 0;
+  let failedQueries = 0;
+
+  // Leveraging Production Plan (15,000 searches/mo)
+  for (const q of queries.slice(0, 3)) {
+    try {
+      // Normalize location for SerpAPI (it expects canonical city, state, country format)
+      let normalizedLocation = location;
+      if (location) {
+        // SerpAPI location mapping for common Indian cities
+        const locationMap = {
+          // Bangalore variations
+          'bangalore': 'Bengaluru, Karnataka, India',
+          'bangalore urban': 'Bengaluru, Karnataka, India',
+          'bangalore urban, india': 'Bengaluru, Karnataka, India',
+          'bangalore urban district': 'Bengaluru, Karnataka, India',
+          'bangalore, india': 'Bengaluru, Karnataka, India',
+          'bengaluru': 'Bengaluru, Karnataka, India',
+          'bengaluru, india': 'Bengaluru, Karnataka, India',
+          'karnataka (bangalore)': 'Bengaluru, Karnataka, India',
+
+          // Mumbai variations
+          'mumbai': 'Mumbai, Maharashtra, India',
+          'mumbai, india': 'Mumbai, Maharashtra, India',
+
+          // Delhi variations
+          'delhi': 'Delhi, India',
+          'new delhi': 'Delhi, India',
+          'delhi, india': 'Delhi, India',
+
+          // Hyderabad
+          'hyderabad': 'Hyderabad, Telangana, India',
+          'hyderabad, india': 'Hyderabad, Telangana, India',
+
+          // Pune
+          'pune': 'Pune, Maharashtra, India',
+          'pune, india': 'Pune, Maharashtra, India',
+
+          // Chennai
+          'chennai': 'Chennai, Tamil Nadu, India',
+          'chennai, india': 'Chennai, Tamil Nadu, India',
+
+          // Kolkata
+          'kolkata': 'Kolkata, West Bengal, India',
+          'kolkata, india': 'Kolkata, West Bengal, India',
+
+          // Generic India
+          'india': 'India',
+        };
+
+        const locationKey = location.toLowerCase().trim();
+        normalizedLocation = locationMap[locationKey] || location.replace(/\s+(Urban|Rural|District)/gi, '').trim();
+      }
+
+      // Check external cache BEFORE making expensive query
+      const cacheKey = generateSerpCacheKey(q.q || q, normalizedLocation);
+      const cached = await getCachedJobs(cacheKey);
+
+      if (cached) {
+        console.log(`[SERP_DIAGNOSTIC] Cache HIT ($0) - Using cached data for "${q.q || q}" (${normalizedLocation || 'global'}) `);
+        for (const job of cached) {
+          const key = `${job.title}__${job.company}`.toLowerCase();
+          if (!seen.has(key)) {
+            seen.add(key);
+            allJobs.push(job);
+          }
+        }
+        successfulQueries++;
+        continue;
+      }
+
+      console.log(`[SERP_DIAGNOSTIC] Cache MISS (!$) - Fetching live from SerpAPI...`);
+
+      const params = new URLSearchParams({
+        engine: 'google_jobs',
+        q: q.q || q,
+        api_key: apiKey,
+        num: '10',
+      });
+      if (q.location || normalizedLocation) {
+        params.set('location', q.location || normalizedLocation);
+      }
+
+      const requestUrl = `https://serpapi.com/search.json?${params}`;
+      console.log(`[SERP_DIAGNOSTIC] Query: "${q.q || q}" | Location: ${q.location || normalizedLocation || 'none'}`);
+
+      const res = await fetch(requestUrl, {
+        signal: AbortSignal.timeout(15000),
+      });
+
+      console.log(`[SERP_DIAGNOSTIC] Response: HTTP ${res.status} for query "${q.q || q}"`);
+
+      if (!res.ok) {
+        failedQueries++;
+
+        // Log response body for debugging
+        try {
+          const errorBody = await res.text();
+          console.error(`[SERP_DIAGNOSTIC] HTTP ${res.status} Error Body:`, errorBody.slice(0, 500));
+        } catch (e) {
+          console.error(`[SERP_DIAGNOSTIC] Could not read error body`);
+        }
+
+        if (res.status === 401) console.error('[SERP_DIAGNOSTIC] ERROR: Invalid API key (HTTP 401)');
+        if (res.status === 429) console.warn('[SERP_DIAGNOSTIC] WARNING: Rate limit exceeded (HTTP 429)');
+        if (res.status === 403) console.error('[SERP_DIAGNOSTIC] ERROR: Access forbidden (HTTP 403)');
+        if (res.status === 400) console.error('[SERP_DIAGNOSTIC] ERROR: Bad request - check query/location format (HTTP 400)');
+        continue;
+      }
+
+      const data = await res.json();
+      const jobsFound = (data.jobs_results || []).length;
+      console.log(`[SERP_DIAGNOSTIC] Jobs found: ${jobsFound} for query "${q.q || q}"`);
+
+      // Array to store jobs retrieved specifically from this fetch for the cache
+      const queryJobs = [];
+
+      for (const job of (data.jobs_results || [])) {
+        const key = `${job.title}__${job.company_name}`.toLowerCase();
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        // Determine actual source from extensions
+        const via = (job.via || '').replace('via ', '');
+        const source = via || 'Google Jobs';
+
+        // Build apply URL from available SerpAPI fields
+        // Priority: apply_options (direct) > share_link > related_links > Google Jobs direct link > search fallback
+        let applyUrl = '';
+        if (job.apply_options && job.apply_options.length > 0) {
+          applyUrl = job.apply_options[0].link;
+        } else if (job.share_link) {
+          applyUrl = job.share_link;
+        } else if (job.related_links && job.related_links.length > 0) {
+          applyUrl = job.related_links[0].link;
+        }
+
+        // If we have a job_id, construct a direct Google Jobs URL that opens the job panel
+        if (!applyUrl && job.job_id) {
+          const searchQ = encodeURIComponent(q.q || q);
+          applyUrl = `https://www.google.com/search?q=${searchQ}&ibp=htl;jobs&htidocid=${job.job_id}`;
+        }
+
+        // Final fallback: Google search for the specific job
+        if (!applyUrl) {
+          const searchQ = encodeURIComponent(`${job.title} ${job.company_name} apply`);
+          applyUrl = `https://www.google.com/search?q=${searchQ}&ibp=htl;jobs`;
+        }
+
+        const formattedJob = {
+          title: job.title || '',
+          company: job.company_name || 'Unknown',
+          summary: stripHtml(job.description || '').slice(0, 1000),
+          apply_url: applyUrl,
+          source,
+          location: job.location || '',
+          date_posted: job.detected_extensions?.posted_at || '',
+          location_tags: extractLocationTags(`${job.title} ${job.description} ${job.location}`),
+        };
+
+        queryJobs.push(formattedJob);
+        allJobs.push(formattedJob);
+      }
+
+      // Important: Cache these specific query results for 24-48 hours (86,400s)
+      if (queryJobs.length > 0) {
+        await cacheJobs(cacheKey, queryJobs, 86400);
+        console.log(`[SERP_DIAGNOSTIC] Successfully cached ${queryJobs.length} live results for 24hrs.`);
+      }
+
+      successfulQueries++;
+
+      // Rate limit: 800ms delay (increased for Vercel Pro's 60s timeout)
+      await new Promise(r => setTimeout(r, 800));
+    } catch (e) {
+      failedQueries++;
+      console.error(`[SERP_DIAGNOSTIC] ERROR: Query "${q.q || q}" failed:`, e.message);
+    }
+  }
+
+  // DIAGNOSTIC LOG: Summary
+  console.log('[SERP_DIAGNOSTIC] Summary:', {
+    totalQueries: queries.slice(0, 6).length,
+    successfulQueries,
+    failedQueries,
+    jobsReturned: allJobs.length,
+    uniqueJobs: allJobs.length
+  });
+
+  return allJobs;
+}
+
+// ---- Fetch JSearch (RapidAPI) ----
+async function fetchJSearch(queries, location, apiKey) {
+  if (!apiKey || !queries.length) return [];
+  const allJobs = [];
+
+  for (const q of queries.slice(0, 3)) {
+    try {
+      const params = new URLSearchParams({
+        query: location ? `${q} in ${location}` : q,
+        num_pages: '1',
+      });
+
+      const res = await fetch(`https://jsearch.p.rapidapi.com/search?${params}`, {
+        headers: {
+          'X-RapidAPI-Key': apiKey,
+          'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
+        },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+
+      for (const job of (data.data || [])) {
+        allJobs.push({
+          title: job.job_title || '',
+          company: job.employer_name || 'Unknown',
+          summary: stripHtml(job.job_description || '').slice(0, 1000),
+          apply_url: job.job_apply_link || '',
+          source: job.job_publisher || 'JSearch',
+          location: [job.job_city, job.job_state, job.job_country].filter(Boolean).join(', '),
+          date_posted: job.job_posted_at_datetime_utc || '',
+          location_tags: extractLocationTags(`${job.job_title} ${job.job_description} ${job.job_city} ${job.job_country}`),
+        });
+      }
+
+      await new Promise(r => setTimeout(r, 1200));
+    } catch (e) {
+      console.error(`JSearch query "${q}" failed:`, e.message);
+    }
+  }
+  return allJobs;
+}
+
+// ---- Build queries from profile & preferences ----
+export function buildQueries(profile, preferences = {}) {
+  const headline = (profile.headline || '').trim();
+  const skills = profile.skills || [];
+  const searchTerms = profile.search_terms || [];
+  const industry = (profile.industry || '').trim();
+
+  // Use explicit preference if set, otherwise fallback to profile
+  const preferredLocation = preferences.location || profile.country || '';
+  const isRemote = preferences.remoteOnly || ['remote only', 'remote', 'global'].includes(preferredLocation.toLowerCase());
+
+  let location = null;
+  if (!isRemote && preferredLocation) {
+    location = preferredLocation;
+  }
+
+  const queries = [];
+  // ... rest of query building ...
+  // Priority 1: Manual Job Title (Headline override)
+  if (headline) queries.push(headline);
+
+  // Priority 2: Precise Skill Combinations
+  for (const term of searchTerms.slice(0, 3)) queries.push(term);
+
+  if (industry && queries.length < 5) queries.push(`${industry} jobs`);
+
+  // Create combined queries if we have a title
+  if (headline) {
+    queries.push(`${headline} remote`);
+    if (location) queries.push(`${headline} ${location}`);
+  }
+  for (const skill of skills.slice(0, 2)) {
+    if (queries.length < 10 && skill.split(' ').length <= 3) queries.push(`${skill} specialist`);
+  }
+
+  // Deduplicate
+  const seen = new Set();
+  const unique = queries.filter(q => {
+    const k = q.toLowerCase().trim();
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+
+  return { queries: unique.slice(0, 3), location };
+}
+
+// ---- Main fetch function ----
+export async function fetchAllJobs(profile, apiKeys = {}, onProgress, preferences = {}) {
+  const serpKey = apiKeys.SERP_API_KEY || process.env.SERP_API_KEY;
+  const jsearchKey = apiKeys.JSEARCH_KEY || process.env.JSEARCH_KEY;
+
+  const { queries, location } = buildQueries(profile, preferences);
+
+  // Decide if we should prioritize local feeds or remote feeds
+  // If user explicitly checked "Remote Only" or didn't set location, default to remote feeds
+  const isRemotePreferred = preferences.remoteOnly || !location;
+
+  onProgress?.(isRemotePreferred ? 'Fetching remote-first jobs...' : `Fetching jobs near ${location}...`);
+
+  // Parallel fetches for speed
+  // If remote preferred, fetch all remote feeds. If local, maybe skip some or prioritize local.
+  // For simplicity, we fetch WWR always, but leverage SerpAPI/JSearch for strict location.
+  const feedsToFetch = isRemotePreferred ? WWR_FEEDS : WWR_FEEDS.slice(0, 2);
+
+  const [wwrResults, remoteOkResult, jobicyResult, remotiveResult, simplyHiredResult] = await Promise.all([
+    Promise.all(feedsToFetch.map(url => fetchRSS(url, 'WeWorkRemotely'))),
+    fetchRSS(REMOTEOK_FEED, 'RemoteOK', 100),
+    fetchRSS(JOBICY_FEED, 'Jobicy'),
+    fetchRemotive(),
+    fetchRSS(SIMPLYHIRED_FEED, 'SimplyHired', 50),
+  ]);
+
+  let allJobs = [
+    ...wwrResults.flat(),
+    ...remoteOkResult,
+    ...jobicyResult,
+    ...remotiveResult,
+    ...simplyHiredResult,
+  ];
+
+  onProgress?.(`RSS: ${allJobs.length} jobs. Fetching Lever...`);
+
+  // Lever (sequential due to rate limiting)
+  const leverJobs = await fetchLever();
+  allJobs.push(...leverJobs);
+
+  onProgress?.(`+${leverJobs.length} Lever jobs found.`);
+
+  // SerpAPI / JSearch - relaxed threshold due to Production Plan (15k searches/mo)
+  // ALWAYS use paid APIs to ensure high-quality localized results
+  const shouldUsePaidAPIs = true;
+
+  if (queries.length > 0 && shouldUsePaidAPIs) {
+    console.log(`[INGESTION_ORCHESTRATOR] Free sources returned ${allJobs.length} jobs. Activating SerpAPI unconditionally.`);
+    console.log('[INGESTION_ORCHESTRATOR] SerpAPI execution gate: queries.length =', queries.length);
+    console.log('[INGESTION_ORCHESTRATOR] SERP_API_KEY present:', !!serpKey);
+
+    onProgress?.(`Need more jobs. Querying Google Jobs...`);
+    const serpJobs = await fetchSerpAPI(queries, location, serpKey);
+    allJobs.push(...serpJobs);
+    onProgress?.(`+${serpJobs.length} SerpAPI.`);
+    console.log('[INGESTION_ORCHESTRATOR] SerpAPI contributed:', serpJobs.length, 'jobs');
+
+    const jsearchJobs = await fetchJSearch(queries, location, jsearchKey);
+    allJobs.push(...jsearchJobs);
+    onProgress?.(`+${jsearchJobs.length} JSearch.`);
+  } else if (!shouldUsePaidAPIs) {
+    console.log(`[INGESTION_ORCHESTRATOR] SerpAPI SKIPPED: Free sources returned ${allJobs.length} jobs (>= ${MIN_JOBS_BEFORE_PAID_API}). No paid API needed.`);
+    onProgress?.(`${allJobs.length} jobs found. Skipping premium sources.`);
+  } else {
+    console.warn('[INGESTION_ORCHESTRATOR] SerpAPI SKIPPED: No queries generated');
+  }
+
+  // Deduplicate by URL
+  const seenUrls = new Set();
+  const unique = allJobs.filter(j => {
+    const url = j.apply_url;
+    if (!url) return true;
+    if (seenUrls.has(url)) return false;
+    seenUrls.add(url);
+    return true;
+  });
+
+  // Source breakdown
+  const sources = {};
+  for (const j of unique) {
+    sources[j.source] = (sources[j.source] || 0) + 1;
+  }
+
+  onProgress?.(`Total: ${unique.length} unique jobs`);
+  return { jobs: unique, sources, queries };
+}

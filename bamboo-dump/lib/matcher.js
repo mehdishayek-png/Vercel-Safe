@@ -1,11 +1,10 @@
 // lib/matcher.js — Job matching engine (faithful port of RELIABLE run_auto_apply.py v7)
-import { calculatePandaScore } from './panda-matcher.js';
 //
 // This is the EXACT logic from the reliable Python backup:
 // 1. Title synonym expansion (huge map covering all major job families)
 // 2. Primary + Secondary + Title keyword extraction with stem expansion
 // 3. Local scoring with weighted keyword lengths
-// 4. LLM batch verification (60% local + 40% LLM — heuristic has authority)
+// 4. LLM batch scoring (40% local + 60% LLM)
 // 5. Source priority boost + Location boost
 // 6. Adaptive thresholds (55 → 50 → 45)
 // 7. Company diversity enforcement
@@ -79,20 +78,9 @@ function titleSeniority(title) {
   return 'open';                   // entry + unknown
 }
 
-// Detect candidate's own seniority from their headline and years
-function candidateSeniorityLevel(headline, years) {
-  const titleLevel = titleSeniorityLevel(headline);
-
-  // If the explicit title doesn't state seniority, infer a floor from years
-  let yearsLevel = 0;
-  if (years !== undefined) {
-    if (years >= 8) yearsLevel = 4; // Senior
-    else if (years >= 5) yearsLevel = 3; // Manager/Lead
-    else if (years >= 2) yearsLevel = 2; // Mid
-    else yearsLevel = 1; // Entry
-  }
-
-  return Math.max(titleLevel, yearsLevel);
+// Detect candidate's own seniority from their headline
+function candidateSeniorityLevel(headline) {
+  return titleSeniorityLevel(headline);
 }
 
 // ============================================
@@ -165,7 +153,7 @@ const TITLE_SYNONYMS = {
   // Customer Support & Success
   'customer support': ['customer support', 'customer service', 'technical support', 'support specialist', 'help desk', 'customer care'],
   'customer success': ['customer success', 'customer support', 'client success', 'account manager', 'customer experience'],
-  'customer experience': ['customer experience', 'cx specialist', 'customer success', 'customer support', 'client experience', 'customer service'],
+  'customer experience': ['customer experience', 'cx specialist', 'customer success', 'customer support', 'client experience'],
   'support specialist': ['support specialist', 'support engineer', 'customer support', 'technical support', 'help desk'],
 
   // Engineering & Development
@@ -348,186 +336,70 @@ function isNonEnglish(title, summary) {
 // LOCAL KEYWORD SCORING (exact Python port)
 // ============================================
 
-function scoreLocally(job, primaryKw, secondaryKw, titleWords, candidateYears, candidateHeadline, countryAliases, cityAliases) {
+function scoreLocally(job, primaryKw, secondaryKw, titleWords, candidateYears, candidateHeadline) {
   const title = (job.title || '').toLowerCase();
   const summary = (job.summary || '').toLowerCase();
-  const jobLocation = (job.location || '').toLowerCase();
   const combined = `${title} ${summary}`;
 
-  // 1. BASE SCORE + DETERMINISTIC VARIANCE
-  // Generate deterministic variance so identical scores don't stack perfectly, 
-  // but the score never changes on refresh.
-  const deterministicVariance = combined.length % 5;
-  let score = 30 + deterministicVariance; // Base variance of 0-4
-
+  let score = 0;
   const matchedPrimary = [];
   const matchedSecondary = [];
-  let titleMatchCount = 0;
 
-  // 2. DENSITY DEBUFF & TITLE SYNERGY 
-  const wordCount = combined.split(/\s+/).length || 1;
-  const densityPenalty = Math.max(0.4, Math.min(1.0, 400 / wordCount));
-
-  let titleSynergyMultiplier = 1.0;
-  if (candidateHeadline && title.includes(candidateHeadline.trim())) {
-    titleSynergyMultiplier = 1.3; // 30% buff for exact role match in headline
-  }
-
-  // 3. DYNAMIC WEIGHTING & DIMINISHING RETURNS (Primary Skills)
-  let keywordHits = 0;
-  let rawKeywordScore = 0;
+  // Primary keywords — weight by length (longer = more specific = higher signal)
   for (const kw of primaryKw) {
     if (combined.includes(kw)) {
-      keywordHits++;
       matchedPrimary.push(kw);
-
-      // Punish rapid-fire keyword stuffing
-      const diminishingFactor = Math.max(0.1, 1.0 - (keywordHits * 0.15));
-
-      let kwScore = 0;
-      if (kw.length > 10) kwScore = 14;
-      else if (kw.length > 6) kwScore = 9;
-      else kwScore = 4;
-
-      rawKeywordScore += (kwScore * diminishingFactor * densityPenalty);
+      if (kw.length > 10) score += 12;
+      else if (kw.length > 6) score += 8;
+      else score += 5;
     }
   }
 
-  // Hard Cap: Max 30 points from raw keyword hits
-  score += Math.min(rawKeywordScore, 30);
-
-  // Core Stack Ratio (Armor Pen): If they hit 4+ skills, provide a synergy bonus, scaled by density
-  if (keywordHits >= 4) {
-    score += (15 * densityPenalty);
-  }
-
-  // Secondary/Soft Skills (Light bonus)
+  // Secondary keywords — bonus for domain relevance
   for (const kw of secondaryKw) {
     if (combined.includes(kw)) {
       matchedSecondary.push(kw);
-      score += (2 * densityPenalty);
+      score += 2;
     }
   }
 
-  // Title word bonuses (for visual flagging and light points)
+  // Title word bonus (job title alignment)
+  let titleMatchCount = 0;
   for (const w of titleWords) {
     if (title.includes(w)) titleMatchCount++;
   }
-  if (titleMatchCount >= 2) score += 5;
-  else if (titleMatchCount === 1) score += 2;
+  if (titleMatchCount >= 2) score += 8;
+  else if (titleMatchCount === 1) score += 4;
 
-  // 4. GOLDILOCKS MULTIPLIER (Dynamic Seniority)
-  const isSeniorJob = title.includes('senior') || title.includes('lead') || title.includes('principal') || title.includes('vp') || title.includes('director') || title.includes('head');
-  const isMidJob = title.includes('mid') || (!isSeniorJob && !title.includes('junior') && !title.includes('entry') && !title.includes('intern'));
-  // Expand junior job detection
-  const isJuniorJob = title.includes('junior') || title.includes('entry') || title.includes('intern') || title.includes('fresher') || title.includes('trainee');
+  // ---- SENIORITY ALIGNMENT (improved — granular penalty) ----
+  // Compare candidate's level to job's level
+  // e.g. candidate="specialist"(1) vs job="manager"(3) → gap=2 → penalty
+  const jobLevel = titleSeniorityLevel(title);
+  const candidateLevel = candidateSeniorityLevel(candidateHeadline || '');
 
-  let seniorityMultiplier = 1.0; // Assume Mid mapping to Mid by default
+  const seniorityGap = jobLevel - candidateLevel; // positive = job is above candidate
 
-  if (candidateYears < 2) {
-    // Entry Level Candidate
-    if (isJuniorJob) seniorityMultiplier = 1.2;     // Perfect Match
-    else if (isMidJob) seniorityMultiplier = 0.8;   // Reaching Up 1 (Okay)
-    else if (isSeniorJob) seniorityMultiplier = 0.2; // Hard Silence (Denied)
-  } else if (candidateYears >= 2 && candidateYears < 6) {
-    // Mid Level Candidate
-    if (isMidJob) seniorityMultiplier = 1.2;        // Perfect Match
-    else if (isSeniorJob) seniorityMultiplier = 0.9; // Reaching Up 1 (Slight Penalty)
-    else if (isJuniorJob) seniorityMultiplier = 0.1; // *Hard Counter*: Slumming (Severe Penalty to keep feed clean for actual Juniors)
-  } else if (candidateYears >= 6) {
-    // Senior Candidate
-    if (isSeniorJob) seniorityMultiplier = 1.2;     // Perfect Match
-    else if (isMidJob) seniorityMultiplier = 0.8;   // Reaching Down 1 (Penalty)
-    else if (isJuniorJob) seniorityMultiplier = 0.1; // Hard Silence (Denied)
+  if (seniorityGap <= 0) {
+    // Job is at or below candidate level — good fit or slight reach down
+    score += 5;
+  } else if (seniorityGap === 1) {
+    // One level up — reasonable stretch (e.g. specialist → mid, or mid → manager)
+    score += 2;
+  } else if (seniorityGap === 2) {
+    // Two levels up — significant stretch (e.g. specialist → manager)
+    // PENALTY: reduce score substantially
+    score -= 15;
+  } else {
+    // 3+ levels up — unrealistic (e.g. specialist → director)
+    // HEAVY PENALTY
+    score -= 30;
   }
-
-  // 5. RECENCY DECAY MULTIPLIER
-  let recencyMultiplier = 1.0;
-  if (job.date_posted) {
-    const postedDate = new Date(job.date_posted);
-    if (!isNaN(postedDate)) {
-      const diffTime = Math.abs(new Date() - postedDate);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays < 3) recencyMultiplier = 1.10; // Freshness buff
-      else if (diffDays <= 7) recencyMultiplier = 1.00; // Neutral
-      else if (diffDays <= 14) recencyMultiplier = 0.85; // Slight decay
-      else if (diffDays <= 29) recencyMultiplier = 0.60; // Heavy decay
-      else recencyMultiplier = 0.30; // Dead
-    }
-  }
-
-  const jobGeo = `${title} ${summary} ${jobLocation}`;
-  const isRemote = jobGeo.includes('remote') || jobGeo.includes('work from home') || jobGeo.includes('wfh');
-
-  // 6. LANGUAGE / QUALITY PENALTY (Non-Latin Check)
-  // If the job explicitly contains Arabic/Cyrillic scripts, severely penalize it assuming it got scraped incorrectly
-  let languageMultiplier = 1.0;
-  const nonLatinRegex = /[\u0600-\u06FF\u0750-\u077F\u0400-\u04FF]/;
-  if (nonLatinRegex.test(jobGeo) || nonLatinRegex.test(job.company)) {
-    languageMultiplier = 0.5; // 50% penalty for untargeted scripts
-  }
-
-  // 7. LOCATION AFFINITY MULTIPLIER (The "Home Turf Advantage")
-  // If the user selected a region, jobs IN that region get a buff.
-  // Jobs explicitly in a DIFFERENT country get a penalty.
-  // "Remote" jobs are treated neutrally (1.0x).
-  let locationMultiplier = 1.0;
-
-  if (countryAliases && countryAliases.length > 0) {
-    const matchesUserRegion = countryAliases.some(alias => jobGeo.includes(alias));
-    const exactCityMatch = cityAliases && cityAliases.length > 0 && cityAliases.some(alias => jobGeo.includes(alias));
-
-    const foreignCountries = ['united states', 'usa', 'uk', 'canada', 'germany', 'australia', 'singapore', 'france', 'netherlands', 'ireland', 'india', 'uae', 'saudi'];
-    const mentionsForeignCountry = foreignCountries.some(fc => {
-      return jobGeo.includes(fc) && !countryAliases.includes(fc);
-    });
-
-    let explicitlyWrongCity = false;
-    let vagueCountryMatch = false;
-
-    if (cityAliases && cityAliases.length > 0) {
-      if (!exactCityMatch && !isRemote) {
-        // If the location has a comma, it's structured (e.g., City, State, Country). Missing our city here is an explicit miss.
-        if (jobLocation.includes(',')) {
-          explicitlyWrongCity = true;
-        } else {
-          // Catch un-comma'd major cities 
-          const majorCities = ['delhi', 'mumbai', 'hyderabad', 'pune', 'chennai', 'noida', 'gurgaon', 'kolkata', 'kochi', 'ahmedabad', 'new york', 'london', 'tumakuru', 'mysuru', 'erode', 'coimbatore', 'chandigarh', 'indore'];
-          if (majorCities.some(c => jobGeo.includes(c))) {
-            explicitlyWrongCity = true;
-          } else if (matchesUserRegion) {
-            // It just says India, etc. Vague but not explicitly wrong.
-            vagueCountryMatch = true;
-          }
-        }
-      }
-    }
-
-    if (exactCityMatch) {
-      locationMultiplier = 1.6; // Massive buff for exact city matches
-    } else if (mentionsForeignCountry || explicitlyWrongCity) {
-      locationMultiplier = 0.4; // 60% penalty for explicitly wrong locations
-    } else if (vagueCountryMatch) {
-      locationMultiplier = 0.7; // 30% penalty for vague country matches when a city was requested
-    } else if (isRemote) {
-      locationMultiplier = 1.0; // Remote is neutral
-    } else if (matchesUserRegion && (!cityAliases || cityAliases.length === 0)) {
-      locationMultiplier = 1.1; // Moderate buff if they only requested a country and it matches
-    } else {
-      locationMultiplier = 1.0; // Unidentifiable locations
-    }
-  }
-
-  // APPLY ALL MULTIPLIERS
-  score = score * titleSynergyMultiplier * seniorityMultiplier * recencyMultiplier * languageMultiplier * densityPenalty * locationMultiplier;
 
   return {
-    score: Math.min(Math.round(score), 100),
+    score: Math.min(score, 100),
     matchedPrimary: matchedPrimary.slice(0, 5),
     matchedSecondary: matchedSecondary.slice(0, 3),
     titleOverlap: titleMatchCount,
-    locationMultiplier, // Expose for transparency
   };
 }
 
@@ -535,13 +407,13 @@ function scoreLocally(job, primaryKw, secondaryKw, titleWords, candidateYears, c
 // LLM BATCH SCORING (exact Python port)
 // ============================================
 
-async function llmBatchScore(batch, profile, candidateYears, apiKey, preferences) {
+async function llmBatchScore(batch, profile, candidateYears, apiKey) {
   const skills = (profile.skills || []).slice(0, 15).join(', ');
   const headline = profile.headline || 'Professional';
   const industry = profile.industry || '';
 
   const jobsText = batch.map((j, i) =>
-    `JOB ${i + 1}:\nTitle: ${j.title || '?'}\nCompany: ${j.company || '?'}\nLocation: ${j.location || 'Unknown'}\nSummary: ${(j.summary || '').slice(0, 500)}`
+    `JOB ${i + 1}:\nTitle: ${j.title || '?'}\nCompany: ${j.company || '?'}\nSummary: ${(j.summary || '').slice(0, 300)}`
   ).join('\n\n');
 
   const industryNote = industry ? `\n- Industry: ${industry}` : '';
@@ -560,14 +432,13 @@ For each job, provide a score 0-100 based on:
 - Skills match (40% weight)
 - Role fit (30% weight)
 - Seniority alignment (30% weight) — THIS IS CRITICAL:
-  * DO NOT penalize candidates for reaching UP (e.g. a Mid-level candidate applying for a Senior role). Ambition is encouraged, evaluate them on skills.
-  * HEAVILY PENALIZE reaching DOWN: If the candidate has 4+ years of experience and the job is specifically "Junior", "Entry Level", or asks for "0-2 years", the score MUST be <50.
-  * A seasoned professional with 5 years experience should NOT have a Junior role as a top match.
+  * If candidate is a "Specialist/Coordinator/Associate" and job is "Manager/Supervisor", score MUST be <50
+  * If candidate is "Specialist" and job is "Director/VP/Head", score MUST be <30
+  * Match the EXACT seniority tier, not just domain overlap
+  * "Customer Experience Specialist" is NOT a match for "Customer Experience Manager"
 
 CRITICAL: Return ONLY a JSON array of ${batch.length} integers, nothing else.
 Example: [75, 60, 45, 90, ...]
-
-IMPORTANT: The candidate's preferred location is "${preferences?.location || 'Not specified'}". Jobs in or near this location should receive a slight boost. Do not penalize remote jobs.
 
 Scores:`;
 
@@ -621,7 +492,7 @@ Scores:`;
       return scores.slice(0, batch.length).map(s => Math.max(0, Math.min(100, Math.round(s))));
     } catch (e2) {
       console.error('Fallback model also failed:', e2.message);
-      return batch.map(() => -1); // Signal hard failure
+      return batch.map(() => 0);
     }
   }
 }
@@ -644,7 +515,7 @@ function enforceCompanyDiversity(matches) {
 // ============================================
 
 const COUNTRY_ALIASES = {
-  'india': ['india', 'in', 'ind'],
+  'india': ['india', 'bangalore', 'bengaluru', 'mumbai', 'delhi', 'hyderabad', 'pune', 'chennai', 'noida', 'gurgaon', 'gurugram', 'kolkata'],
   'united states': ['united states', 'usa', 'us-based', 'u.s.'],
   'united kingdom': ['united kingdom', 'uk', 'london', 'england'],
   'canada': ['canada', 'toronto', 'vancouver'],
@@ -675,24 +546,22 @@ function buildCountryAliases(preferredLoc, profileCountry, profileState) {
   if (!aliases.length && userCountry) aliases.push(userCountry);
 
   // Add state/city specifics
-  let cityAliases = [];
   if (userState && userState !== 'any') {
     const cityMatch = userState.match(/\(([^)]+)\)/);
     if (cityMatch) {
       for (const city of cityMatch[1].split('/')) {
         const c = city.trim().toLowerCase();
-        if (c && !cityAliases.includes(c)) cityAliases.push(c);
+        if (c && !aliases.includes(c)) aliases.push(c);
       }
     } else {
-      if (!cityAliases.includes(userState)) cityAliases.push(userState);
+      if (!aliases.includes(userState)) aliases.push(userState);
     }
     // Known alias pairs
-    if (userState === 'bangalore' && !cityAliases.includes('bengaluru')) cityAliases.push('bengaluru');
-    if (userState === 'bengaluru' && !cityAliases.includes('bangalore')) cityAliases.push('bangalore');
-    aliases.push(...cityAliases);
+    if (userState === 'bangalore' && !aliases.includes('bengaluru')) aliases.push('bengaluru');
+    if (userState === 'bengaluru' && !aliases.includes('bangalore')) aliases.push('bangalore');
   }
 
-  return { userCountry, userState, countryAliases: aliases, cityAliases };
+  return { userCountry, userState, countryAliases: aliases };
 }
 
 // ============================================
@@ -718,7 +587,7 @@ export async function matchJobs(jobs, profile, apiKeys = {}, onProgress, prefere
   const { primary, secondary, titleWords } = extractKeywords(profile);
 
   const preferredLoc = (preferences?.location || '').toLowerCase();
-  const { userCountry, userState, countryAliases, cityAliases } = buildCountryAliases(
+  const { userCountry, userState, countryAliases } = buildCountryAliases(
     preferredLoc, profile.country, profile.state
   );
 
@@ -752,7 +621,7 @@ export async function matchJobs(jobs, profile, apiKeys = {}, onProgress, prefere
       continue;
     }
 
-    const local = await calculatePandaScore(job, profile, preferences);
+    const local = scoreLocally(job, primary, secondary, titleWords, candidateYears, profile.headline);
 
     if (local.score < MATCH_THRESHOLD) {
       filtered.lowScore++;
@@ -763,11 +632,8 @@ export async function matchJobs(jobs, profile, apiKeys = {}, onProgress, prefere
     filtered.passed++;
   }
 
-  // Sort by local score (with location multiplier tie-breaker)
-  scoredJobs.sort((a, b) => {
-    if (b._localScore !== a._localScore) return b._localScore - a._localScore;
-    return (b._localDetail?.locationMultiplier || 1) - (a._localDetail?.locationMultiplier || 1);
-  });
+  // Sort by local score
+  scoredJobs.sort((a, b) => b._localScore - a._localScore);
 
   onProgress?.(
     `✅ Phase 1: ${filtered.passed} relevant jobs ` +
@@ -781,15 +647,12 @@ export async function matchJobs(jobs, profile, apiKeys = {}, onProgress, prefere
       if (isNonEnglish(job.title, job.summary)) continue;
       if (candidateYears < 3 && titleSeniority(job.title) === 'senior') continue;
 
-      const local = await calculatePandaScore(job, profile, preferences);
+      const local = scoreLocally(job, primary, secondary, titleWords, candidateYears, profile.headline);
       if (local.score >= 20) {
         scoredJobs.push({ ...job, _localScore: local.score, _localDetail: local });
       }
     }
-    scoredJobs.sort((a, b) => {
-      if (b._localScore !== a._localScore) return b._localScore - a._localScore;
-      return (b._localDetail?.locationMultiplier || 1) - (a._localDetail?.locationMultiplier || 1);
-    });
+    scoredJobs.sort((a, b) => b._localScore - a._localScore);
     onProgress?.(`✅ Broadened search: ${scoredJobs.length} candidates found`);
   }
 
@@ -800,7 +663,7 @@ export async function matchJobs(jobs, profile, apiKeys = {}, onProgress, prefere
 
   // ---- Phase 2: LLM scoring for top candidates ----
   const topCandidates = scoredJobs.slice(0, MAX_LLM_CANDIDATES);
-  const apiKey = apiKeys?.openRouter || apiKeys?.openrouter || apiKeys?.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY;
+  const apiKey = apiKeys.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY;
 
   if (!apiKey) {
     onProgress?.('No OPENROUTER_API_KEY — using local scores only');
@@ -810,10 +673,7 @@ export async function matchJobs(jobs, profile, apiKeys = {}, onProgress, prefere
       match_score: j._localScore,
     }));
     const finalLocal = localOnly.filter(j => j.match_score >= 45);
-    finalLocal.sort((a, b) => {
-      if (b.match_score !== a.match_score) return b.match_score - a.match_score;
-      return (b._localDetail?.locationMultiplier || 1) - (a._localDetail?.locationMultiplier || 1);
-    });
+    finalLocal.sort((a, b) => b.match_score - a.match_score);
     const diverse = enforceCompanyDiversity(finalLocal);
     return diverse.slice(0, MAX_MATCHES).map(j => {
       const { _localScore, _localDetail, ...clean } = j;
@@ -833,70 +693,21 @@ export async function matchJobs(jobs, profile, apiKeys = {}, onProgress, prefere
 
     onProgress?.(`🧠 AI Batch ${bn}/${tb}: Scoring ${batch.length} jobs...`);
 
-    const scores = await llmBatchScore(batch, profile, candidateYears, apiKey, preferences);
+    const scores = await llmBatchScore(batch, profile, candidateYears, apiKey);
     apiCalls++;
-
-    // Graceful degradation: If the API failed entirely, abort and return local heuristic results
-    if (scores[0] === -1) {
-      onProgress?.('⚠️ AI providers timed out or failed. Falling back to local heuristic matches.');
-      const localOnly = topCandidates.map(j => ({
-        ...j,
-        match_score: j._localScore, // Boosts are omitted for pure local fallback to maintain integrity
-      }));
-      const finalLocal = localOnly.filter(j => j.match_score >= 45);
-      finalLocal.sort((a, b) => {
-        if (b.match_score !== a.match_score) return b.match_score - a.match_score;
-        return (b._localDetail?.locationMultiplier || 1) - (a._localDetail?.locationMultiplier || 1);
-      });
-      const diverse = enforceCompanyDiversity(finalLocal);
-      return diverse.slice(0, MAX_MATCHES).map(j => {
-        const { _localScore, _localDetail, ...clean } = j;
-        return clean;
-      });
-    }
 
     for (let j = 0; j < batch.length; j++) {
       const localScore = batch[j]._localScore;
       const llmScore = scores[j];
 
-      // Combined score: 60% local heuristic + 40% LLM verification
-      // The heuristic has been mathematically tuned (Dota-style) and should have authority.
-      // The LLM acts as a verification layer, not the primary scorer.
-      let combined = Math.round(localScore * 0.6 + llmScore * 0.4);
+      // Combined score: 40% local + 60% LLM (exact Python weights)
+      let combined = Math.round(localScore * 0.4 + llmScore * 0.6);
 
-      // HIGH-CONFIDENCE FLOOR: If our heuristic scored ≥80, the LLM cannot
-      // assassinate the match below 70. This prevents the AI from kicking out
-      // perfect keyword+seniority+location matches just because it has limited context.
-      if (localScore >= 80 && combined < 70) {
-        combined = 70;
-      }
-
-      // Source priority boost
+      // Source priority boost (exact Python logic)
       const source = (batch[j].source || '').toLowerCase();
-      const PRIORITY_SOURCES = ['google jobs', 'indeed', 'naukri', 'instahyre', 'foundit', 'glassdoor'];
-
-      // LinkedIn gets a massive boost due to high quality listings
-      if (source.includes('linkedin')) {
-        combined = Math.min(combined + 12, 100);
-      } else if (PRIORITY_SOURCES.some(s => source.includes(s))) {
+      const PRIORITY_SOURCES = ['google jobs', 'indeed', 'naukri', 'linkedin', 'instahyre', 'foundit', 'glassdoor'];
+      if (PRIORITY_SOURCES.some(s => source.includes(s))) {
         combined = Math.min(combined + 5, 100);
-      }
-
-      // PRESTIGE MULTIPLIER (F500 / Big Tech / Unicorns)
-      const companyName = (batch[j].company || '').toLowerCase();
-      const prestigiousCompanies = [
-        // FAANG / Big Tech
-        'google', 'apple', 'meta', 'amazon', 'netflix', 'microsoft', 'salesforce', 'adobe', 'intel', 'ibm', 'oracle', 'cisco', 'nvidia', 'tesla',
-        // Top Tier Indian IT & Consulting
-        'tcs', 'tata consultancy', 'infosys', 'wipro', 'hcl', 'tech mahindra', 'accenture', 'deloitte', 'pwc', 'ey', 'kpmg', 'capgemini', 'cognizant',
-        // Major Unicorns & High Growth
-        'swiggy', 'zomato', 'flipkart', 'paytm', 'meesho', 'cred', 'razorpay', 'groww', 'zerodha', 'phonepe', 'stripe', 'uber', 'airbnb', 'spotify'
-      ];
-
-      // If it's a highly reputable commercial entity, give the final combined score a bump to push it above random obscure companies
-      if (prestigiousCompanies.some(pc => companyName.includes(pc))) {
-        // Apply a 1.15x multiplier to the final combined score, capping at 100
-        combined = Math.min(Math.round(combined * 1.15), 100);
       }
 
       // Location boost: +8 if job mentions user's country/city (exact Python logic)
@@ -929,10 +740,7 @@ export async function matchJobs(jobs, profile, apiKeys = {}, onProgress, prefere
   for (const threshold of [55, 50, 45]) {
     const matches = allResults.filter(j => j.match_score >= threshold);
     if (matches.length > 0) {
-      matches.sort((a, b) => {
-        if (b.match_score !== a.match_score) return b.match_score - a.match_score;
-        return (b._localDetail?.locationMultiplier || 1) - (a._localDetail?.locationMultiplier || 1);
-      });
+      matches.sort((a, b) => b.match_score - a.match_score);
       const diverse = enforceCompanyDiversity(matches);
 
       onProgress?.(`✅ ${diverse.length} matches (threshold ${threshold}%, ${apiCalls} API calls)`);
