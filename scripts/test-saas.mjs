@@ -8,26 +8,93 @@ const profile = {
     experience_years: 5
 };
 
-console.log('Queries Generated:');
+console.log('=== QUERY GENERATION ===');
 console.dir(buildQueries(profile, { location: 'Remote', remoteOnly: true }), { depth: null });
 
-const job1 = {
+// --- JOB DEFINITIONS ---
+
+const job1_basic = {
     title: 'Customer Support Specialist',
-    summary: 'Must have great customer support and technical troubleshooting skills.',
-    company: 'Zendesk'
+    summary: 'Handle inbound calls and emails from customers. Basic ticket resolution and chat support.',
+    company: 'Zendesk',
+    date_posted: new Date().toISOString()
 };
 
-const job2 = {
+const job2_saas_integration = {
     title: 'SaaS Integration Engineer',
-    summary: 'Looking for someone with sso, saml and okta experience. Workato is a plus.',
-    company: 'Okta'
+    summary: 'Looking for someone with sso, saml and okta experience. Workato and API integration is a plus. B2B enterprise platform work.',
+    company: 'Okta',
+    date_posted: new Date().toISOString()
 };
+
+const job3_call_center = {
+    title: 'Customer Service Representative',
+    summary: 'Answering calls and responding to emails in a call center environment. Tier 1 phone support for our customers.',
+    company: 'Generic BPO Inc',
+    date_posted: new Date().toISOString()
+};
+
+const job4_strategic_cx = {
+    title: 'Customer Success Manager, B2B SaaS',
+    summary: 'Drive platform adoption, reduce churn, manage enterprise onboarding. SSO/SAML integrations, health score monitoring, renewal management. Salesforce and Zendesk required.',
+    company: 'Gainsight',
+    date_posted: new Date().toISOString()
+};
+
+const job5_tam = {
+    title: 'Technical Account Manager',
+    summary: 'Own post-sales technical relationships for enterprise accounts. Deep integration work with Okta, Workato, and AWS. Drive customer retention and expansion.',
+    company: 'Salesforce',
+    date_posted: new Date().toISOString()
+};
+
+const job6_helpdesk = {
+    title: 'Help Desk Agent',
+    summary: 'L1 support. Reset passwords, handle basic ticket resolution. No technical skills required.',
+    company: 'TCS',
+    date_posted: new Date().toISOString()
+};
+
+const allJobs = [
+    { label: 'Basic Support', job: job1_basic },
+    { label: 'SaaS Integration Engineer', job: job2_saas_integration },
+    { label: 'Call Center Rep', job: job3_call_center },
+    { label: 'Strategic CSM (B2B SaaS)', job: job4_strategic_cx },
+    { label: 'Technical Account Manager', job: job5_tam },
+    { label: 'Help Desk Agent (L1)', job: job6_helpdesk },
+];
 
 async function run() {
-    console.log('\n--- MATCHING JOB 1 (Basic Support) ---');
-    console.dir(await calculatePandaScore(job1, profile, {}), { depth: null });
+    console.log('\n=== PANDA SCORING: Unconventional CX Profile ===');
+    console.log(`Profile: ${profile.headline} | ${profile.experience_years}yr | Skills: ${profile.skills.join(', ')}\n`);
 
-    console.log('\n--- MATCHING JOB 2 (SaaS Integration) ---');
-    console.dir(await calculatePandaScore(job2, profile, {}), { depth: null });
+    const results = [];
+
+    for (const { label, job } of allJobs) {
+        const result = await calculatePandaScore(job, profile, {});
+        results.push({ label, score: result.score, depth: result.multipliers.depth, raw: result.raw, matches: result.matches.map(m => m.skill).join(', ') });
+        console.log(`${result.score.toString().padStart(3)} | depth:${result.multipliers.depth} | ${label.padEnd(30)} | "${job.title}" at ${job.company}`);
+        console.log(`     Matched: ${result.matches.map(m => `${m.skill}(${m.value})`).join(', ') || 'None'}`);
+    }
+
+    console.log('\n=== VALIDATION ===');
+    const basicScore = results.find(r => r.label === 'Basic Support')?.score || 0;
+    const saasScore = results.find(r => r.label === 'SaaS Integration Engineer')?.score || 0;
+    const callCenterScore = results.find(r => r.label === 'Call Center Rep')?.score || 0;
+    const csmScore = results.find(r => r.label === 'Strategic CSM (B2B SaaS)')?.score || 0;
+    const tamScore = results.find(r => r.label === 'Technical Account Manager')?.score || 0;
+    const helpdeskScore = results.find(r => r.label === 'Help Desk Agent (L1)')?.score || 0;
+
+    const pass = (condition, msg) => console.log(condition ? `  ✅ PASS: ${msg}` : `  ❌ FAIL: ${msg}`);
+
+    pass(callCenterScore < 30, `Call Center Rep (${callCenterScore}) < 30`);
+    pass(helpdeskScore < 30, `Help Desk Agent (${helpdeskScore}) < 30`);
+    pass(basicScore < saasScore, `Basic Support (${basicScore}) < SaaS Integration (${saasScore})`);
+    pass(csmScore > 50, `Strategic CSM (${csmScore}) > 50`);
+    pass(tamScore > 50, `Technical Account Manager (${tamScore}) > 50`);
+    pass(saasScore > 50, `SaaS Integration Engineer (${saasScore}) > 50`);
+    pass(tamScore > basicScore, `TAM (${tamScore}) > Basic Support (${basicScore})`);
+    pass(csmScore > callCenterScore, `CSM (${csmScore}) > Call Center (${callCenterScore})`);
 }
+
 run();
