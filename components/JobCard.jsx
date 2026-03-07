@@ -275,10 +275,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
                         className="group flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-blue-600 transition-colors py-1 px-3 rounded-full hover:bg-blue-50"
                     >
                         {(() => {
-                            const usedCount = typeof window !== 'undefined' ? parseInt(localStorage.getItem('midas_ds_count') || '0', 10) : 0;
-                            const isPaywalled = usedCount >= 100 && !analysis;
-
-                            if (isPaywalled) {
+                            if (analysis?.isBlurredTeaser) {
                                 return (
                                     <>
                                         <Lock className="w-3.5 h-3.5 group-hover:text-amber-500 transition-colors" />
