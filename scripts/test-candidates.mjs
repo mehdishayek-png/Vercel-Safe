@@ -2,18 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Simple polyfill for loading .env.local without external dependencies
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const envPath = path.resolve(__dirname, '../.env.local');
-if (fs.existsSync(envPath)) {
-    const envConfig = fs.readFileSync(envPath, 'utf8').split('\n');
-    for (const line of envConfig) {
-        const match = line.match(/^([A-Z0-9_]+)=(.*)$/);
-        if (match) {
-            process.env[match[1]] = match[2].trim().replace(/^"|"$/g, '').replace(/^'|'$/g, '');
-        }
-    }
-}
+import 'dotenv/config'; // Automatically loads .env and .env.local
 
 import { fetchAllJobs } from '../lib/job-fetcher.js';
 import { calculatePandaScore } from '../lib/panda-matcher.js';
@@ -49,7 +38,11 @@ const candidates = [
 ];
 
 async function runSimulation() {
-    console.log('--- 🐼 PANDA MATCHER REAL WORLD SIMULATION ---\n');
+    console.log('\n--- 🐼 PANDA MATCHER REAL WORLD SIMULATION ---\n');
+
+    // Force development mode so the SERP_DIAGNOSTIC logs print out
+    process.env.NODE_ENV = 'development';
+    const serapiKey = process.env.SERP_API_KEY;
 
     for (const candidate of candidates) {
         console.log(`\n============ 👤 ${candidate.name} (${candidate.profile.experience_years} years exp) ============`);
