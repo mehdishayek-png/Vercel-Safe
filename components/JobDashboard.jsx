@@ -659,7 +659,6 @@ export function JobDashboard({ apiKeys, onBack }) {
                         </div>
                     </div>
 
-                    <ResumeStrength profile={profile} onTokensUpdated={refreshTokens} />
 
                     {/* Token Balance Card */}
                     <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-4 shadow-sm">
