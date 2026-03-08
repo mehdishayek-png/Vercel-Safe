@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import crypto from 'crypto';
+import { Redis } from '@upstash/redis';
 import { creditTokens, TOKEN_PACK_SIZE } from '@/lib/tokens';
+
+const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    ? new Redis({ url: process.env.UPSTASH_REDIS_REST_URL, token: process.env.UPSTASH_REDIS_REST_TOKEN })
+    : null;
 
 export async function POST(request) {
     try {
@@ -23,11 +28,31 @@ export async function POST(request) {
         const isAuthentic = expectedSignature === razorpay_signature;
 
         if (isAuthentic) {
-            // 3. Credit tokens server-side if user is authenticated
+            // 3. Idempotency check — prevent double-crediting the same payment
+            const idempotencyKey = `payment:${razorpay_payment_id}`;
+            if (redis) {
+                const alreadyProcessed = await redis.get(idempotencyKey);
+                if (alreadyProcessed) {
+                    return NextResponse.json({
+                        success: true,
+                        tokens: TOKEN_PACK_SIZE,
+                        balance: alreadyProcessed,
+                        serverCredited: true,
+                        message: "Payment already processed"
+                    });
+                }
+            }
+
+            // 4. Credit tokens server-side if user is authenticated
             let serverCredit = { success: false };
             if (userId) {
                 serverCredit = await creditTokens(userId, TOKEN_PACK_SIZE);
                 console.log(`[Payment] Credited ${TOKEN_PACK_SIZE} tokens to user ${userId}. New balance: ${serverCredit.balance}`);
+
+                // Mark payment as processed (TTL 7 days)
+                if (redis && serverCredit.success) {
+                    await redis.set(idempotencyKey, serverCredit.balance, { ex: 7 * 86400 });
+                }
             } else {
                 console.warn('[Payment] Payment verified but no authenticated user — tokens will only be in localStorage');
             }

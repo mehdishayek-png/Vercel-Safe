@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { getDeepScanCount, incrementDeepScan, deductToken, FREE_DEEP_SCANS } from '@/lib/tokens';
+import { getDeepScanCount, incrementDeepScan, deductToken, FREE_DEEP_SCANS, isAdmin as checkIsAdmin } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 
 export const maxDuration = 30;
@@ -9,10 +9,10 @@ export async function POST(request) {
     try {
         const { userId } = await auth();
 
-        const isAdmin = process.env.ADMIN_USER_ID && userId === process.env.ADMIN_USER_ID;
+        const adminUser = await checkIsAdmin(userId);
 
         // Rate limiting — 30 requests per minute per user
-        if (!isAdmin) {
+        if (!adminUser) {
             const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
             const rl = await rateLimit(rateLimitId, 30, 60);
             if (!rl.allowed) {
@@ -31,7 +31,7 @@ export async function POST(request) {
         }
 
 
-        if (!isAdmin) {
+        if (!adminUser) {
             const usedCount = await getDeepScanCount(userId);
             if (usedCount >= FREE_DEEP_SCANS) {
                 // Past free limit — need tokens
@@ -153,6 +153,6 @@ export async function POST(request) {
 
     } catch (error) {
         console.error('Analysis error:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: 'Analysis failed. Please try again.' }, { status: 500 });
     }
 }

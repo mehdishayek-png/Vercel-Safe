@@ -1,37 +1,37 @@
 import { motion } from 'framer-motion';
-import { Bot, FileText, Zap, Target, BarChart3, MessageSquare } from 'lucide-react';
+import { Brain, FileText, Zap, Target, Globe, ShieldCheck } from 'lucide-react';
 import { Card } from './ui/Card';
 
 const features = [
     {
-        icon: Bot,
-        title: "Autonomous Agent",
-        desc: "Our AI browses job boards, filters for your criteria, and submits applications on your behalf."
+        icon: Brain,
+        title: "10-Layer Scoring Engine",
+        desc: "Every job is scored through 10 independent multipliers — seniority, location, role family, semantic similarity, and more."
     },
     {
         icon: FileText,
-        title: "Resume Optimizer",
-        desc: "Automatically tailors your resume keywords for each specific job description to beat ATS."
+        title: "Instant Resume Parsing",
+        desc: "Drop your PDF and we extract skills, experience level, and job preferences in seconds using AI."
     },
     {
-        icon: MessageSquare,
-        title: "Cover Letter Generator",
-        desc: "Writes distinct, human-like cover letters in seconds based on your experience and the role."
+        icon: Globe,
+        title: "Multi-Source Aggregation",
+        desc: "Pulls jobs from LinkedIn, Indeed, Google Jobs, Naukri, and more — all scored against your profile."
     },
     {
         icon: Target,
-        title: "Smart Matching",
-        desc: "Uses LLMs to score jobs based on actual fit, not just keyword matching."
+        title: "AI Deep Scan",
+        desc: "Get a detailed fit analysis on any job — skill gaps, salary estimates, and an honest verdict powered by LLMs."
     },
     {
         icon: Zap,
-        title: "One-Click Apply",
-        desc: "Apply to multiple jobs at once with a single command. Speed meets precision."
+        title: "Hybrid AI + Heuristic",
+        desc: "Local scoring handles speed. LLM verification handles nuance. Combined for accuracy you can trust."
     },
     {
-        icon: BarChart3,
-        title: "Application Tracker",
-        desc: "Visualize your pipeline. Track sent applications, interviews, and offers in real-time."
+        icon: ShieldCheck,
+        title: "Noise Elimination",
+        desc: "Scams, wrong-country postings, irrelevant roles, and seniority mismatches are killed before you see them."
     }
 ];
 

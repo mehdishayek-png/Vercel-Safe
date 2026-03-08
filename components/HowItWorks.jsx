@@ -9,13 +9,13 @@ const steps = [
     },
     {
         icon: Search,
-        title: "AI Hunts Jobs",
-        desc: "Our agent scans 50+ job boards and scores matches based on your unique profile."
+        title: "AI Scores Jobs",
+        desc: "Our engine scans multiple job boards and ranks matches through 10 scoring multipliers."
     },
     {
         icon: CheckCircle,
-        title: "Get Interviews",
-        desc: "Review high-quality matches and auto-apply. Watch the interview invites roll in."
+        title: "Apply With Confidence",
+        desc: "Review your top-ranked matches with deep fit analysis, then apply to the ones that matter."
     }
 ];
 
