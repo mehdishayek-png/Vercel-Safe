@@ -62,15 +62,8 @@ export function Hero({ onStart, onDemo }) {
                     transition={{ duration: 1, delay: 1 }}
                     className="mt-20 pt-10 border-t border-gray-200"
                 >
-                    <p className="text-sm text-gray-400 uppercase tracking-widest mb-6">Trusted by candidates who got into</p>
-                    <div className="flex flex-wrap justify-center gap-12 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-                        {['Google', 'Netflix', 'Spotify', 'Stripe', 'Airbnb'].map((company) => (
-                            <span key={company} className="text-xl font-bold font-mono text-gray-800">{company}</span>
-                        ))}
-                    </div>
-
                     {/* InfoSec Trust Strip */}
-                    <div className="mt-8 flex flex-wrap justify-center gap-6">
+                    <div className="flex flex-wrap justify-center gap-6">
                         <span className="text-[11px] text-gray-400 flex items-center gap-1.5">🔒 In-memory processing only</span>
                         <span className="text-[11px] text-gray-400 flex items-center gap-1.5">🛡️ Resume never stored on servers</span>
                         <span className="text-[11px] text-gray-400 flex items-center gap-1.5">🚫 Not used for AI model training</span>
