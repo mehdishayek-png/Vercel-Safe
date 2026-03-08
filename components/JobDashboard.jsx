@@ -1,13 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, FileText, Search, Check, AlertCircle, Loader2, X, Plus, MapPin, Globe, Sparkles, List, ShieldCheck, Clock, BrainCircuit } from 'lucide-react';
-import { Button } from './ui/Button';
-import { Card } from './ui/Card';
-import { Input } from './ui/Input';
+import { Upload, Loader2, X, Plus, Sparkles, ShieldCheck, BrainCircuit } from 'lucide-react';
 import { Combobox } from './ui/Combobox';
 import { Header } from './Header';
 import { GuideModal } from './GuideModal';
-import { ResumeStrength } from './ResumeStrength';
 import { FilterPanel } from './FilterPanel';
 import { TokenSection } from './TokenSection';
 import { MatchResultsGrid } from './MatchResultsGrid';
@@ -28,9 +24,9 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [logs, setLogs] = useState([]);
     const [savedJobIds, setSavedJobIds] = useState(new Set());
     const [savedJobsData, setSavedJobsData] = useState([]);
-    const [activeTab, setActiveTab] = useState('matches'); // 'matches' | 'saved'
+    const [activeTab, setActiveTab] = useState('matches');
     const [showGuide, setShowGuide] = useState(false);
-    const [sortBy, setSortBy] = useState('score'); // 'score' | 'latest'
+    const [sortBy, setSortBy] = useState('score');
     const [deepAnalysisProgress, setDeepAnalysisProgress] = useState(null);
     const [confirmClear, setConfirmClear] = useState(false);
     const toast = useToast();
@@ -43,6 +39,9 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [midasSearch, setMidasSearch] = useState(false);
     const [isAdminUser, setIsAdminUser] = useState(false);
     const [tokensLoading, setTokensLoading] = useState(true);
+
+    // Profile readiness collapsible
+    const [readinessOpen, setReadinessOpen] = useState(false);
 
     // Filter state (feature-flagged pre-filter system)
     const {
@@ -62,10 +61,8 @@ export function JobDashboard({ apiKeys, onBack }) {
                 setDailyScanCount(data.dailyScansUsed);
                 setWeeklyMidasScanCount(data.weeklyMidasScansUsed || 0);
                 if (data.isAdmin) setIsAdminUser(true);
-                // Sync to localStorage as display cache
                 localStorage.setItem('midas_tokens', data.tokens.toString());
             } else {
-                // Fallback to localStorage for anonymous users
                 setTokenBalance(parseInt(localStorage.getItem('midas_tokens') || '0', 10));
             }
         } catch {
@@ -75,9 +72,9 @@ export function JobDashboard({ apiKeys, onBack }) {
         }
     }, []);
 
-    // Razorpay hook — replaces inline payment code
+    // Razorpay hook
     const { initiatePayment, isProcessing: isPaymentProcessing } = useRazorpay({
-        onSuccess: async (verifyData) => {
+        onSuccess: async () => {
             await refreshTokens();
             toast('✅ 50 tokens credited! Happy hunting.', 'success');
         },
@@ -100,44 +97,34 @@ export function JobDashboard({ apiKeys, onBack }) {
             logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [logs]);
-    // Data State
+
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
-
     const fileInputRef = useRef(null);
 
-
-    // P0-2: LocalStorage Persistence - Load on mount
+    // Load on mount
     useEffect(() => {
-        // Fetch token balance from server on mount
         refreshTokens();
 
         try {
             const data = getAllCountries();
-            if (data && Array.isArray(data)) {
-                setCountries(data);
-            }
+            if (data && Array.isArray(data)) setCountries(data);
         } catch (err) {
             console.error("Failed to load countries:", err);
         }
 
         try {
             const saved = localStorage.getItem('midas_saved_jobs');
-            if (saved) {
-                setSavedJobIds(new Set(JSON.parse(saved)));
-            }
+            if (saved) setSavedJobIds(new Set(JSON.parse(saved)));
             const savedData = localStorage.getItem('midas_saved_jobs_data');
-            if (savedData) {
-                setSavedJobsData(JSON.parse(savedData));
-            }
+            if (savedData) setSavedJobsData(JSON.parse(savedData));
         } catch (err) {
             console.error("Failed to load saved jobs:", err);
             setSavedJobIds(new Set());
             setSavedJobsData([]);
         }
 
-        // Restore profile from localStorage
         try {
             const storedProfile = localStorage.getItem('midas_profile');
             if (storedProfile) {
@@ -150,18 +137,15 @@ export function JobDashboard({ apiKeys, onBack }) {
             console.error("Failed to restore profile:", err);
         }
 
-        // Restore search results if recent (less than 1 hour old)
         try {
             const storedResults = localStorage.getItem('midas_results');
             if (storedResults) {
                 const { jobs: savedJobs, timestamp } = JSON.parse(storedResults);
                 const ageInMinutes = (Date.now() - timestamp) / 1000 / 60;
-
                 if (ageInMinutes < 60) {
                     setJobs(savedJobs);
                     addLog(`Restored ${savedJobs.length} jobs from last search (${Math.floor(ageInMinutes)} min ago)`);
                 } else {
-                    // Clear stale results
                     localStorage.removeItem('midas_results');
                 }
             }
@@ -170,15 +154,11 @@ export function JobDashboard({ apiKeys, onBack }) {
         }
     }, []);
 
-    // P0-2: Save profile to localStorage whenever it changes
+    // Save profile to localStorage whenever it changes
     useEffect(() => {
         if (profile) {
             try {
-                const profileToSave = {
-                    ...profile,
-                    experience_years: experienceYears,
-                    headline: jobTitle
-                };
+                const profileToSave = { ...profile, experience_years: experienceYears, headline: jobTitle };
                 localStorage.setItem('midas_profile', JSON.stringify(profileToSave));
             } catch (err) {
                 console.error("Failed to save profile:", err);
@@ -186,14 +166,11 @@ export function JobDashboard({ apiKeys, onBack }) {
         }
     }, [profile, experienceYears, jobTitle]);
 
-    // P0-2: Save search results after successful search
+    // Save search results after successful search
     useEffect(() => {
         if (jobs.length > 0 && !isMatching) {
             try {
-                localStorage.setItem('midas_results', JSON.stringify({
-                    jobs,
-                    timestamp: Date.now()
-                }));
+                localStorage.setItem('midas_results', JSON.stringify({ jobs, timestamp: Date.now() }));
             } catch (err) {
                 console.error("Failed to save results:", err);
             }
@@ -205,15 +182,11 @@ export function JobDashboard({ apiKeys, onBack }) {
         if (preferences.country) {
             const countryStates = getStatesByCountry(preferences.country);
             setStates(countryStates);
-
-            // If no states available, load cities directly for the country
             if (countryStates.length === 0) {
                 setCities(getCitiesByState(preferences.country, null));
             } else {
                 setCities([]);
             }
-
-            // Reset state and city selection
             setPreferences(prev => ({ ...prev, state: '', city: '' }));
         } else {
             setStates([]);
@@ -263,19 +236,13 @@ export function JobDashboard({ apiKeys, onBack }) {
             setNewSkill('');
             return;
         }
-        setProfile(prev => ({
-            ...prev,
-            skills: [...prev.skills, newSkill.trim()]
-        }));
+        setProfile(prev => ({ ...prev, skills: [...prev.skills, newSkill.trim()] }));
         setNewSkill('');
     };
 
     const handleRemoveSkill = (skillToRemove) => {
         if (!profile) return;
-        setProfile(prev => ({
-            ...prev,
-            skills: prev.skills.filter(s => s !== skillToRemove)
-        }));
+        setProfile(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skillToRemove) }));
     };
 
     // ---- Resume Upload ----
@@ -318,7 +285,6 @@ export function JobDashboard({ apiKeys, onBack }) {
 
                 const locLower = data.profile.location.toLowerCase();
 
-                // 1. Try to match Country
                 const allCountries = Country.getAllCountries();
                 const foundCountry = allCountries.find(c =>
                     locLower.includes(c.name.toLowerCase()) ||
@@ -330,35 +296,23 @@ export function JobDashboard({ apiKeys, onBack }) {
                 if (foundCountry) {
                     matchedCountry = foundCountry.isoCode;
 
-                    // 2. Try to match State within that Country
                     const countryStates = State.getStatesOfCountry(matchedCountry);
                     const foundState = countryStates.find(s =>
                         locLower.includes(s.name.toLowerCase()) ||
-                        // Only match short state codes if they are bounded by commas/spaces to avoid false positives
                         new RegExp(`\\b${s.isoCode.toLowerCase()}\\b`).test(locLower)
                     );
 
                     if (foundState) {
                         matchedState = foundState.isoCode;
-
-                        // 3. Try to match City within that State
                         const stateCities = City.getCitiesOfState(matchedCountry, matchedState);
                         const foundCity = stateCities.find(c => locLower.includes(c.name.toLowerCase()));
-                        if (foundCity) {
-                            matchedCity = foundCity.name;
-                        }
+                        if (foundCity) matchedCity = foundCity.name;
                     } else {
-                        // Fallback: Try to find City just within the Country
                         const countryCities = City.getCitiesOfCountry(matchedCountry);
                         const foundCity = countryCities.find(c => locLower.includes(c.name.toLowerCase()));
-                        if (foundCity) {
-                            matchedCity = foundCity.name;
-                            // If we found a city but no state, we can reverse lookup its state if needed, 
-                            // but setting just Country & City is often enough for the UI.
-                        }
+                        if (foundCity) matchedCity = foundCity.name;
                     }
 
-                    // Apply the matching location to preferences
                     setPreferences(prev => ({
                         ...prev,
                         country: matchedCountry,
@@ -398,13 +352,10 @@ export function JobDashboard({ apiKeys, onBack }) {
         setActiveTab('matches');
         setSearchError(null);
 
-        // Scroll to results area so loading state is visible
         setTimeout(() => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 100);
 
-        // Token / scan limit check — server enforces limits too,
-        // but we check client-side first for instant feedback
         if (midasSearch && tokenBalance < 2 && weeklyMidasScanCount >= 1 && !isAdminUser) {
             setSearchError('Midas Search requires 2 tokens. Purchase tokens or disable Midas Search.');
             setIsMatching(false);
@@ -417,16 +368,13 @@ export function JobDashboard({ apiKeys, onBack }) {
             return;
         }
 
-        // Format location string
         let locationQuery = '';
         if (!preferences.remoteOnly) {
             const countryName = getCountryName(preferences.country);
-            // Construct query: "City, State, Country" or "City, Country"
             const queryParts = [];
             if (preferences.city) queryParts.push(preferences.city);
-            else if (preferences.state) queryParts.push(preferences.state); // Use state code if no city
+            else if (preferences.state) queryParts.push(preferences.state);
             queryParts.push(countryName);
-
             locationQuery = queryParts.join(', ');
         }
 
@@ -441,7 +389,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                         ...preferences,
                         location: locationQuery,
                         midasSearch,
-                        filters, // pre-filter config — passthrough when ADVANCED_FILTERS flag is off
+                        filters,
                     }
                 })
             });
@@ -466,21 +414,18 @@ export function JobDashboard({ apiKeys, onBack }) {
             const data = await res.json();
             const initialMatches = data.matches || [];
 
-            // Set initial jobs immediately (Heuristic match)
             setJobs(initialMatches);
             addLog(`Found ${data.total} jobs, ${initialMatches.length} heuristic matches`);
 
-            // ---- START DEEP ANALYSIS (Top 20) ----
+            // ---- DEEP ANALYSIS (Top 20) ----
             if (initialMatches.length > 0) {
                 const top20 = initialMatches.slice(0, 20);
                 const totalBatches = Math.ceil(top20.length / 4);
                 addLog(`🤖 AI Agent: Starting deep analysis on top ${top20.length} candidates...`);
                 setDeepAnalysisProgress({ current: 0, total: totalBatches });
 
-                // Process in chunks of 4 to avoid rate limits/timeouts
                 const chunkSize = 4;
 
-                // Helper to update a single job WITHOUT re-sorting (prevents scroll jumps)
                 const updateJobWithAnalysis = (jobId, analysis) => {
                     setJobs(currentJobs => {
                         return currentJobs.map(j => {
@@ -488,19 +433,13 @@ export function JobDashboard({ apiKeys, onBack }) {
                                 return { ...j, analysis, match_score: analysis.fit_score || j.match_score };
                             }
                             return j;
-                        })
-                            .filter(j => {
-                                // FILTER OUT: Only hide jobs with AI score < 35 (truly irrelevant)
-                                if (j.analysis?.fit_score && j.analysis.fit_score < 35) {
-                                    return false;
-                                }
-                                return true;
-                            });
-                        // NOTE: No .sort() here — deferred to end to prevent scroll jumps
+                        }).filter(j => {
+                            if (j.analysis?.fit_score && j.analysis.fit_score < 35) return false;
+                            return true;
+                        });
                     });
                 };
 
-                // Process chunks
                 for (let i = 0; i < top20.length; i += chunkSize) {
                     const chunk = top20.slice(i, i + chunkSize);
                     const batchNum = Math.floor(i / chunkSize) + 1;
@@ -519,9 +458,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                         })
                             .then(r => r.json())
                             .then(d => {
-                                if (d.analysis) {
-                                    updateJobWithAnalysis(job.id || job.apply_url, d.analysis);
-                                }
+                                if (d.analysis) updateJobWithAnalysis(job.id || job.apply_url, d.analysis);
                             })
                             .catch(err => console.error(`Failed to analyze ${job.title}`, err))
                     );
@@ -529,7 +466,6 @@ export function JobDashboard({ apiKeys, onBack }) {
                     await Promise.all(promises);
                 }
 
-                // Final sort ONCE after all batches complete (prevents scroll jumps)
                 setJobs(currentJobs => {
                     return [...currentJobs].sort((a, b) => {
                         const scoreA = a.analysis?.fit_score || a.match_score;
@@ -540,12 +476,9 @@ export function JobDashboard({ apiKeys, onBack }) {
 
                 setDeepAnalysisProgress(null);
                 addLog("✨ AI Curation Complete. Jobs sorted by Fit Score.");
-                // Refresh token balance from server after AI analysis
                 refreshTokens();
             }
-            // ---- END DEEP ANALYSIS ----
 
-            // Refresh tokens after search (server deducted during scan)
             refreshTokens();
 
             if (initialMatches.length === 0) {
@@ -564,11 +497,11 @@ export function JobDashboard({ apiKeys, onBack }) {
         }
     };
 
-    // P0-2: Clear all data function
+    // Clear all data
     const clearAllData = () => {
         if (!confirmClear) {
             setConfirmClear(true);
-            setTimeout(() => setConfirmClear(false), 3000); // Reset after 3s
+            setTimeout(() => setConfirmClear(false), 3000);
             return;
         }
         setConfirmClear(false);
@@ -591,14 +524,10 @@ export function JobDashboard({ apiKeys, onBack }) {
         toast('All data cleared.', 'success');
     };
 
-    // Paywall applies to ANY scan (even free ones) if the user has no tokens.
-    // This allows free users to see 4 jobs, proving value before asking them to pay for the rest.
     const isPaywalled = !isAdminUser && tokenBalance <= 0;
 
     const displayedJobs = (() => {
-        let list = activeTab === 'saved'
-            ? savedJobsData
-            : [...jobs];
+        let list = activeTab === 'saved' ? savedJobsData : [...jobs];
 
         if (sortBy === 'latest') {
             list.sort((a, b) => {
@@ -606,7 +535,6 @@ export function JobDashboard({ apiKeys, onBack }) {
                     if (!d) return 0;
                     const parsed = new Date(d);
                     if (!isNaN(parsed)) return parsed.getTime();
-                    // Handle relative dates like "3 days ago"
                     const rel = String(d).match(/(\d+)\s*(day|hour|minute|week|month)/i);
                     if (rel) {
                         const units = { minute: 60000, hour: 3600000, day: 86400000, week: 604800000, month: 2592000000 };
@@ -617,12 +545,9 @@ export function JobDashboard({ apiKeys, onBack }) {
                 return parseDate(b.date_posted || b.posted_date) - parseDate(a.date_posted || a.posted_date);
             });
         } else {
-            // Preserve server-provided order (which includes location tie-breakers) when scores are tied
             const listWithIndex = list.map((item, index) => ({ item, index }));
             listWithIndex.sort((A, B) => {
-                const a = A.item;
-                const b = B.item;
-                const scoreDiff = (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0);
+                const scoreDiff = (B.item.analysis?.fit_score || B.item.match_score || 0) - (A.item.analysis?.fit_score || A.item.match_score || 0);
                 if (scoreDiff !== 0) return scoreDiff;
                 return A.index - B.index;
             });
@@ -631,35 +556,344 @@ export function JobDashboard({ apiKeys, onBack }) {
         return list;
     })();
 
+    // Profile readiness checks
+    const readinessChecks = profile ? [
+        { label: "Identity & Core Targets", passed: !!(profile.name && jobTitle), points: 20 },
+        { label: "Semantic Skills Parsed", passed: profile.skills?.length > 0, points: 20 },
+        { label: "High-Signal Expertise", passed: profile.skills?.length >= 5, points: 20 },
+        { label: "Experience Delta Locked", passed: true, points: 20 },
+        { label: "Ready for Deep Scan", passed: true, points: 20 },
+    ] : [];
+    const readinessScore = readinessChecks.reduce((acc, c) => c.passed ? acc + c.points : acc, 0);
+    const freeScansRemaining = Math.max(0, FREE_DAILY_SCANS - dailyScanCount);
+
     return (
-        <div className="min-h-screen pt-24 pb-12 px-4 container mx-auto text-gray-900">
-            <Header onShowGuide={() => setShowGuide(true)} onClearData={clearAllData} />
+        <div className="min-h-screen bg-[#f5f6f8]" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+            <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+            <Header
+                onShowGuide={() => setShowGuide(true)}
+                onClearData={clearAllData}
+                tokenBalance={tokenBalance}
+            />
             <AnimatePresence>
                 {showGuide && <GuideModal onClose={() => setShowGuide(false)} />}
             </AnimatePresence>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-                {/* ---- Left Sidebar: Profile & Controls ---- */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="lg:col-span-4 space-y-6"
-                >
-                    {/* Privacy & Timing Badge */}
-                    <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2 text-[11px] text-gray-500 bg-white/60 p-2 rounded-lg border border-gray-100 shadow-sm">
-                            <ShieldCheck className="w-3.5 h-3.5 text-green-600" />
-                            <span>Privacy First: Resumes are processed in-memory and not used for AI training.</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-[11px] text-gray-500 bg-white/60 p-2 rounded-lg border border-gray-100 shadow-sm">
-                            <Clock className="w-3.5 h-3.5 text-blue-600" />
-                            <span>AI Analysis: Semantic matching takes 1-2 mins to process 10,000+ jobs.</span>
-                        </div>
+            <div className="flex max-w-[1280px] mx-auto px-6 gap-6 pt-[60px]">
+                {/* ---- Left Panel ---- */}
+                <div className="w-[420px] shrink-0 pt-5 pb-10 space-y-4">
+                    {/* Privacy notice */}
+                    <div className="flex items-center gap-1.5 text-xs text-slate-500 p-2 px-3 bg-green-50 rounded-lg border border-green-200">
+                        <ShieldCheck className="w-3.5 h-3.5 text-green-500 shrink-0" />
+                        Resumes processed in-memory only. Never used for training.
                     </div>
 
+                    {/* Profile Readiness — collapsed by default */}
+                    {profile && (
+                        <>
+                            <button
+                                onClick={() => setReadinessOpen(!readinessOpen)}
+                                className="w-full flex items-center justify-between p-2.5 px-3.5 bg-white rounded-[10px] border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
+                            >
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-7 h-7 rounded-full bg-green-100 border-2 border-green-500 flex items-center justify-center text-[11px] font-bold text-green-600">
+                                        ✓
+                                    </div>
+                                    <span className="text-[13px] font-semibold text-gray-900">Profile Ready</span>
+                                    <span className="text-[11px] font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                                        {readinessScore}
+                                    </span>
+                                </div>
+                                <svg
+                                    width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                    stroke="#94a3b8" strokeWidth="2"
+                                    className={`transition-transform duration-200 ${readinessOpen ? 'rotate-180' : ''}`}
+                                >
+                                    <path d="M6 9l6 6 6-6"/>
+                                </svg>
+                            </button>
 
+                            <AnimatePresence>
+                                {readinessOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="bg-white rounded-[10px] border border-gray-200 p-3 px-4 -mt-2 overflow-hidden"
+                                    >
+                                        {readinessChecks.map((check, i) => (
+                                            <div
+                                                key={i}
+                                                className={`flex items-center justify-between py-1.5 text-[13px] text-slate-600 ${i < readinessChecks.length - 1 ? 'border-b border-slate-100' : ''}`}
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={check.passed ? '#22c55e' : '#cbd5e1'} strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                                                    {check.label}
+                                                </div>
+                                                {check.passed && (
+                                                    <span className="text-xs text-green-500 font-semibold">+{check.points}</span>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </>
+                    )}
+
+                    {/* Resume Upload — shown when no profile */}
+                    {!profile && (
+                        <div className="bg-white rounded-xl border border-gray-200 p-5">
+                            <div
+                                onClick={() => fileInputRef.current?.click()}
+                                className="border-2 border-dashed border-gray-200 rounded-xl p-10 text-center cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/30 transition-all"
+                            >
+                                <div className="w-14 h-14 bg-gradient-to-br from-indigo-100 to-violet-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    {isParsing ? <Loader2 className="animate-spin text-indigo-600" /> : <Upload className="text-indigo-600 w-6 h-6" />}
+                                </div>
+                                <p className="text-base font-medium text-gray-900">Upload Resume</p>
+                                <p className="text-xs text-gray-400 mt-1">PDF Only &middot; Max 10MB</p>
+                                <p className="text-[10px] text-gray-400 mt-3 leading-relaxed">🔒 Your resume is processed by AI to extract skills. We never store your file.</p>
+                            </div>
+                            <input ref={fileInputRef} type="file" accept=".pdf" className="hidden" onChange={handleFileUpload} />
+                        </div>
+                    )}
+
+                    {profile && (
+                        <>
+                            {/* Identity Card */}
+                            <div className="bg-white rounded-xl border border-gray-200 p-5">
+                                <div className="text-[11px] font-semibold tracking-[0.06em] text-slate-400 uppercase mb-1">
+                                    Candidate
+                                </div>
+                                <div className="text-lg font-bold text-gray-900 mb-0.5">
+                                    {profile.name}
+                                </div>
+                                <div className="text-[13px] text-slate-500">
+                                    Target:{' '}
+                                    <input
+                                        type="text"
+                                        value={jobTitle}
+                                        onChange={(e) => setJobTitle(e.target.value)}
+                                        className="font-medium text-gray-900 border-none bg-transparent focus:outline-none p-0 inline"
+                                        placeholder="e.g. Senior Frontend Engineer"
+                                        style={{ width: Math.max(180, jobTitle.length * 8) }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Skills Matrix */}
+                            <div className="bg-white rounded-xl border border-gray-200 p-5">
+                                <div className="text-[11px] font-semibold tracking-[0.06em] text-slate-400 uppercase mb-3">
+                                    Skills Matrix
+                                </div>
+                                <div className="flex flex-wrap gap-1.5 mb-3 max-h-40 overflow-y-auto">
+                                    {profile.skills.map((skill) => (
+                                        <span
+                                            key={skill}
+                                            className="inline-flex items-center gap-1.5 px-2.5 py-[5px] rounded-md bg-slate-50 border border-slate-200 text-[12.5px] text-slate-700 font-medium transition-all"
+                                        >
+                                            {skill}
+                                            <button
+                                                onClick={() => handleRemoveSkill(skill)}
+                                                className="text-slate-400 hover:text-red-500 cursor-pointer text-sm leading-none transition-colors"
+                                            >
+                                                &times;
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+                                <div className="flex gap-2">
+                                    <input
+                                        value={newSkill}
+                                        onChange={e => setNewSkill(e.target.value)}
+                                        onKeyDown={e => e.key === 'Enter' && handleAddSkill()}
+                                        placeholder="Add skill..."
+                                        className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-[13px] text-slate-700 bg-slate-50 outline-none focus:border-indigo-500 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.08)] transition-all"
+                                    />
+                                    <button
+                                        onClick={handleAddSkill}
+                                        className="w-9 h-9 rounded-lg border border-slate-200 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 cursor-pointer text-lg text-slate-500 flex items-center justify-center transition-colors"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Experience + Location + Toggles + Scan */}
+                            <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-5">
+                                {/* Experience Level */}
+                                <div>
+                                    <div className="flex justify-between items-baseline mb-2.5">
+                                        <span className="text-[11px] font-semibold tracking-[0.06em] text-slate-400 uppercase">
+                                            Experience Level
+                                        </span>
+                                        <span className="text-[13px] font-semibold text-indigo-500">
+                                            {experienceYears} {experienceYears === 1 ? 'Year' : 'Years'}
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="30"
+                                        step="1"
+                                        value={experienceYears}
+                                        onChange={(e) => setExperienceYears(parseInt(e.target.value))}
+                                        className="w-full accent-indigo-500"
+                                    />
+                                    <div className="flex justify-between text-[11px] text-slate-400 mt-1">
+                                        <span>Entry Level</span>
+                                        <span>Mid-Senior</span>
+                                        <span>Executive</span>
+                                    </div>
+                                </div>
+
+                                {/* Broadcasting Range */}
+                                <div>
+                                    <div className="text-[11px] font-semibold tracking-[0.06em] text-slate-400 uppercase mb-2">
+                                        Broadcasting Range
+                                    </div>
+                                    <Combobox
+                                        options={countries}
+                                        value={preferences.country}
+                                        onChange={(val) => setPreferences(prev => ({ ...prev, country: val }))}
+                                        placeholder="Select Country..."
+                                    />
+
+                                    {!preferences.remoteOnly && (states.length > 0 || cities.length > 0) && (
+                                        <div className="flex gap-3 mt-3">
+                                            {states.length > 0 && (
+                                                <div className="flex-1">
+                                                    <Combobox
+                                                        options={states}
+                                                        value={preferences.state}
+                                                        onChange={(val) => setPreferences(prev => ({ ...prev, state: val }))}
+                                                        placeholder="Select State..."
+                                                        searchPlaceholder="Search states..."
+                                                    />
+                                                </div>
+                                            )}
+                                            {cities.length > 0 && (
+                                                <div className="flex-1">
+                                                    <Combobox
+                                                        options={cities}
+                                                        value={preferences.city}
+                                                        onChange={(val) => setPreferences(prev => ({ ...prev, city: val }))}
+                                                        placeholder="City (Optional)"
+                                                        searchPlaceholder="Search cities..."
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Toggles */}
+                                <div className="flex flex-col gap-2.5">
+                                    <label
+                                        className={`flex items-center gap-2.5 p-2 px-3 rounded-lg border cursor-pointer transition-all text-[13px] font-medium text-slate-700 ${
+                                            preferences.remoteOnly
+                                                ? 'bg-green-50 border-green-200'
+                                                : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+                                        }`}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={preferences.remoteOnly}
+                                            onChange={e => setPreferences(prev => ({ ...prev, remoteOnly: e.target.checked }))}
+                                            className="accent-green-500"
+                                        />
+                                        Global Remote Only
+                                    </label>
+
+                                    {tokensLoading ? (
+                                        <div className="flex items-center gap-3 p-2 px-3 rounded-lg border bg-slate-50 border-slate-200 animate-pulse">
+                                            <div className="w-4 h-4 rounded bg-slate-200" />
+                                            <div className="h-3 bg-slate-200 rounded w-24" />
+                                        </div>
+                                    ) : (
+                                        <label
+                                            className={`flex items-center gap-2.5 p-2 px-3 rounded-lg border cursor-pointer transition-all text-[13px] text-slate-700 ${
+                                                (!isAdminUser && tokenBalance < 2 && weeklyMidasScanCount >= 1)
+                                                    ? 'bg-slate-50 border-slate-200 opacity-60 cursor-not-allowed'
+                                                    : midasSearch
+                                                        ? 'bg-violet-50 border-violet-200'
+                                                        : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+                                            }`}
+                                            onClick={(e) => {
+                                                if (!isAdminUser && tokenBalance < 2 && weeklyMidasScanCount >= 1) e.preventDefault();
+                                            }}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={midasSearch}
+                                                onChange={e => {
+                                                    if (isAdminUser || tokenBalance >= 2 || weeklyMidasScanCount < 1) {
+                                                        setMidasSearch(e.target.checked);
+                                                    }
+                                                }}
+                                                className="accent-violet-600"
+                                            />
+                                            <span className="font-medium">
+                                                ⚡ Super Search
+                                                <span className="font-normal text-slate-400 ml-1.5 text-xs">
+                                                    {isAdminUser ? '(admin — unlimited)' : weeklyMidasScanCount < 1 ? '(1 free this week)' : tokenBalance < 2 ? '(need 2 tokens)' : '(2 tokens)'}
+                                                </span>
+                                            </span>
+                                        </label>
+                                    )}
+                                </div>
+
+                                {/* Scan buttons */}
+                                <div className="flex gap-2.5">
+                                    <button
+                                        onClick={() => setProfile(null)}
+                                        className="flex-1 py-3 rounded-[10px] border border-slate-200 bg-white text-[13px] font-semibold text-slate-500 hover:bg-slate-50 cursor-pointer transition-colors"
+                                    >
+                                        Reset
+                                    </button>
+                                    <button
+                                        onClick={findJobs}
+                                        disabled={isMatching}
+                                        className="flex-[2.5] py-3 rounded-[10px] border-none text-[13px] font-semibold text-white cursor-pointer shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                        style={{ background: 'linear-gradient(135deg, #6366f1, #7c3aed)' }}
+                                    >
+                                        {isMatching ? (
+                                            <span className="flex items-center justify-center gap-2">
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                Scanning...
+                                            </span>
+                                        ) : !isSignedIn
+                                            ? '🔒 Sign in to Scan'
+                                            : midasSearch
+                                                ? isAdminUser || weeklyMidasScanCount < 1 ? '⚡ Super Scan (Free)' : tokenBalance >= 2 ? '⚡ Super Scan (2 tokens)' : '🔒 Need 2 Tokens'
+                                                : `Initialize Scan (${freeScansRemaining} free)`
+                                        }
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Filter Panel */}
+                            <FilterPanel
+                                filters={filters}
+                                flags={flags}
+                                isActive={filtersActive}
+                                activeCount={filterCount}
+                                summary={filterSummary}
+                                toggleWorkArrangement={toggleWorkArrangement}
+                                toggleWorkType={toggleWorkType}
+                                toggleRegion={toggleRegion}
+                                toggleCompanySize={toggleCompanySize}
+                                setSalaryMin={setSalaryMin}
+                                setSalaryCurrency={setSalaryCurrency}
+                                setIncludeMissingSalary={setIncludeMissingSalary}
+                                reset={resetFilters}
+                            />
+                        </>
+                    )}
+
+                    {/* Token upsell */}
                     <TokenSection
                         tokenBalance={tokenBalance}
                         dailyScanCount={dailyScanCount}
@@ -669,221 +903,11 @@ export function JobDashboard({ apiKeys, onBack }) {
                         isPaymentProcessing={isPaymentProcessing}
                     />
 
-                    {/* Filter Panel — feature-flagged pre-filter system */}
-                    <FilterPanel
-                        filters={filters}
-                        flags={flags}
-                        isActive={filtersActive}
-                        activeCount={filterCount}
-                        summary={filterSummary}
-                        toggleWorkArrangement={toggleWorkArrangement}
-                        toggleWorkType={toggleWorkType}
-                        toggleRegion={toggleRegion}
-                        toggleCompanySize={toggleCompanySize}
-                        setSalaryMin={setSalaryMin}
-                        setSalaryCurrency={setSalaryCurrency}
-                        setIncludeMissingSalary={setIncludeMissingSalary}
-                        reset={resetFilters}
-                    />
-
-                    <div className="glass-panel p-6 overflow-hidden relative group">
-                        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-gray-900">
-                            <Sparkles className="w-5 h-5 text-blue-500" />
-                            Commander Profile
-                        </h2>
-
-                        {!profile ? (
-                            <div
-                                onClick={() => fileInputRef.current?.click()}
-                                className="border-2 border-dashed border-gray-200 rounded-xl p-10 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-all group/upload relative overflow-hidden"
-                            >
-                                <div className="absolute inset-0 bg-blue-50/30 scale-0 group-hover/upload:scale-100 transition-transform duration-500 rounded-xl origin-center" />
-                                <div className="relative z-10">
-                                    <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover/upload:shadow-lg transition-all">
-                                        {isParsing ? <Loader2 className="animate-spin text-blue-600" /> : <Upload className="text-blue-600 w-6 h-6" />}
-                                    </div>
-                                    <p className="text-base font-medium text-gray-900">Upload Resume</p>
-                                    <p className="text-xs text-gray-400 mt-1">PDF Only • Max 10MB</p>
-                                    <p className="text-[10px] text-gray-400 mt-3 leading-relaxed">🔒 Your resume is processed by AI to extract skills. We never store your file.</p>
-                                </div>
-                                <input ref={fileInputRef} type="file" accept=".pdf" className="hidden" onChange={handleFileUpload} />
-                            </div>
-                        ) : (
-                            <div className="space-y-6 relative z-10">
-                                {/* Identity */}
-                                <div>
-                                    <div className="font-semibold text-lg text-gray-900">{profile.name}</div>
-                                    <div className="mt-1">
-                                        <label className="text-[10px] tracking-widest text-gray-400 uppercase font-semibold block mb-1">Target Role</label>
-                                        <input
-                                            type="text"
-                                            value={jobTitle}
-                                            onChange={(e) => setJobTitle(e.target.value)}
-                                            className="w-full text-sm font-medium text-gray-900 border-b border-gray-200 focus:border-blue-500 focus:outline-none py-1 bg-transparent placeholder:text-gray-300"
-                                            placeholder="e.g. Senior Frontend Engineer"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Skills */}
-                                <div>
-                                    <label className="text-[10px] tracking-widest text-gray-400 uppercase font-semibold mb-2 block">Skills Matrix</label>
-                                    <div className="flex flex-wrap gap-2 mb-3 max-h-40 overflow-y-auto custom-scrollbar p-1 -m-1">
-                                        {profile.skills.map(s => (
-                                            <span key={s} className="text-xs px-2.5 py-1 rounded-md bg-white border border-gray-200 shadow-sm text-gray-700 flex items-center gap-1.5 group/skill hover:border-blue-300 transition-all">
-                                                {s}
-                                                <button onClick={() => handleRemoveSkill(s)} className="text-gray-400 hover:text-red-500 transition-colors">
-                                                    <X size={12} />
-                                                </button>
-                                            </span>
-                                        ))}
-                                    </div>
-                                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg pr-1 border border-gray-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
-                                        <input
-                                            type="text"
-                                            value={newSkill}
-                                            onChange={(e) => setNewSkill(e.target.value)}
-                                            onKeyDown={(e) => e.key === 'Enter' && handleAddSkill()}
-                                            placeholder="Add skill..."
-                                            className="w-full bg-transparent border-none text-xs px-3 py-2 focus:outline-none text-gray-900 placeholder:text-gray-400"
-                                        />
-                                        <button onClick={handleAddSkill} disabled={!newSkill.trim()} className="p-1 rounded-md bg-white border border-gray-200 hover:bg-blue-50 hover:text-blue-600 text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm">
-                                            <Plus size={14} />
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Experience Level */}
-                                <div>
-                                    <div className="flex justify-between items-center mb-2">
-                                        <label className="text-[10px] tracking-widest text-gray-400 uppercase font-semibold">Experience Level</label>
-                                        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{experienceYears} Years</span>
-                                    </div>
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max="30"
-                                        step="1"
-                                        value={experienceYears}
-                                        onChange={(e) => setExperienceYears(parseInt(e.target.value))}
-                                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                                    />
-                                    <div className="flex justify-between text-[10px] text-gray-400 mt-1">
-                                        <span>Entry Level</span>
-                                        <span>Mid-Senior</span>
-                                        <span>Executive</span>
-                                    </div>
-                                </div>
-
-                                <div className="h-px bg-gray-100" />
-
-                                {/* Targeting */}
-                                <div>
-                                    <h3 className="text-sm font-medium text-gray-900 mb-3 flex items-center gap-2">
-                                        <Globe className="w-4 h-4 text-blue-500" />
-                                        Broadcasting Range
-                                    </h3>
-
-                                    <div className="space-y-3">
-                                        <Combobox
-                                            options={countries}
-                                            value={preferences.country}
-                                            onChange={(val) => setPreferences(prev => ({ ...prev, country: val }))}
-                                            placeholder="Select Country..."
-                                        />
-
-                                        {!preferences.remoteOnly && (states.length > 0 || cities.length > 0) && (
-                                            <div className="flex gap-3">
-                                                {states.length > 0 && (
-                                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="flex-1">
-                                                        <Combobox
-                                                            options={states}
-                                                            value={preferences.state}
-                                                            onChange={(val) => setPreferences(prev => ({ ...prev, state: val }))}
-                                                            placeholder="Select State..."
-                                                            searchPlaceholder="Search states..."
-                                                        />
-                                                    </motion.div>
-                                                )}
-                                                {cities.length > 0 && (
-                                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="flex-1">
-                                                        <Combobox
-                                                            options={cities}
-                                                            value={preferences.city}
-                                                            onChange={(val) => setPreferences(prev => ({ ...prev, city: val }))}
-                                                            placeholder="City (Optional)"
-                                                            searchPlaceholder="Search cities..."
-                                                        />
-                                                    </motion.div>
-                                                )}
-                                            </div>
-                                        )}
-
-                                        <div
-                                            className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${preferences.remoteOnly ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}
-                                            onClick={() => setPreferences(prev => ({ ...prev, remoteOnly: !prev.remoteOnly }))}
-                                        >
-                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${preferences.remoteOnly ? 'bg-blue-500 border-blue-500' : 'border-gray-300 bg-white'}`}>
-                                                {preferences.remoteOnly && <Check className="w-3.5 h-3.5 text-white" />}
-                                            </div>
-                                            <span className={`text-xs font-medium select-none ${preferences.remoteOnly ? 'text-blue-700' : 'text-gray-600'}`}>Global Remote Only</span>
-                                        </div>
-
-                                        {/* Midas Search Toggle */}
-                                        {tokensLoading ? (
-                                            <div className="flex items-center gap-3 p-3 rounded-lg border bg-gray-50 border-gray-200 animate-pulse">
-                                                <div className="w-5 h-5 rounded border border-gray-200 bg-gray-200" />
-                                                <div className="h-3 bg-gray-200 rounded w-24" />
-                                            </div>
-                                        ) : (
-                                            <div
-                                                className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${(!isAdminUser && tokenBalance < 2 && weeklyMidasScanCount >= 1)
-                                                    ? 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'
-                                                    : midasSearch
-                                                        ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 cursor-pointer'
-                                                        : 'bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer'
-                                                    }`}
-                                                onClick={() => (isAdminUser || tokenBalance >= 2 || weeklyMidasScanCount < 1) && setMidasSearch(!midasSearch)}
-                                            >
-                                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${midasSearch ? 'bg-amber-500 border-amber-500' : 'border-gray-300 bg-white'}`}>
-                                                    {midasSearch && <Check className="w-3.5 h-3.5 text-white" />}
-                                                </div>
-                                                <div className="flex-1">
-                                                    <span className={`text-xs font-medium select-none ${midasSearch ? 'text-amber-700' : 'text-gray-600'}`}>✦ Midas Search</span>
-                                                    <span className="text-[10px] text-gray-400 ml-1">
-                                                        {isAdminUser ? '(admin — unlimited)' : weeklyMidasScanCount < 1 ? '(1 free this week)' : tokenBalance < 2 ? '(need 2 tokens)' : '(2 tokens — 2× results)'}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="pt-4 flex gap-3">
-                                        <Button onClick={() => setProfile(null)} variant="outline" size="sm" className="w-1/3 text-xs border-gray-200 text-gray-600 hover:bg-gray-50">Reset</Button>
-                                        <Button onClick={findJobs} isLoading={isMatching} className="w-2/3 text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/30">
-                                            {!isSignedIn
-                                                ? '🔒 Sign in to Scan'
-                                                : midasSearch
-                                                    ? isAdminUser || weeklyMidasScanCount < 1 ? '✦ Midas Scan (Free)' : tokenBalance >= 2 ? '✦ Midas Scan (2 tokens)' : '🔒 Need 2 Tokens'
-                                                    : dailyScanCount < FREE_DAILY_SCANS
-                                                        ? `Scan (${FREE_DAILY_SCANS - dailyScanCount} free today)`
-                                                        : tokenBalance > 0
-                                                            ? `Scan (1 token)`
-                                                            : '🔒 Get Tokens to Scan'}
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
                     {/* Agent Activity Feed */}
-                    <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-xl p-0 h-48 overflow-hidden flex flex-col shadow-sm relative group hover:shadow-md transition-shadow">
-                        <div className="px-4 py-3 bg-white/50 border-b border-gray-100 flex justify-between items-center backdrop-blur-sm sticky top-0 z-10">
+                    <div className="bg-white border border-gray-200 rounded-xl h-48 overflow-hidden flex flex-col">
+                        <div className="px-4 py-3 bg-white border-b border-gray-100 flex justify-between items-center sticky top-0 z-10">
                             <div className="flex items-center gap-2">
-                                <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+                                <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
                                 <span className="text-xs font-semibold text-gray-700 uppercase tracking-wider">Agent Activity</span>
                             </div>
                             <div className="flex items-center gap-1.5">
@@ -909,21 +933,17 @@ export function JobDashboard({ apiKeys, onBack }) {
                                     key={i}
                                     className="flex gap-3 text-gray-600"
                                 >
-                                    <span className="opacity-40 shrink-0">
-                                        {log.time}
-                                    </span>
-                                    <span className="border-l-2 border-blue-100 pl-3 break-words">
-                                        {log.message}
-                                    </span>
+                                    <span className="opacity-40 shrink-0">{log.time}</span>
+                                    <span className="border-l-2 border-indigo-100 pl-3 break-words">{log.message}</span>
                                 </motion.div>
                             ))}
                             <div ref={logsEndRef} />
                         </div>
                     </div>
-                </motion.div>
+                </div>
 
-                {/* ---- Right Col: Results ---- */}
-                <div className="lg:col-span-8" ref={resultsRef}>
+                {/* ---- Right Panel: Results ---- */}
+                <div className="flex-1 pt-5" ref={resultsRef}>
                     <MatchResultsGrid
                         jobs={jobs}
                         activeTab={activeTab}
@@ -949,7 +969,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                 </div>
             </div>
 
-            {/* Fixed Loading Toast - visible from any scroll position */}
+            {/* Fixed Loading Toast */}
             <AnimatePresence>
                 {isMatching && (
                     <motion.div
@@ -960,8 +980,8 @@ export function JobDashboard({ apiKeys, onBack }) {
                     >
                         <div className="flex items-center gap-4">
                             <div className="relative">
-                                <div className="w-10 h-10 rounded-full border-2 border-blue-100 border-t-blue-500 animate-spin" />
-                                <Sparkles className="w-4 h-4 text-blue-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                                <div className="w-10 h-10 rounded-full border-2 border-indigo-100 border-t-indigo-500 animate-spin" />
+                                <Sparkles className="w-4 h-4 text-indigo-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="text-sm font-semibold text-gray-900 mb-1">
@@ -977,9 +997,6 @@ export function JobDashboard({ apiKeys, onBack }) {
                     </motion.div>
                 )}
             </AnimatePresence>
-
-            <div className="fixed top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent pointer-events-none" />
-            <div className="fixed bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent pointer-events-none" />
-        </div >
+        </div>
     );
 }
