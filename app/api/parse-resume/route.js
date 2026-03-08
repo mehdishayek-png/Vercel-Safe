@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { parseResumePDF } from '@/lib/resume-parser';
+import { parseResumePDF, extractSearchStrategy } from '@/lib/resume-parser';
 import { auth } from '@clerk/nextjs/server';
 import { rateLimit } from '@/lib/rate-limit';
 
@@ -36,6 +36,12 @@ export async function POST(request) {
     }
 
     const profile = await parseResumePDF(buffer, apiKey);
+
+    // Enrich with search strategy (non-blocking — failures are graceful)
+    const strategy = await extractSearchStrategy(profile.resume_text || '', profile, apiKey);
+    if (strategy) {
+      profile.search_strategy = strategy;
+    }
 
     return NextResponse.json({ profile });
   } catch (e) {
