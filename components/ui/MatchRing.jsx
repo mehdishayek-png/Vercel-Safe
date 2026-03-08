@@ -1,17 +1,12 @@
 import { motion } from 'framer-motion';
+import { getMatchColor } from '@/lib/match-colors';
 
 export function MatchRing({ score, size = 60, strokeWidth = 4 }) {
     const radius = (size - strokeWidth) / 2;
     const circumference = radius * 2 * Math.PI;
     const offset = circumference - (score / 100) * circumference;
 
-    const getColor = (s) => {
-        if (s >= 80) return "#10b981"; // emerald-500
-        if (s >= 60) return "#3b82f6"; // blue-500
-        return "#9ca3af"; // gray-400
-    };
-
-    const color = getColor(score);
+    const color = getMatchColor(score).hex;
 
     return (
         <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>

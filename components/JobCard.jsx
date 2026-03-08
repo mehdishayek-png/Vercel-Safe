@@ -4,6 +4,7 @@ import { MapPin, Calendar, Building2, ExternalLink, ChevronDown, Check, Bookmark
 import confetti from 'canvas-confetti';
 import { Button } from './ui/Button';
 import { MatchRing } from './ui/MatchRing';
+import { getMatchColor as getMatchColorUtil, getMatchGradient as getMatchGradientUtil } from '@/lib/match-colors';
 import { useRazorpay } from '../lib/useRazorpay';
 import { useToast } from './ui/Toast';
 
@@ -89,18 +90,9 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
     const cleanLocation = stripHtml(job.location);
     const cleanSummary = stripHtml(job.summary || job.description);
 
-    // Confidence color logic (Presentation layer only)
-    const getMatchColor = (score) => {
-        if (score >= 80) return "text-emerald-600";
-        if (score >= 60) return "text-blue-600";
-        return "text-gray-400";
-    };
-
-    const getMatchGradient = (score) => {
-        if (score >= 80) return "from-emerald-500 to-teal-500";
-        if (score >= 60) return "from-indigo-500 to-purple-500";
-        return "from-slate-500 to-slate-600";
-    };
+    // Confidence color logic — centralized in lib/match-colors.js
+    const getMatchColor = (score) => getMatchColorUtil(score).text;
+    const getMatchGradient = (score) => getMatchGradientUtil(score);
 
     const handleExpandWrapper = async (e) => {
         e.stopPropagation();
@@ -390,7 +382,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
                                         {analysis.isBlurredTeaser && (
                                             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center p-6 bg-white/40 rounded-xl backdrop-blur-[2px]">
                                                 <Lock className="w-10 h-10 text-amber-500 mb-3" />
-                                                <h4 className="text-lg font-bold text-gray-900 mb-2">You've used your 3 Free Scans</h4>
+                                                <h4 className="text-lg font-bold text-gray-900 mb-2">You've used your 5 Free Scans</h4>
                                                 <p className="text-sm text-gray-800 mb-4 max-w-sm font-medium drop-shadow-sm">Unlock this job's precise match gaps, hidden signals, and salary estimates (along with 50 others) for just ₹399.</p>
                                                 <Button
                                                     onClick={initiatePayment}
