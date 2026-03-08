@@ -107,6 +107,8 @@ export async function POST(request) {
 
         2. **SENIORITY CHECK** (STRICT):
            - If job title contains "Senior", "Sr.", "Lead", "Director", "VP", "Principal" AND candidate has <8 years → fit_score MUST be <40.
+           - If job title contains "Manager" or "Supervisor" AND candidate has <6 years → fit_score MUST be <50.
+           - Manager/Supervisor roles typically require 6-8+ years for team leadership, strategy, and cross-functional ownership.
         
         3. **SKILL GAPS** (LENIENT - VERY IMPORTANT):
            - Missing 1-3 skills? **Ignore it.** People learn on the job.
