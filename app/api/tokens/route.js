@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { getTokenBalance, getDailyScanCount, getDeepScanCount, getWeeklySuperScanCount, FREE_DAILY_SCANS, FREE_DEEP_SCANS, isAdmin } from '@/lib/tokens';
+import { getTokenBalance, getDailyScanCount, getDeepScanCount, getWeeklyMidasScanCount, FREE_DAILY_SCANS, FREE_DEEP_SCANS, isAdmin } from '@/lib/tokens';
 
 export const dynamic = 'force-dynamic';
 /**
@@ -38,13 +38,13 @@ export async function GET() {
         const { tokens, source } = await getTokenBalance(userId);
         const dailyScansUsed = await getDailyScanCount(userId);
         const deepScansUsed = await getDeepScanCount(userId);
-        const weeklySuperScansUsed = await getWeeklySuperScanCount(userId);
+        const weeklyMidasScansUsed = await getWeeklyMidasScanCount(userId);
 
         return NextResponse.json({
             tokens,
             dailyScansUsed,
             deepScansUsed,
-            weeklySuperScansUsed,
+            weeklyMidasScansUsed,
             freeDailyScans: FREE_DAILY_SCANS,
             freeDeepScans: FREE_DEEP_SCANS,
             source,

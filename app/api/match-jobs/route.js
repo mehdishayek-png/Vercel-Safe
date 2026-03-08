@@ -18,7 +18,7 @@ const ScanPayloadSchema = z.object({
     location: z.string().max(200).optional().default(""),
   }).passthrough(), // Allow other profile fields but strictly validate these
   preferences: z.object({
-    superSearch: z.boolean().optional().default(false),
+    midasSearch: z.boolean().optional().default(false),
     filters: z.any().optional(), // validated lower down by validateFilters
   }).passthrough().optional().default({}),
   apiKeys: z.any().optional()
@@ -62,7 +62,7 @@ export async function POST(request) {
     }
 
     // Server-side scan limit enforcement — applies to ALL users
-    const scanCheck = await canScan(userId, preferences?.superSearch);
+    const scanCheck = await canScan(userId, preferences?.midasSearch);
     if (!scanCheck.allowed) {
       return NextResponse.json({
         error: scanCheck.error,
@@ -74,8 +74,8 @@ export async function POST(request) {
     // Deduct: free scan or token
     if (!scanCheck.adminPass) {
       if (scanCheck.isFree) {
-        if (scanCheck.isSuperSearchFree) {
-          await import('@/lib/tokens').then(m => m.incrementWeeklySuperScan(userId));
+        if (scanCheck.isMidasSearchFree) {
+          await import('@/lib/tokens').then(m => m.incrementWeeklyMidasScan(userId));
         } else {
           await incrementDailyScan(userId);
         }

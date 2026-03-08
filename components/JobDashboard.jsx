@@ -37,10 +37,10 @@ export function JobDashboard({ apiKeys, onBack }) {
 
     const [tokenBalance, setTokenBalance] = useState(0);
     const [dailyScanCount, setDailyScanCount] = useState(0);
-    const [weeklySuperScanCount, setWeeklySuperScanCount] = useState(0);
-    const FREE_DAILY_SCANS = 100; // Paywall removed for today
-    const FREE_VISIBLE_JOBS = 100; // Removed paywall for today as requested
-    const [superSearch, setSuperSearch] = useState(false);
+    const [weeklyMidasScanCount, setWeeklyMidasScanCount] = useState(0);
+    const FREE_DAILY_SCANS = 3;
+    const FREE_VISIBLE_JOBS = 100;
+    const [midasSearch, setMidasSearch] = useState(false);
     const [isAdminUser, setIsAdminUser] = useState(false);
     const [tokensLoading, setTokensLoading] = useState(true);
 
@@ -60,7 +60,7 @@ export function JobDashboard({ apiKeys, onBack }) {
             if (data.source !== 'anonymous' && data.source !== 'local') {
                 setTokenBalance(data.tokens);
                 setDailyScanCount(data.dailyScansUsed);
-                setWeeklySuperScanCount(data.weeklySuperScansUsed || 0);
+                setWeeklyMidasScanCount(data.weeklyMidasScansUsed || 0);
                 if (data.isAdmin) setIsAdminUser(true);
                 // Sync to localStorage as display cache
                 localStorage.setItem('midas_tokens', data.tokens.toString());
@@ -405,13 +405,13 @@ export function JobDashboard({ apiKeys, onBack }) {
 
         // Token / scan limit check — server enforces limits too,
         // but we check client-side first for instant feedback
-        if (superSearch && tokenBalance < 2 && weeklySuperScanCount >= 1 && !isAdminUser) {
-            setSearchError('Super Search requires 2 tokens. Purchase tokens or disable Super Search.');
+        if (midasSearch && tokenBalance < 2 && weeklyMidasScanCount >= 1 && !isAdminUser) {
+            setSearchError('Midas Search requires 2 tokens. Purchase tokens or disable Midas Search.');
             setIsMatching(false);
             return;
         }
-        const isFreeScan = !superSearch && dailyScanCount < FREE_DAILY_SCANS;
-        if (!isFreeScan && !superSearch && tokenBalance <= 0 && !isAdminUser) {
+        const isFreeScan = !midasSearch && dailyScanCount < FREE_DAILY_SCANS;
+        if (!isFreeScan && !midasSearch && tokenBalance <= 0 && !isAdminUser) {
             setSearchError('You\'ve used your free daily scans. Purchase tokens to continue searching.');
             setIsMatching(false);
             return;
@@ -440,7 +440,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                     preferences: {
                         ...preferences,
                         location: locationQuery,
-                        superSearch,
+                        midasSearch,
                         filters, // pre-filter config — passthrough when ADVANCED_FILTERS flag is off
                     }
                 })
@@ -850,7 +850,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                                             <span className={`text-xs font-medium select-none ${preferences.remoteOnly ? 'text-blue-700' : 'text-gray-600'}`}>Global Remote Only</span>
                                         </div>
 
-                                        {/* Super Search Toggle */}
+                                        {/* Midas Search Toggle */}
                                         {tokensLoading ? (
                                             <div className="flex items-center gap-3 p-3 rounded-lg border bg-gray-50 border-gray-200 animate-pulse">
                                                 <div className="w-5 h-5 rounded border border-gray-200 bg-gray-200" />
@@ -858,21 +858,21 @@ export function JobDashboard({ apiKeys, onBack }) {
                                             </div>
                                         ) : (
                                             <div
-                                                className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${(!isAdminUser && tokenBalance < 2 && weeklySuperScanCount >= 1)
+                                                className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${(!isAdminUser && tokenBalance < 2 && weeklyMidasScanCount >= 1)
                                                     ? 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'
-                                                    : superSearch
+                                                    : midasSearch
                                                         ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 cursor-pointer'
                                                         : 'bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer'
                                                     }`}
-                                                onClick={() => (isAdminUser || tokenBalance >= 2 || weeklySuperScanCount < 1) && setSuperSearch(!superSearch)}
+                                                onClick={() => (isAdminUser || tokenBalance >= 2 || weeklyMidasScanCount < 1) && setMidasSearch(!midasSearch)}
                                             >
-                                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${superSearch ? 'bg-amber-500 border-amber-500' : 'border-gray-300 bg-white'}`}>
-                                                    {superSearch && <Check className="w-3.5 h-3.5 text-white" />}
+                                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${midasSearch ? 'bg-amber-500 border-amber-500' : 'border-gray-300 bg-white'}`}>
+                                                    {midasSearch && <Check className="w-3.5 h-3.5 text-white" />}
                                                 </div>
                                                 <div className="flex-1">
-                                                    <span className={`text-xs font-medium select-none ${superSearch ? 'text-amber-700' : 'text-gray-600'}`}>⚡ Super Search</span>
+                                                    <span className={`text-xs font-medium select-none ${midasSearch ? 'text-amber-700' : 'text-gray-600'}`}>✦ Midas Search</span>
                                                     <span className="text-[10px] text-gray-400 ml-1">
-                                                        {isAdminUser ? '(admin — unlimited)' : weeklySuperScanCount < 1 ? '(1 free scan this week)' : tokenBalance < 2 ? '(need 2 tokens)' : '(2 tokens per scan, 3× sources)'}
+                                                        {isAdminUser ? '(admin — unlimited)' : weeklyMidasScanCount < 1 ? '(1 free this week)' : tokenBalance < 2 ? '(need 2 tokens)' : '(2 tokens — 2× results)'}
                                                     </span>
                                                 </div>
                                             </div>
@@ -884,10 +884,10 @@ export function JobDashboard({ apiKeys, onBack }) {
                                         <Button onClick={findJobs} isLoading={isMatching} className="w-2/3 text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/30">
                                             {!isSignedIn
                                                 ? '🔒 Sign in to Scan'
-                                                : superSearch
-                                                    ? isAdminUser || weeklySuperScanCount < 1 ? 'Super Scan (Free)' : tokenBalance >= 2 ? 'Super Scan (2 tokens)' : '🔒 Need 2 Tokens'
+                                                : midasSearch
+                                                    ? isAdminUser || weeklyMidasScanCount < 1 ? '✦ Midas Scan (Free)' : tokenBalance >= 2 ? '✦ Midas Scan (2 tokens)' : '🔒 Need 2 Tokens'
                                                     : dailyScanCount < FREE_DAILY_SCANS
-                                                        ? `Initialize Scan (${FREE_DAILY_SCANS - dailyScanCount} free)`
+                                                        ? `Scan (${FREE_DAILY_SCANS - dailyScanCount} free today)`
                                                         : tokenBalance > 0
                                                             ? `Scan (1 token)`
                                                             : '🔒 Get Tokens to Scan'}
