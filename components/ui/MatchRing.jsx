@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { getMatchColor } from '@/lib/match-colors';
 
-export function MatchRing({ score, size = 60, strokeWidth = 4 }) {
+export function MatchRing({ score, size = 56, strokeWidth = 3.5 }) {
     const radius = (size - strokeWidth) / 2;
     const circumference = radius * 2 * Math.PI;
     const offset = circumference - (score / 100) * circumference;
@@ -16,7 +16,7 @@ export function MatchRing({ score, size = 60, strokeWidth = 4 }) {
                     cx={size / 2}
                     cy={size / 2}
                     r={radius}
-                    stroke="#e5e7eb"
+                    stroke="#f3f4f6"
                     strokeWidth={strokeWidth}
                     fill="transparent"
                 />
@@ -24,7 +24,7 @@ export function MatchRing({ score, size = 60, strokeWidth = 4 }) {
                 <motion.circle
                     initial={{ strokeDashoffset: circumference }}
                     animate={{ strokeDashoffset: offset }}
-                    transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+                    transition={{ duration: 1.2, ease: "easeOut", delay: 0.1 }}
                     cx={size / 2}
                     cy={size / 2}
                     r={radius}
@@ -33,11 +33,10 @@ export function MatchRing({ score, size = 60, strokeWidth = 4 }) {
                     fill="transparent"
                     strokeDasharray={circumference}
                     strokeLinecap="round"
-                    className="drop-shadow-sm"
                 />
             </svg>
-            <div className="absolute inset-0 flex items-center justify-center flex-col">
-                <span className="text-sm font-bold text-gray-900" style={{ color }}>{score}</span>
+            <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-[13px] font-bold" style={{ color }}>{score}</span>
             </div>
         </div>
     );

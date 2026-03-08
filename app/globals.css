@@ -2,25 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* Mac-inspired Brilliant White Theme */
-  --bg-deep: #F5F5F7;
-  /* Apple Light Gray */
-  --bg-panel: rgba(255, 255, 255, 0.7);
-  --primary-accent: #007AFF;
-  /* System Blue */
-  --secondary-accent: #5856D6;
-  /* System Indigo */
-  --text-primary: #1D1D1F;
-  /* Apple Dark Gray */
-  --text-secondary: rgba(60, 60, 67, 0.6);
-  /* Label Color */
-  --border-color: rgba(0, 0, 0, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.4);
-  --hover-bg: rgba(0, 0, 0, 0.05);
-  --system-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --bg-app: #f8f9fb;
+  --bg-card: #ffffff;
+  --primary: #4f46e5;
+  --primary-light: #6366f1;
+  --accent: #7c3aed;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --border: #e5e7eb;
+  --border-light: #f3f4f6;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
 }
 
 * {
@@ -28,22 +25,18 @@
 }
 
 body {
-  font-family: var(--system-font);
-  background-color: var(--bg-deep);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-app);
   color: var(--text-primary);
   margin: 0;
   min-height: 100vh;
-  /* Subtle mesh gradient - Airy & Light */
-  background-image:
-    radial-gradient(circle at 50% 0%, rgba(0, 122, 255, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 80% 20%, rgba(88, 86, 214, 0.05) 0%, transparent 30%);
-  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -51,83 +44,46 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: #d1d5db;
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* Glassmorphism Utilities */
-.glass-panel {
-  background: var(--bg-panel);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.08);
-  /* Softer shadow */
-  border-radius: 16px;
-  /* Slightly more rounded */
+  background: #9ca3af;
 }
 
 /* Gradient Text */
 .text-gradient {
-  background: linear-gradient(180deg, #1D1D1F 0%, #434344 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
 
-.text-gradient-accent {
-  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+/* Subtle card hover */
+.card-hover {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
-
-/* Buttons */
-.btn-primary {
-  background: #0A84FF;
-  color: white;
-  font-weight: 500;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  border: none;
-  font-size: 13px;
-  box-shadow: 0 2px 8px rgba(10, 132, 255, 0.3);
-  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+.card-hover:hover {
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.08);
+  border-color: #d1d5db;
 }
-
-.btn-primary:hover {
-  background: #007AFF;
-  transform: translateY(-1px);
-}
-
-/* Scrollbar colors updated to match light theme */
 
 /* Upload Zone */
-.upload-zone-premium {
-  border: 2px dashed var(--border-color);
-  border-radius: 16px;
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
   transition: all 0.2s;
 }
 
-.upload-zone-premium:hover {
-  border-color: var(--secondary-accent);
-  background: rgba(0, 212, 255, 0.05);
-}
-
-.upload-zone-premium.dragging {
-  border-color: var(--primary-accent);
-  background: rgba(111, 66, 193, 0.1);
+.upload-zone:hover {
+  border-color: var(--primary-light);
+  background: rgba(79, 70, 229, 0.03);
 }
 
 /* Accessibility: respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
