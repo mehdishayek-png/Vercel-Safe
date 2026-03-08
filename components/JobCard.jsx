@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles, BrainCircuit, AlertCircle, Loader2, Lock } from 'lucide-react';
+import { MapPin, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles, BrainCircuit, AlertCircle, Loader2, Lock, FileText, Copy, CheckCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Button } from './ui/Button';
 import { MatchRing } from './ui/MatchRing';
@@ -14,6 +14,9 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
     const [analysis, setAnalysis] = useState(null);
     const [analysisError, setAnalysisError] = useState(null);
     const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
+    const [coverLetter, setCoverLetter] = useState(null);
+    const [isLoadingCoverLetter, setIsLoadingCoverLetter] = useState(false);
+    const [copied, setCopied] = useState(false);
     const toast = useToast();
     const { initiatePayment, isProcessing: isPaymentProcessing } = useRazorpay({
         onSuccess: () => {
@@ -28,6 +31,35 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
         if (!isSaved && job.match_score >= 80) {
             confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 }, colors: ['#4f46e5', '#7c3aed', '#10b981'] });
         }
+    };
+
+    const handleCoverLetter = async () => {
+        if (coverLetter) return; // Already generated
+        setIsLoadingCoverLetter(true);
+        try {
+            const res = await fetch('/api/cover-letter', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ job, profile, apiKey: apiKeys?.OPENROUTER_API_KEY }),
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || 'Failed to generate');
+            }
+            const data = await res.json();
+            setCoverLetter(data.letter);
+        } catch (err) {
+            toast(err.message || 'Cover letter failed', 'error');
+        } finally {
+            setIsLoadingCoverLetter(false);
+        }
+    };
+
+    const handleCopy = async () => {
+        if (!coverLetter) return;
+        await navigator.clipboard.writeText(coverLetter);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     const getFormattedDate = (dateString) => {
@@ -301,6 +333,41 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
+                                        )}
+
+                                        {/* Cover Letter Generator */}
+                                        {!analysis.isBlurredTeaser && (
+                                            <div className="mt-3 border-t border-dashed border-surface-200 pt-3">
+                                                {!coverLetter ? (
+                                                    <button
+                                                        onClick={handleCoverLetter}
+                                                        disabled={isLoadingCoverLetter}
+                                                        className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-brand-600 transition-colors py-1.5 px-3 rounded-lg hover:bg-brand-50 cursor-pointer disabled:opacity-50"
+                                                    >
+                                                        {isLoadingCoverLetter ? (
+                                                            <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating...</>
+                                                        ) : (
+                                                            <><FileText className="w-3.5 h-3.5" /> Generate Cover Letter</>
+                                                        )}
+                                                    </button>
+                                                ) : (
+                                                    <div className="bg-surface-50 rounded-lg border border-surface-200 p-3">
+                                                        <div className="flex items-center justify-between mb-2">
+                                                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                                                                <FileText className="w-3.5 h-3.5 text-brand-400" />
+                                                                Cover Letter
+                                                            </h4>
+                                                            <button
+                                                                onClick={handleCopy}
+                                                                className="flex items-center gap-1 text-[10px] font-medium text-gray-400 hover:text-brand-600 transition-colors px-2 py-1 rounded-md hover:bg-brand-50 cursor-pointer"
+                                                            >
+                                                                {copied ? <><CheckCheck className="w-3 h-3 text-emerald-500" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
+                                                            </button>
+                                                        </div>
+                                                        <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-wrap">{coverLetter}</p>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
 

@@ -38,6 +38,7 @@ export default function Home() {
   }
 
   return (
+    <ErrorBoundary>
     <main className="min-h-screen bg-white text-gray-900 overflow-x-hidden selection:bg-brand-100">
       <Header />
       <Hero onStart={() => setView('dashboard')} onDemo={() => document.getElementById('preview')?.scrollIntoView({ behavior: 'smooth' })} />
@@ -96,5 +97,6 @@ export default function Home() {
         </div>
       </footer>
     </main>
+    </ErrorBoundary>
   );
 }

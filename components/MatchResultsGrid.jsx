@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Lock, Search } from 'lucide-react';
+import { Sparkles, Lock, Search, Download } from 'lucide-react';
 import { JobCard } from './JobCard';
 import { ScanningRadar } from './ScanningRadar';
+import { exportJobsToCSV } from '@/lib/export-csv';
 
 export function MatchResultsGrid({
     jobs,
@@ -56,7 +57,16 @@ export function MatchResultsGrid({
                 ))}
 
                 {jobs.length > 0 && (
-                    <div className="ml-auto flex items-center gap-0.5 bg-surface-100 rounded-lg p-0.5">
+                    <div className="ml-auto flex items-center gap-2">
+                    <button
+                        onClick={() => exportJobsToCSV(displayedJobs)}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-gray-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
+                        title="Export to CSV"
+                    >
+                        <Download className="w-3.5 h-3.5" />
+                        CSV
+                    </button>
+                    <div className="flex items-center gap-0.5 bg-surface-100 rounded-lg p-0.5">
                         <button
                             onClick={() => setSortBy('score')}
                             className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
@@ -73,6 +83,7 @@ export function MatchResultsGrid({
                         >
                             Latest
                         </button>
+                    </div>
                     </div>
                 )}
             </div>

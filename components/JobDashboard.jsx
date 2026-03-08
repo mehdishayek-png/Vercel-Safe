@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Loader2, ShieldCheck, BrainCircuit, ChevronDown, Sparkles, Pencil, Compass, Target, Zap, FileText, TrendingUp } from 'lucide-react';
-import { Combobox } from './ui/Combobox';
+import { ShieldCheck, ChevronDown, Sparkles } from 'lucide-react';
 import { Header } from './Header';
 import { GuideModal } from './GuideModal';
 import { FilterPanel } from './FilterPanel';
 import { TokenSection } from './TokenSection';
 import { MatchResultsGrid } from './MatchResultsGrid';
+import { OnboardingPanel } from './dashboard/OnboardingPanel';
+import { CandidatePanel } from './dashboard/CandidatePanel';
+import { ScanControls } from './dashboard/ScanControls';
+import { ActivityLog } from './dashboard/ActivityLog';
 import { getAllCountries, getStatesByCountry, getCitiesByState, getCountryName } from '../lib/location-data';
 import { Country, State, City } from 'country-state-city';
 import { useRazorpay } from '../lib/useRazorpay';
@@ -85,11 +88,6 @@ export function JobDashboard({ apiKeys, onBack }) {
     const [isEditingTitle, setIsEditingTitle] = useState(false);
 
     const resultsRef = useRef(null);
-    const logsEndRef = useRef(null);
-
-    useEffect(() => {
-        if (logsEndRef.current) logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }, [logs]);
 
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
@@ -103,12 +101,28 @@ export function JobDashboard({ apiKeys, onBack }) {
             if (data && Array.isArray(data)) setCountries(data);
         } catch (err) { console.error("Failed to load countries:", err); }
 
-        try {
-            const saved = localStorage.getItem('midas_saved_jobs');
-            if (saved) setSavedJobIds(new Set(JSON.parse(saved)));
-            const savedData = localStorage.getItem('midas_saved_jobs_data');
-            if (savedData) setSavedJobsData(JSON.parse(savedData));
-        } catch (err) { console.error("Failed to load saved jobs:", err); setSavedJobIds(new Set()); setSavedJobsData([]); }
+        // Load saved jobs — try server first, fall back to localStorage
+        (async () => {
+            try {
+                const res = await fetch('/api/saved-jobs');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.source === 'server' && data.jobs.length > 0) {
+                        setSavedJobsData(data.jobs);
+                        setSavedJobIds(new Set(data.jobs.map(j => j.apply_url)));
+                        localStorage.setItem('midas_saved_jobs', JSON.stringify(data.jobs.map(j => j.apply_url)));
+                        localStorage.setItem('midas_saved_jobs_data', JSON.stringify(data.jobs));
+                        return;
+                    }
+                }
+            } catch { /* fall through to localStorage */ }
+            try {
+                const saved = localStorage.getItem('midas_saved_jobs');
+                if (saved) setSavedJobIds(new Set(JSON.parse(saved)));
+                const savedData = localStorage.getItem('midas_saved_jobs_data');
+                if (savedData) setSavedJobsData(JSON.parse(savedData));
+            } catch (err) { console.error("Failed to load saved jobs:", err); setSavedJobIds(new Set()); setSavedJobsData([]); }
+        })();
 
         try {
             const storedProfile = localStorage.getItem('midas_profile');
@@ -177,17 +191,24 @@ export function JobDashboard({ apiKeys, onBack }) {
         const newSavedIds = new Set(savedJobIds);
         const jobId = job.apply_url;
         let newSavedData = [...savedJobsData];
-        if (newSavedIds.has(jobId)) {
-            newSavedIds.delete(jobId);
-            newSavedData = newSavedData.filter(j => j.apply_url !== jobId);
-        } else {
+        const isSaving = !newSavedIds.has(jobId);
+        if (isSaving) {
             newSavedIds.add(jobId);
             newSavedData.push(job);
+        } else {
+            newSavedIds.delete(jobId);
+            newSavedData = newSavedData.filter(j => j.apply_url !== jobId);
         }
         setSavedJobIds(new Set(newSavedIds));
         setSavedJobsData(newSavedData);
         localStorage.setItem('midas_saved_jobs', JSON.stringify(Array.from(newSavedIds)));
         localStorage.setItem('midas_saved_jobs_data', JSON.stringify(newSavedData));
+        // Sync to server in background
+        fetch('/api/saved-jobs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ job, action: isSaving ? 'save' : 'unsave' }),
+        }).catch(() => { /* silent — localStorage is the fallback */ });
     };
 
     const handleAddSkill = () => {
@@ -486,241 +507,33 @@ export function JobDashboard({ apiKeys, onBack }) {
                         </div>
                     )}
 
-                    {/* Resume Upload */}
+                    {/* Resume Upload & Onboarding */}
                     {!profile && (
-                        <>
-                            <div className="bg-white rounded-xl border border-surface-200 p-5">
-                                <div
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="upload-zone p-10 text-center cursor-pointer"
-                                >
-                                    <div className="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mx-auto mb-3">
-                                        {isParsing ? <Loader2 className="animate-spin text-brand-600" /> : <Upload className="text-brand-600 w-5 h-5" />}
-                                    </div>
-                                    <p className="text-sm font-medium text-gray-900">Upload Resume</p>
-                                    <p className="text-xs text-gray-400 mt-1">PDF &middot; Max 10MB</p>
-                                </div>
-                                <input ref={fileInputRef} type="file" accept=".pdf" className="hidden" onChange={handleFileUpload} />
-                            </div>
-
-                            {/* Getting Started Guide */}
-                            <div className="bg-white rounded-xl border border-surface-200 p-5">
-                                <div className="text-[10px] font-semibold tracking-widest text-gray-400 uppercase mb-3">How it works</div>
-                                <div className="space-y-3">
-                                    <div className="flex gap-3 items-start">
-                                        <div className="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center shrink-0 mt-0.5">
-                                            <FileText className="w-3.5 h-3.5 text-brand-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[13px] font-medium text-gray-900">Upload your resume</p>
-                                            <p className="text-[11px] text-gray-400 mt-0.5">We extract your skills, experience, and target role automatically.</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-3 items-start">
-                                        <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0 mt-0.5">
-                                            <Target className="w-3.5 h-3.5 text-emerald-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[13px] font-medium text-gray-900">Refine your profile</p>
-                                            <p className="text-[11px] text-gray-400 mt-0.5">Edit your target title, add or remove skills, and set your preferred location.</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-3 items-start">
-                                        <div className="w-7 h-7 rounded-lg bg-accent-50 flex items-center justify-center shrink-0 mt-0.5">
-                                            <Zap className="w-3.5 h-3.5 text-accent-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[13px] font-medium text-gray-900">Scan the market</p>
-                                            <p className="text-[11px] text-gray-400 mt-0.5">Midas scores thousands of live jobs against your profile in under a minute.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Tips */}
-                            <div className="bg-gradient-to-br from-brand-50 to-accent-50 rounded-xl border border-brand-100 p-5">
-                                <div className="text-[10px] font-semibold tracking-widest text-brand-600 uppercase mb-3">Tips for best results</div>
-                                <ul className="space-y-2 text-[12px] text-gray-600">
-                                    <li className="flex gap-2 items-start">
-                                        <TrendingUp className="w-3.5 h-3.5 text-brand-500 shrink-0 mt-0.5" />
-                                        <span>Use a <strong>specific target title</strong> &mdash; &ldquo;Product Operations Specialist&rdquo; beats &ldquo;Manager&rdquo;</span>
-                                    </li>
-                                    <li className="flex gap-2 items-start">
-                                        <TrendingUp className="w-3.5 h-3.5 text-brand-500 shrink-0 mt-0.5" />
-                                        <span>Add <strong>tools you use</strong> as skills (Zendesk, Jira, Workato) &mdash; not just soft skills</span>
-                                    </li>
-                                    <li className="flex gap-2 items-start">
-                                        <TrendingUp className="w-3.5 h-3.5 text-brand-500 shrink-0 mt-0.5" />
-                                        <span>Set your <strong>experience level</strong> accurately to filter out roles that are too senior or junior</span>
-                                    </li>
-                                    <li className="flex gap-2 items-start">
-                                        <TrendingUp className="w-3.5 h-3.5 text-brand-500 shrink-0 mt-0.5" />
-                                        <span>Try <strong>Explore Adjacent Roles</strong> to discover opportunities outside your exact title</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </>
+                        <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} />
                     )}
 
                     {profile && (
                         <>
-                            {/* Identity */}
-                            <div className="bg-white rounded-xl border border-surface-200 p-5">
-                                <div className="text-[10px] font-semibold tracking-widest text-gray-400 uppercase mb-1">Candidate</div>
-                                <div className="text-lg font-bold text-gray-900 mb-1.5">{profile.name}</div>
-                                <div className="text-[11px] font-semibold tracking-widest text-gray-400 uppercase mb-1">Target Role</div>
-                                {isEditingTitle ? (
-                                    <input
-                                        type="text"
-                                        value={jobTitle}
-                                        onChange={(e) => setJobTitle(e.target.value)}
-                                        onBlur={() => setIsEditingTitle(false)}
-                                        onKeyDown={(e) => { if (e.key === 'Enter') setIsEditingTitle(false); }}
-                                        autoFocus
-                                        className="w-full text-[14px] font-semibold text-gray-900 bg-brand-50 border border-brand-200 rounded-lg px-3 py-2 outline-none focus:border-brand-400 transition-colors"
-                                        placeholder="e.g. Product Operations Specialist"
-                                    />
-                                ) : (
-                                    <button
-                                        onClick={() => setIsEditingTitle(true)}
-                                        className="w-full flex items-center justify-between gap-2 text-left px-3 py-2 rounded-lg border border-surface-200 bg-surface-50 hover:bg-brand-50 hover:border-brand-200 cursor-pointer transition-colors group"
-                                    >
-                                        <span className="text-[14px] font-semibold text-gray-900 truncate">
-                                            {jobTitle || <span className="text-gray-400 font-normal">Click to set target role...</span>}
-                                        </span>
-                                        <Pencil className="w-3.5 h-3.5 text-gray-300 group-hover:text-brand-500 shrink-0 transition-colors" />
-                                    </button>
-                                )}
-                            </div>
+                            <CandidatePanel
+                                profile={profile} jobTitle={jobTitle} setJobTitle={setJobTitle}
+                                isEditingTitle={isEditingTitle} setIsEditingTitle={setIsEditingTitle}
+                                newSkill={newSkill} setNewSkill={setNewSkill}
+                                handleAddSkill={handleAddSkill} handleRemoveSkill={handleRemoveSkill}
+                            />
 
-                            {/* Skills */}
-                            <div className="bg-white rounded-xl border border-surface-200 p-5">
-                                <div className="text-[10px] font-semibold tracking-widest text-gray-400 uppercase mb-3">Skills</div>
-                                <div className="flex flex-wrap gap-1.5 mb-3 max-h-36 overflow-y-auto">
-                                    {profile.skills.map((skill) => (
-                                        <span key={skill} className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-surface-50 border border-surface-200 text-xs text-gray-700 font-medium">
-                                            {skill}
-                                            <button onClick={() => handleRemoveSkill(skill)} className="text-gray-400 hover:text-red-500 cursor-pointer text-sm leading-none">&times;</button>
-                                        </span>
-                                    ))}
-                                </div>
-                                <div className="flex gap-2">
-                                    <input
-                                        value={newSkill}
-                                        onChange={e => setNewSkill(e.target.value)}
-                                        onKeyDown={e => e.key === 'Enter' && handleAddSkill()}
-                                        placeholder="Add skill..."
-                                        className="flex-1 px-3 py-2 rounded-lg border border-surface-200 text-xs text-gray-700 bg-surface-50 outline-none focus:border-brand-500 transition-colors"
-                                    />
-                                    <button onClick={handleAddSkill} className="w-8 h-8 rounded-lg border border-surface-200 bg-surface-50 hover:bg-brand-50 hover:text-brand-600 cursor-pointer text-gray-500 flex items-center justify-center transition-colors">+</button>
-                                </div>
-                            </div>
+                            <ScanControls
+                                experienceYears={experienceYears} setExperienceYears={setExperienceYears}
+                                preferences={preferences} setPreferences={setPreferences}
+                                countries={countries} states={states} cities={cities}
+                                exploreAdjacent={exploreAdjacent} setExploreAdjacent={setExploreAdjacent}
+                                midasSearch={midasSearch} setMidasSearch={setMidasSearch}
+                                tokensLoading={tokensLoading} tokenBalance={tokenBalance}
+                                weeklyMidasScanCount={weeklyMidasScanCount} isAdminUser={isAdminUser}
+                                isMatching={isMatching} isSignedIn={isSignedIn}
+                                freeScansRemaining={freeScansRemaining}
+                                findJobs={findJobs} onReset={() => setProfile(null)}
+                            />
 
-                            {/* Controls */}
-                            <div className="bg-white rounded-xl border border-surface-200 p-5 space-y-5">
-                                {/* Experience */}
-                                <div>
-                                    <div className="flex justify-between items-baseline mb-2">
-                                        <span className="text-[10px] font-semibold tracking-widest text-gray-400 uppercase">Experience</span>
-                                        <span className="text-[13px] font-semibold text-brand-600">{experienceYears}y</span>
-                                    </div>
-                                    <input type="range" min="0" max="30" step="1" value={experienceYears} onChange={(e) => setExperienceYears(parseInt(e.target.value))} className="w-full accent-brand-600" />
-                                    <div className="flex justify-between text-[10px] text-gray-400 mt-1">
-                                        <span>Entry</span><span>Mid</span><span>Senior+</span>
-                                    </div>
-                                </div>
-
-                                {/* Location */}
-                                <div>
-                                    <div className="text-[10px] font-semibold tracking-widest text-gray-400 uppercase mb-2">Location</div>
-                                    <Combobox
-                                        options={countries}
-                                        value={preferences.country}
-                                        onChange={(val) => setPreferences(prev => ({ ...prev, country: val }))}
-                                        placeholder="Country..."
-                                    />
-                                    {!preferences.remoteOnly && (states.length > 0 || cities.length > 0) && (
-                                        <div className="flex gap-2 mt-2">
-                                            {states.length > 0 && (
-                                                <div className="flex-1">
-                                                    <Combobox options={states} value={preferences.state} onChange={(val) => setPreferences(prev => ({ ...prev, state: val }))} placeholder="State..." />
-                                                </div>
-                                            )}
-                                            {cities.length > 0 && (
-                                                <div className="flex-1">
-                                                    <Combobox options={cities} value={preferences.city} onChange={(val) => setPreferences(prev => ({ ...prev, city: val }))} placeholder="City..." />
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Toggles */}
-                                <div className="flex flex-col gap-2">
-                                    <label className={`flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-colors text-xs font-medium ${
-                                        preferences.remoteOnly ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-surface-50 border-surface-200 text-gray-600 hover:bg-surface-100'
-                                    }`}>
-                                        <input type="checkbox" checked={preferences.remoteOnly} onChange={e => setPreferences(prev => ({ ...prev, remoteOnly: e.target.checked }))} className="accent-emerald-500" />
-                                        Remote Only
-                                    </label>
-
-                                    <label className={`flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-colors text-xs ${
-                                        exploreAdjacent ? 'bg-violet-50 border-violet-200 text-violet-700' : 'bg-surface-50 border-surface-200 text-gray-600 hover:bg-surface-100'
-                                    }`}>
-                                        <input type="checkbox" checked={exploreAdjacent} onChange={e => setExploreAdjacent(e.target.checked)} className="accent-violet-500" />
-                                        <span className="font-medium flex items-center gap-1.5">
-                                            <Compass className="w-3.5 h-3.5" />
-                                            Explore Adjacent Roles
-                                        </span>
-                                    </label>
-
-                                    {tokensLoading ? (
-                                        <div className="flex items-center gap-2.5 p-2.5 rounded-lg border bg-surface-50 border-surface-200 animate-pulse">
-                                            <div className="w-4 h-4 rounded bg-surface-200" />
-                                            <div className="h-3 bg-surface-200 rounded w-24" />
-                                        </div>
-                                    ) : (
-                                        <label className={`flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-colors text-xs ${
-                                            (!isAdminUser && tokenBalance < 2 && weeklyMidasScanCount >= 1)
-                                                ? 'bg-surface-50 border-surface-200 opacity-50 cursor-not-allowed'
-                                                : midasSearch ? 'bg-accent-50 border-accent-200 text-accent-700' : 'bg-surface-50 border-surface-200 text-gray-600 hover:bg-surface-100'
-                                        }`} onClick={(e) => { if (!isAdminUser && tokenBalance < 2 && weeklyMidasScanCount >= 1) e.preventDefault(); }}>
-                                            <input type="checkbox" checked={midasSearch}
-                                                onChange={e => { if (isAdminUser || tokenBalance >= 2 || weeklyMidasScanCount < 1) setMidasSearch(e.target.checked); }}
-                                                className="accent-accent-600"
-                                            />
-                                            <span className="font-medium">
-                                                Super Search
-                                                <span className="font-normal text-gray-400 ml-1">
-                                                    {isAdminUser ? '(admin)' : weeklyMidasScanCount < 1 ? '(1 free/wk)' : tokenBalance < 2 ? '(need 2)' : '(2 tokens)'}
-                                                </span>
-                                            </span>
-                                        </label>
-                                    )}
-                                </div>
-
-                                {/* Action buttons */}
-                                <div className="flex gap-2">
-                                    <button onClick={() => setProfile(null)} className="flex-1 py-2.5 rounded-lg border border-surface-200 bg-white text-xs font-medium text-gray-500 hover:bg-surface-50 cursor-pointer transition-colors">
-                                        Reset
-                                    </button>
-                                    <button
-                                        onClick={findJobs}
-                                        disabled={isMatching}
-                                        className="flex-[2.5] py-2.5 rounded-lg border-none text-xs font-semibold text-white cursor-pointer bg-brand-600 hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {isMatching ? (
-                                            <span className="flex items-center justify-center gap-2"><Loader2 className="w-3.5 h-3.5 animate-spin" />Scanning...</span>
-                                        ) : !isSignedIn ? 'Sign in to Scan'
-                                            : midasSearch
-                                                ? isAdminUser || weeklyMidasScanCount < 1 ? 'Super Scan (Free)' : tokenBalance >= 2 ? 'Super Scan (2 tokens)' : 'Need 2 Tokens'
-                                                : `Scan (${freeScansRemaining} free)`
-                                        }
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Filters */}
                             <FilterPanel
                                 filters={filters} flags={flags} isActive={filtersActive} activeCount={filterCount} summary={filterSummary}
                                 toggleWorkArrangement={toggleWorkArrangement} toggleWorkType={toggleWorkType} toggleRegion={toggleRegion} toggleCompanySize={toggleCompanySize}
@@ -733,36 +546,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                     <TokenSection tokenBalance={tokenBalance} dailyScanCount={dailyScanCount} freeDailyScans={FREE_DAILY_SCANS} isAdminUser={isAdminUser} initiatePayment={initiatePayment} isPaymentProcessing={isPaymentProcessing} />
 
                     {/* Activity Log */}
-                    <div className="bg-white border border-surface-200 rounded-xl h-44 overflow-hidden flex flex-col">
-                        <div className="px-4 py-2.5 border-b border-surface-100 flex justify-between items-center">
-                            <div className="flex items-center gap-1.5">
-                                <Sparkles className="w-3 h-3 text-brand-500" />
-                                <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Activity</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <span className="relative flex h-1.5 w-1.5">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                                </span>
-                                <span className="text-[9px] font-medium text-emerald-600">Live</span>
-                            </div>
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-3 space-y-2 font-mono text-[11px]">
-                            {logs.length === 0 && (
-                                <div className="h-full flex flex-col items-center justify-center text-gray-400 opacity-50">
-                                    <BrainCircuit className="w-6 h-6 mb-1.5 stroke-1" />
-                                    <span className="text-[10px]">Waiting...</span>
-                                </div>
-                            )}
-                            {logs.map((log, i) => (
-                                <div key={i} className="flex gap-2 text-gray-500">
-                                    <span className="opacity-40 shrink-0">{log.time}</span>
-                                    <span className="border-l border-surface-200 pl-2 break-words">{log.message}</span>
-                                </div>
-                            ))}
-                            <div ref={logsEndRef} />
-                        </div>
-                    </div>
+                    <ActivityLog logs={logs} />
                 </div>
 
                 {/* Right Panel */}
