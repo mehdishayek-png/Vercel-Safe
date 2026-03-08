@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutGrid, Bookmark, Sparkles, Lock, Search } from 'lucide-react';
+import { Sparkles, Lock, Search } from 'lucide-react';
 import { JobCard } from './JobCard';
 import { ScanningRadar } from './ScanningRadar';
 
@@ -25,41 +25,52 @@ export function MatchResultsGrid({
     findJobs,
     freeVisibleJobs,
 }) {
+    const tabs = [
+        { key: 'matches', label: 'Matches', count: jobs.length },
+        { key: 'saved', label: 'Saved', count: savedJobIds.size },
+    ];
+
     return (
         <>
-            {/* Tab Bar + Sort Controls */}
-            <div className="sticky top-20 z-30 bg-white/80 backdrop-blur-xl border border-white/20 rounded-xl p-2 mb-6 flex items-center justify-between shadow-sm">
-                <div className="flex gap-1">
+            {/* Tab bar */}
+            <div className="flex gap-0 border-b-2 border-gray-200 mb-5">
+                {tabs.map((tab) => (
                     <button
-                        onClick={() => setActiveTab('matches')}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'matches' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
+                        key={tab.key}
+                        onClick={() => setActiveTab(tab.key)}
+                        className={`px-5 py-2.5 text-sm font-semibold flex items-center gap-1.5 -mb-[2px] border-b-2 transition-colors ${
+                            activeTab === tab.key
+                                ? 'text-indigo-500 border-indigo-500'
+                                : 'text-slate-400 border-transparent hover:text-slate-600'
+                        }`}
                     >
-                        <div className="flex items-center gap-2">
-                            <LayoutGrid className="w-4 h-4" />
-                            Matches <span className="opacity-50 text-xs">({jobs.length})</span>
-                        </div>
+                        {tab.label}
+                        <span className={`text-[11px] font-semibold px-1.5 py-px rounded-full ${
+                            activeTab === tab.key
+                                ? 'bg-indigo-50 text-indigo-500'
+                                : 'bg-slate-100 text-slate-400'
+                        }`}>
+                            {tab.count}
+                        </span>
                     </button>
-                    <button
-                        onClick={() => setActiveTab('saved')}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'saved' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
-                    >
-                        <div className="flex items-center gap-2">
-                            <Bookmark className="w-4 h-4" />
-                            Saved <span className="opacity-50 text-xs">({savedJobIds.size})</span>
-                        </div>
-                    </button>
-                </div>
+                ))}
+
+                {/* Sort controls — right aligned */}
                 {jobs.length > 0 && (
-                    <div className="flex gap-1 bg-gray-100/80 rounded-lg p-0.5">
+                    <div className="ml-auto flex items-center gap-1 bg-gray-100 rounded-lg p-0.5 my-1.5">
                         <button
                             onClick={() => setSortBy('score')}
-                            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${sortBy === 'score' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                            className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                                sortBy === 'score' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                            }`}
                         >
                             Top Score
                         </button>
                         <button
                             onClick={() => setSortBy('latest')}
-                            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${sortBy === 'latest' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                            className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                                sortBy === 'latest' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                            }`}
                         >
                             Latest
                         </button>
@@ -67,7 +78,7 @@ export function MatchResultsGrid({
                 )}
             </div>
 
-            {/* Status Area: Scanning / Error / Deep Analysis */}
+            {/* Status Area */}
             <div className="space-y-4">
                 {isMatching && !deepAnalysisProgress && (
                     <ScanningRadar />
@@ -106,7 +117,7 @@ export function MatchResultsGrid({
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="sticky top-2 z-40 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl px-5 py-3.5 shadow-lg shadow-indigo-500/25 flex items-center gap-4"
+                        className="sticky top-2 z-40 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl px-5 py-3.5 shadow-lg shadow-indigo-500/25 flex items-center gap-4"
                     >
                         <div className="relative">
                             <div className="w-8 h-8 rounded-full border-2 border-white/30 border-t-white animate-spin" />
@@ -125,12 +136,14 @@ export function MatchResultsGrid({
 
             {/* Empty State */}
             {displayedJobs.length === 0 && !isMatching && !searchError && (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                    <Search className="w-12 h-12 text-gray-300 mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-600 mb-2">No matches yet</h3>
-                    <p className="text-sm text-gray-400 max-w-sm">
-                        Upload your resume and hit Scan to find jobs matched to your skills.
-                    </p>
+                <div className="flex flex-col items-center justify-center py-20 px-10 text-center bg-white rounded-xl border border-dashed border-gray-300">
+                    <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
+                        <Search className="w-6 h-6 text-slate-400" />
+                    </div>
+                    <div className="text-[15px] font-semibold text-slate-700 mb-1.5">No matches yet</div>
+                    <div className="text-[13px] text-slate-400 max-w-[280px] leading-relaxed">
+                        Initialize a scan to match your profile against 10,000+ jobs. Takes 1–2 minutes.
+                    </div>
                 </div>
             )}
 
@@ -154,7 +167,7 @@ export function MatchResultsGrid({
                                             <button
                                                 onClick={initiatePayment}
                                                 disabled={isPaymentProcessing}
-                                                className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-bold rounded-full hover:from-indigo-500 hover:to-purple-500 transition-all shadow-lg shadow-indigo-500/25 disabled:opacity-50"
+                                                className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-bold rounded-full hover:from-indigo-500 hover:to-violet-500 transition-all shadow-lg shadow-indigo-500/25 disabled:opacity-50"
                                             >
                                                 {isPaymentProcessing ? 'Processing...' : 'Unlock All — Get 50 Tokens for ₹399'}
                                             </button>
