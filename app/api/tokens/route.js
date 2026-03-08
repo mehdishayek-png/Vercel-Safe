@@ -28,6 +28,7 @@ export async function GET() {
                 tokens: 9999,
                 dailyScansUsed: 0,
                 deepScansUsed: 0,
+                weeklyMidasScansUsed: 0,
                 freeDailyScans: 9999,
                 freeDeepScans: 9999,
                 source: 'server',
