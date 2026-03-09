@@ -114,8 +114,15 @@ export async function POST(request) {
       onProgress(`🔍 Pre-filter: ${totalBefore} → ${totalAfter} jobs (${filterSummary})`);
     }
 
+    // Pass query planner insights to matcher for enriched LLM scoring
+    const enrichedPreferences = {
+      ...preferences,
+      roleAnchor,
+      dominantPlatform,
+    };
+
     // Match using the reliable pipeline (keyword + LLM hybrid)
-    const matches = await matchJobs(filteredJobs, profile, apiKeys, onProgress, preferences);
+    const matches = await matchJobs(filteredJobs, profile, apiKeys, onProgress, enrichedPreferences);
 
     return NextResponse.json({
       matches,
