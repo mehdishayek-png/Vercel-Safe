@@ -5,11 +5,10 @@ export function Card({ children, className, hover = false, ...props }) {
     return (
         <motion.div
             initial={hover ? { y: 0 } : undefined}
-            whileHover={hover ? { y: -5 } : undefined}
+            whileHover={hover ? { y: -3 } : undefined}
             className={cn(
-                "relative rounded-2xl border border-gray-200 bg-white/80 backdrop-blur-xl transition-all duration-300",
-                "shadow-sm hover:shadow-lg hover:border-blue-200",
-                "before:absolute before:inset-0 before:-z-10 before:rounded-2xl before:bg-gradient-to-b before:from-white before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity",
+                "relative rounded-xl border border-surface-200 bg-white shadow-card transition-all duration-200",
+                hover && "hover:shadow-card-hover hover:border-surface-300",
                 className
             )}
             {...props}

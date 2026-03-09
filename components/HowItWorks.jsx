@@ -4,47 +4,53 @@ import { Upload, Search, CheckCircle } from 'lucide-react';
 const steps = [
     {
         icon: Upload,
+        num: "01",
         title: "Upload Resume",
-        desc: "Drop your PDF. We extract your skills, experience, and preferences instantly."
+        desc: "Drop your PDF. We extract skills, experience, and preferences in seconds."
     },
     {
         icon: Search,
+        num: "02",
         title: "AI Scores Jobs",
         desc: "Our engine scans multiple job boards and ranks matches through 10 scoring multipliers."
     },
     {
         icon: CheckCircle,
+        num: "03",
         title: "Apply With Confidence",
-        desc: "Review your top-ranked matches with deep fit analysis, then apply to the ones that matter."
+        desc: "Review top-ranked matches with deep fit analysis, then apply to the ones that matter."
     }
 ];
 
 export function HowItWorks() {
     return (
-        <section className="py-32 bg-gradient-to-b from-gray-50/80 to-white relative overflow-hidden">
-            <div className="container mx-auto px-4">
-                <div className="text-center mb-20">
-                    <h2 className="text-4xl md:text-5xl font-bold mb-6">How it works</h2>
+        <section className="py-24 bg-surface-50 relative overflow-hidden">
+            <div className="container mx-auto px-4 max-w-4xl">
+                <div className="text-center mb-16">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">How it works</h2>
+                    <p className="text-gray-500 text-lg">Three steps to your next opportunity.</p>
                 </div>
 
-                <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12">
-                    {/* Connector Line */}
-                    <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
-
+                <div className="space-y-6">
                     {steps.map((s, i) => (
                         <motion.div
                             key={i}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: i * 0.2 }}
-                            className="relative text-center"
+                            transition={{ delay: i * 0.15 }}
+                            className="flex items-start gap-5 bg-white border border-surface-200 rounded-xl p-6"
                         >
-                            <div className="relative mx-auto w-24 h-24 rounded-full bg-white border border-blue-100 flex items-center justify-center mb-8 z-10 shadow-[0_0_30px_-5px_rgba(59,130,246,0.2)]">
-                                <s.icon className="w-10 h-10 text-blue-500" />
+                            <div className="w-12 h-12 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center shrink-0">
+                                <s.icon className="w-5 h-5 text-brand-600" />
                             </div>
-                            <h3 className="text-2xl font-bold mb-4 text-gray-900">{s.title}</h3>
-                            <p className="text-gray-500 max-w-xs mx-auto text-lg">{s.desc}</p>
+                            <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-[10px] font-bold text-brand-400 tracking-wider">{s.num}</span>
+                                    <h3 className="text-lg font-semibold text-gray-900">{s.title}</h3>
+                                </div>
+                                <p className="text-gray-500 text-sm leading-relaxed">{s.desc}</p>
+                            </div>
                         </motion.div>
                     ))}
                 </div>

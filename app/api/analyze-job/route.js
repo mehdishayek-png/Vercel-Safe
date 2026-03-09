@@ -80,10 +80,10 @@ export async function POST(request) {
         const prompt = `
         Role: Expert Career Coach & Recruiter.
         Task: Analyze the fit between a candidate and a job description.
-        
+
         Candidate Profile:
         Headline: ${profile.headline}
-        Experience Years: ${profile.experience_years || 'Not specified'}
+        Experience Years: ${profile.experience_years || 'Not specified'} (THIS IS THE AUTHORITATIVE NUMBER — use this for ALL experience comparisons, do NOT infer a different number from context)
         Skills: ${profile.skills.join(', ')}
         
         Job Description:
@@ -93,15 +93,22 @@ export async function POST(request) {
         Summary: ${job.summary || job.description}
         
         CRITICAL INSTRUCTIONS - READ CAREFULLY:
-        
-        1. **BRUTAL EXPERIENCE GAP RULE** (STRICT): 
-           - If job requires MORE than 5 years beyond candidate's experience, set "fit_score" = 20.
+
+        0. **EXPERIENCE YEARS** (MANDATORY):
+           - The candidate's experience is EXACTLY ${profile.experience_years || 0} years. This number was set by the user.
+           - Do NOT override, guess, or infer a different number from the resume or any other context.
+           - All experience gap calculations MUST use this number.
+
+        1. **BRUTAL EXPERIENCE GAP RULE** (STRICT):
+           - If job requires MORE than 5 years beyond candidate's ${profile.experience_years || 0} years, set "fit_score" = 20.
            - Example: Job needs "15+ years", candidate has 6 years → fit_score = 20.
            - Example: Job needs "10+ years", candidate has 5 years → fit_score = 30.
            - Example: Job needs "8+ years", candidate has 6 years → fit_score = 55.
-        
-        2. **SENIORITY CHECK** (STRICT): 
+
+        2. **SENIORITY CHECK** (STRICT):
            - If job title contains "Senior", "Sr.", "Lead", "Director", "VP", "Principal" AND candidate has <8 years → fit_score MUST be <40.
+           - If job title contains "Manager" or "Supervisor" AND candidate has <6 years → fit_score MUST be <50.
+           - Manager/Supervisor roles typically require 6-8+ years for team leadership, strategy, and cross-functional ownership.
         
         3. **SKILL GAPS** (LENIENT - VERY IMPORTANT):
            - Missing 1-3 skills? **Ignore it.** People learn on the job.

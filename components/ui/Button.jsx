@@ -17,26 +17,26 @@ export function Button({
     ...props
 }) {
     const variants = {
-        primary: "bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 bg-[length:200%_auto] hover:bg-right text-white shadow-lg shadow-blue-600/20 border-0",
-        secondary: "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 shadow-sm",
-        outline: "bg-transparent border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300",
-        ghost: "bg-transparent text-gray-500 hover:text-gray-900 hover:bg-gray-100",
-        glow: "bg-cyan-500/10 text-cyan-600 border border-cyan-500/20 hover:bg-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.1)]"
+        primary: "bg-brand-600 hover:bg-brand-700 text-white shadow-button border-0",
+        secondary: "bg-white border border-surface-200 text-gray-700 hover:bg-surface-50 hover:text-gray-900 shadow-button",
+        outline: "bg-transparent border border-surface-200 text-gray-600 hover:text-gray-900 hover:border-surface-300",
+        ghost: "bg-transparent text-gray-500 hover:text-gray-900 hover:bg-surface-100",
+        accent: "bg-accent-600 hover:bg-accent-700 text-white shadow-button border-0",
     };
 
     const sizes = {
-        sm: "h-8 px-3 text-xs",
-        md: "h-10 px-5 text-sm",
-        lg: "h-12 px-8 text-base",
-        xl: "h-14 px-10 text-lg font-semibold"
+        sm: "h-8 px-3 text-xs rounded-lg",
+        md: "h-10 px-5 text-sm rounded-[10px]",
+        lg: "h-12 px-8 text-base rounded-xl",
+        xl: "h-14 px-10 text-base font-semibold rounded-xl"
     };
 
     return (
         <motion.button
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             className={cn(
-                "relative rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed",
+                "relative font-medium transition-colors duration-150 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
                 variants[variant],
                 sizes[size],
                 className
