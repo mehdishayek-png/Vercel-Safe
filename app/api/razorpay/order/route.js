@@ -1,11 +1,21 @@
 import { NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 import { auth } from '@clerk/nextjs/server';
+import { rateLimit } from '@/lib/rate-limit';
 
 export async function POST(request) {
     try {
         const { userId } = await auth();
         if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+        // Rate limit: 5 order creations per minute per user
+        const rl = await rateLimit(`razorpay:${userId}`, 5, 60);
+        if (!rl.allowed) {
+            return NextResponse.json(
+                { error: 'Too many payment attempts. Please wait a moment.' },
+                { status: 429, headers: { 'Retry-After': String(rl.retryAfter || 60) } }
+            );
+        }
 
         // Initialize Razorpay
         const razorpay = new Razorpay({

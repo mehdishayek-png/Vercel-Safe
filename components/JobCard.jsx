@@ -315,17 +315,31 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
                                                         </div>
                                                     </div>
                                                     <div className="flex-1">
-                                                        <div className="text-[10px] text-gray-400 uppercase font-semibold mb-1.5">Multipliers</div>
+                                                        <div className="text-[10px] text-gray-400 uppercase font-semibold mb-1.5">Match Signals</div>
                                                         <div className="grid grid-cols-2 gap-1.5">
                                                             {Object.entries(job.heuristic_breakdown.multipliers || {}).map(([key, val]) => {
                                                                 const numVal = parseFloat(val);
+                                                                // Convert raw multipliers to user-friendly labels
+                                                                const labels = {
+                                                                    seniority: numVal >= 1.1 ? 'Seniority: Great fit' : numVal >= 0.8 ? 'Seniority: Slight stretch' : numVal >= 0.4 ? 'Seniority: Reach' : 'Seniority: Mismatch',
+                                                                    recency: numVal >= 1.0 ? 'Posted: Fresh' : numVal >= 0.7 ? 'Posted: Recent' : numVal >= 0.4 ? 'Posted: Aging' : 'Posted: Old',
+                                                                    prestige: numVal > 1.0 ? 'Company: Well-known' : 'Company: Neutral',
+                                                                    location: numVal >= 1.3 ? 'Location: Exact match' : numVal >= 1.0 ? 'Location: Good' : numVal >= 0.5 ? 'Location: Remote' : numVal >= 0.1 ? 'Location: Partial' : 'Location: Mismatch',
+                                                                    quality: numVal >= 1.0 ? 'Quality: Good' : 'Quality: Low',
+                                                                    depth: numVal >= 1.1 ? 'Depth: Strong' : numVal >= 0.9 ? 'Depth: Neutral' : 'Depth: Basic role',
+                                                                    roleFamily: numVal >= 1.0 ? 'Career track: Match' : numVal >= 0.6 ? 'Career track: Adjacent' : 'Career track: Different',
+                                                                    negative: numVal >= 1.0 ? null : 'Flagged: Irrelevant',
+                                                                    coherence: numVal >= 1.0 ? null : 'Title: Misleading',
+                                                                    semantic: numVal >= 1.1 ? 'Semantic: Strong' : numVal >= 0.9 ? null : 'Semantic: Weak',
+                                                                };
+                                                                const label = labels[key];
+                                                                if (!label) return null; // Hide neutral/irrelevant signals
                                                                 let colorClass = "bg-surface-50 text-gray-600 border-surface-200";
                                                                 if (numVal > 1.0) colorClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
                                                                 if (numVal < 1.0) colorClass = "bg-rose-50 text-rose-700 border-rose-200";
                                                                 return (
-                                                                    <div key={key} className={`flex justify-between items-center px-2 py-1 rounded-md border text-[10px] font-medium ${colorClass}`}>
-                                                                        <span className="capitalize">{key}</span>
-                                                                        <span className="font-mono font-bold">{val}x</span>
+                                                                    <div key={key} className={`flex items-center px-2 py-1 rounded-md border text-[10px] font-medium ${colorClass}`}>
+                                                                        <span>{label}</span>
                                                                     </div>
                                                                 );
                                                             })}
