@@ -76,18 +76,16 @@ export function ScanControls({
                     </div>
                 ) : (
                     <label className={`flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-colors text-xs ${
-                        (!isAdminUser && tokenBalance < 2 && weeklyMidasScanCount >= 1)
-                            ? 'bg-surface-50 border-surface-200 opacity-50 cursor-not-allowed'
-                            : midasSearch ? 'bg-accent-50 border-accent-200 text-accent-700' : 'bg-surface-50 border-surface-200 text-gray-600 hover:bg-surface-100'
-                    }`} onClick={(e) => { if (!isAdminUser && tokenBalance < 2 && weeklyMidasScanCount >= 1) e.preventDefault(); }}>
+                        midasSearch ? 'bg-accent-50 border-accent-200 text-accent-700' : 'bg-surface-50 border-surface-200 text-gray-600 hover:bg-surface-100'
+                    }`}>{/* Beta: no disabled state. Restore: onClick={(e) => { if (!isAdminUser && tokenBalance < 2 && weeklyMidasScanCount >= 1) e.preventDefault(); }} */}
                         <input type="checkbox" checked={midasSearch}
-                            onChange={e => { if (isAdminUser || tokenBalance >= 2 || weeklyMidasScanCount < 1) setMidasSearch(e.target.checked); }}
+                            onChange={e => setMidasSearch(e.target.checked)} /* Beta: always enabled. Restore: onChange={e => { if (isAdminUser || tokenBalance >= 2 || weeklyMidasScanCount < 1) setMidasSearch(e.target.checked); }} */
                             className="accent-accent-600"
                         />
                         <span className="font-medium">
                             Super Search
                             <span className="font-normal text-gray-400 ml-1">
-                                {isAdminUser ? '(admin)' : weeklyMidasScanCount < 1 ? '(1 free/wk)' : tokenBalance < 2 ? '(need 2)' : '(2 tokens)'}
+                                {'(free)'  /* Beta: all free. Restore: isAdminUser ? '(admin)' : weeklyMidasScanCount < 1 ? '(1 free/wk)' : tokenBalance < 2 ? '(need 2)' : '(2 tokens)' */}
                             </span>
                         </span>
                     </label>
@@ -108,7 +106,7 @@ export function ScanControls({
                         <span className="flex items-center justify-center gap-2"><Loader2 className="w-3.5 h-3.5 animate-spin" />Scanning...</span>
                     ) : !isSignedIn ? 'Sign in to Scan'
                         : midasSearch
-                            ? isAdminUser || weeklyMidasScanCount < 1 ? 'Super Scan (Free)' : tokenBalance >= 2 ? 'Super Scan (2 tokens)' : 'Need 2 Tokens'
+                            ? 'Super Scan (Free)' // Beta: all scans free. Restore: isAdminUser || weeklyMidasScanCount < 1 ? 'Super Scan (Free)' : tokenBalance >= 2 ? 'Super Scan (2 tokens)' : 'Need 2 Tokens'
                             : `Scan (${freeScansRemaining} free)`
                     }
                 </button>

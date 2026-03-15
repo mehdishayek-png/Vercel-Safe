@@ -384,7 +384,8 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
                                             </div>
                                         )}
 
-                                        {analysis.isBlurredTeaser && (
+                                        {/* Paywall overlay — disabled during beta */}
+                                        {false && analysis.isBlurredTeaser && (
                                             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center p-6 bg-white/60 rounded-xl">
                                                 <Lock className="w-8 h-8 text-amber-500 mb-2" />
                                                 <h4 className="text-base font-bold text-gray-900 mb-1">Free scans used</h4>

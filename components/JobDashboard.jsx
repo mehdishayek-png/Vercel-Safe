@@ -294,11 +294,12 @@ export function JobDashboard({ apiKeys, onBack }) {
         setActiveTab('matches');
         setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
 
-        if (midasSearch && tokenBalance < 2 && weeklyMidasScanCount >= 1 && !isAdminUser) {
-            setSearchError('Super Search requires 2 tokens.');
-            setIsMatching(false);
-            return;
-        }
+        // Beta: skip token check for Super Search. Restore before monetizing:
+        // if (midasSearch && tokenBalance < 2 && weeklyMidasScanCount >= 1 && !isAdminUser) {
+        //     setSearchError('Super Search requires 2 tokens.');
+        //     setIsMatching(false);
+        //     return;
+        // }
         const isFreeScan = !midasSearch && dailyScanCount < FREE_DAILY_SCANS;
         if (!isFreeScan && !midasSearch && tokenBalance <= 0 && !isAdminUser) {
             setSearchError('Free daily scans used. Purchase tokens to continue.');
@@ -542,8 +543,8 @@ export function JobDashboard({ apiKeys, onBack }) {
                         </>
                     )}
 
-                    {/* Tokens upsell */}
-                    <TokenSection tokenBalance={tokenBalance} dailyScanCount={dailyScanCount} freeDailyScans={FREE_DAILY_SCANS} isAdminUser={isAdminUser} initiatePayment={initiatePayment} isPaymentProcessing={isPaymentProcessing} />
+                    {/* Tokens upsell — hidden during beta, restore before monetizing */}
+                    {/* <TokenSection tokenBalance={tokenBalance} dailyScanCount={dailyScanCount} freeDailyScans={FREE_DAILY_SCANS} isAdminUser={isAdminUser} initiatePayment={initiatePayment} isPaymentProcessing={isPaymentProcessing} /> */}
 
                     {/* Activity Log */}
                     <ActivityLog logs={logs} />

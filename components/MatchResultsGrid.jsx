@@ -238,7 +238,7 @@ export function MatchResultsGrid({
             <div className="space-y-3 mt-4">
                 <AnimatePresence>
                     {displayedJobs.map((job, i) => {
-                        const shouldBlur = isPaywalled && activeTab === 'matches' && i >= freeVisibleJobs;
+                        const shouldBlur = false; // Beta: all results visible. Restore: isPaywalled && activeTab === 'matches' && i >= freeVisibleJobs;
                         if (shouldBlur && i === freeVisibleJobs) {
                             return (
                                 <div key="paywall-cta">
