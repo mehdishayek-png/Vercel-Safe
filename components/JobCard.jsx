@@ -8,7 +8,7 @@ import { getMatchColor as getMatchColorUtil, getMatchGradient as getMatchGradien
 import { useRazorpay } from '../lib/useRazorpay';
 import { useToast } from './ui/Toast';
 
-export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdated }) {
+export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApplied, onTokensUpdated }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [showFullDescription, setShowFullDescription] = useState(false);
     const [analysis, setAnalysis] = useState(null);
@@ -198,6 +198,20 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
                             >
                                 <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-brand-600' : ''}`} />
                             </button>
+                            {onApply && (
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onApply(job); }}
+                                    aria-label={isApplied ? 'Remove from applied' : 'Mark as applied'}
+                                    className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                                        isApplied
+                                            ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
+                                            : 'bg-white border-surface-200 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50'
+                                    }`}
+                                    title={isApplied ? 'Applied' : 'Mark as Applied'}
+                                >
+                                    <Check className={`w-3.5 h-3.5 ${isApplied ? 'stroke-[3]' : ''}`} />
+                                </button>
+                            )}
                             <Button
                                 size="sm"
                                 onClick={() => {

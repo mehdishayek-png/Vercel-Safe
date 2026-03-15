@@ -19,6 +19,8 @@ export function MatchResultsGrid({
     profile,
     apiKeys,
     toggleSaveJob,
+    toggleAppliedJob,
+    appliedJobIds,
     refreshTokens,
     isPaywalled,
     initiatePayment,
@@ -29,6 +31,7 @@ export function MatchResultsGrid({
     const tabs = [
         { key: 'matches', label: 'Matches', count: jobs.length },
         { key: 'saved', label: 'Saved', count: savedJobIds.size },
+        ...(appliedJobIds?.size > 0 ? [{ key: 'applied', label: 'Applied', count: appliedJobIds.size }] : []),
     ];
 
     return (
@@ -282,6 +285,8 @@ export function MatchResultsGrid({
                                 apiKeys={apiKeys}
                                 onSave={toggleSaveJob}
                                 isSaved={savedJobIds.has(job.apply_url)}
+                                onApply={toggleAppliedJob}
+                                isApplied={appliedJobIds?.has(job.apply_url)}
                                 onTokensUpdated={refreshTokens}
                             />
                         );

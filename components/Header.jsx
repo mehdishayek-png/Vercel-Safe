@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { HelpCircle, Coins } from 'lucide-react';
+import { HelpCircle, Coins, LayoutDashboard } from 'lucide-react';
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { GuideModal } from './GuideModal';
+import Link from 'next/link';
 
 export function Header({ onShowGuide, onClearData, tokenBalance }) {
     const [scrolled, setScrolled] = useState(false);
@@ -47,6 +48,14 @@ export function Header({ onShowGuide, onClearData, tokenBalance }) {
                             Clear
                         </button>
                     )}
+
+                    <Link
+                        href="/dashboard"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-lg transition-colors"
+                    >
+                        <LayoutDashboard className="w-3.5 h-3.5" />
+                        Dashboard
+                    </Link>
 
                     <button
                         onClick={handleGuideClick}
