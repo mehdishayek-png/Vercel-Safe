@@ -5,7 +5,11 @@ export function ActivityLog({ logs }) {
     const logsEndRef = useRef(null);
 
     useEffect(() => {
-        if (logsEndRef.current) logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        // Scroll only within the log container — never scroll the main page
+        const container = logsEndRef.current?.parentElement;
+        if (container) {
+            container.scrollTop = container.scrollHeight;
+        }
     }, [logs]);
 
     return (
