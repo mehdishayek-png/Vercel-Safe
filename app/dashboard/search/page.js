@@ -134,7 +134,7 @@ export default function SearchPage() {
     const findJobs = async () => {
         if (!profile) return;
         setIsMatching(true);
-        setJobs([]);
+        // Don't clear previous jobs — new results will merge in via streaming
         setLogs([]);
         setSearchError(null);
         addLog("Starting job search agent...");
@@ -183,7 +183,8 @@ export default function SearchPage() {
             const reader = res.body.getReader();
             const decoder = new TextDecoder();
             let buffer = '';
-            const seenUrls = new Set();
+            // Seed with existing job URLs to avoid duplicates across scans
+            const seenUrls = new Set(jobs.map(j => j.apply_url).filter(Boolean));
             let totalSourceJobs = 0;
 
             while (true) {
@@ -403,7 +404,7 @@ export default function SearchPage() {
                             weeklyMidasScanCount={weeklyMidasScanCount} isAdminUser={isAdminUser}
                             isMatching={isMatching} isSignedIn={isSignedIn}
                             freeScansRemaining={freeScansRemaining}
-                            findJobs={findJobs} onReset={() => setProfile(null)}
+                            findJobs={findJobs} onReset={() => { /* Reset profile for re-upload but preserve existing job results */ setProfile(null); }}
                         />
 
                         <FilterPanel

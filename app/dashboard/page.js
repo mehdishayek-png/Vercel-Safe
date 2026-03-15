@@ -3,6 +3,7 @@ import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, Target, Clock, Che
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
+import { useUser } from '@clerk/nextjs';
 import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 
@@ -30,6 +31,7 @@ function scoreToDots(score) {
 }
 
 export default function DashboardHome() {
+    const { user } = useUser();
     const {
         profile, jobs, savedJobsData, appliedJobsData,
         isParsing, fileInputRef, setIsParsing, setProfile,
@@ -102,7 +104,7 @@ export default function DashboardHome() {
             <div className="flex items-end justify-between">
                 <div>
                     <h1 className="text-[22px] font-semibold text-gray-900 tracking-tight">
-                        {profile ? `Hi, ${profile.name?.split(' ')[0] || 'there'}` : 'Welcome to Midas Match'}
+                        {user?.firstName ? `Hi, ${user.firstName}` : profile ? `Hi, ${profile.name?.split(' ')[0] || 'there'}` : 'Welcome to Midas Match'}
                     </h1>
                     <p className="text-sm text-gray-400 mt-1">
                         {profile
