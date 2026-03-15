@@ -5,6 +5,7 @@ import confetti from 'canvas-confetti';
 import Link from 'next/link';
 import { Button } from './ui/Button';
 import { MatchRing } from './ui/MatchRing';
+import { CompanyLogo } from './ui/CompanyLogo';
 import { getMatchColor as getMatchColorUtil, getMatchGradient as getMatchGradientUtil } from '@/lib/match-colors';
 import { useRazorpay } from '../lib/useRazorpay';
 import { useToast } from './ui/Toast';
@@ -141,7 +142,8 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                 <div className="flex justify-between items-start gap-4">
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1.5">
+                        <div className="flex items-center gap-2.5 mb-1.5">
+                            <CompanyLogo company={job.company} applyUrl={job.apply_url} size={32} colorIndex={0} />
                             <h3 className="text-[15px] font-semibold text-gray-900 truncate">
                                 <Link
                                     href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}

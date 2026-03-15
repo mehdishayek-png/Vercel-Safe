@@ -3,6 +3,7 @@ import { Briefcase, Search, ExternalLink, Clock, X, CheckCircle, RefreshCw, Star
 import Link from 'next/link';
 import { useApp } from '@/contexts/AppContext';
 import { exportJobsToCSV } from '@/lib/export-csv';
+import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { useState, useRef, useEffect } from 'react';
 
 function DotIndicator({ filled, total = 5 }) {
@@ -319,10 +320,6 @@ export default function ApplicationsPage() {
                             const isSelected = selectedJobs.has(job.apply_url);
                             const score = job.analysis?.fit_score || job.match_score || 0;
                             const dots = getOverallDots(job);
-                            const colorIndex = i % AVATAR_COLORS.length;
-                            const initial = (stripHtml(job.company) || '?').charAt(0).toUpperCase();
-                            const secondInitial = (stripHtml(job.company) || '??').split(/\s/).filter(Boolean)[1]?.charAt(0)?.toUpperCase() || '';
-
                             return (
                                 <div
                                     key={jobId + i}
@@ -340,11 +337,9 @@ export default function ApplicationsPage() {
                                         />
                                     </div>
 
-                                    {/* Job info with avatar */}
+                                    {/* Job info with logo */}
                                     <div className="flex items-center gap-3 min-w-0 pr-4">
-                                        <div className={`w-9 h-9 rounded-full ${AVATAR_COLORS[colorIndex]} flex items-center justify-center text-white text-[12px] font-semibold tracking-tight shrink-0`}>
-                                            {initial}{secondInitial}
-                                        </div>
+                                        <CompanyLogo company={job.company} applyUrl={job.apply_url} size={36} colorIndex={i} />
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-2">
                                                 <Link

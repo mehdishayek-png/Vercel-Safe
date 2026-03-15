@@ -4,11 +4,7 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
-
-const AVATAR_COLORS = [
-    'bg-teal-500', 'bg-sky-500', 'bg-violet-500', 'bg-amber-500',
-    'bg-rose-500', 'bg-emerald-500', 'bg-indigo-500', 'bg-pink-500',
-];
+import { CompanyLogo } from '@/components/ui/CompanyLogo';
 
 function DotIndicator({ filled, total = 5 }) {
     return (
@@ -222,8 +218,6 @@ export default function DashboardHome() {
                     ) : (
                         <div className="divide-y divide-gray-50">
                             {recommendations.map((job, i) => {
-                                const initial = (stripHtml(job.company) || '?').charAt(0).toUpperCase();
-                                const secondInitial = (stripHtml(job.company) || '??').split(/\s/).filter(Boolean)[1]?.charAt(0)?.toUpperCase() || '';
                                 const score = job.match_score || 0;
                                 const dots = scoreToDots(score);
                                 const isSaved = savedJobIds.has(job.apply_url);
@@ -234,9 +228,7 @@ export default function DashboardHome() {
                                         key={job.apply_url || i}
                                         className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 transition-colors group"
                                     >
-                                        <div className={`w-9 h-9 rounded-full ${AVATAR_COLORS[i % AVATAR_COLORS.length]} flex items-center justify-center text-white text-[11px] font-semibold shrink-0`}>
-                                            {initial}{secondInitial}
-                                        </div>
+                                        <CompanyLogo company={job.company} applyUrl={job.apply_url} size={36} colorIndex={i} />
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2">
                                                 <Link
@@ -338,8 +330,6 @@ export default function DashboardHome() {
                     ) : (
                         <div className="divide-y divide-gray-50">
                             {recentApplied.map((job, i) => {
-                                const initial = (stripHtml(job.company) || '?').charAt(0).toUpperCase();
-                                const secondInitial = (stripHtml(job.company) || '??').split(/\s/).filter(Boolean)[1]?.charAt(0)?.toUpperCase() || '';
                                 const score = job.analysis?.fit_score || job.match_score || 0;
                                 return (
                                     <Link
@@ -353,9 +343,7 @@ export default function DashboardHome() {
                                         }}
                                         className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 transition-colors group"
                                     >
-                                        <div className={`w-8 h-8 rounded-full ${AVATAR_COLORS[i % AVATAR_COLORS.length]} flex items-center justify-center text-white text-[10px] font-semibold shrink-0`}>
-                                            {initial}{secondInitial}
-                                        </div>
+                                        <CompanyLogo company={job.company} applyUrl={job.apply_url} size={32} colorIndex={i} />
                                         <div className="flex-1 min-w-0">
                                             <p className="text-[13px] font-medium text-gray-900 truncate group-hover:text-teal-600 transition-colors">{stripHtml(job.title)}</p>
                                             <p className="text-[11px] text-gray-400 truncate">{stripHtml(job.company)}</p>

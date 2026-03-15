@@ -1,10 +1,11 @@
 'use client';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
-import { ArrowLeft, ExternalLink, Bookmark, Check, MapPin, Building2, Clock, Sparkles, BrainCircuit, FileText, Copy, CheckCheck, Loader2, AlertCircle, Briefcase, ChevronRight, GraduationCap, Target, BadgeCheck } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Bookmark, Check, MapPin, Building2, Clock, Sparkles, BrainCircuit, FileText, Copy, CheckCheck, Loader2, AlertCircle, Briefcase, ChevronRight, GraduationCap, Target, BadgeCheck, Eye, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { useApp } from '@/contexts/AppContext';
 import { useToast } from '@/components/ui/Toast';
+import { CompanyLogo } from '@/components/ui/CompanyLogo';
 
 // ---- Utilities ----
 
@@ -74,11 +75,20 @@ function DotIndicator({ filled, total = 5 }) {
     );
 }
 
-function StatBox({ label, value, sublabel, icon: Icon }) {
+function StatBox({ label, value, sublabel, icon: Icon, accentColor = 'teal' }) {
+    const colorMap = {
+        teal: 'bg-teal-50 border-teal-100 text-teal-600',
+        sky: 'bg-sky-50 border-sky-100 text-sky-600',
+        violet: 'bg-violet-50 border-violet-100 text-violet-600',
+        amber: 'bg-amber-50 border-amber-100 text-amber-600',
+    };
+    const iconColor = colorMap[accentColor] || colorMap.teal;
     return (
-        <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
-            <div className="flex items-center justify-center gap-1.5 mb-1">
-                <Icon className="w-3.5 h-3.5 text-gray-400" />
+        <div className="bg-white rounded-xl p-4 text-center border border-gray-100 hover:border-gray-200 transition-colors">
+            <div className="flex items-center justify-center gap-1.5 mb-1.5">
+                <div className={`w-5 h-5 rounded-md flex items-center justify-center ${iconColor}`}>
+                    <Icon className="w-3 h-3" />
+                </div>
                 <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">{label}</span>
             </div>
             <div className="text-xl font-semibold text-gray-900">{value}</div>
@@ -114,13 +124,106 @@ function ScoreRing({ score, size = 64 }) {
     );
 }
 
+function SimilarJobCard({ job, index, onSave, isSaved }) {
+    const score = job.analysis?.fit_score || job.match_score || 0;
+    const accentColors = ['border-l-teal-400', 'border-l-sky-400', 'border-l-violet-400', 'border-l-amber-400', 'border-l-rose-400', 'border-l-indigo-400'];
+    const accent = accentColors[index % accentColors.length];
+
+    return (
+        <div className={`bg-white rounded-lg border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all p-4 border-l-[3px] ${accent}`}>
+            <div className="flex items-start gap-3">
+                <CompanyLogo
+                    company={job.company}
+                    applyUrl={job.apply_url}
+                    size={32}
+                    colorIndex={index}
+                />
+                <div className="flex-1 min-w-0">
+                    <Link
+                        href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                        onClick={() => {
+                            try {
+                                const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                localStorage.setItem(key, JSON.stringify(job));
+                            } catch (e) { /* ignore */ }
+                        }}
+                        className="text-[13px] font-medium text-gray-900 hover:text-teal-600 transition-colors line-clamp-1"
+                    >
+                        {stripHtml(job.title)}
+                    </Link>
+                    <p className="text-[11px] text-gray-400 mt-0.5 truncate">
+                        {stripHtml(job.company)}
+                        {job.location && <> &middot; {stripHtml(job.location)}</>}
+                    </p>
+                </div>
+                {score > 0 && (
+                    <span className={`text-[11px] font-semibold shrink-0 px-1.5 py-0.5 rounded-md ${
+                        score >= 75 ? 'bg-teal-50 text-teal-600' : score >= 55 ? 'bg-amber-50 text-amber-600' : 'bg-gray-50 text-gray-500'
+                    }`}>
+                        {score}%
+                    </span>
+                )}
+            </div>
+
+            {/* Skill tags */}
+            {job.heuristic_breakdown?.matches?.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2.5 ml-[44px]">
+                    {job.heuristic_breakdown.matches.slice(0, 3).map((m, idx) => (
+                        <span key={idx} className="px-1.5 py-0.5 rounded text-[9px] bg-gray-50 border border-gray-100 text-gray-500 font-medium">
+                            {m.skill}
+                        </span>
+                    ))}
+                    {job.heuristic_breakdown.matches.length > 3 && (
+                        <span className="px-1 py-0.5 rounded text-[9px] text-gray-300">
+                            +{job.heuristic_breakdown.matches.length - 3}
+                        </span>
+                    )}
+                </div>
+            )}
+
+            <div className="flex items-center justify-between mt-3 ml-[44px]">
+                {job.source && (
+                    <span className="text-[10px] text-gray-300">{job.source}</span>
+                )}
+                <div className="flex items-center gap-1.5">
+                    <button
+                        onClick={() => onSave(job)}
+                        className={`p-1 rounded transition-colors cursor-pointer ${
+                            isSaved ? 'text-sky-500 bg-sky-50' : 'text-gray-300 hover:text-sky-500 hover:bg-sky-50'
+                        }`}
+                        title={isSaved ? 'Saved' : 'Save'}
+                    >
+                        <Bookmark className={`w-3 h-3 ${isSaved ? 'fill-sky-500' : ''}`} />
+                    </button>
+                    <Link
+                        href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                        onClick={() => {
+                            try {
+                                const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                localStorage.setItem(key, JSON.stringify(job));
+                            } catch (e) { /* ignore */ }
+                        }}
+                        className="flex items-center gap-1 text-[10px] font-medium text-teal-600 hover:text-teal-700 transition-colors"
+                    >
+                        View <ChevronRight className="w-3 h-3" />
+                    </Link>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 // ---- Main Page ----
 
 export default function JobDetailPage() {
     const params = useParams();
     const router = useRouter();
     const toast = useToast();
-    const { savedJobIds, toggleSaveJob, appliedJobIds, toggleAppliedJob, profile, apiKeys, experienceYears: userExperienceYears } = useApp();
+    const {
+        savedJobIds, toggleSaveJob, appliedJobIds, toggleAppliedJob,
+        profile, apiKeys, experienceYears: userExperienceYears,
+        jobs, savedJobsData, recommendations
+    } = useApp();
     const [job, setJob] = useState(null);
     const [coverLetter, setCoverLetter] = useState(null);
     const [isLoadingCoverLetter, setIsLoadingCoverLetter] = useState(false);
@@ -152,6 +255,63 @@ export default function JobDetailPage() {
 
         return { multipliers, matches, analysis, score, skillCount, cleanDescription, requiredExp, requiredEdu };
     }, [job]);
+
+    // Similar jobs — find from cached search results + recommendations
+    const similarJobs = useMemo(() => {
+        if (!job) return [];
+        const currentUrl = job.apply_url;
+        const currentTitle = stripHtml(job.title).toLowerCase();
+        const currentSkills = (job.heuristic_breakdown?.matches || []).map(m => m.skill.toLowerCase());
+        const currentCompany = stripHtml(job.company).toLowerCase();
+
+        // Collect all candidate jobs
+        const allJobs = [
+            ...(jobs || []),
+            ...(savedJobsData || []),
+            ...(recommendations || []),
+        ];
+
+        // Deduplicate by apply_url
+        const seen = new Set([currentUrl]);
+        const candidates = [];
+        for (const j of allJobs) {
+            if (!j.apply_url || seen.has(j.apply_url)) continue;
+            seen.add(j.apply_url);
+            candidates.push(j);
+        }
+
+        // Score similarity
+        const scored = candidates.map(candidate => {
+            let sim = 0;
+            const cTitle = stripHtml(candidate.title).toLowerCase();
+            const cCompany = stripHtml(candidate.company).toLowerCase();
+            const cSkills = (candidate.heuristic_breakdown?.matches || []).map(m => m.skill.toLowerCase());
+
+            // Title word overlap
+            const titleWords = currentTitle.split(/\s+/).filter(w => w.length > 2);
+            const cTitleWords = cTitle.split(/\s+/).filter(w => w.length > 2);
+            const titleOverlap = titleWords.filter(w => cTitleWords.includes(w)).length;
+            sim += titleOverlap * 3;
+
+            // Skill overlap
+            const skillOverlap = currentSkills.filter(s => cSkills.includes(s)).length;
+            sim += skillOverlap * 2;
+
+            // Same company slight boost
+            if (cCompany === currentCompany) sim += 1;
+
+            // Match score factor
+            const cScore = candidate.analysis?.fit_score || candidate.match_score || 0;
+            sim += cScore / 50;
+
+            return { ...candidate, _similarity: sim };
+        });
+
+        return scored
+            .filter(j => j._similarity > 1)
+            .sort((a, b) => b._similarity - a._similarity)
+            .slice(0, 6);
+    }, [job, jobs, savedJobsData, recommendations]);
 
     if (!job || !derived) {
         return (
@@ -250,7 +410,7 @@ export default function JobDetailPage() {
         : cleanDescription.slice(0, DESC_PREVIEW_LENGTH);
 
     return (
-        <div className="max-w-[780px] mx-auto space-y-5 pb-8">
+        <div className="max-w-[1200px] space-y-5 pb-8">
             {/* Back */}
             <button
                 onClick={() => router.back()}
@@ -267,37 +427,45 @@ export default function JobDetailPage() {
 
                 <div className="p-6">
                     <div className="flex items-start justify-between gap-5">
-                        <div className="flex-1 min-w-0">
-                            <h1 className="text-[20px] font-semibold text-gray-900 leading-tight mb-2.5">
-                                {stripHtml(job.title)}
-                            </h1>
-                            <div className="flex flex-wrap items-center gap-2 text-[13px] text-gray-500">
-                                <span className="flex items-center gap-1.5 font-medium text-gray-700">
-                                    <Building2 className="w-4 h-4 text-gray-400" />
-                                    {stripHtml(job.company)}
-                                </span>
-                                <span className="w-px h-4 bg-gray-200" />
-                                <span className="flex items-center gap-1.5">
-                                    <MapPin className="w-4 h-4 text-gray-400" />
-                                    {stripHtml(job.location) || 'Remote'}
-                                </span>
-                                {job.source && (
-                                    <>
-                                        <span className="w-px h-4 bg-gray-200" />
-                                        <span className="px-2 py-0.5 rounded-md bg-gray-50 text-gray-500 border border-gray-200 text-[11px] font-medium">
-                                            via {job.source}
-                                        </span>
-                                    </>
-                                )}
-                                {job.date_posted && (
-                                    <>
-                                        <span className="w-px h-4 bg-gray-200" />
-                                        <span className="flex items-center gap-1 text-gray-400 text-[12px]">
-                                            <Clock className="w-3.5 h-3.5" />
-                                            {stripHtml(job.date_posted)}
-                                        </span>
-                                    </>
-                                )}
+                        <div className="flex items-start gap-4 flex-1 min-w-0">
+                            <CompanyLogo
+                                company={job.company}
+                                applyUrl={job.apply_url}
+                                size={48}
+                                colorIndex={0}
+                            />
+                            <div className="flex-1 min-w-0">
+                                <h1 className="text-[20px] font-semibold text-gray-900 leading-tight mb-2.5">
+                                    {stripHtml(job.title)}
+                                </h1>
+                                <div className="flex flex-wrap items-center gap-2 text-[13px] text-gray-500">
+                                    <span className="flex items-center gap-1.5 font-medium text-gray-700">
+                                        <Building2 className="w-4 h-4 text-gray-400" />
+                                        {stripHtml(job.company)}
+                                    </span>
+                                    <span className="w-px h-4 bg-gray-200" />
+                                    <span className="flex items-center gap-1.5">
+                                        <MapPin className="w-4 h-4 text-gray-400" />
+                                        {stripHtml(job.location) || 'Remote'}
+                                    </span>
+                                    {job.source && (
+                                        <>
+                                            <span className="w-px h-4 bg-gray-200" />
+                                            <span className="px-2 py-0.5 rounded-md bg-gray-50 text-gray-500 border border-gray-200 text-[11px] font-medium">
+                                                via {job.source}
+                                            </span>
+                                        </>
+                                    )}
+                                    {job.date_posted && (
+                                        <>
+                                            <span className="w-px h-4 bg-gray-200" />
+                                            <span className="flex items-center gap-1 text-gray-400 text-[12px]">
+                                                <Clock className="w-3.5 h-3.5" />
+                                                {stripHtml(job.date_posted)}
+                                            </span>
+                                        </>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -311,24 +479,28 @@ export default function JobDetailPage() {
                             value={`${userExperienceYears || 0} yrs`}
                             sublabel={requiredExp ? `Required: ${requiredExp} yrs` : null}
                             icon={Briefcase}
+                            accentColor="teal"
                         />
                         <StatBox
                             label="Skills Matched"
                             value={skillCount}
                             sublabel={`of ${profile?.skills?.length || 0} total`}
                             icon={Target}
+                            accentColor="sky"
                         />
                         <StatBox
                             label="Match Score"
                             value={`${score}%`}
                             sublabel={score >= 75 ? 'Strong match' : score >= 50 ? 'Moderate' : 'Low'}
                             icon={BadgeCheck}
+                            accentColor="violet"
                         />
                         <StatBox
                             label="Education"
                             value={requiredEdu || 'Any'}
                             sublabel={requiredEdu ? 'Required' : 'Not specified'}
                             icon={GraduationCap}
+                            accentColor="amber"
                         />
                     </div>
 
@@ -372,9 +544,9 @@ export default function JobDetailPage() {
                 </div>
             </div>
 
-            {/* ===== TWO-COLUMN LAYOUT ===== */}
-            <div className="grid grid-cols-[1fr,260px] gap-5">
-                {/* Left column */}
+            {/* ===== THREE-COLUMN LAYOUT ===== */}
+            <div className="grid grid-cols-[1fr,280px,280px] gap-5">
+                {/* Left column — Main content */}
                 <div className="space-y-5">
                     {/* Job Description — FULL */}
                     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -497,7 +669,7 @@ export default function JobDetailPage() {
                     </div>
                 </div>
 
-                {/* ===== RIGHT SIDEBAR ===== */}
+                {/* ===== MIDDLE SIDEBAR — Relevance & Skills ===== */}
                 <div className="space-y-5">
                     {/* Relevance Breakdown */}
                     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -613,6 +785,116 @@ export default function JobDetailPage() {
                             </button>
                         </div>
                     )}
+                </div>
+
+                {/* ===== RIGHT SIDEBAR — Similar Jobs ===== */}
+                <div className="space-y-5">
+                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                        <div className="px-4 py-3.5 border-b border-gray-100">
+                            <h2 className="text-[13px] font-semibold text-gray-900 flex items-center gap-2">
+                                <Sparkles className="w-3.5 h-3.5 text-violet-500" />
+                                While you're here
+                            </h2>
+                            <p className="text-[10px] text-gray-400 mt-0.5">Jobs similar to this one</p>
+                        </div>
+
+                        {similarJobs.length > 0 ? (
+                            <div className="p-3 space-y-2.5">
+                                {similarJobs.map((sj, i) => (
+                                    <SimilarJobCard
+                                        key={sj.apply_url || i}
+                                        job={sj}
+                                        index={i}
+                                        onSave={toggleSaveJob}
+                                        isSaved={savedJobIds.has(sj.apply_url)}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="p-6 text-center">
+                                <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center mx-auto mb-3">
+                                    <Briefcase className="w-5 h-5 text-gray-300" />
+                                </div>
+                                <p className="text-[12px] text-gray-400 mb-1">No similar jobs found yet</p>
+                                <p className="text-[11px] text-gray-300 leading-relaxed">
+                                    Run a search first to build your job pool. Similar jobs will appear here automatically.
+                                </p>
+                                <Link
+                                    href="/dashboard/search"
+                                    className="inline-flex items-center gap-1.5 mt-3 text-[12px] font-medium text-teal-600 hover:text-teal-700 transition-colors"
+                                >
+                                    Search Jobs <ChevronRight className="w-3 h-3" />
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Company info card */}
+                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                        <div className="px-4 py-3 border-b border-gray-100">
+                            <h2 className="text-[12px] font-semibold text-gray-900">About the Company</h2>
+                        </div>
+                        <div className="p-4">
+                            <div className="flex items-center gap-3 mb-3">
+                                <CompanyLogo
+                                    company={job.company}
+                                    applyUrl={job.apply_url}
+                                    size={40}
+                                    colorIndex={0}
+                                />
+                                <div>
+                                    <h3 className="text-[13px] font-medium text-gray-900">{stripHtml(job.company)}</h3>
+                                    <p className="text-[11px] text-gray-400">{stripHtml(job.location) || 'Remote'}</p>
+                                </div>
+                            </div>
+
+                            {/* Other jobs from same company */}
+                            {(() => {
+                                const companyName = stripHtml(job.company).toLowerCase();
+                                const sameCompany = [...(jobs || []), ...(savedJobsData || [])]
+                                    .filter(j => j.apply_url !== job.apply_url && stripHtml(j.company).toLowerCase() === companyName)
+                                    .slice(0, 3);
+
+                                if (sameCompany.length === 0) return null;
+
+                                return (
+                                    <div className="mt-3 pt-3 border-t border-gray-100">
+                                        <h4 className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-2">
+                                            More from {stripHtml(job.company)}
+                                        </h4>
+                                        <div className="space-y-2">
+                                            {sameCompany.map((sj, i) => (
+                                                <Link
+                                                    key={i}
+                                                    href={`/dashboard/job/${encodeURIComponent(btoa(sj.apply_url || sj.title))}`}
+                                                    onClick={() => {
+                                                        try {
+                                                            const key = `job_detail_${btoa(sj.apply_url || sj.title)}`;
+                                                            localStorage.setItem(key, JSON.stringify(sj));
+                                                        } catch (e) { /* ignore */ }
+                                                    }}
+                                                    className="block text-[12px] text-gray-600 hover:text-teal-600 transition-colors truncate"
+                                                >
+                                                    {stripHtml(sj.title)}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+
+                            {job.apply_url && (
+                                <a
+                                    href={job.apply_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1.5 mt-3 pt-3 border-t border-gray-100 text-[12px] font-medium text-teal-600 hover:text-teal-700 transition-colors"
+                                >
+                                    View original listing <ExternalLink className="w-3 h-3 opacity-50" />
+                                </a>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
