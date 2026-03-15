@@ -1,5 +1,24 @@
-import { Loader2, Compass } from 'lucide-react';
+import { Loader2, Compass, Info } from 'lucide-react';
+import { useState } from 'react';
 import { Combobox } from '../ui/Combobox';
+
+function Tooltip({ text, children }) {
+    const [show, setShow] = useState(false);
+    return (
+        <span className="relative inline-flex items-center"
+            onMouseEnter={() => setShow(true)}
+            onMouseLeave={() => setShow(false)}
+        >
+            {children}
+            {show && (
+                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-lg bg-gray-900 text-white text-[11px] leading-relaxed w-56 text-center shadow-lg z-50 pointer-events-none">
+                    {text}
+                    <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
+                </span>
+            )}
+        </span>
+    );
+}
 
 export function ScanControls({
     experienceYears, setExperienceYears,
@@ -16,7 +35,12 @@ export function ScanControls({
             {/* Experience */}
             <div>
                 <div className="flex justify-between items-baseline mb-2">
-                    <span className="text-[10px] font-semibold tracking-widest text-gray-400 uppercase">Experience</span>
+                    <span className="text-[10px] font-semibold tracking-widest text-gray-400 uppercase flex items-center gap-1">
+                        Experience
+                        <Tooltip text="Your years of experience. Jobs are scored higher when their seniority level matches your experience.">
+                            <Info className="w-3 h-3 text-gray-400" />
+                        </Tooltip>
+                    </span>
                     <span className="text-[13px] font-semibold text-brand-600">{experienceYears}y</span>
                 </div>
                 <input type="range" min="0" max="30" step="1" value={experienceYears} onChange={(e) => setExperienceYears(parseInt(e.target.value))} className="w-full accent-brand-600" />
@@ -57,16 +81,22 @@ export function ScanControls({
                 }`}>
                     <input type="checkbox" checked={preferences.remoteOnly} onChange={e => setPreferences(prev => ({ ...prev, remoteOnly: e.target.checked }))} className="accent-emerald-500" />
                     Remote Only
+                    <Tooltip text="Only show jobs that are listed as remote or work-from-home. Filters out office-based roles.">
+                        <Info className="w-3.5 h-3.5 text-gray-400 ml-auto shrink-0" />
+                    </Tooltip>
                 </label>
 
                 <label className={`flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-colors text-xs ${
                     exploreAdjacent ? 'bg-violet-50 border-violet-200 text-violet-700' : 'bg-surface-50 border-surface-200 text-gray-600 hover:bg-surface-100'
                 }`}>
                     <input type="checkbox" checked={exploreAdjacent} onChange={e => setExploreAdjacent(e.target.checked)} className="accent-violet-500" />
-                    <span className="font-medium flex items-center gap-1.5">
+                    <span className="font-medium flex items-center gap-1.5 flex-1">
                         <Compass className="w-3.5 h-3.5" />
                         Explore Adjacent Roles
                     </span>
+                    <Tooltip text="Loosens matching to include roles outside your exact career track. Great for career pivots or discovering unexpected fits.">
+                        <Info className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                    </Tooltip>
                 </label>
 
                 {tokensLoading ? (
@@ -82,12 +112,15 @@ export function ScanControls({
                             onChange={e => setMidasSearch(e.target.checked)} /* Beta: always enabled. Restore: onChange={e => { if (isAdminUser || tokenBalance >= 2 || weeklyMidasScanCount < 1) setMidasSearch(e.target.checked); }} */
                             className="accent-accent-600"
                         />
-                        <span className="font-medium">
+                        <span className="font-medium flex-1">
                             Super Search
                             <span className="font-normal text-gray-400 ml-1">
                                 {'(free)'  /* Beta: all free. Restore: isAdminUser ? '(admin)' : weeklyMidasScanCount < 1 ? '(1 free/wk)' : tokenBalance < 2 ? '(need 2)' : '(2 tokens)' */}
                             </span>
                         </span>
+                        <Tooltip text="Fetches deeper results from job boards for wider coverage. Best for niche roles where page 1 results aren't enough.">
+                            <Info className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                        </Tooltip>
                     </label>
                 )}
             </div>
