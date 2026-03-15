@@ -1,8 +1,9 @@
 'use client';
 import { usePathname } from 'next/navigation';
-import { HelpCircle, Coins, Bell } from 'lucide-react';
+import { HelpCircle, Coins, Bell, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import { GuideModal } from './GuideModal';
 import { useApp } from '@/contexts/AppContext';
 
@@ -19,12 +20,21 @@ export function DashboardHeader() {
     const [showGuide, setShowGuide] = useState(false);
 
     const title = PAGE_TITLES[pathname] || 'Dashboard';
+    const isSubpage = pathname !== '/dashboard';
 
     return (
         <>
-            <header className="h-14 px-6 flex items-center justify-between bg-white border-b border-surface-200 shrink-0 sticky top-0 z-40">
-                <div>
-                    <h1 className="text-[15px] font-semibold text-gray-900">{title}</h1>
+            <header className="h-14 px-6 flex items-center justify-between bg-white shrink-0 sticky top-0 z-40 relative">
+                <div className="flex items-center gap-2">
+                    {isSubpage && (
+                        <>
+                            <Link href="/dashboard" className="text-xs text-gray-400 hover:text-brand-600 transition-colors font-medium">
+                                Home
+                            </Link>
+                            <ChevronRight className="w-3 h-3 text-gray-300" />
+                        </>
+                    )}
+                    <h1 className="text-[15px] font-bold text-gray-900">{title}</h1>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -43,6 +53,9 @@ export function DashboardHeader() {
                         <span className="hidden sm:inline">Guide</span>
                     </button>
                 </div>
+
+                {/* Gradient bottom border */}
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-400 via-accent-400 to-emerald-400 opacity-40" />
             </header>
 
             <AnimatePresence>

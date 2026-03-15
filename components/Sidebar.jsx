@@ -29,7 +29,7 @@ export function Sidebar() {
     };
 
     return (
-        <aside className="w-[240px] shrink-0 bg-gray-950 text-white flex flex-col min-h-screen sticky top-0">
+        <aside className="w-[240px] shrink-0 bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white flex flex-col min-h-screen sticky top-0">
             {/* Logo */}
             <div className="px-5 h-16 flex items-center gap-3 border-b border-white/10">
                 <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white text-sm font-bold">
@@ -71,7 +71,7 @@ export function Sidebar() {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-3 py-4 space-y-1">
+            <nav className="flex-1 px-3 py-4 space-y-1 relative">
                 {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
                     const active = isActive(href);
                     const badge = getBadge(href);
@@ -79,23 +79,23 @@ export function Sidebar() {
                         <Link
                             key={href}
                             href={href}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group ${
+                            className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group ${
                                 active
-                                    ? 'bg-brand-600/20 text-brand-400'
-                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                    ? 'bg-brand-600/20 text-brand-300 shadow-[inset_0_0_20px_rgba(99,102,241,0.08)]'
+                                    : 'text-gray-400 hover:text-white hover:bg-white/[0.07]'
                             }`}
                         >
-                            <Icon className={`w-[18px] h-[18px] ${active ? 'text-brand-400' : 'text-gray-500 group-hover:text-gray-300'}`} />
+                            {active && (
+                                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full bg-brand-400" />
+                            )}
+                            <Icon className={`w-[18px] h-[18px] transition-colors duration-200 ${active ? 'text-brand-400' : 'text-gray-500 group-hover:text-gray-300'}`} />
                             <span className="flex-1">{label}</span>
                             {badge && (
                                 <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
-                                    active ? 'bg-brand-600/30 text-brand-300' : 'bg-white/10 text-gray-400'
+                                    active ? 'bg-brand-500/30 text-brand-300' : 'bg-white/10 text-gray-400'
                                 }`}>
                                     {badge}
                                 </span>
-                            )}
-                            {active && (
-                                <div className="w-1 h-5 rounded-full bg-brand-500 absolute right-0" />
                             )}
                         </Link>
                     );

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles, BrainCircuit, AlertCircle, Loader2, Lock, FileText, Copy, CheckCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import Link from 'next/link';
 import { Button } from './ui/Button';
 import { MatchRing } from './ui/MatchRing';
 import { getMatchColor as getMatchColorUtil, getMatchGradient as getMatchGradientUtil } from '@/lib/match-colors';
@@ -142,7 +143,18 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1.5">
                             <h3 className="text-[15px] font-semibold text-gray-900 truncate">
-                                {cleanTitle}
+                                <Link
+                                    href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                    onClick={() => {
+                                        try {
+                                            const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                            localStorage.setItem(key, JSON.stringify(job));
+                                        } catch (e) { /* ignore quota errors */ }
+                                    }}
+                                    className="hover:text-brand-600 transition-colors"
+                                >
+                                    {cleanTitle}
+                                </Link>
                             </h3>
                             {job.date_posted && (
                                 <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-surface-50 text-gray-500 border border-surface-200 whitespace-nowrap shrink-0">

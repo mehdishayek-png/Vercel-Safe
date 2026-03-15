@@ -64,7 +64,7 @@ export default function ApplicationsPage() {
             ) : (
                 <div className="bg-white rounded-xl border border-surface-200 overflow-hidden">
                     {/* Table header */}
-                    <div className="grid grid-cols-[1fr,180px,120px,100px,80px] gap-4 px-5 py-3 bg-surface-50 border-b border-surface-200 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                    <div className="grid grid-cols-[1fr,180px,120px,140px,80px] gap-4 px-5 py-3 bg-surface-50 border-b border-surface-200 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                         <span>Job</span>
                         <span>Company</span>
                         <span>Applied</span>
@@ -75,14 +75,16 @@ export default function ApplicationsPage() {
                     {/* Rows */}
                     <div className="divide-y divide-surface-100">
                         {sortedApps.map((job, i) => (
-                            <div key={job.apply_url || i} className="grid grid-cols-[1fr,180px,120px,100px,80px] gap-4 px-5 py-3.5 items-center hover:bg-surface-50 transition-colors group">
+                            <div key={job.apply_url || i} className="grid grid-cols-[1fr,180px,120px,140px,80px] gap-4 px-5 py-3.5 items-center hover:bg-brand-50/30 transition-all duration-150 group border-l-2 border-transparent hover:border-brand-400">
                                 <div className="min-w-0">
                                     <p className="text-sm font-medium text-gray-900 truncate">{job.title}</p>
                                     <p className="text-[11px] text-gray-400 truncate">{job.location || 'Remote'}</p>
                                 </div>
 
                                 <div className="flex items-center gap-2 min-w-0">
-                                    <div className="w-7 h-7 rounded-lg bg-surface-100 flex items-center justify-center text-xs font-bold text-gray-500 shrink-0">
+                                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0 ${
+                                        ['bg-brand-500', 'bg-accent-500', 'bg-emerald-500', 'bg-amber-500'][i % 4]
+                                    }`}>
                                         {(job.company || '?').charAt(0).toUpperCase()}
                                     </div>
                                     <span className="text-sm text-gray-700 truncate">{job.company || 'Unknown'}</span>
@@ -93,7 +95,7 @@ export default function ApplicationsPage() {
                                     {formatDate(job.applied_at)}
                                 </div>
 
-                                <div>
+                                <div className="flex items-center gap-2">
                                     {(job.match_score || job.analysis?.fit_score) ? (
                                         <span className={`text-sm font-semibold ${
                                             (job.analysis?.fit_score || job.match_score) >= 70 ? 'text-emerald-600' :
@@ -102,8 +104,12 @@ export default function ApplicationsPage() {
                                             {job.analysis?.fit_score || job.match_score}%
                                         </span>
                                     ) : (
-                                        <span className="text-xs text-gray-400">—</span>
+                                        <span className="text-xs text-gray-400">&mdash;</span>
                                     )}
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700">
+                                        <CheckCircle className="w-3 h-3" />
+                                        Applied
+                                    </span>
                                 </div>
 
                                 <div className="flex items-center gap-1 justify-end">

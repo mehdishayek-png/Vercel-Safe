@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }) {
                     <div className="flex-1 flex flex-col min-w-0">
                         <DashboardHeader />
                         <ReturnNotification />
-                        <main className="flex-1 px-6 py-5">
+                        <main className="flex-1 px-6 py-5 dashboard-bg">
                             {children}
                         </main>
                     </div>

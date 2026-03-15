@@ -134,10 +134,11 @@ export default function SearchPage() {
     const findJobs = async () => {
         if (!profile) return;
         setIsMatching(true);
+        setJobs([]);
         setLogs([]);
         setSearchError(null);
         addLog("Starting job search agent...");
-        addLog("Scanning job market... ~1 minute for quality matches.");
+        addLog("Streaming results as sources respond...");
         setActiveTab('matches');
 
         const isFreeScan = !midasSearch && dailyScanCount < FREE_DAILY_SCANS;
@@ -158,7 +159,8 @@ export default function SearchPage() {
         }
 
         try {
-            const res = await fetch('/api/match-jobs', {
+            // Use streaming endpoint — results populate as each source completes
+            const res = await fetch('/api/match-jobs-stream', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -168,70 +170,123 @@ export default function SearchPage() {
                 })
             });
 
+            // Handle non-streaming error responses (auth, rate-limit, validation)
             if (!res.ok) {
-                if (res.status === 429) {
-                    const errData = await res.json().catch(() => ({}));
-                    throw new Error(errData.error || 'Rate limit reached. Wait before searching again.');
-                }
                 const errData = await res.json().catch(() => ({}));
-                if (res.status === 401 && errData.requiresAuth) setSearchError('Sign in to scan for jobs.');
-                else if (res.status === 403) setSearchError(errData.error || 'No tokens remaining.');
-                else setSearchError(errData.error || 'Failed to fetch jobs');
-                setIsMatching(false);
-                return;
+                if (res.status === 429) throw new Error(errData.error || 'Rate limit reached.');
+                if (res.status === 401 && errData.requiresAuth) { setSearchError('Sign in to scan for jobs.'); setIsMatching(false); return; }
+                if (res.status === 403) { setSearchError(errData.error || 'No tokens remaining.'); setIsMatching(false); return; }
+                throw new Error(errData.error || 'Failed to fetch jobs');
             }
 
-            const data = await res.json();
-            const initialMatches = data.matches || [];
-            setJobs(initialMatches);
-            addLog(`Found ${data.total} jobs, ${initialMatches.length} heuristic matches`);
+            // Consume SSE stream — populate results progressively
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+            const seenUrls = new Set();
+            let totalSourceJobs = 0;
 
-            if (initialMatches.length > 0) {
-                const top20 = initialMatches.slice(0, 20);
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+                for (const line of lines) {
+                    if (!line.startsWith('data: ')) continue;
+                    try {
+                        const event = JSON.parse(line.slice(6));
+
+                        if (event.type === 'progress') {
+                            addLog(event.message);
+                        } else if (event.type === 'jobs') {
+                            // Deduplicate against already-displayed jobs
+                            const newJobs = (event.jobs || []).filter(j => {
+                                if (!j.apply_url || seenUrls.has(j.apply_url)) return false;
+                                seenUrls.add(j.apply_url);
+                                return true;
+                            }).map(j => ({
+                                ...j,
+                                match_score: j.pandaScore?.score ?? j.match_score ?? 0,
+                                heuristic_breakdown: j.pandaScore || j.heuristic_breakdown,
+                            })).filter(j => j.match_score >= 20); // Basic threshold
+
+                            if (newJobs.length > 0) {
+                                totalSourceJobs += newJobs.length;
+                                addLog(`+${newJobs.length} from ${event.source} (${totalSourceJobs} total)`);
+                                // Merge and sort by score
+                                setJobs(prev => {
+                                    const merged = [...prev, ...newJobs];
+                                    return merged.sort((a, b) =>
+                                        (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0)
+                                    );
+                                });
+                            }
+                        } else if (event.type === 'complete') {
+                            addLog(`Search complete: ${event.totalUnique} unique jobs from ${Object.keys(event.sources || {}).length} sources`);
+                        } else if (event.type === 'error') {
+                            addLog(`Warning: ${event.message}`);
+                        }
+                    } catch { /* skip malformed SSE lines */ }
+                }
+            }
+
+            // Deep analysis on top results (after streaming is complete)
+            setJobs(currentJobs => {
+                if (currentJobs.length === 0) {
+                    setSearchError('No matching jobs found. Try broadening your search.');
+                    return currentJobs;
+                }
+
+                const top20 = currentJobs.slice(0, 20);
                 const totalBatches = Math.ceil(top20.length / 4);
                 addLog(`AI Agent: Deep analysis on top ${top20.length} candidates...`);
                 setDeepAnalysisProgress({ current: 0, total: totalBatches });
-                const chunkSize = 4;
 
-                const updateJobWithAnalysis = (jobId, analysis) => {
-                    setJobs(currentJobs => currentJobs.map(j => {
-                        if (j.id === jobId || j.apply_url === jobId) return { ...j, analysis, match_score: analysis.fit_score || j.match_score };
-                        return j;
-                    }).filter(j => !(j.analysis?.fit_score && j.analysis.fit_score < 35)));
-                };
+                // Run deep analysis asynchronously
+                (async () => {
+                    const chunkSize = 4;
+                    const updateJobWithAnalysis = (jobId, analysis) => {
+                        setJobs(prev => prev.map(j => {
+                            if (j.id === jobId || j.apply_url === jobId) return { ...j, analysis, match_score: analysis.fit_score || j.match_score };
+                            return j;
+                        }).filter(j => !(j.analysis?.fit_score && j.analysis.fit_score < 35)));
+                    };
 
-                for (let i = 0; i < top20.length; i += chunkSize) {
-                    const chunk = top20.slice(i, i + chunkSize);
-                    const batchNum = Math.floor(i / chunkSize) + 1;
-                    addLog(`Batch ${batchNum}/${totalBatches}...`);
-                    setDeepAnalysisProgress({ current: batchNum, total: totalBatches });
+                    for (let i = 0; i < top20.length; i += chunkSize) {
+                        const chunk = top20.slice(i, i + chunkSize);
+                        const batchNum = Math.floor(i / chunkSize) + 1;
+                        addLog(`Batch ${batchNum}/${totalBatches}...`);
+                        setDeepAnalysisProgress({ current: batchNum, total: totalBatches });
 
-                    const promises = chunk.map(job =>
-                        fetch('/api/analyze-job', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                job, profile: { ...profile, experience_years: experienceYears, headline: jobTitle }, apiKeys
-                            })
-                        }).then(r => r.json()).then(d => {
-                            if (d.analysis) updateJobWithAnalysis(job.id || job.apply_url, d.analysis);
-                        }).catch(err => console.error(`Failed to analyze ${job.title}`, err))
-                    );
-                    await Promise.all(promises);
-                }
+                        const promises = chunk.map(job =>
+                            fetch('/api/analyze-job', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    job, profile: { ...profile, experience_years: experienceYears, headline: jobTitle }, apiKeys
+                                })
+                            }).then(r => r.json()).then(d => {
+                                if (d.analysis) updateJobWithAnalysis(job.id || job.apply_url, d.analysis);
+                            }).catch(err => console.error(`Failed to analyze ${job.title}`, err))
+                        );
+                        await Promise.all(promises);
+                    }
 
-                setJobs(currentJobs => [...currentJobs].sort((a, b) => {
-                    const scoreA = a.analysis?.fit_score || a.match_score;
-                    const scoreB = b.analysis?.fit_score || b.match_score;
-                    return scoreB - scoreA;
-                }));
-                setDeepAnalysisProgress(null);
-                addLog("Analysis complete. Sorted by fit score.");
-                refreshTokens();
-            }
+                    setJobs(prev => [...prev].sort((a, b) =>
+                        (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0)
+                    ));
+                    setDeepAnalysisProgress(null);
+                    addLog("Analysis complete. Sorted by fit score.");
+                    refreshTokens();
+                })();
+
+                return currentJobs;
+            });
 
             refreshTokens();
-            if (initialMatches.length === 0) setSearchError('No matching jobs found. Try broadening your search.');
         } catch (err) {
             const hasPartial = jobs.length > 0;
             const userMessage = hasPartial

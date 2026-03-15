@@ -47,18 +47,11 @@ export default function DashboardHome() {
         : 0;
 
     const statCards = [
-        { label: 'Total Matches', value: totalMatches, icon: Target, color: 'brand', change: totalMatches > 0 ? 'From last scan' : 'Run a scan' },
-        { label: 'Saved Jobs', value: savedCount, icon: Bookmark, color: 'emerald', change: savedCount > 0 ? 'Click to view' : 'Save jobs you like' },
-        { label: 'Applications', value: appliedCount, icon: Briefcase, color: 'accent', change: appliedCount > 0 ? 'Track progress' : 'Mark as applied' },
-        { label: 'Avg. Score', value: avgScore || '—', icon: TrendingUp, color: 'amber', change: avgScore > 0 ? `${avgScore}/100` : 'No data yet' },
+        { label: 'Total Matches', value: totalMatches, icon: Target, gradient: 'from-brand-500 to-brand-700', change: totalMatches > 0 ? 'From last scan' : 'Run a scan' },
+        { label: 'Saved Jobs', value: savedCount, icon: Bookmark, gradient: 'from-emerald-500 to-emerald-700', change: savedCount > 0 ? 'Click to view' : 'Save jobs you like' },
+        { label: 'Applications', value: appliedCount, icon: Briefcase, gradient: 'from-accent-500 to-accent-700', change: appliedCount > 0 ? 'Track progress' : 'Mark as applied' },
+        { label: 'Avg. Score', value: avgScore || '—', icon: TrendingUp, gradient: 'from-amber-500 to-amber-600', change: avgScore > 0 ? `${avgScore}/100` : 'No data yet' },
     ];
-
-    const colorMap = {
-        brand: { bg: 'bg-brand-50', icon: 'text-brand-600', border: 'border-brand-100' },
-        emerald: { bg: 'bg-emerald-50', icon: 'text-emerald-600', border: 'border-emerald-100' },
-        accent: { bg: 'bg-accent-50', icon: 'text-accent-600', border: 'border-accent-100' },
-        amber: { bg: 'bg-amber-50', icon: 'text-amber-600', border: 'border-amber-100' },
-    };
 
     // Recent applied jobs (top 5)
     const recentApplied = appliedJobsData.slice(-5).reverse();
@@ -79,21 +72,18 @@ export default function DashboardHome() {
 
             {/* Stats cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {statCards.map(({ label, value, icon: Icon, color, change }) => {
-                    const c = colorMap[color];
-                    return (
-                        <div key={label} className={`bg-white rounded-xl border ${c.border} p-5 hover:shadow-card transition-shadow`}>
-                            <div className="flex items-center justify-between mb-3">
-                                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">{label}</span>
-                                <div className={`w-9 h-9 rounded-lg ${c.bg} flex items-center justify-center`}>
-                                    <Icon className={`w-[18px] h-[18px] ${c.icon}`} />
-                                </div>
+                {statCards.map(({ label, value, icon: Icon, gradient, change }) => (
+                    <div key={label} className={`stat-card-gradient bg-gradient-to-br ${gradient} rounded-xl p-5 hover:shadow-elevated transition-shadow`}>
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="text-xs font-medium text-white/70 uppercase tracking-wider">{label}</span>
+                            <div className="w-9 h-9 rounded-lg bg-white/15 flex items-center justify-center">
+                                <Icon className="w-[18px] h-[18px] text-white/80" />
                             </div>
-                            <div className="text-3xl font-bold text-gray-900">{value}</div>
-                            <p className="text-[11px] text-gray-400 mt-1">{change}</p>
                         </div>
-                    );
-                })}
+                        <div className="text-3xl font-extrabold text-white">{value}</div>
+                        <p className="text-[11px] text-white/50 mt-1">{change}</p>
+                    </div>
+                ))}
             </div>
 
             {/* Quick actions row */}
