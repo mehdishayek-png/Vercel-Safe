@@ -1,5 +1,5 @@
 'use client';
-import { Bookmark, Search, X, ExternalLink, ChevronDown, Star, Eye, Download, CheckCircle } from 'lucide-react';
+import { Bookmark, Search, X, ExternalLink, ChevronDown, Star, Eye, Download, CheckCircle, Trash2, Check } from 'lucide-react';
 import Link from 'next/link';
 import { useApp } from '@/contexts/AppContext';
 import { exportJobsToCSV } from '@/lib/export-csv';
@@ -258,15 +258,69 @@ export default function SavedJobsPage() {
                         })}
                     </div>
 
-                    {/* Footer */}
-                    <div className="px-5 py-3 bg-gray-50/50 border-t border-gray-100">
-                        <p className="text-[11px] text-gray-400">
-                            {selectedJobs.size > 0 ? (
-                                <>{selectedJobs.size} of {sortedJobs.length} selected</>
-                            ) : (
-                                <>Showing {sortedJobs.length} job{sortedJobs.length !== 1 ? 's' : ''}</>
-                            )}
-                        </p>
+                    {/* Footer / Bulk Actions Bar */}
+                    <div className={`px-5 py-2.5 border-t border-gray-100 flex items-center justify-between transition-colors ${
+                        selectedJobs.size > 0 ? 'bg-gray-900' : 'bg-gray-50/50'
+                    }`}>
+                        {selectedJobs.size > 0 ? (
+                            <>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[12px] text-white font-medium">
+                                        {selectedJobs.size} selected
+                                    </span>
+                                    <button
+                                        onClick={() => setSelectedJobs(new Set())}
+                                        className="text-[11px] text-gray-400 hover:text-white transition-colors cursor-pointer ml-1"
+                                    >
+                                        Clear
+                                    </button>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <button
+                                        onClick={() => {
+                                            const selected = sortedJobs.filter(j => selectedJobs.has(j.apply_url));
+                                            selected.forEach(job => {
+                                                if (!appliedJobIds.has(job.apply_url)) toggleAppliedJob(job);
+                                            });
+                                            setSelectedJobs(new Set());
+                                        }}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer"
+                                        title="Mark selected as applied"
+                                    >
+                                        <Check className="w-3 h-3" />
+                                        Mark Applied
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const selected = sortedJobs.filter(j => selectedJobs.has(j.apply_url));
+                                            exportJobsToCSV(selected);
+                                        }}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer"
+                                        title="Export selected as CSV"
+                                    >
+                                        <Download className="w-3 h-3" />
+                                        Export
+                                    </button>
+                                    <div className="w-px h-4 bg-white/20 mx-1" />
+                                    <button
+                                        onClick={() => {
+                                            const selected = sortedJobs.filter(j => selectedJobs.has(j.apply_url));
+                                            selected.forEach(job => toggleSaveJob(job));
+                                            setSelectedJobs(new Set());
+                                        }}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-md transition-colors cursor-pointer"
+                                        title="Unsave selected"
+                                    >
+                                        <Trash2 className="w-3 h-3" />
+                                        Unsave
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <p className="text-[11px] text-gray-400">
+                                Showing {sortedJobs.length} job{sortedJobs.length !== 1 ? 's' : ''}
+                            </p>
+                        )}
                     </div>
                 </div>
             )}

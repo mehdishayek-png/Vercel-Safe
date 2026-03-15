@@ -187,12 +187,28 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                             {cleanSummary.length > 150 && (
                                 <button
                                     onClick={(e) => { e.stopPropagation(); setShowFullDescription(!showFullDescription); }}
-                                    className="text-xs font-medium text-brand-600 hover:text-brand-700 mt-0.5 cursor-pointer"
+                                    className="text-xs font-medium text-teal-600 hover:text-teal-700 mt-0.5 cursor-pointer"
                                 >
                                     {showFullDescription ? 'Less' : 'More'}
                                 </button>
                             )}
                         </div>
+
+                        {/* Matched skill tags */}
+                        {job.heuristic_breakdown?.matches?.length > 0 && (
+                            <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
+                                {job.heuristic_breakdown.matches.slice(0, 5).map((m, idx) => (
+                                    <span key={idx} className="px-2 py-0.5 rounded-md bg-teal-50 border border-teal-100 text-[10px] text-teal-700 font-medium">
+                                        {m.skill}
+                                    </span>
+                                ))}
+                                {job.heuristic_breakdown.matches.length > 5 && (
+                                    <span className="px-1.5 py-0.5 rounded-md text-[10px] text-gray-400 bg-gray-50 border border-gray-100">
+                                        +{job.heuristic_breakdown.matches.length - 5}
+                                    </span>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {/* Score + Actions */}

@@ -1,5 +1,5 @@
 'use client';
-import { Briefcase, Search, ExternalLink, Clock, X, CheckCircle, RefreshCw, Star, ChevronDown, MapPin, Building2, MoreHorizontal, Download, Filter, Eye } from 'lucide-react';
+import { Briefcase, Search, ExternalLink, Clock, X, CheckCircle, RefreshCw, Star, ChevronDown, MapPin, Building2, MoreHorizontal, Download, Filter, Eye, Trash2, Bookmark, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useApp } from '@/contexts/AppContext';
 import { exportJobsToCSV } from '@/lib/export-csv';
@@ -118,7 +118,7 @@ const AVATAR_COLORS = [
 ];
 
 export default function ApplicationsPage() {
-    const { appliedJobsData, appliedJobIds, toggleAppliedJob } = useApp();
+    const { appliedJobsData, appliedJobIds, toggleAppliedJob, toggleSaveJob, savedJobIds } = useApp();
     const [filter, setFilter] = useState('all');
     const [activePopover, setActivePopover] = useState(null);
     const [selectedJobs, setSelectedJobs] = useState(new Set());
@@ -448,18 +448,74 @@ export default function ApplicationsPage() {
                         })}
                     </div>
 
-                    {/* Footer */}
-                    <div className="px-5 py-3 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
-                        <p className="text-[11px] text-gray-400">
-                            {selectedJobs.size > 0 ? (
-                                <>{selectedJobs.size} of {filteredApps.length} selected</>
-                            ) : (
-                                <>Showing {filteredApps.length} application{filteredApps.length !== 1 ? 's' : ''}</>
-                            )}
-                        </p>
-                        <p className="text-[11px] text-gray-300">
-                            Click the dots to see match breakdown
-                        </p>
+                    {/* Footer / Bulk Actions Bar */}
+                    <div className={`px-5 py-2.5 border-t border-gray-100 flex items-center justify-between transition-colors ${
+                        selectedJobs.size > 0 ? 'bg-gray-900' : 'bg-gray-50/50'
+                    }`}>
+                        {selectedJobs.size > 0 ? (
+                            <>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[12px] text-white font-medium">
+                                        {selectedJobs.size} selected
+                                    </span>
+                                    <button
+                                        onClick={() => setSelectedJobs(new Set())}
+                                        className="text-[11px] text-gray-400 hover:text-white transition-colors cursor-pointer ml-1"
+                                    >
+                                        Clear
+                                    </button>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <button
+                                        onClick={() => {
+                                            const selectedJobsList = filteredApps.filter(j => selectedJobs.has(j.apply_url));
+                                            selectedJobsList.forEach(job => {
+                                                if (!savedJobIds.has(job.apply_url)) toggleSaveJob(job);
+                                            });
+                                            setSelectedJobs(new Set());
+                                        }}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer"
+                                        title="Save selected jobs"
+                                    >
+                                        <Bookmark className="w-3 h-3" />
+                                        Save All
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const selectedJobsList = filteredApps.filter(j => selectedJobs.has(j.apply_url));
+                                            exportJobsToCSV(selectedJobsList);
+                                        }}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer"
+                                        title="Export selected as CSV"
+                                    >
+                                        <Download className="w-3 h-3" />
+                                        Export
+                                    </button>
+                                    <div className="w-px h-4 bg-white/20 mx-1" />
+                                    <button
+                                        onClick={() => {
+                                            const selectedJobsList = filteredApps.filter(j => selectedJobs.has(j.apply_url));
+                                            selectedJobsList.forEach(job => toggleAppliedJob(job));
+                                            setSelectedJobs(new Set());
+                                        }}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-md transition-colors cursor-pointer"
+                                        title="Remove selected from applications"
+                                    >
+                                        <Trash2 className="w-3 h-3" />
+                                        Remove
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <p className="text-[11px] text-gray-400">
+                                    Showing {filteredApps.length} application{filteredApps.length !== 1 ? 's' : ''}
+                                </p>
+                                <p className="text-[11px] text-gray-300">
+                                    Click the dots to see match breakdown
+                                </p>
+                            </>
+                        )}
                     </div>
                 </div>
             )}
