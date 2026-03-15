@@ -1,81 +1,273 @@
 'use client';
-import { Bookmark, Search, Trash2, ExternalLink, ArrowRight } from 'lucide-react';
+import { Bookmark, Search, X, ExternalLink, ChevronDown, Star, Eye, Download, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useApp } from '@/contexts/AppContext';
-import { JobCard } from '@/components/JobCard';
 import { exportJobsToCSV } from '@/lib/export-csv';
 import { useState } from 'react';
 
+const AVATAR_COLORS = [
+    'bg-teal-500', 'bg-sky-500', 'bg-violet-500', 'bg-amber-500',
+    'bg-rose-500', 'bg-emerald-500', 'bg-indigo-500', 'bg-pink-500',
+];
+
+function DotIndicator({ filled, total = 5 }) {
+    return (
+        <div className="flex items-center gap-[3px]">
+            {Array.from({ length: total }, (_, i) => (
+                <div
+                    key={i}
+                    className={`w-[7px] h-[7px] rounded-full ${
+                        i < filled ? 'bg-teal-500' : 'bg-gray-200'
+                    }`}
+                />
+            ))}
+        </div>
+    );
+}
+
 export default function SavedJobsPage() {
     const { savedJobsData, savedJobIds, toggleSaveJob, toggleAppliedJob, appliedJobIds, profile, apiKeys, refreshTokens } = useApp();
-    const [sortBy, setSortBy] = useState('score');
+    const [sortField, setSortField] = useState('score');
+    const [sortDir, setSortDir] = useState('desc');
+    const [selectedJobs, setSelectedJobs] = useState(new Set());
 
     const sortedJobs = [...savedJobsData].sort((a, b) => {
-        if (sortBy === 'latest') {
+        if (sortField === 'date') {
             const dateA = new Date(a.date_posted || a.posted_date || 0).getTime();
             const dateB = new Date(b.date_posted || b.posted_date || 0).getTime();
-            return dateB - dateA;
+            return sortDir === 'desc' ? dateB - dateA : dateA - dateB;
         }
-        return (b.match_score || 0) - (a.match_score || 0);
+        if (sortField === 'company') {
+            return sortDir === 'desc'
+                ? (b.company || '').localeCompare(a.company || '')
+                : (a.company || '').localeCompare(b.company || '');
+        }
+        // Default: score
+        const scoreA = a.analysis?.fit_score || a.match_score || 0;
+        const scoreB = b.analysis?.fit_score || b.match_score || 0;
+        return sortDir === 'desc' ? scoreB - scoreA : scoreA - scoreB;
     });
 
+    const toggleSort = (field) => {
+        if (sortField === field) {
+            setSortDir(prev => prev === 'desc' ? 'asc' : 'desc');
+        } else {
+            setSortField(field);
+            setSortDir('desc');
+        }
+    };
+
+    const stripHtml = (html) => {
+        if (!html) return '';
+        return html.replace(/<[^>]*>/g, '');
+    };
+
+    const getOverallDots = (job) => {
+        const score = job.analysis?.fit_score || job.match_score || 0;
+        if (score >= 85) return 5;
+        if (score >= 70) return 4;
+        if (score >= 55) return 3;
+        if (score >= 35) return 2;
+        return 1;
+    };
+
+    const toggleSelect = (id) => {
+        setSelectedJobs(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedJobs.size === sortedJobs.length) {
+            setSelectedJobs(new Set());
+        } else {
+            setSelectedJobs(new Set(sortedJobs.map(j => j.apply_url)));
+        }
+    };
+
     return (
-        <div className="max-w-4xl space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h2 className="text-xl font-bold text-gray-900">Saved Jobs</h2>
-                    <p className="text-sm text-gray-500 mt-0.5">{savedJobsData.length} job{savedJobsData.length !== 1 ? 's' : ''} saved</p>
-                </div>
-                {savedJobsData.length > 0 && (
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => exportJobsToCSV(sortedJobs)}
-                            className="px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors cursor-pointer"
-                        >
-                            Export CSV
-                        </button>
-                        <div className="flex items-center gap-0.5 bg-surface-100 rounded-lg p-0.5">
-                            <button onClick={() => setSortBy('score')} className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${sortBy === 'score' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500'}`}>Score</button>
-                            <button onClick={() => setSortBy('latest')} className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${sortBy === 'latest' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500'}`}>Latest</button>
-                        </div>
-                    </div>
-                )}
+        <div className="max-w-[1100px] space-y-0">
+            <div className="mb-6">
+                <h1 className="text-[22px] font-semibold text-gray-900 tracking-tight">Saved Jobs</h1>
+                <p className="text-sm text-gray-400 mt-1">{savedJobsData.length} job{savedJobsData.length !== 1 ? 's' : ''} bookmarked</p>
             </div>
 
             {sortedJobs.length === 0 ? (
-                <div className="bg-white rounded-xl border border-surface-200 p-12 text-center">
-                    <div className="w-14 h-14 bg-surface-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <Bookmark className="w-7 h-7 text-gray-400" />
+                <div className="bg-white rounded-xl border border-gray-200 p-16 text-center">
+                    <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                        <Bookmark className="w-8 h-8 text-gray-300" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No Saved Jobs Yet</h3>
-                    <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">
-                        Save jobs you're interested in while searching. They'll appear here for easy access later.
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No Saved Jobs</h3>
+                    <p className="text-sm text-gray-400 mb-8 max-w-md mx-auto leading-relaxed">
+                        Save jobs you're interested in while searching. They'll appear here for easy access.
                     </p>
                     <Link
                         href="/dashboard/search"
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors"
+                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
                     >
-                        <Search className="w-4 h-4" /> Search Jobs
+                        <Search className="w-4 h-4" /> Find Jobs
                     </Link>
                 </div>
             ) : (
-                <div className="space-y-3">
-                    <AnimatePresence>
-                        {sortedJobs.map((job, i) => (
-                            <JobCard
-                                key={job.apply_url || `saved-${i}`}
-                                job={job}
-                                profile={profile}
-                                apiKeys={apiKeys}
-                                onSave={toggleSaveJob}
-                                isSaved={savedJobIds.has(job.apply_url)}
-                                onApply={toggleAppliedJob}
-                                isApplied={appliedJobIds.has(job.apply_url)}
-                                onTokensUpdated={refreshTokens}
+                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    {/* Toolbar */}
+                    <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100">
+                        <div className="flex items-center gap-3">
+                            <span className="text-[12px] text-gray-400 font-medium">{sortedJobs.length} jobs</span>
+                        </div>
+                        <button
+                            onClick={() => exportJobsToCSV(sortedJobs)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+                        >
+                            <Download className="w-3.5 h-3.5" />
+                            Export
+                        </button>
+                    </div>
+
+                    {/* Column headers */}
+                    <div className="grid grid-cols-[40px,1fr,140px,120px,100px,80px] items-center gap-0 px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 text-[11px] font-medium text-gray-400 uppercase tracking-wider select-none">
+                        <div className="flex items-center justify-center">
+                            <input
+                                type="checkbox"
+                                checked={selectedJobs.size === sortedJobs.length && sortedJobs.length > 0}
+                                onChange={toggleSelectAll}
+                                className="w-3.5 h-3.5 rounded border-gray-300 cursor-pointer"
                             />
-                        ))}
-                    </AnimatePresence>
+                        </div>
+                        <button onClick={() => toggleSort('company')} className="flex items-center gap-1 text-left cursor-pointer hover:text-gray-600 transition-colors">
+                            Job
+                            {sortField === 'company' && <ChevronDown className={`w-3 h-3 transition-transform ${sortDir === 'asc' ? 'rotate-180' : ''}`} />}
+                        </button>
+                        <button onClick={() => toggleSort('score')} className="flex items-center gap-1 cursor-pointer hover:text-gray-600 transition-colors">
+                            Match
+                            {sortField === 'score' && <ChevronDown className={`w-3 h-3 transition-transform ${sortDir === 'asc' ? 'rotate-180' : ''}`} />}
+                        </button>
+                        <div>Source</div>
+                        <div>Status</div>
+                        <div className="text-right pr-1">Actions</div>
+                    </div>
+
+                    {/* Rows */}
+                    <div className="divide-y divide-gray-50">
+                        {sortedJobs.map((job, i) => {
+                            const jobId = job.apply_url || job.title;
+                            const isSelected = selectedJobs.has(job.apply_url);
+                            const score = job.analysis?.fit_score || job.match_score || 0;
+                            const dots = getOverallDots(job);
+                            const colorIndex = i % AVATAR_COLORS.length;
+                            const initial = (stripHtml(job.company) || '?').charAt(0).toUpperCase();
+                            const secondInitial = (stripHtml(job.company) || '??').split(/\s/).filter(Boolean)[1]?.charAt(0)?.toUpperCase() || '';
+                            const isApplied = appliedJobIds.has(job.apply_url);
+
+                            return (
+                                <div
+                                    key={jobId + i}
+                                    className={`grid grid-cols-[40px,1fr,140px,120px,100px,80px] items-center gap-0 px-4 py-3 transition-colors duration-100 group ${
+                                        isSelected ? 'bg-teal-50/40' : 'hover:bg-gray-50/70'
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={isSelected}
+                                            onChange={() => toggleSelect(job.apply_url)}
+                                            className="w-3.5 h-3.5 rounded border-gray-300 cursor-pointer"
+                                        />
+                                    </div>
+
+                                    <div className="flex items-center gap-3 min-w-0 pr-4">
+                                        <div className={`w-9 h-9 rounded-full ${AVATAR_COLORS[colorIndex]} flex items-center justify-center text-white text-[12px] font-semibold tracking-tight shrink-0`}>
+                                            {initial}{secondInitial}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <Link
+                                                    href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                                    onClick={() => {
+                                                        try {
+                                                            const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                                            localStorage.setItem(key, JSON.stringify(job));
+                                                        } catch (e) { /* ignore */ }
+                                                    }}
+                                                    className="text-[13px] font-medium text-gray-900 truncate hover:text-teal-600 transition-colors"
+                                                >
+                                                    {stripHtml(job.title)}
+                                                </Link>
+                                            </div>
+                                            <p className="text-[11px] text-gray-400 truncate mt-0.5">
+                                                {stripHtml(job.company)}
+                                                {job.location && <> · {stripHtml(job.location)}</>}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-2.5">
+                                        <DotIndicator filled={dots} />
+                                        {score > 0 && (
+                                            <span className="text-[11px] text-gray-300">{score}%</span>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        {job.source && (
+                                            <span className="text-[11px] text-gray-400">{job.source}</span>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        {isApplied ? (
+                                            <span className="inline-flex items-center gap-1 px-2 py-[3px] rounded-full text-[10px] font-semibold bg-teal-50 text-teal-600 border border-teal-100">
+                                                <CheckCircle className="w-2.5 h-2.5" />
+                                                Applied
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1 px-2 py-[3px] rounded-full text-[10px] font-semibold bg-sky-50 text-sky-600 border border-sky-100">
+                                                <Bookmark className="w-2.5 h-2.5" />
+                                                Saved
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Link
+                                            href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                            onClick={() => {
+                                                try {
+                                                    const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                                    localStorage.setItem(key, JSON.stringify(job));
+                                                } catch (e) { /* ignore */ }
+                                            }}
+                                            className="p-1.5 text-gray-300 hover:text-teal-600 hover:bg-teal-50 rounded-md transition-colors"
+                                            title="View details"
+                                        >
+                                            <Eye className="w-3.5 h-3.5" />
+                                        </Link>
+                                        <button
+                                            onClick={() => toggleSaveJob(job)}
+                                            className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
+                                            title="Unsave"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Footer */}
+                    <div className="px-5 py-3 bg-gray-50/50 border-t border-gray-100">
+                        <p className="text-[11px] text-gray-400">
+                            {selectedJobs.size > 0 ? (
+                                <>{selectedJobs.size} of {sortedJobs.length} selected</>
+                            ) : (
+                                <>Showing {sortedJobs.length} job{sortedJobs.length !== 1 ? 's' : ''}</>
+                            )}
+                        </p>
+                    </div>
                 </div>
             )}
         </div>

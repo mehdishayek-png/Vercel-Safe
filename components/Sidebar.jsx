@@ -29,33 +29,32 @@ export function Sidebar() {
     };
 
     return (
-        <aside className="w-[240px] shrink-0 bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white flex flex-col min-h-screen sticky top-0">
+        <aside className="w-[220px] shrink-0 bg-white border-r border-gray-100 text-gray-700 flex flex-col min-h-screen sticky top-0">
             {/* Logo */}
-            <div className="px-5 h-16 flex items-center gap-3 border-b border-white/10">
-                <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white text-sm font-bold">
+            <div className="px-5 h-12 flex items-center gap-2.5 border-b border-gray-100">
+                <div className="w-7 h-7 rounded-lg bg-gray-900 flex items-center justify-center text-white text-[11px] font-bold">
                     M
                 </div>
-                <span className="text-[15px] font-bold tracking-tight">Midas Match</span>
+                <span className="text-[14px] font-semibold text-gray-900 tracking-tight">Midas Match</span>
             </div>
 
             {/* User info */}
-            <div className="px-4 py-4 border-b border-white/10">
+            <div className="px-4 py-3.5 border-b border-gray-100">
                 <SignedIn>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2.5">
                         <UserButton
                             afterSignOutUrl="/"
                             appearance={{
                                 elements: {
-                                    avatarBox: "w-9 h-9",
-                                    userButtonPopoverCard: "bg-gray-900 border border-white/10",
+                                    avatarBox: "w-8 h-8",
                                 }
                             }}
                         />
                         <div className="min-w-0">
-                            <p className="text-sm font-medium text-white truncate">
+                            <p className="text-[12px] font-medium text-gray-900 truncate">
                                 {user?.firstName || 'User'}
                             </p>
-                            <p className="text-[11px] text-gray-500 truncate">
+                            <p className="text-[10px] text-gray-400 truncate">
                                 {user?.primaryEmailAddress?.emailAddress || 'Job Seeker'}
                             </p>
                         </div>
@@ -63,7 +62,7 @@ export function Sidebar() {
                 </SignedIn>
                 <SignedOut>
                     <SignInButton mode="modal">
-                        <button className="w-full px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors cursor-pointer">
+                        <button className="w-full px-4 py-2 text-[12px] font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-lg transition-colors cursor-pointer">
                             Sign In
                         </button>
                     </SignInButton>
@@ -71,7 +70,7 @@ export function Sidebar() {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-3 py-4 space-y-1 relative">
+            <nav className="flex-1 px-3 py-3 space-y-0.5">
                 {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
                     const active = isActive(href);
                     const badge = getBadge(href);
@@ -79,20 +78,17 @@ export function Sidebar() {
                         <Link
                             key={href}
                             href={href}
-                            className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group ${
+                            className={`relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 group ${
                                 active
-                                    ? 'bg-brand-600/20 text-brand-300 shadow-[inset_0_0_20px_rgba(99,102,241,0.08)]'
-                                    : 'text-gray-400 hover:text-white hover:bg-white/[0.07]'
+                                    ? 'bg-gray-900 text-white'
+                                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                             }`}
                         >
-                            {active && (
-                                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full bg-brand-400" />
-                            )}
-                            <Icon className={`w-[18px] h-[18px] transition-colors duration-200 ${active ? 'text-brand-400' : 'text-gray-500 group-hover:text-gray-300'}`} />
+                            <Icon className={`w-4 h-4 ${active ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`} />
                             <span className="flex-1">{label}</span>
                             {badge && (
                                 <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
-                                    active ? 'bg-brand-500/30 text-brand-300' : 'bg-white/10 text-gray-400'
+                                    active ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'
                                 }`}>
                                     {badge}
                                 </span>
@@ -103,21 +99,21 @@ export function Sidebar() {
             </nav>
 
             {/* Bottom section */}
-            <div className="px-3 py-4 border-t border-white/10 space-y-1">
+            <div className="px-3 py-3 border-t border-gray-100">
                 <Link
                     href="/"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:text-white hover:bg-white/5 transition-all"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-all"
                 >
-                    <ChevronLeft className="w-[18px] h-[18px]" />
+                    <ChevronLeft className="w-4 h-4" />
                     Back to Home
                 </Link>
             </div>
 
             {/* Footer links */}
-            <div className="px-5 py-3 border-t border-white/10 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-gray-600">
-                <a href="/privacy" className="hover:text-gray-400 transition-colors">Privacy</a>
-                <a href="/terms" className="hover:text-gray-400 transition-colors">Terms</a>
-                <a href="/refund" className="hover:text-gray-400 transition-colors">Refund</a>
+            <div className="px-5 py-2.5 border-t border-gray-100 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-gray-300">
+                <a href="/privacy" className="hover:text-gray-500 transition-colors">Privacy</a>
+                <a href="/terms" className="hover:text-gray-500 transition-colors">Terms</a>
+                <a href="/refund" className="hover:text-gray-500 transition-colors">Refund</a>
             </div>
         </aside>
     );

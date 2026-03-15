@@ -224,20 +224,18 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                     <Check className={`w-3.5 h-3.5 ${isApplied ? 'stroke-[3]' : ''}`} />
                                 </button>
                             )}
-                            <Button
-                                size="sm"
+                            <Link
+                                href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
                                 onClick={() => {
-                                    if (job.apply_url) {
-                                        window.open(job.apply_url, '_blank');
-                                    } else {
-                                        const searchQuery = encodeURIComponent(`${job.title} ${job.company} apply`);
-                                        window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank');
-                                    }
+                                    try {
+                                        const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                        localStorage.setItem(key, JSON.stringify(job));
+                                    } catch (e) { /* ignore */ }
                                 }}
-                                className="bg-gray-900 hover:bg-gray-800 text-white border-0 text-xs px-3"
+                                className="inline-flex items-center gap-1 bg-gray-900 hover:bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
                             >
-                                Apply <ExternalLink className="w-3 h-3 ml-1 opacity-50" />
-                            </Button>
+                                View <ChevronDown className="w-3 h-3 -rotate-90" />
+                            </Link>
                         </div>
                     </div>
                 </div>

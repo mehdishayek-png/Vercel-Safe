@@ -1,6 +1,6 @@
 'use client';
 import { usePathname } from 'next/navigation';
-import { HelpCircle, Coins, Bell, ChevronRight } from 'lucide-react';
+import { HelpCircle, Coins, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -24,38 +24,34 @@ export function DashboardHeader() {
 
     return (
         <>
-            <header className="h-14 px-6 flex items-center justify-between bg-white shrink-0 sticky top-0 z-40 relative">
+            <header className="h-12 px-6 flex items-center justify-between bg-white border-b border-gray-100 shrink-0 sticky top-0 z-40">
                 <div className="flex items-center gap-2">
                     {isSubpage && (
                         <>
-                            <Link href="/dashboard" className="text-xs text-gray-400 hover:text-brand-600 transition-colors font-medium">
+                            <Link href="/dashboard" className="text-[12px] text-gray-400 hover:text-gray-600 transition-colors font-medium">
                                 Home
                             </Link>
                             <ChevronRight className="w-3 h-3 text-gray-300" />
                         </>
                     )}
-                    <h1 className="text-[15px] font-bold text-gray-900">{title}</h1>
+                    <h1 className="text-[13px] font-semibold text-gray-900">{title}</h1>
                 </div>
 
                 <div className="flex items-center gap-3">
                     {typeof tokenBalance === 'number' && (
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-brand-50 border border-brand-100 text-xs font-semibold text-brand-600">
-                            <Coins className="w-3.5 h-3.5" />
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-50 border border-gray-100 text-[11px] font-medium text-gray-500">
+                            <Coins className="w-3 h-3 text-gray-400" />
                             {tokenBalance}
                         </div>
                     )}
 
                     <button
                         onClick={() => setShowGuide(true)}
-                        className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                        className="p-1.5 text-gray-300 hover:text-gray-500 transition-colors cursor-pointer rounded-md hover:bg-gray-50"
                     >
                         <HelpCircle className="w-4 h-4" />
-                        <span className="hidden sm:inline">Guide</span>
                     </button>
                 </div>
-
-                {/* Gradient bottom border */}
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-400 via-accent-400 to-emerald-400 opacity-40" />
             </header>
 
             <AnimatePresence>

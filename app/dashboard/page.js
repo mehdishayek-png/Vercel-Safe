@@ -1,9 +1,13 @@
 'use client';
-import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, Upload, Target, Clock } from 'lucide-react';
+import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, ArrowUpRight, Upload, Target, Clock, ChevronRight, Zap, FileText, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { useApp } from '@/contexts/AppContext';
 import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
-import { ResumeStrength } from '@/components/ResumeStrength';
+
+const AVATAR_COLORS = [
+    'bg-teal-500', 'bg-sky-500', 'bg-violet-500', 'bg-amber-500',
+    'bg-rose-500', 'bg-emerald-500', 'bg-indigo-500', 'bg-pink-500',
+];
 
 export default function DashboardHome() {
     const {
@@ -38,7 +42,6 @@ export default function DashboardHome() {
         }
     };
 
-    // Stats
     const totalMatches = jobs.length;
     const savedCount = savedJobsData.length;
     const appliedCount = appliedJobsData.length;
@@ -46,155 +49,223 @@ export default function DashboardHome() {
         ? Math.round(jobs.reduce((sum, j) => sum + (j.analysis?.fit_score || j.match_score || 0), 0) / totalMatches)
         : 0;
 
-    const statCards = [
-        { label: 'Total Matches', value: totalMatches, icon: Target, gradient: 'from-brand-500 to-brand-700', change: totalMatches > 0 ? 'From last scan' : 'Run a scan' },
-        { label: 'Saved Jobs', value: savedCount, icon: Bookmark, gradient: 'from-emerald-500 to-emerald-700', change: savedCount > 0 ? 'Click to view' : 'Save jobs you like' },
-        { label: 'Applications', value: appliedCount, icon: Briefcase, gradient: 'from-accent-500 to-accent-700', change: appliedCount > 0 ? 'Track progress' : 'Mark as applied' },
-        { label: 'Avg. Score', value: avgScore || '—', icon: TrendingUp, gradient: 'from-amber-500 to-amber-600', change: avgScore > 0 ? `${avgScore}/100` : 'No data yet' },
-    ];
-
-    // Recent applied jobs (top 5)
     const recentApplied = appliedJobsData.slice(-5).reverse();
 
+    const stripHtml = (html) => {
+        if (!html) return '';
+        return html.replace(/<[^>]*>/g, '');
+    };
+
+    const formatDate = (dateStr) => {
+        if (!dateStr) return 'Recently';
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+        if (diffDays === 0) return 'Today';
+        if (diffDays === 1) return 'Yesterday';
+        if (diffDays < 7) return `${diffDays}d ago`;
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    };
+
     return (
-        <div className="max-w-5xl space-y-6">
-            {/* Greeting */}
-            <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                    {profile ? `Welcome back, ${profile.name?.split(' ')[0] || 'there'}` : 'Welcome to Midas Match'}
-                </h2>
-                <p className="text-sm text-gray-500 mt-1">
-                    {profile
-                        ? 'Stay on top of your job hunt with quick access to key sections.'
-                        : 'Upload your resume to get started with AI-powered job matching.'}
-                </p>
-            </div>
-
-            {/* Stats cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {statCards.map(({ label, value, icon: Icon, gradient, change }) => (
-                    <div key={label} className={`stat-card-gradient bg-gradient-to-br ${gradient} rounded-xl p-5 hover:shadow-elevated transition-shadow`}>
-                        <div className="flex items-center justify-between mb-3">
-                            <span className="text-xs font-medium text-white/70 uppercase tracking-wider">{label}</span>
-                            <div className="w-9 h-9 rounded-lg bg-white/15 flex items-center justify-center">
-                                <Icon className="w-[18px] h-[18px] text-white/80" />
-                            </div>
-                        </div>
-                        <div className="text-3xl font-extrabold text-white">{value}</div>
-                        <p className="text-[11px] text-white/50 mt-1">{change}</p>
-                    </div>
-                ))}
-            </div>
-
-            {/* Quick actions row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Upload / Profile card */}
-                {!profile ? (
-                    <div className="bg-white rounded-xl border border-surface-200 p-6 col-span-2">
-                        <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} />
-                    </div>
-                ) : (
-                    <div className="bg-white rounded-xl border border-surface-200 p-5">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-semibold text-gray-900">Your Profile</h3>
-                            <span className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-600 font-semibold">Active</span>
-                        </div>
-                        <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Name</span>
-                                <span className="font-medium text-gray-900">{profile.name}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Title</span>
-                                <span className="font-medium text-gray-900 truncate ml-4">{jobTitle || 'Not set'}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Experience</span>
-                                <span className="font-medium text-gray-900">{experienceYears} years</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Skills</span>
-                                <span className="font-medium text-gray-900">{profile.skills?.length || 0} extracted</span>
-                            </div>
-                        </div>
-                        <Link
-                            href="/dashboard/search"
-                            className="flex items-center justify-center gap-2 mt-4 w-full py-2.5 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors"
-                        >
-                            <Search className="w-4 h-4" /> Search Jobs
-                        </Link>
-                    </div>
-                )}
-
-                {/* Quick links */}
-                <div className="bg-white rounded-xl border border-surface-200 p-5">
-                    <h3 className="text-sm font-semibold text-gray-900 mb-4">Quick Actions</h3>
-                    <div className="space-y-2">
-                        <Link href="/dashboard/search" className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-50 transition-colors group">
-                            <div className="w-9 h-9 rounded-lg bg-brand-50 flex items-center justify-center shrink-0">
-                                <Search className="w-4 h-4 text-brand-600" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900">Search Jobs</p>
-                                <p className="text-[11px] text-gray-400">Find new opportunities matched to your profile</p>
-                            </div>
-                            <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-brand-500 transition-colors" />
-                        </Link>
-                        <Link href="/dashboard/saved" className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-50 transition-colors group">
-                            <div className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
-                                <Bookmark className="w-4 h-4 text-emerald-600" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900">Saved Jobs</p>
-                                <p className="text-[11px] text-gray-400">{savedCount} saved job{savedCount !== 1 ? 's' : ''}</p>
-                            </div>
-                            <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-emerald-500 transition-colors" />
-                        </Link>
-                        <Link href="/dashboard/applications" className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-50 transition-colors group">
-                            <div className="w-9 h-9 rounded-lg bg-accent-50 flex items-center justify-center shrink-0">
-                                <Briefcase className="w-4 h-4 text-accent-600" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900">Applications</p>
-                                <p className="text-[11px] text-gray-400">{appliedCount} application{appliedCount !== 1 ? 's' : ''} tracked</p>
-                            </div>
-                            <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-accent-500 transition-colors" />
-                        </Link>
-                    </div>
+        <div className="max-w-[1000px] space-y-6">
+            {/* Greeting — clean, minimal */}
+            <div className="flex items-end justify-between">
+                <div>
+                    <h1 className="text-[22px] font-semibold text-gray-900 tracking-tight">
+                        {profile ? `Hi, ${profile.name?.split(' ')[0] || 'there'}` : 'Welcome to Midas Match'}
+                    </h1>
+                    <p className="text-sm text-gray-400 mt-1">
+                        {profile
+                            ? "Here's an overview of your job search activity."
+                            : 'Upload your resume to get started.'}
+                    </p>
                 </div>
+                <Link
+                    href="/dashboard/search"
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-[13px] font-medium hover:bg-gray-800 transition-colors"
+                >
+                    <Search className="w-3.5 h-3.5" /> New Search
+                </Link>
             </div>
 
-            {/* Recent Applications */}
-            {recentApplied.length > 0 && (
-                <div className="bg-white rounded-xl border border-surface-200 p-5">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-semibold text-gray-900">Recent Applications</h3>
-                        <Link href="/dashboard/applications" className="text-xs text-brand-600 hover:text-brand-700 font-medium">
-                            View all
-                        </Link>
-                    </div>
-                    <div className="space-y-3">
-                        {recentApplied.map((job, i) => (
-                            <div key={job.apply_url || i} className="flex items-center gap-3 py-2 border-b border-surface-100 last:border-0">
-                                <div className="w-8 h-8 rounded-lg bg-surface-100 flex items-center justify-center text-xs font-bold text-gray-500 shrink-0">
-                                    {(job.company || 'N/A').charAt(0).toUpperCase()}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-gray-900 truncate">{job.title}</p>
-                                    <p className="text-[11px] text-gray-400 truncate">{job.company} {job.location ? `· ${job.location}` : ''}</p>
-                                </div>
-                                <div className="flex items-center gap-2 shrink-0">
-                                    <span className="text-[10px] text-gray-400 flex items-center gap-1">
-                                        <Clock className="w-3 h-3" />
-                                        {job.applied_at ? new Date(job.applied_at).toLocaleDateString() : 'Recently'}
-                                    </span>
-                                    <span className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-600 font-semibold">Applied</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+            {/* Upload panel for new users */}
+            {!profile && (
+                <div className="bg-white rounded-xl border border-gray-200 p-6">
+                    <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} />
                 </div>
             )}
+
+            {/* Stats row — clean, flat, not gradient-heavy */}
+            <div className="grid grid-cols-4 gap-4">
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Matches</span>
+                        <div className="w-7 h-7 rounded-lg bg-teal-50 flex items-center justify-center">
+                            <Target className="w-3.5 h-3.5 text-teal-500" />
+                        </div>
+                    </div>
+                    <div className="text-2xl font-semibold text-gray-900">{totalMatches}</div>
+                    <p className="text-[11px] text-gray-300 mt-1">{totalMatches > 0 ? 'From latest scan' : 'Run a scan'}</p>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Saved</span>
+                        <div className="w-7 h-7 rounded-lg bg-sky-50 flex items-center justify-center">
+                            <Bookmark className="w-3.5 h-3.5 text-sky-500" />
+                        </div>
+                    </div>
+                    <div className="text-2xl font-semibold text-gray-900">{savedCount}</div>
+                    <p className="text-[11px] text-gray-300 mt-1">{savedCount > 0 ? 'Jobs bookmarked' : 'None yet'}</p>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Applied</span>
+                        <div className="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center">
+                            <Briefcase className="w-3.5 h-3.5 text-violet-500" />
+                        </div>
+                    </div>
+                    <div className="text-2xl font-semibold text-gray-900">{appliedCount}</div>
+                    <p className="text-[11px] text-gray-300 mt-1">{appliedCount > 0 ? 'Applications sent' : 'None yet'}</p>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Avg Score</span>
+                        <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
+                            <TrendingUp className="w-3.5 h-3.5 text-amber-500" />
+                        </div>
+                    </div>
+                    <div className="text-2xl font-semibold text-gray-900">{avgScore || '—'}</div>
+                    <p className="text-[11px] text-gray-300 mt-1">{avgScore > 0 ? `${avgScore}/100 match` : 'No data'}</p>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-[1fr,340px] gap-5">
+                {/* Recent Applications table */}
+                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
+                        <h3 className="text-[13px] font-semibold text-gray-900">Recent Applications</h3>
+                        <Link href="/dashboard/applications" className="text-[12px] text-teal-600 hover:text-teal-700 font-medium flex items-center gap-1">
+                            View all <ArrowRight className="w-3 h-3" />
+                        </Link>
+                    </div>
+                    {recentApplied.length === 0 ? (
+                        <div className="px-5 py-10 text-center">
+                            <p className="text-sm text-gray-300">No applications yet</p>
+                            <Link href="/dashboard/search" className="text-[12px] text-teal-600 hover:text-teal-700 font-medium mt-2 inline-block">
+                                Start searching
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-gray-50">
+                            {recentApplied.map((job, i) => {
+                                const initial = (stripHtml(job.company) || '?').charAt(0).toUpperCase();
+                                const secondInitial = (stripHtml(job.company) || '??').split(/\s/).filter(Boolean)[1]?.charAt(0)?.toUpperCase() || '';
+                                const score = job.analysis?.fit_score || job.match_score || 0;
+                                return (
+                                    <Link
+                                        key={job.apply_url || i}
+                                        href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                        onClick={() => {
+                                            try {
+                                                const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                                localStorage.setItem(key, JSON.stringify(job));
+                                            } catch (e) { /* ignore */ }
+                                        }}
+                                        className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 transition-colors group"
+                                    >
+                                        <div className={`w-8 h-8 rounded-full ${AVATAR_COLORS[i % AVATAR_COLORS.length]} flex items-center justify-center text-white text-[10px] font-semibold shrink-0`}>
+                                            {initial}{secondInitial}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[13px] font-medium text-gray-900 truncate group-hover:text-teal-600 transition-colors">{stripHtml(job.title)}</p>
+                                            <p className="text-[11px] text-gray-400 truncate">{stripHtml(job.company)}</p>
+                                        </div>
+                                        <div className="flex items-center gap-3 shrink-0">
+                                            {score > 0 && (
+                                                <span className={`text-[11px] font-semibold ${score >= 70 ? 'text-teal-600' : score >= 50 ? 'text-amber-500' : 'text-gray-400'}`}>
+                                                    {score}%
+                                                </span>
+                                            )}
+                                            <span className="text-[11px] text-gray-300">{formatDate(job.applied_at)}</span>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+
+                {/* Right sidebar */}
+                <div className="space-y-4">
+                    {/* Profile summary */}
+                    {profile && (
+                        <div className="bg-white rounded-xl border border-gray-200 p-5">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-white text-sm font-semibold">
+                                    {profile.name?.charAt(0)?.toUpperCase() || 'U'}
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-[13px] font-semibold text-gray-900 truncate">{profile.name}</p>
+                                    <p className="text-[11px] text-gray-400 truncate">{jobTitle || 'Job Seeker'}</p>
+                                </div>
+                            </div>
+                            <div className="space-y-2.5">
+                                <div className="flex justify-between text-[12px]">
+                                    <span className="text-gray-400">Experience</span>
+                                    <span className="font-medium text-gray-700">{experienceYears} years</span>
+                                </div>
+                                <div className="flex justify-between text-[12px]">
+                                    <span className="text-gray-400">Skills</span>
+                                    <span className="font-medium text-gray-700">{profile.skills?.length || 0} identified</span>
+                                </div>
+                                <div className="flex justify-between text-[12px]">
+                                    <span className="text-gray-400">Location</span>
+                                    <span className="font-medium text-gray-700">{preferences.city || preferences.state || preferences.country || 'Not set'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Quick navigation */}
+                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                        <div className="px-5 py-3 border-b border-gray-100">
+                            <h3 className="text-[13px] font-semibold text-gray-900">Quick Actions</h3>
+                        </div>
+                        <div className="divide-y divide-gray-50">
+                            <Link href="/dashboard/search" className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 transition-colors group">
+                                <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center">
+                                    <Search className="w-3.5 h-3.5 text-teal-500" />
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-[13px] font-medium text-gray-700 group-hover:text-gray-900">Search Jobs</p>
+                                </div>
+                                <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
+                            </Link>
+                            <Link href="/dashboard/saved" className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 transition-colors group">
+                                <div className="w-8 h-8 rounded-lg bg-sky-50 flex items-center justify-center">
+                                    <Bookmark className="w-3.5 h-3.5 text-sky-500" />
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-[13px] font-medium text-gray-700 group-hover:text-gray-900">Saved Jobs</p>
+                                    {savedCount > 0 && <p className="text-[10px] text-gray-300">{savedCount} saved</p>}
+                                </div>
+                                <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
+                            </Link>
+                            <Link href="/dashboard/applications" className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 transition-colors group">
+                                <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
+                                    <Briefcase className="w-3.5 h-3.5 text-violet-500" />
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-[13px] font-medium text-gray-700 group-hover:text-gray-900">Applications</p>
+                                    {appliedCount > 0 && <p className="text-[10px] text-gray-300">{appliedCount} tracked</p>}
+                                </div>
+                                <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
