@@ -1,6 +1,7 @@
 'use client';
-import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, ArrowUpRight, Upload, Target, Clock, ChevronRight, Zap, FileText, Eye } from 'lucide-react';
+import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, Target, Clock, ChevronRight, Sparkles, RefreshCw, Eye, Loader2, Zap, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
 
@@ -9,13 +10,45 @@ const AVATAR_COLORS = [
     'bg-rose-500', 'bg-emerald-500', 'bg-indigo-500', 'bg-pink-500',
 ];
 
+function DotIndicator({ filled, total = 5 }) {
+    return (
+        <div className="flex items-center gap-[3px]">
+            {Array.from({ length: total }, (_, i) => (
+                <div
+                    key={i}
+                    className={`w-[6px] h-[6px] rounded-full ${
+                        i < filled ? 'bg-teal-500' : 'bg-gray-200'
+                    }`}
+                />
+            ))}
+        </div>
+    );
+}
+
+function scoreToDots(score) {
+    if (score >= 85) return 5;
+    if (score >= 70) return 4;
+    if (score >= 55) return 3;
+    if (score >= 35) return 2;
+    return 1;
+}
+
 export default function DashboardHome() {
     const {
         profile, jobs, savedJobsData, appliedJobsData,
         isParsing, fileInputRef, setIsParsing, setProfile,
         experienceYears, setExperienceYears, jobTitle, setJobTitle, addLog,
         preferences, setPreferences,
+        recommendations, isLoadingRecs, recsError, fetchRecommendations,
+        toggleSaveJob, savedJobIds, toggleAppliedJob, appliedJobIds,
     } = useApp();
+
+    // Auto-fetch recommendations when dashboard loads (if user has a profile)
+    useEffect(() => {
+        if (profile && profile.skills?.length > 0) {
+            fetchRecommendations();
+        }
+    }, [profile]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleFileUpload = async (e) => {
         const file = e.target.files?.[0];
@@ -69,7 +102,7 @@ export default function DashboardHome() {
 
     return (
         <div className="max-w-[1000px] space-y-6">
-            {/* Greeting — clean, minimal */}
+            {/* Greeting */}
             <div className="flex items-end justify-between">
                 <div>
                     <h1 className="text-[22px] font-semibold text-gray-900 tracking-tight">
@@ -96,7 +129,7 @@ export default function DashboardHome() {
                 </div>
             )}
 
-            {/* Stats row — clean, flat, not gradient-heavy */}
+            {/* Stats row */}
             <div className="grid grid-cols-4 gap-4">
                 <div className="bg-white rounded-xl border border-gray-200 p-4">
                     <div className="flex items-center justify-between mb-3">
@@ -139,6 +172,152 @@ export default function DashboardHome() {
                     <p className="text-[11px] text-gray-300 mt-1">{avgScore > 0 ? `${avgScore}/100 match` : 'No data'}</p>
                 </div>
             </div>
+
+            {/* ===== PICKED FOR YOU — Smart Recommendations ===== */}
+            {profile && (
+                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
+                        <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center">
+                                <Sparkles className="w-3 h-3 text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-[13px] font-semibold text-gray-900">Picked for You</h3>
+                                <p className="text-[10px] text-gray-400">Auto-curated based on your profile and activity</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => fetchRecommendations(true)}
+                            disabled={isLoadingRecs}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                        >
+                            <RefreshCw className={`w-3 h-3 ${isLoadingRecs ? 'animate-spin' : ''}`} />
+                            {isLoadingRecs ? 'Finding...' : 'Refresh'}
+                        </button>
+                    </div>
+
+                    {isLoadingRecs && recommendations.length === 0 ? (
+                        <div className="px-5 py-12 text-center">
+                            <Loader2 className="w-5 h-5 text-teal-500 animate-spin mx-auto mb-3" />
+                            <p className="text-[13px] text-gray-400">Finding jobs that match your profile...</p>
+                            <p className="text-[11px] text-gray-300 mt-1">Analyzing your skills, search history, and saved preferences</p>
+                        </div>
+                    ) : recsError && recommendations.length === 0 ? (
+                        <div className="px-5 py-10 text-center">
+                            <p className="text-sm text-gray-400">Couldn't load recommendations right now</p>
+                            <button
+                                onClick={() => fetchRecommendations(true)}
+                                className="text-[12px] text-teal-600 hover:text-teal-700 font-medium mt-2 cursor-pointer"
+                            >
+                                Try again
+                            </button>
+                        </div>
+                    ) : recommendations.length === 0 ? (
+                        <div className="px-5 py-10 text-center">
+                            <p className="text-sm text-gray-400">Run a job search first to help us learn your preferences</p>
+                            <Link href="/dashboard/search" className="text-[12px] text-teal-600 hover:text-teal-700 font-medium mt-2 inline-block">
+                                Search Jobs
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-gray-50">
+                            {recommendations.map((job, i) => {
+                                const initial = (stripHtml(job.company) || '?').charAt(0).toUpperCase();
+                                const secondInitial = (stripHtml(job.company) || '??').split(/\s/).filter(Boolean)[1]?.charAt(0)?.toUpperCase() || '';
+                                const score = job.match_score || 0;
+                                const dots = scoreToDots(score);
+                                const isSaved = savedJobIds.has(job.apply_url);
+                                const isApplied = appliedJobIds.has(job.apply_url);
+
+                                return (
+                                    <div
+                                        key={job.apply_url || i}
+                                        className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 transition-colors group"
+                                    >
+                                        <div className={`w-9 h-9 rounded-full ${AVATAR_COLORS[i % AVATAR_COLORS.length]} flex items-center justify-center text-white text-[11px] font-semibold shrink-0`}>
+                                            {initial}{secondInitial}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <Link
+                                                    href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                                    onClick={() => {
+                                                        try {
+                                                            const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                                            localStorage.setItem(key, JSON.stringify(job));
+                                                        } catch (e) { /* ignore */ }
+                                                    }}
+                                                    className="text-[13px] font-medium text-gray-900 truncate hover:text-teal-600 transition-colors"
+                                                >
+                                                    {stripHtml(job.title)}
+                                                </Link>
+                                                {job._boosted && (
+                                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 border border-amber-100 shrink-0">
+                                                        Preferred
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-[11px] text-gray-400 truncate mt-0.5">
+                                                {stripHtml(job.company)}
+                                                {job.location && <> · {stripHtml(job.location)}</>}
+                                                {job.source && <> · <span className="text-gray-300">{job.source}</span></>}
+                                            </p>
+                                        </div>
+
+                                        <div className="flex items-center gap-2.5 shrink-0">
+                                            <DotIndicator filled={dots} />
+                                            {score > 0 && (
+                                                <span className={`text-[11px] font-medium ${score >= 70 ? 'text-teal-600' : score >= 50 ? 'text-amber-500' : 'text-gray-400'}`}>
+                                                    {score}%
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Quick actions */}
+                                        <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                onClick={() => toggleSaveJob(job)}
+                                                className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                                                    isSaved
+                                                        ? 'text-sky-500 bg-sky-50'
+                                                        : 'text-gray-300 hover:text-sky-500 hover:bg-sky-50'
+                                                }`}
+                                                title={isSaved ? 'Saved' : 'Save'}
+                                            >
+                                                <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-sky-500' : ''}`} />
+                                            </button>
+                                            <Link
+                                                href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                                onClick={() => {
+                                                    try {
+                                                        const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                                        localStorage.setItem(key, JSON.stringify(job));
+                                                    } catch (e) { /* ignore */ }
+                                                }}
+                                                className="p-1.5 text-gray-300 hover:text-teal-600 hover:bg-teal-50 rounded-md transition-colors"
+                                                title="View details"
+                                            >
+                                                <Eye className="w-3.5 h-3.5" />
+                                            </Link>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {recommendations.length > 0 && (
+                        <div className="px-5 py-2.5 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
+                            <p className="text-[10px] text-gray-300">
+                                {recommendations.length} job{recommendations.length !== 1 ? 's' : ''} matched to your profile
+                            </p>
+                            <p className="text-[10px] text-gray-300">
+                                Updates every 30 min · Click to view full details
+                            </p>
+                        </div>
+                    )}
+                </div>
+            )}
 
             <div className="grid grid-cols-[1fr,340px] gap-5">
                 {/* Recent Applications table */}

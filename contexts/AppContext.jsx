@@ -62,6 +62,83 @@ export function AppProvider({ children }) {
     // Notification
     const [showReturnNotification, setShowReturnNotification] = useState(false);
 
+    // Recommendations
+    const [recommendations, setRecommendations] = useState([]);
+    const [isLoadingRecs, setIsLoadingRecs] = useState(false);
+    const [recsError, setRecsError] = useState(null);
+    const [recsLastFetched, setRecsLastFetched] = useState(null);
+
+    const fetchRecommendations = useCallback(async (force = false) => {
+        if (!profile || !profile.skills || profile.skills.length === 0) return;
+        if (isLoadingRecs) return;
+
+        // Don't re-fetch if we have recent recs (< 30 min) unless forced
+        if (!force && recsLastFetched && (Date.now() - recsLastFetched) < 30 * 60 * 1000) return;
+
+        // Check localStorage cache first
+        if (!force) {
+            try {
+                const cached = localStorage.getItem('midas_recommendations');
+                if (cached) {
+                    const { recs, timestamp } = JSON.parse(cached);
+                    const ageMin = (Date.now() - timestamp) / 1000 / 60;
+                    if (ageMin < 30 && recs.length > 0) {
+                        setRecommendations(recs);
+                        setRecsLastFetched(timestamp);
+                        return;
+                    }
+                }
+            } catch {}
+        }
+
+        setIsLoadingRecs(true);
+        setRecsError(null);
+
+        try {
+            // Build seen URLs from current jobs + saved + applied
+            const seenJobUrls = [
+                ...jobs.map(j => j.apply_url),
+                ...savedJobsData.map(j => j.apply_url),
+                ...appliedJobsData.map(j => j.apply_url),
+            ].filter(Boolean);
+
+            const res = await fetch('/api/recommendations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    profile,
+                    savedJobs: savedJobsData,
+                    appliedJobs: appliedJobsData,
+                    preferences,
+                    apiKeys,
+                    seenJobUrls,
+                }),
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || 'Failed to fetch recommendations');
+            }
+
+            const data = await res.json();
+            const recs = data.recommendations || [];
+            setRecommendations(recs);
+            setRecsLastFetched(Date.now());
+
+            // Cache recommendations
+            try {
+                localStorage.setItem('midas_recommendations', JSON.stringify({
+                    recs,
+                    timestamp: Date.now(),
+                }));
+            } catch {}
+        } catch (err) {
+            setRecsError(err.message);
+        } finally {
+            setIsLoadingRecs(false);
+        }
+    }, [profile, savedJobsData, appliedJobsData, jobs, preferences, apiKeys, isLoadingRecs, recsLastFetched]);
+
     const refreshTokens = useCallback(async () => {
         try {
             const res = await fetch('/api/tokens');
@@ -323,6 +400,12 @@ export function AppProvider({ children }) {
 
         // Notifications
         showReturnNotification, setShowReturnNotification,
+
+        // Recommendations
+        recommendations, setRecommendations,
+        isLoadingRecs,
+        recsError,
+        fetchRecommendations,
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
