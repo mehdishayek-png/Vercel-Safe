@@ -1,7 +1,7 @@
 'use client';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
-import { ArrowLeft, ExternalLink, Bookmark, Check, MapPin, Building2, Clock, Sparkles, BrainCircuit, FileText, Copy, CheckCheck, Loader2, AlertCircle, Briefcase, ChevronRight, GraduationCap, Target, BadgeCheck, Eye, ChevronDown } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Bookmark, Check, MapPin, Building2, Clock, Sparkles, BrainCircuit, FileText, Copy, CheckCheck, Loader2, AlertCircle, Briefcase, ChevronRight, GraduationCap, Target, BadgeCheck, Eye, ChevronDown, Lightbulb } from 'lucide-react';
 import Link from 'next/link';
 import { useApp } from '@/contexts/AppContext';
 import { useToast } from '@/components/ui/Toast';
@@ -119,6 +119,90 @@ function ScoreRing({ score, size = 64 }) {
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
                 <span className="text-[15px] font-bold" style={{ color }}>{score}</span>
+            </div>
+        </div>
+    );
+}
+
+function ScoreGauge({ score, heuristicBreakdown, profile }) {
+    const size = 90;
+    const strokeWidth = 6;
+    const radius = (size - strokeWidth) / 2;
+    const circumference = radius * 2 * Math.PI;
+    const offset = circumference - (score / 100) * circumference;
+
+    const color = score >= 75 ? '#14b8a6' : score >= 55 ? '#f59e0b' : '#9ca3af';
+    const gradientId = `gauge-grad-${score}`;
+
+    // Sub-scores
+    const matches = heuristicBreakdown?.matches || [];
+    const multipliers = heuristicBreakdown?.multipliers || {};
+    const profileSkillsCount = profile?.skills?.length || 1;
+    const skillsScore = Math.round(Math.min((matches.length / profileSkillsCount) * 100, 100));
+    const experienceScore = Math.round(Math.min(parseFloat(multipliers.seniority || 0) * 100, 100));
+    const titleScore = Math.round(Math.min(parseFloat(multipliers.coherence || multipliers.roleFamily || 0) * 100, 100));
+
+    const subScores = [
+        { label: 'Skills', value: skillsScore },
+        { label: 'Experience', value: experienceScore },
+        { label: 'Title', value: titleScore },
+    ];
+
+    const barColor = (v) => v >= 75 ? 'bg-teal-400' : v >= 55 ? 'bg-amber-400' : 'bg-gray-300';
+
+    return (
+        <div className="flex flex-col items-center gap-2">
+            {/* Radial gauge */}
+            <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+                <svg width={size} height={size} className="transform -rotate-90">
+                    <defs>
+                        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+                            {score >= 75 ? (
+                                <>
+                                    <stop offset="0%" stopColor="#14b8a6" />
+                                    <stop offset="100%" stopColor="#0d9488" />
+                                </>
+                            ) : score >= 55 ? (
+                                <>
+                                    <stop offset="0%" stopColor="#f59e0b" />
+                                    <stop offset="100%" stopColor="#d97706" />
+                                </>
+                            ) : (
+                                <>
+                                    <stop offset="0%" stopColor="#9ca3af" />
+                                    <stop offset="100%" stopColor="#6b7280" />
+                                </>
+                            )}
+                        </linearGradient>
+                    </defs>
+                    <circle cx={size / 2} cy={size / 2} r={radius} stroke="#f3f4f6" strokeWidth={strokeWidth} fill="transparent" />
+                    <circle
+                        cx={size / 2} cy={size / 2} r={radius}
+                        stroke={`url(#${gradientId})`} strokeWidth={strokeWidth} fill="transparent"
+                        strokeDasharray={circumference} strokeDashoffset={offset}
+                        strokeLinecap="round"
+                        className="transition-all duration-1000 ease-out"
+                    />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-[22px] font-bold" style={{ color }}>{score}</span>
+                </div>
+            </div>
+
+            {/* Sub-scores row */}
+            <div className="flex items-center gap-3">
+                {subScores.map(({ label, value }) => (
+                    <div key={label} className="flex flex-col items-center gap-0.5">
+                        <span className="text-[9px] font-medium text-gray-400 uppercase tracking-wider">{label}</span>
+                        <div className="w-12 h-1 rounded-full bg-gray-100 overflow-hidden">
+                            <div
+                                className={`h-full rounded-full transition-all duration-700 ease-out ${barColor(value)}`}
+                                style={{ width: `${value}%` }}
+                            />
+                        </div>
+                        <span className="text-[9px] font-semibold text-gray-500">{value}</span>
+                    </div>
+                ))}
             </div>
         </div>
     );
@@ -469,7 +553,7 @@ export default function JobDetailPage() {
                             </div>
                         </div>
 
-                        <ScoreRing score={score} />
+                        <ScoreGauge score={score} heuristicBreakdown={job.heuristic_breakdown} profile={profile} />
                     </div>
 
                     {/* Quick stats row */}
@@ -548,6 +632,35 @@ export default function JobDetailPage() {
             <div className="grid grid-cols-[1fr,280px,280px] gap-5">
                 {/* Left column — Main content */}
                 <div className="space-y-5">
+                    {/* Why this fits you — AI insight card */}
+                    {analysis && !analysis.isBlurredTeaser && (
+                        <div className="bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-100 rounded-xl p-5">
+                            <div className="flex items-center gap-2 mb-3">
+                                <div className="w-6 h-6 rounded-lg bg-teal-100 flex items-center justify-center">
+                                    <Lightbulb className="w-3.5 h-3.5 text-teal-600" />
+                                </div>
+                                <h2 className="text-[13px] font-semibold text-teal-900">Why this fits you</h2>
+                            </div>
+                            <p className="text-[13px] text-teal-800/80 leading-relaxed mb-3">
+                                {analysis.verdict || (analysis.strong_signals?.length > 0
+                                    ? analysis.strong_signals.join('. ') + '.'
+                                    : 'This role aligns with your profile based on our analysis.')}
+                            </p>
+                            {matches.length > 0 && (
+                                <div className="flex flex-wrap gap-1.5">
+                                    {matches.slice(0, 10).map((m, i) => (
+                                        <span
+                                            key={i}
+                                            className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-teal-100/70 text-teal-700 border border-teal-200/50"
+                                        >
+                                            {m.skill}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {/* Job Description — FULL */}
                     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                         <div className="px-5 py-3.5 border-b border-gray-100">

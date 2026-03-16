@@ -127,48 +127,86 @@ export default function DashboardHome() {
                 </div>
             )}
 
-            {/* Stats row */}
+            {/* Stats row — inspired by JobZen/HirePath */}
             <div className="grid grid-cols-4 gap-4">
-                <div className="bg-white rounded-xl border border-gray-200 p-4">
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Matches</span>
-                        <div className="w-7 h-7 rounded-lg bg-teal-50 flex items-center justify-center">
-                            <Target className="w-3.5 h-3.5 text-teal-500" />
+                {[
+                    {
+                        label: 'Matches',
+                        value: totalMatches,
+                        icon: Target,
+                        color: 'teal',
+                        bg: 'bg-gradient-to-br from-teal-50 to-emerald-50/50',
+                        iconBg: 'bg-teal-100',
+                        iconColor: 'text-teal-600',
+                        borderColor: 'border-teal-100',
+                        sub: totalMatches > 0 ? 'From latest scan' : 'Run a scan',
+                        trend: totalMatches > 0 ? `${totalMatches} found` : null,
+                        trendUp: totalMatches > 0,
+                    },
+                    {
+                        label: 'Saved',
+                        value: savedCount,
+                        icon: Bookmark,
+                        color: 'sky',
+                        bg: 'bg-gradient-to-br from-sky-50 to-blue-50/50',
+                        iconBg: 'bg-sky-100',
+                        iconColor: 'text-sky-600',
+                        borderColor: 'border-sky-100',
+                        sub: savedCount > 0 ? 'Jobs bookmarked' : 'None yet',
+                        trend: savedCount > 0 ? `${savedCount} saved` : null,
+                        trendUp: savedCount > 0,
+                    },
+                    {
+                        label: 'Applied',
+                        value: appliedCount,
+                        icon: Briefcase,
+                        color: 'violet',
+                        bg: 'bg-gradient-to-br from-violet-50 to-purple-50/50',
+                        iconBg: 'bg-violet-100',
+                        iconColor: 'text-violet-600',
+                        borderColor: 'border-violet-100',
+                        sub: appliedCount > 0 ? 'Applications sent' : 'None yet',
+                        trend: appliedCount > 0 ? `${appliedCount} tracked` : null,
+                        trendUp: appliedCount > 0,
+                    },
+                    {
+                        label: 'Avg Score',
+                        value: avgScore || '—',
+                        icon: TrendingUp,
+                        color: 'amber',
+                        bg: 'bg-gradient-to-br from-amber-50 to-orange-50/50',
+                        iconBg: 'bg-amber-100',
+                        iconColor: 'text-amber-600',
+                        borderColor: 'border-amber-100',
+                        sub: avgScore > 0 ? `${avgScore}/100 match` : 'No data',
+                        trend: avgScore >= 70 ? 'Strong' : avgScore >= 50 ? 'Moderate' : null,
+                        trendUp: avgScore >= 60,
+                    },
+                ].map((stat) => (
+                    <div key={stat.label} className={`${stat.bg} rounded-xl border ${stat.borderColor} p-4 relative overflow-hidden`}>
+                        {/* Subtle accent circle */}
+                        <div className={`absolute -top-4 -right-4 w-16 h-16 rounded-full ${stat.iconBg} opacity-30`} />
+                        <div className="relative">
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">{stat.label}</span>
+                                <div className={`w-8 h-8 rounded-lg ${stat.iconBg} flex items-center justify-center`}>
+                                    <stat.icon className={`w-4 h-4 ${stat.iconColor}`} />
+                                </div>
+                            </div>
+                            <div className="text-[28px] font-bold text-gray-900 leading-none">{stat.value}</div>
+                            <div className="flex items-center justify-between mt-2">
+                                <p className="text-[11px] text-gray-400">{stat.sub}</p>
+                                {stat.trend && (
+                                    <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+                                        stat.trendUp ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
+                                    }`}>
+                                        {stat.trendUp ? '↑' : '·'} {stat.trend}
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
-                    <div className="text-2xl font-semibold text-gray-900">{totalMatches}</div>
-                    <p className="text-[11px] text-gray-300 mt-1">{totalMatches > 0 ? 'From latest scan' : 'Run a scan'}</p>
-                </div>
-                <div className="bg-white rounded-xl border border-gray-200 p-4">
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Saved</span>
-                        <div className="w-7 h-7 rounded-lg bg-sky-50 flex items-center justify-center">
-                            <Bookmark className="w-3.5 h-3.5 text-sky-500" />
-                        </div>
-                    </div>
-                    <div className="text-2xl font-semibold text-gray-900">{savedCount}</div>
-                    <p className="text-[11px] text-gray-300 mt-1">{savedCount > 0 ? 'Jobs bookmarked' : 'None yet'}</p>
-                </div>
-                <div className="bg-white rounded-xl border border-gray-200 p-4">
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Applied</span>
-                        <div className="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center">
-                            <Briefcase className="w-3.5 h-3.5 text-violet-500" />
-                        </div>
-                    </div>
-                    <div className="text-2xl font-semibold text-gray-900">{appliedCount}</div>
-                    <p className="text-[11px] text-gray-300 mt-1">{appliedCount > 0 ? 'Applications sent' : 'None yet'}</p>
-                </div>
-                <div className="bg-white rounded-xl border border-gray-200 p-4">
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Avg Score</span>
-                        <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
-                            <TrendingUp className="w-3.5 h-3.5 text-amber-500" />
-                        </div>
-                    </div>
-                    <div className="text-2xl font-semibold text-gray-900">{avgScore || '—'}</div>
-                    <p className="text-[11px] text-gray-300 mt-1">{avgScore > 0 ? `${avgScore}/100 match` : 'No data'}</p>
-                </div>
+                ))}
             </div>
 
             {/* ===== PICKED FOR YOU — Smart Recommendations ===== */}

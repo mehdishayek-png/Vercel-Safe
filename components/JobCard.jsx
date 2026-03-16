@@ -163,6 +163,19 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                     {postedDate}
                                 </span>
                             )}
+                            {job.match_score >= 80 ? (
+                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    Strong Match
+                                </span>
+                            ) : job.match_score >= 60 ? (
+                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-teal-50 text-teal-700 border border-teal-100">
+                                    Good Match
+                                </span>
+                            ) : job.match_score >= 40 ? (
+                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-amber-50 text-amber-600 border border-amber-100">
+                                    Fair Match
+                                </span>
+                            ) : null}
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2.5 text-xs text-gray-500 mb-3">
