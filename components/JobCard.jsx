@@ -4,7 +4,7 @@ import { MapPin, Calendar, Building2, ExternalLink, ChevronDown, Check, Bookmark
 import confetti from 'canvas-confetti';
 import { Button } from './ui/Button';
 import { MatchRing } from './ui/MatchRing';
-import { getMatchColor as getMatchColorUtil, getMatchGradient as getMatchGradientUtil } from '@/lib/match-colors';
+import { getMatchColor as getMatchColorUtil, getMatchGradient as getMatchGradientUtil, getMatchBadge } from '@/lib/match-colors';
 import { useRazorpay } from '../lib/useRazorpay';
 import { useToast } from './ui/Toast';
 
@@ -176,6 +176,16 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onTokensUpdate
                             <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
                                 {cleanTitle}
                             </h3>
+                            {/* Match Quality Badge — Seekify-inspired */}
+                            {(() => {
+                                const badge = getMatchBadge(analysis?.fit_score || job.match_score);
+                                return (
+                                    <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full border whitespace-nowrap ${badge.bg} ${badge.text} ${badge.border}`}>
+                                        <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
+                                        {badge.label}
+                                    </span>
+                                );
+                            })()}
                             {job.date_posted && (
                                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-50 text-gray-600 border border-gray-200 whitespace-nowrap">
                                     {postedDate}

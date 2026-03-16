@@ -1,22 +1,31 @@
 import { motion } from 'framer-motion';
-import { getMatchColor } from '@/lib/match-colors';
+import { getMatchColor, getMatchBadge } from '@/lib/match-colors';
 
-export function MatchRing({ score, size = 60, strokeWidth = 4 }) {
+export function MatchRing({ score, size = 64, strokeWidth = 5 }) {
     const radius = (size - strokeWidth) / 2;
     const circumference = radius * 2 * Math.PI;
     const offset = circumference - (score / 100) * circumference;
 
-    const color = getMatchColor(score).hex;
+    const { hex } = getMatchColor(score);
+    const { dot: dotClass } = getMatchBadge(score);
+
+    // Glow color based on score tier
+    const glowColor = score >= 80 ? 'rgba(16,185,129,0.15)' : score >= 60 ? 'rgba(59,130,246,0.15)' : 'rgba(156,163,175,0.08)';
 
     return (
         <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-            <svg width={size} height={size} className="transform -rotate-90">
+            {/* Subtle ambient glow behind the ring */}
+            <div
+                className="absolute inset-0 rounded-full blur-md"
+                style={{ background: glowColor }}
+            />
+            <svg width={size} height={size} className="transform -rotate-90 relative z-10">
                 {/* Background Ring */}
                 <circle
                     cx={size / 2}
                     cy={size / 2}
                     r={radius}
-                    stroke="#e5e7eb"
+                    stroke="#f1f5f9"
                     strokeWidth={strokeWidth}
                     fill="transparent"
                 />
@@ -28,16 +37,17 @@ export function MatchRing({ score, size = 60, strokeWidth = 4 }) {
                     cx={size / 2}
                     cy={size / 2}
                     r={radius}
-                    stroke={color}
+                    stroke={hex}
                     strokeWidth={strokeWidth}
                     fill="transparent"
                     strokeDasharray={circumference}
                     strokeLinecap="round"
-                    className="drop-shadow-sm"
+                    style={{ filter: `drop-shadow(0 0 3px ${hex}40)` }}
                 />
             </svg>
-            <div className="absolute inset-0 flex items-center justify-center flex-col">
-                <span className="text-sm font-bold text-gray-900" style={{ color }}>{score}</span>
+            <div className="absolute inset-0 flex items-center justify-center flex-col z-10">
+                <span className="text-[15px] font-extrabold leading-none" style={{ color: hex }}>{score}</span>
+                <span className="text-[8px] font-semibold text-gray-400 mt-0.5">/100</span>
             </div>
         </div>
     );

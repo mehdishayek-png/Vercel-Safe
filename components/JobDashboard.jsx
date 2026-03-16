@@ -874,22 +874,6 @@ export function JobDashboard({ apiKeys, onBack }) {
                                 </div>
                             </div>
 
-                            {/* Filter Panel */}
-                            <FilterPanel
-                                filters={filters}
-                                flags={flags}
-                                isActive={filtersActive}
-                                activeCount={filterCount}
-                                summary={filterSummary}
-                                toggleWorkArrangement={toggleWorkArrangement}
-                                toggleWorkType={toggleWorkType}
-                                toggleRegion={toggleRegion}
-                                toggleCompanySize={toggleCompanySize}
-                                setSalaryMin={setSalaryMin}
-                                setSalaryCurrency={setSalaryCurrency}
-                                setIncludeMissingSalary={setIncludeMissingSalary}
-                                reset={resetFilters}
-                            />
                         </>
                     )}
 
@@ -944,6 +928,26 @@ export function JobDashboard({ apiKeys, onBack }) {
 
                 {/* ---- Right Panel: Results ---- */}
                 <div className="flex-1 pt-5" ref={resultsRef}>
+                    {/* Horizontal Filter Bar — Seekify-inspired */}
+                    {profile && (
+                        <div className="mb-4 p-3 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/80">
+                            <FilterPanel
+                                filters={filters}
+                                flags={flags}
+                                isActive={filtersActive}
+                                activeCount={filterCount}
+                                summary={filterSummary}
+                                toggleWorkArrangement={toggleWorkArrangement}
+                                toggleWorkType={toggleWorkType}
+                                toggleRegion={toggleRegion}
+                                toggleCompanySize={toggleCompanySize}
+                                setSalaryMin={setSalaryMin}
+                                setSalaryCurrency={setSalaryCurrency}
+                                setIncludeMissingSalary={setIncludeMissingSalary}
+                                reset={resetFilters}
+                            />
+                        </div>
+                    )}
                     <MatchResultsGrid
                         jobs={jobs}
                         activeTab={activeTab}

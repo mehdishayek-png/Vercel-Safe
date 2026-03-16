@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Lock, Search } from 'lucide-react';
+import { Sparkles, Lock, Search, TrendingUp, Target, Layers, Zap } from 'lucide-react';
 import { JobCard } from './JobCard';
 import { ScanningRadar } from './ScanningRadar';
 
@@ -77,6 +77,43 @@ export function MatchResultsGrid({
                     </div>
                 )}
             </div>
+
+            {/* Stats Summary Row — JobZen-inspired */}
+            {jobs.length > 0 && !isMatching && (
+                <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="grid grid-cols-4 gap-3 mb-5"
+                >
+                    {(() => {
+                        const strongCount = jobs.filter(j => (j.analysis?.fit_score || j.match_score) >= 80).length;
+                        const goodCount = jobs.filter(j => { const s = j.analysis?.fit_score || j.match_score; return s >= 60 && s < 80; }).length;
+                        const avgScore = jobs.length > 0 ? Math.round(jobs.reduce((sum, j) => sum + (j.analysis?.fit_score || j.match_score || 0), 0) / jobs.length) : 0;
+                        const sources = [...new Set(jobs.map(j => j.source).filter(Boolean))].length;
+
+                        const stats = [
+                            { label: 'Total Matches', value: jobs.length, icon: Layers, color: 'text-indigo-600', bg: 'bg-indigo-50', iconBg: 'bg-indigo-100' },
+                            { label: 'Strong Matches', value: strongCount, icon: Target, color: 'text-emerald-600', bg: 'bg-emerald-50', iconBg: 'bg-emerald-100' },
+                            { label: 'Avg Score', value: avgScore, icon: TrendingUp, color: 'text-blue-600', bg: 'bg-blue-50', iconBg: 'bg-blue-100' },
+                            { label: 'Sources', value: sources, icon: Zap, color: 'text-violet-600', bg: 'bg-violet-50', iconBg: 'bg-violet-100' },
+                        ];
+
+                        return stats.map((stat) => (
+                            <div key={stat.label} className={`${stat.bg} rounded-xl p-3.5 border border-white/60`}>
+                                <div className="flex items-center gap-2.5">
+                                    <div className={`w-8 h-8 ${stat.iconBg} rounded-lg flex items-center justify-center`}>
+                                        <stat.icon className={`w-4 h-4 ${stat.color}`} />
+                                    </div>
+                                    <div>
+                                        <div className={`text-lg font-bold ${stat.color} leading-none`}>{stat.value}</div>
+                                        <div className="text-[10px] font-medium text-gray-500 mt-0.5">{stat.label}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        ));
+                    })()}
+                </motion.div>
+            )}
 
             {/* Status Area */}
             <div className="space-y-4">
