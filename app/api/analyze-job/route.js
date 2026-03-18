@@ -163,7 +163,10 @@ export async function POST(request) {
         }
 
         const data = await response.json();
-        const analysis = JSON.parse(data.choices[0].message.content);
+        let rawContent = (data.choices[0].message.content || '').trim();
+        // Strip markdown code fences (```json ... ```) that Gemini sometimes wraps around JSON
+        rawContent = rawContent.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '');
+        const analysis = JSON.parse(rawContent);
 
         return NextResponse.json({ analysis });
 
