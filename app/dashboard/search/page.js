@@ -80,6 +80,7 @@ export default function SearchPage() {
             setProfile(data.profile);
             if (typeof data.profile.experience_years === 'number') setExperienceYears(data.profile.experience_years);
             if (data.profile.headline) setJobTitle(data.profile.headline);
+            if (data.whatIDo) setWhatIDo(data.whatIDo);
 
             if (data.profile.location) {
                 addLog(`Detected location: ${data.profile.location}`);

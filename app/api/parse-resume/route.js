@@ -5,6 +5,62 @@ import { rateLimit } from '@/lib/rate-limit';
 
 export const maxDuration = 30;
 
+/**
+ * Generate a "What I Do" summary from the parsed resume.
+ * Uses OpenRouter (Gemini Flash) for speed and cost.
+ * Returns a 2-3 sentence description the user can edit.
+ */
+async function generateWhatIDo(profile, apiKey) {
+  const effectiveKey = apiKey || process.env.OPENROUTER_API_KEY;
+  if (!effectiveKey) return '';
+
+  const skills = (profile.skills || []).slice(0, 15).join(', ');
+  const headline = profile.headline || '';
+  const industry = profile.industry || '';
+  const years = profile.experience_years || 0;
+  // Use first 1500 chars of resume text for context
+  const resumeSnippet = (profile.resume_text || '').slice(0, 1500);
+
+  const prompt = `Based on this resume, write a 2-3 sentence "What I Do" description in first person.
+It should describe what the person does day-to-day, what they're good at, and what kind of role they're looking for.
+Keep it natural and conversational — not a LinkedIn summary. Max 400 characters.
+
+Resume headline: ${headline}
+Industry: ${industry}
+Experience: ${years} years
+Skills: ${skills}
+Resume excerpt: ${resumeSnippet}
+
+Write ONLY the description, nothing else. No quotes, no labels.`;
+
+  try {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${effectiveKey}`,
+        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://midasmatch.com',
+        'X-Title': 'Midas',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        temperature: 0.3,
+        max_tokens: 150,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+      signal: AbortSignal.timeout(8000),
+    });
+
+    if (!res.ok) return '';
+    const data = await res.json();
+    const text = (data.choices?.[0]?.message?.content || '').trim();
+    // Cap at 500 chars (matches the UI limit)
+    return text.slice(0, 500);
+  } catch {
+    return ''; // Non-blocking — empty is fine, user can fill manually
+  }
+}
+
 export async function POST(request) {
   try {
     const { userId } = await auth();
@@ -43,7 +99,10 @@ export async function POST(request) {
       profile.search_strategy = strategy;
     }
 
-    return NextResponse.json({ profile });
+    // Generate "What I Do" summary from resume text (non-blocking)
+    const whatIDo = await generateWhatIDo(profile, apiKey);
+
+    return NextResponse.json({ profile, whatIDo });
   } catch (e) {
     console.error('Parse resume error:', e);
     return NextResponse.json({ error: 'Failed to parse resume. Please try a different PDF.' }, { status: 500 });
