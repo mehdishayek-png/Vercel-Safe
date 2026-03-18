@@ -247,13 +247,13 @@ export default function SearchPage() {
                 }
 
                 const top20 = currentJobs.slice(0, 20);
-                const totalBatches = Math.ceil(top20.length / 4);
+                const chunkSize = 10; // 10 parallel calls — 2 batches instead of 5
+                const totalBatches = Math.ceil(top20.length / chunkSize);
                 addLog(`AI Agent: Deep analysis on top ${top20.length} candidates...`);
                 setDeepAnalysisProgress({ current: 0, total: totalBatches });
 
                 // Run deep analysis asynchronously
                 (async () => {
-                    const chunkSize = 4;
                     const updateJobWithAnalysis = (jobId, analysis) => {
                         setJobs(prev => prev.map(j => {
                             if (j.id === jobId || j.apply_url === jobId) return { ...j, analysis, match_score: analysis.fit_score || j.match_score };
@@ -272,7 +272,7 @@ export default function SearchPage() {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
-                                    job, profile: { ...profile, experience_years: experienceYears, headline: jobTitle }
+                                    job, profile: { ...profile, experience_years: experienceYears, headline: jobTitle, whatIDo }
                                 })
                             }).then(r => r.json()).then(d => {
                                 if (d.analysis) updateJobWithAnalysis(job.id || job.apply_url, d.analysis);

@@ -63,7 +63,7 @@ export async function POST(request) {
         if (openRouterKey) {
             apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
             apiKey = openRouterKey;
-            model = 'anthropic/claude-3.5-sonnet'; // Claude 3.5 Sonnet - Best reasoning for career-critical decisions
+            model = 'google/gemini-2.5-flash'; // Gemini Flash — 3-5x faster than Sonnet, sufficient for scoring
             headers['HTTP-Referer'] = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://midasmatch.com'; // Required by OpenRouter
             headers['X-Title'] = 'Midas';
         }
