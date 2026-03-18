@@ -3,12 +3,15 @@ import { auth } from '@clerk/nextjs/server';
 import crypto from 'crypto';
 import { Redis } from '@upstash/redis';
 import { creditTokens, TOKEN_PACK_SIZE } from '@/lib/tokens';
+import { validateOrigin } from '@/lib/csrf';
 
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
     ? new Redis({ url: process.env.UPSTASH_REDIS_REST_URL, token: process.env.UPSTASH_REDIS_REST_TOKEN })
     : null;
 
 export async function POST(request) {
+    if (!validateOrigin(request)) return NextResponse.json({ error: 'Invalid request origin' }, { status: 403 });
+
     try {
         const { userId } = await auth();
         const {

@@ -1,11 +1,19 @@
 'use client';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { Hero } from '@/components/Hero';
 import { Header } from '@/components/Header';
-import { Features } from '@/components/Features';
-import { HowItWorks } from '@/components/HowItWorks';
-import { DashboardPreview } from '@/components/DashboardPreview';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+
+const Features = dynamic(() => import('@/components/Features').then(mod => ({ default: mod.Features })), {
+    loading: () => <div className="h-96" />,
+});
+const HowItWorks = dynamic(() => import('@/components/HowItWorks').then(mod => ({ default: mod.HowItWorks })), {
+    loading: () => <div className="h-64" />,
+});
+const DashboardPreview = dynamic(() => import('@/components/DashboardPreview').then(mod => ({ default: mod.DashboardPreview })), {
+    loading: () => <div className="h-96" />,
+});
 
 export default function Home() {
     return (
@@ -20,6 +28,30 @@ export default function Home() {
                 <div id="preview">
                     <DashboardPreview />
                 </div>
+
+                {/* Social proof / stats strip */}
+                <section className="py-12 border-y border-gray-100">
+                    <div className="container mx-auto px-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto text-center">
+                            <div>
+                                <div className="text-3xl font-bold text-gray-900">8+</div>
+                                <div className="text-sm text-gray-500 mt-1">Job Sources Scanned</div>
+                            </div>
+                            <div>
+                                <div className="text-3xl font-bold text-gray-900">350+</div>
+                                <div className="text-sm text-gray-500 mt-1">Company Career Pages</div>
+                            </div>
+                            <div>
+                                <div className="text-3xl font-bold text-gray-900">7</div>
+                                <div className="text-sm text-gray-500 mt-1">Scoring Signals</div>
+                            </div>
+                            <div>
+                                <div className="text-3xl font-bold text-gray-900">&lt;60s</div>
+                                <div className="text-sm text-gray-500 mt-1">Average Scan Time</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
                 <Features />
                 <HowItWorks />
@@ -83,6 +115,9 @@ export default function Home() {
                                     <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
                                     <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
                                     <a href="/refund" className="hover:text-white transition-colors">Refund Policy</a>
+                                    <a href="/pricing" className="hover:text-white transition-colors">Pricing</a>
+                                    <a href="/faq" className="hover:text-white transition-colors">FAQ</a>
+                                    <a href="/about" className="hover:text-white transition-colors">About</a>
                                     <a href="mailto:support@midasmatch.com" className="hover:text-white transition-colors">Contact Support</a>
                                 </div>
 

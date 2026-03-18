@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { Redis } from '@upstash/redis';
 import { sendApplicationConfirmation } from '@/lib/email';
+import { validateOrigin } from '@/lib/csrf';
 
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
     ? new Redis({ url: process.env.UPSTASH_REDIS_REST_URL, token: process.env.UPSTASH_REDIS_REST_TOKEN })
@@ -30,6 +31,7 @@ export async function GET() {
 export async function POST(request) {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!validateOrigin(request)) return NextResponse.json({ error: 'Invalid request origin' }, { status: 403 });
     if (!redis) return NextResponse.json({ error: 'Storage unavailable' }, { status: 503 });
 
     try {

@@ -25,7 +25,7 @@ export function Button({
     };
 
     const sizes = {
-        sm: "h-8 px-3 text-xs rounded-lg",
+        sm: "h-10 px-3 text-xs rounded-lg",
         md: "h-10 px-5 text-sm rounded-[10px]",
         lg: "h-12 px-8 text-base rounded-xl",
         xl: "h-14 px-10 text-base font-semibold rounded-xl"

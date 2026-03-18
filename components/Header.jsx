@@ -60,7 +60,7 @@ export function Header({ onShowGuide, onClearData, tokenBalance }) {
                     <button
                         onClick={handleGuideClick}
                         aria-label="How it Works"
-                        className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer transition-colors"
+                        className="flex items-center gap-1.5 p-2 text-xs text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer transition-colors"
                     >
                         <HelpCircle className="w-4 h-4" />
                         <span className="hidden sm:inline">Guide</span>

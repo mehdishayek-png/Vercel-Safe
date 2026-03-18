@@ -92,7 +92,7 @@ export function Sidebar({ isOpen, onClose }) {
                             key={href}
                             href={href}
                             onClick={onClose}
-                            className={`relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 group ${
+                            className={`relative flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-150 group ${
                                 active
                                     ? 'bg-gray-900 text-white'
                                     : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
@@ -117,7 +117,7 @@ export function Sidebar({ isOpen, onClose }) {
                 <Link
                     href="/"
                     onClick={onClose}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-all"
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-all"
                 >
                     <ChevronLeft className="w-4 h-4" />
                     Back to Home
