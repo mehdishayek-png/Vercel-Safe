@@ -1,7 +1,6 @@
 'use client';
-import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, Target, Clock, ChevronRight, Sparkles, RefreshCw, Eye, Loader2, Zap, CheckCircle } from 'lucide-react';
+import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, Target, ChevronRight, Sparkles, Eye } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { useUser } from '@clerk/nextjs';
 import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
@@ -37,16 +36,13 @@ export default function DashboardHome() {
         isParsing, fileInputRef, setIsParsing, setProfile,
         experienceYears, setExperienceYears, jobTitle, setJobTitle, addLog,
         preferences, setPreferences,
-        recommendations, isLoadingRecs, recsError, fetchRecommendations,
         toggleSaveJob, savedJobIds, toggleAppliedJob, appliedJobIds,
     } = useApp();
 
-    // Auto-fetch recommendations when dashboard loads (if user has a profile)
-    useEffect(() => {
-        if (profile && profile.skills?.length > 0) {
-            fetchRecommendations();
-        }
-    }, [profile]); // eslint-disable-line react-hooks/exhaustive-deps
+    // Top 5 jobs from latest scan — sorted by AI score if available, then heuristic
+    const topPicks = [...jobs]
+        .sort((a, b) => (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0))
+        .slice(0, 5);
 
     const handleFileUpload = async (e) => {
         const file = e.target.files?.[0];
@@ -209,103 +205,73 @@ export default function DashboardHome() {
                 ))}
             </div>
 
-            {/* ===== PICKED FOR YOU — Smart Recommendations ===== */}
+            {/* ===== TOP PICKS — Best from latest scan ===== */}
             {profile && (
-                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
+                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140]">
                         <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-md bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center">
                                 <Sparkles className="w-3 h-3 text-white" />
                             </div>
                             <div>
-                                <h3 className="text-[13px] font-semibold text-gray-900">Picked for You</h3>
-                                <p className="text-[10px] text-gray-400">Auto-curated based on your profile and activity</p>
+                                <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">Top Picks</h3>
+                                <p className="text-[10px] text-gray-400">Best matches from your latest scan</p>
                             </div>
                         </div>
-                        <button
-                            onClick={() => fetchRecommendations(true)}
-                            disabled={isLoadingRecs}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                        <Link
+                            href="/dashboard/search"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 hover:text-teal-600 hover:bg-teal-50 dark:hover:bg-teal-900/20 rounded-lg transition-colors"
                         >
-                            <RefreshCw className={`w-3 h-3 ${isLoadingRecs ? 'animate-spin' : ''}`} />
-                            {isLoadingRecs ? 'Finding...' : 'Refresh'}
-                        </button>
+                            View all <ArrowRight className="w-3 h-3" />
+                        </Link>
                     </div>
 
-                    {isLoadingRecs && recommendations.length === 0 ? (
-                        <div className="px-5 py-12 text-center">
-                            <Loader2 className="w-5 h-5 text-teal-500 animate-spin mx-auto mb-3" />
-                            <p className="text-[13px] text-gray-400">Finding jobs that match your profile...</p>
-                            <p className="text-[11px] text-gray-300 mt-1">Analyzing your skills, search history, and saved preferences</p>
-                        </div>
-                    ) : recsError && recommendations.length === 0 ? (
+                    {topPicks.length === 0 ? (
                         <div className="px-5 py-10 text-center">
-                            <p className="text-sm text-gray-400">Couldn't load recommendations right now</p>
-                            <button
-                                onClick={() => fetchRecommendations(true)}
-                                className="text-[12px] text-teal-600 hover:text-teal-700 font-medium mt-2 cursor-pointer"
-                            >
-                                Try again
-                            </button>
-                        </div>
-                    ) : recommendations.length === 0 ? (
-                        <div className="px-5 py-10 text-center">
-                            <p className="text-sm text-gray-400">Run a job search first to help us learn your preferences</p>
+                            <p className="text-sm text-gray-400">Run a job search to see your top matches here</p>
                             <Link href="/dashboard/search" className="text-[12px] text-teal-600 hover:text-teal-700 font-medium mt-2 inline-block">
                                 Search Jobs
                             </Link>
                         </div>
                     ) : (
-                        <div className="divide-y divide-gray-50">
-                            {recommendations.map((job, i) => {
-                                const score = job.match_score || 0;
+                        <div className="divide-y divide-gray-50 dark:divide-[#2d3140]">
+                            {topPicks.map((job, i) => {
+                                const score = Math.round(job.analysis?.fit_score || job.match_score || 0);
                                 const dots = scoreToDots(score);
                                 const isSaved = savedJobIds.has(job.apply_url);
-                                const isApplied = appliedJobIds.has(job.apply_url);
 
                                 return (
                                     <div
                                         key={job.apply_url || i}
-                                        className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 transition-colors group"
+                                        className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 dark:hover:bg-[#22252f] transition-colors group"
                                     >
                                         <CompanyLogo company={job.company} applyUrl={job.apply_url} size={36} colorIndex={i} />
                                         <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2">
-                                                <Link
-                                                    href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
-                                                    onClick={() => {
-                                                        try {
-                                                            const key = `job_detail_${btoa(job.apply_url || job.title)}`;
-                                                            localStorage.setItem(key, JSON.stringify(job));
-                                                        } catch (e) { /* ignore */ }
-                                                    }}
-                                                    className="text-[13px] font-medium text-gray-900 truncate hover:text-teal-600 transition-colors"
-                                                >
-                                                    {stripHtml(job.title)}
-                                                </Link>
-                                                {job._boosted && (
-                                                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 border border-amber-100 shrink-0">
-                                                        Preferred
-                                                    </span>
-                                                )}
-                                            </div>
+                                            <Link
+                                                href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                                onClick={() => {
+                                                    try {
+                                                        const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                                        localStorage.setItem(key, JSON.stringify(job));
+                                                    } catch (e) { /* ignore */ }
+                                                }}
+                                                className="text-[13px] font-medium text-gray-900 dark:text-gray-100 truncate hover:text-teal-600 transition-colors block"
+                                            >
+                                                {stripHtml(job.title)}
+                                            </Link>
                                             <p className="text-[11px] text-gray-400 truncate mt-0.5">
                                                 {stripHtml(job.company)}
                                                 {job.location && <> · {stripHtml(job.location)}</>}
-                                                {job.source && <> · <span className="text-gray-300">{job.source}</span></>}
                                             </p>
                                         </div>
 
                                         <div className="flex items-center gap-2.5 shrink-0">
                                             <DotIndicator filled={dots} />
-                                            {score > 0 && (
-                                                <span className={`text-[11px] font-medium ${score >= 70 ? 'text-teal-600' : score >= 50 ? 'text-amber-500' : 'text-gray-400'}`}>
-                                                    {Math.round(score)}%
-                                                </span>
-                                            )}
+                                            <span className={`text-[11px] font-semibold ${score >= 70 ? 'text-teal-600' : score >= 50 ? 'text-amber-500' : 'text-gray-400'}`}>
+                                                {score}
+                                            </span>
                                         </div>
 
-                                        {/* Quick actions */}
                                         <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <button
                                                 onClick={() => toggleSaveJob(job)}
@@ -318,34 +284,10 @@ export default function DashboardHome() {
                                             >
                                                 <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-sky-500' : ''}`} />
                                             </button>
-                                            <Link
-                                                href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
-                                                onClick={() => {
-                                                    try {
-                                                        const key = `job_detail_${btoa(job.apply_url || job.title)}`;
-                                                        localStorage.setItem(key, JSON.stringify(job));
-                                                    } catch (e) { /* ignore */ }
-                                                }}
-                                                className="p-1.5 text-gray-300 hover:text-teal-600 hover:bg-teal-50 rounded-md transition-colors"
-                                                title="View details"
-                                            >
-                                                <Eye className="w-3.5 h-3.5" />
-                                            </Link>
                                         </div>
                                     </div>
                                 );
                             })}
-                        </div>
-                    )}
-
-                    {recommendations.length > 0 && (
-                        <div className="px-5 py-2.5 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
-                            <p className="text-[10px] text-gray-300">
-                                {recommendations.length} job{recommendations.length !== 1 ? 's' : ''} matched to your profile
-                            </p>
-                            <p className="text-[10px] text-gray-300">
-                                Updates every 30 min · Click to view full details
-                            </p>
                         </div>
                     )}
                 </div>
