@@ -77,7 +77,11 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
 
     const stripHtml = (html) => {
         if (!html) return '';
-        return html.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>?/gm, '');
+        return html
+            .replace(/<br\s*\/?>/gi, '\n')
+            .replace(/<[^>]*>?/gm, '')
+            .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ');
     };
 
     const cleanTitle = stripHtml(job.title);
