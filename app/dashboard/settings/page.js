@@ -66,6 +66,7 @@ export default function SettingsPage() {
         profile, setProfile,
         experienceYears, setExperienceYears,
         jobTitle, setJobTitle,
+        whatIDo, setWhatIDo,
         preferences, setPreferences,
         countries, states, cities,
         tokenBalance, freeScansRemaining, FREE_DAILY_SCANS,
@@ -219,6 +220,20 @@ export default function SettingsPage() {
                                     placeholder="e.g. Technology"
                                 />
                             </div>
+                        </div>
+
+                        {/* What I Do */}
+                        <div>
+                            <FieldLabel>What I Do <span className="text-gray-300 font-normal">(optional)</span></FieldLabel>
+                            <textarea
+                                value={whatIDo}
+                                onChange={(e) => setWhatIDo(e.target.value)}
+                                placeholder="Describe what you do day-to-day in 2-3 sentences. E.g., 'I help SaaS companies onboard enterprise clients. I run QBRs, build playbooks, and reduce churn.'"
+                                className="w-full px-3 py-2 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors placeholder:text-gray-300 resize-none dark:bg-[#22252f] dark:border-[#2d3140] dark:text-gray-200 dark:placeholder:text-gray-600"
+                                rows={3}
+                                maxLength={500}
+                            />
+                            <div className="text-[10px] text-gray-300 text-right mt-1">{whatIDo.length}/500</div>
                         </div>
 
                         {/* Skills */}

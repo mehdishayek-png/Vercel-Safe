@@ -118,7 +118,7 @@ function ScoreRing({ score, size = 64 }) {
                 />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-[15px] font-bold" style={{ color }}>{score}</span>
+                <span className="text-[15px] font-bold" style={{ color }}>{Math.round(score)}</span>
             </div>
         </div>
     );
@@ -185,7 +185,7 @@ function ScoreGauge({ score, heuristicBreakdown, profile }) {
                     />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[22px] font-bold" style={{ color }}>{score}</span>
+                    <span className="text-[22px] font-bold" style={{ color }}>{Math.round(score)}</span>
                 </div>
             </div>
 
@@ -244,7 +244,7 @@ function SimilarJobCard({ job, index, onSave, isSaved }) {
                     <span className={`text-[11px] font-semibold shrink-0 px-1.5 py-0.5 rounded-md ${
                         score >= 75 ? 'bg-teal-50 text-teal-600' : score >= 55 ? 'bg-amber-50 text-amber-600' : 'bg-gray-50 text-gray-500'
                     }`}>
-                        {score}%
+                        {Math.round(score)}%
                     </span>
                 )}
             </div>
@@ -574,7 +574,7 @@ export default function JobDetailPage() {
                         />
                         <StatBox
                             label="Match Score"
-                            value={`${score}%`}
+                            value={`${Math.round(score)}%`}
                             sublabel={score >= 75 ? 'Strong match' : score >= 50 ? 'Moderate' : 'Low'}
                             icon={BadgeCheck}
                             accentColor="violet"

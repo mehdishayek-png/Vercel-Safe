@@ -276,7 +276,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                     {analysis?.fit_score ? (
                         <div className="text-xs font-semibold px-2 py-0.5 rounded-md bg-brand-50 text-brand-600 flex items-center gap-1">
                             <Sparkles className="w-3 h-3" />
-                            AI: {analysis.fit_score}
+                            AI: {Math.round(analysis.fit_score)}
                         </div>
                     ) : (
                         <div className="text-[11px] text-gray-400">Heuristic Match</div>

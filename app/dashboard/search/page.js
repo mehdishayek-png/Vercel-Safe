@@ -44,6 +44,7 @@ export default function SearchPage() {
         countries, states, cities,
         experienceYears, setExperienceYears,
         jobTitle, setJobTitle,
+        whatIDo, setWhatIDo,
         fileInputRef, apiKeys,
         toggleSaveJob, toggleAppliedJob,
         appliedJobIds,
@@ -164,7 +165,7 @@ export default function SearchPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    profile: { ...profile, experience_years: experienceYears, headline: jobTitle },
+                    profile: { ...profile, experience_years: experienceYears, headline: jobTitle, whatIDo },
                     preferences: { ...preferences, location: locationQuery, midasSearch, filters, exploreAdjacent }
                 })
             });
@@ -211,7 +212,7 @@ export default function SearchPage() {
                                 ...j,
                                 match_score: j.pandaScore?.score ?? j.match_score ?? 0,
                                 heuristic_breakdown: j.pandaScore || j.heuristic_breakdown,
-                            })).filter(j => j.match_score >= 20); // Basic threshold
+                            })).filter(j => j.match_score >= 30); // Quality threshold — hide heavily-penalized results
 
                             if (newJobs.length > 0) {
                                 totalSourceJobs += newJobs.length;
@@ -382,6 +383,25 @@ export default function SearchPage() {
                 {/* Resume Upload & Onboarding */}
                 {!profile && (
                     <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} />
+                )}
+
+                {/* What I Do — optional description for better matching */}
+                {profile && (
+                    <div className="bg-white rounded-xl border border-surface-200 p-4 space-y-2">
+                        <label className="text-[12px] font-semibold text-gray-500 uppercase tracking-wider">
+                            What I Do
+                            <span className="text-gray-300 font-normal normal-case tracking-normal ml-1">(optional)</span>
+                        </label>
+                        <textarea
+                            value={whatIDo}
+                            onChange={(e) => setWhatIDo(e.target.value)}
+                            placeholder="Describe what you do day-to-day in 2-3 sentences. E.g., 'I help SaaS companies onboard enterprise clients. I run QBRs, build playbooks, and reduce churn.'"
+                            className="w-full text-[13px] text-gray-700 bg-surface-50 border border-surface-200 rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 placeholder:text-gray-300 dark:bg-[#22252f] dark:border-[#2d3140] dark:text-gray-200 dark:placeholder:text-gray-600"
+                            rows={3}
+                            maxLength={500}
+                        />
+                        <div className="text-[10px] text-gray-300 text-right">{whatIDo.length}/500</div>
+                    </div>
                 )}
 
                 {profile && (

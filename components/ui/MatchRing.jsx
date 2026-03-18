@@ -36,7 +36,7 @@ export function MatchRing({ score, size = 56, strokeWidth = 3.5 }) {
                 />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-[13px] font-bold" style={{ color }}>{score}</span>
+                <span className="text-[13px] font-bold" style={{ color }}>{Math.round(score)}</span>
             </div>
         </div>
     );

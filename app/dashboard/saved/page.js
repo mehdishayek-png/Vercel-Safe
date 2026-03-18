@@ -203,7 +203,7 @@ export default function SavedJobsPage() {
                                     <div className="flex items-center gap-2.5">
                                         <DotIndicator filled={dots} />
                                         {score > 0 && (
-                                            <span className="text-[11px] text-gray-300">{score}%</span>
+                                            <span className="text-[11px] text-gray-300">{Math.round(score)}%</span>
                                         )}
                                     </div>
 

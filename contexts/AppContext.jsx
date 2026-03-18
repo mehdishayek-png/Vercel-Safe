@@ -14,6 +14,7 @@ export function AppProvider({ children }) {
     const [profile, setProfile] = useState(null);
     const [experienceYears, setExperienceYears] = useState(0);
     const [jobTitle, setJobTitle] = useState('');
+    const [whatIDo, setWhatIDo] = useState('');
 
     // Jobs
     const [jobs, setJobs] = useState([]);
@@ -282,6 +283,12 @@ export function AppProvider({ children }) {
             }
         } catch {}
 
+        // Load "What I Do" description
+        try {
+            const storedWhatIDo = localStorage.getItem('midas_what_i_do');
+            if (storedWhatIDo) setWhatIDo(storedWhatIDo);
+        } catch {}
+
         // Load cached results
         try {
             const storedResults = localStorage.getItem('midas_results');
@@ -332,6 +339,13 @@ export function AppProvider({ children }) {
         }
     }, [profile, experienceYears, jobTitle]);
 
+    // Persist whatIDo
+    useEffect(() => {
+        if (whatIDo) {
+            try { localStorage.setItem('midas_what_i_do', whatIDo); } catch {}
+        }
+    }, [whatIDo]);
+
     // Persist job results
     useEffect(() => {
         if (jobs.length > 0 && !isMatching) {
@@ -365,6 +379,7 @@ export function AppProvider({ children }) {
         profile, setProfile,
         experienceYears, setExperienceYears,
         jobTitle, setJobTitle,
+        whatIDo, setWhatIDo,
         isParsing, setIsParsing,
         fileInputRef,
         apiKeys, setApiKeys,

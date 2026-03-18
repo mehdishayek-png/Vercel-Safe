@@ -68,7 +68,7 @@ function ScorePopover({ job, onClose }) {
                     <div className="text-[10px] text-gray-400 mt-0.5">Relevant Skills</div>
                 </div>
                 <div className="text-center">
-                    <div className="text-[22px] font-light text-gray-800">{score}%</div>
+                    <div className="text-[22px] font-light text-gray-800">{Math.round(score)}%</div>
                     <div className="text-[10px] text-gray-400 mt-0.5">Match Score</div>
                 </div>
             </div>
@@ -376,7 +376,7 @@ export default function ApplicationsPage() {
                                             <DotIndicator filled={dots} />
                                             {score > 0 && (
                                                 <span className="text-[11px] text-gray-300 group-hover/dots:text-teal-500 transition-colors">
-                                                    {score}%
+                                                    {Math.round(score)}%
                                                 </span>
                                             )}
                                         </button>

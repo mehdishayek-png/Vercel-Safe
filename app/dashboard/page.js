@@ -300,7 +300,7 @@ export default function DashboardHome() {
                                             <DotIndicator filled={dots} />
                                             {score > 0 && (
                                                 <span className={`text-[11px] font-medium ${score >= 70 ? 'text-teal-600' : score >= 50 ? 'text-amber-500' : 'text-gray-400'}`}>
-                                                    {score}%
+                                                    {Math.round(score)}%
                                                 </span>
                                             )}
                                         </div>
@@ -391,7 +391,7 @@ export default function DashboardHome() {
                                         <div className="flex items-center gap-3 shrink-0">
                                             {score > 0 && (
                                                 <span className={`text-[11px] font-semibold ${score >= 70 ? 'text-teal-600' : score >= 50 ? 'text-amber-500' : 'text-gray-400'}`}>
-                                                    {score}%
+                                                    {Math.round(score)}%
                                                 </span>
                                             )}
                                             <span className="text-[11px] text-gray-300">{formatDate(job.applied_at)}</span>
