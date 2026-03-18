@@ -73,6 +73,10 @@ export default function SearchPage() {
                 throw new Error(errData.error || `Failed to parse resume (${res.status})`);
             }
             const data = await res.json();
+            // Clear previous job results — new resume = new matches
+            setJobs([]);
+            try { localStorage.removeItem('midas_results'); } catch {}
+
             setProfile(data.profile);
             if (typeof data.profile.experience_years === 'number') setExperienceYears(data.profile.experience_years);
             if (data.profile.headline) setJobTitle(data.profile.headline);

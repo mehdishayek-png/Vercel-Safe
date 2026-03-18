@@ -78,8 +78,13 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
     const stripHtml = (html) => {
         if (!html) return '';
         return html
+            // Decode entities first (handles double-encoded HTML)
+            .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+            // Strip tags
             .replace(/<br\s*\/?>/gi, '\n')
             .replace(/<[^>]*>?/gm, '')
+            // Second decode pass for remaining entities
             .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
             .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ');
     };

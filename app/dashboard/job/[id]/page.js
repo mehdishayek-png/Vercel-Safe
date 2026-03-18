@@ -12,8 +12,13 @@ import { CompanyLogo } from '@/components/ui/CompanyLogo';
 function stripHtml(html) {
     if (!html) return '';
     return html
+        // Decode entities first (handles double-encoded HTML from Greenhouse/Lever)
+        .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+        // Strip tags
         .replace(/<br\s*\/?>/gi, '\n')
         .replace(/<[^>]*>?/gm, '')
+        // Second decode pass
         .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
         .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ');
 }
