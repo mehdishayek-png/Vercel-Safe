@@ -3,6 +3,7 @@ import { fetchAllJobsStreaming } from '@/lib/job-fetcher';
 import { calculatePandaScore } from '@/lib/panda-matcher';
 import { canScan, incrementDailyScan, deductToken } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
+import { saveAlertProfile } from '@/lib/job-alerts';
 import { z } from 'zod';
 
 export const maxDuration = 90;
@@ -152,6 +153,11 @@ export async function POST(request) {
             roleAnchor: result.roleAnchor,
             dominantPlatform: result.dominantPlatform,
           });
+
+          // Save alert profile for daily job alerts (fire-and-forget)
+          if (userId) {
+              saveAlertProfile(userId, profile, preferences).catch(() => {});
+          }
 
           controller.close();
         } catch (err) {
