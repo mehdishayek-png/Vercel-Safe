@@ -1,7 +1,7 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Search, Bookmark, Briefcase, User, Settings, LogOut, ChevronLeft, X } from 'lucide-react';
+import { Home, Search, Bookmark, Briefcase, User, Settings, LogOut, ChevronLeft, X, GraduationCap } from 'lucide-react';
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { useApp } from '@/contexts/AppContext';
 
@@ -10,6 +10,7 @@ const NAV_ITEMS = [
     { href: '/dashboard/search', icon: Search, label: 'Search Jobs' },
     { href: '/dashboard/saved', icon: Bookmark, label: 'Saved Jobs' },
     { href: '/dashboard/applications', icon: Briefcase, label: 'Applications' },
+    { href: '/dashboard/prep', icon: GraduationCap, label: 'Interview Prep' },
     { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ];
 
