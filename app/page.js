@@ -25,33 +25,33 @@ export default function Home() {
                     onDemo={() => document.getElementById('preview')?.scrollIntoView({ behavior: 'smooth' })}
                 />
 
-                <div id="preview">
-                    <DashboardPreview />
-                </div>
-
                 {/* Social proof / stats strip */}
-                <section className="py-12 border-y border-gray-100">
+                <section className="py-16 bg-gray-50 dark:bg-[#12141c]">
                     <div className="container mx-auto px-4">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto text-center">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 max-w-5xl mx-auto text-center">
                             <div>
-                                <div className="text-3xl font-bold text-gray-900">8+</div>
-                                <div className="text-sm text-gray-500 mt-1">Job Sources Scanned</div>
+                                <div className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">1,000+</div>
+                                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Jobs Scanned Per Search</div>
                             </div>
                             <div>
-                                <div className="text-3xl font-bold text-gray-900">350+</div>
-                                <div className="text-sm text-gray-500 mt-1">Company Career Pages</div>
+                                <div className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">350+</div>
+                                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Company Career Pages</div>
                             </div>
                             <div>
-                                <div className="text-3xl font-bold text-gray-900">7</div>
-                                <div className="text-sm text-gray-500 mt-1">Scoring Signals</div>
+                                <div className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">8+</div>
+                                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Job Sources Aggregated</div>
                             </div>
                             <div>
-                                <div className="text-3xl font-bold text-gray-900">&lt;60s</div>
-                                <div className="text-sm text-gray-500 mt-1">Average Scan Time</div>
+                                <div className="text-4xl md:text-5xl font-extrabold text-brand-600 dark:text-brand-400">&lt;60s</div>
+                                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Average Scan Time</div>
                             </div>
                         </div>
                     </div>
                 </section>
+
+                <div id="preview">
+                    <DashboardPreview />
+                </div>
 
                 <Features />
                 <HowItWorks />
@@ -76,7 +76,7 @@ export default function Home() {
                             href="/dashboard"
                             className="px-8 py-4 bg-white text-gray-900 rounded-xl font-semibold text-base hover:bg-gray-100 transition-colors inline-block shadow-lg shadow-white/10 hover:shadow-white/20"
                         >
-                            Start Matching — Free
+                            Get Started Free
                         </Link>
                         <p className="text-sm text-gray-400 mt-3">Free to start · No credit card required</p>
                     </div>
