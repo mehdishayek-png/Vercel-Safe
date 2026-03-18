@@ -42,7 +42,16 @@ export function AppProvider({ children }) {
     // Search settings
     const [midasSearch, setMidasSearch] = useState(false);
     const [exploreAdjacent, setExploreAdjacent] = useState(false);
-    const [preferences, setPreferences] = useState({ country: 'US', state: '', city: '', remoteOnly: false });
+    const [preferences, setPreferences] = useState(() => {
+        // Restore saved preferences on init (before first render)
+        if (typeof window !== 'undefined') {
+            try {
+                const stored = localStorage.getItem('midas_preferences');
+                if (stored) return JSON.parse(stored);
+            } catch {}
+        }
+        return { country: 'US', state: '', city: '', remoteOnly: false };
+    });
 
     // Location data
     const [countries, setCountries] = useState([]);
@@ -346,6 +355,13 @@ export function AppProvider({ children }) {
         }
     }, [whatIDo]);
 
+    // Persist preferences (country, state, city, remoteOnly)
+    useEffect(() => {
+        if (preferences.country) {
+            try { localStorage.setItem('midas_preferences', JSON.stringify(preferences)); } catch {}
+        }
+    }, [preferences]);
+
     // Persist job results
     useEffect(() => {
         if (jobs.length > 0 && !isMatching) {
@@ -354,21 +370,32 @@ export function AppProvider({ children }) {
         }
     }, [jobs, isMatching]);
 
-    // Location cascading
+    // Location cascading — skip resetting state/city on initial mount
+    const isInitialMount = useRef(true);
     useEffect(() => {
         if (preferences.country) {
             const countryStates = getStatesByCountry(preferences.country);
             setStates(countryStates);
             if (countryStates.length === 0) setCities(getCitiesByState(preferences.country, null));
-            else setCities([]);
-            setPreferences(prev => ({ ...prev, state: '', city: '' }));
+            else if (!isInitialMount.current) setCities([]);
+            // Only reset state/city when user CHANGES country, not on initial load
+            if (!isInitialMount.current) {
+                setPreferences(prev => ({ ...prev, state: '', city: '' }));
+            }
         } else { setStates([]); setCities([]); }
     }, [preferences.country]);
 
     useEffect(() => {
         if (preferences.state) {
             setCities(getCitiesByState(preferences.country, preferences.state));
-            setPreferences(prev => ({ ...prev, city: '' }));
+            // Only reset city when user CHANGES state, not on initial load
+            if (!isInitialMount.current) {
+                setPreferences(prev => ({ ...prev, city: '' }));
+            }
+        }
+        // Mark initial mount complete after both cascades have fired
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
         }
     }, [preferences.state]);
 
