@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Lock, Search, Download, BrainCircuit, Target, Zap, ShieldCheck, TrendingUp, Globe, FileText } from 'lucide-react';
+import { Sparkles, Lock, Search, Download, BrainCircuit, Target, Zap, ShieldCheck, TrendingUp, Globe, FileText, ChevronDown, Building2 } from 'lucide-react';
 import { JobCard } from './JobCard';
 import { ScanningRadar } from './ScanningRadar';
 import { exportJobsToCSV } from '@/lib/export-csv';
+import { CompanyLogo } from './ui/CompanyLogo';
 
 export function MatchResultsGrid({
     jobs,
@@ -27,6 +29,8 @@ export function MatchResultsGrid({
     isPaymentProcessing,
     findJobs,
     freeVisibleJobs,
+    searchSuggestions,
+    onSuggestionClick,
 }) {
     const tabs = [
         { key: 'matches', label: 'Matches', count: jobs.length },
@@ -242,62 +246,165 @@ export function MatchResultsGrid({
                 </div>
             )}
 
-            {/* Job Cards */}
-            <div className="space-y-3 mt-4">
-                <AnimatePresence>
-                    {displayedJobs.map((job, i) => {
-                        const shouldBlur = false; // Beta: all results visible. Restore: isPaywalled && activeTab === 'matches' && i >= freeVisibleJobs;
-                        if (shouldBlur && i === freeVisibleJobs) {
-                            return (
-                                <div key="paywall-cta">
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="relative rounded-xl overflow-hidden mb-3"
-                                    >
-                                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white z-10 flex flex-col items-center justify-center">
-                                            <Lock className="w-7 h-7 text-brand-500 mb-2" />
-                                            <h3 className="text-base font-bold text-gray-900 mb-1">+{displayedJobs.length - freeVisibleJobs} more matches</h3>
-                                            <p className="text-sm text-gray-500 mb-3">Unlock all results with tokens</p>
-                                            <button
-                                                onClick={initiatePayment}
-                                                disabled={isPaymentProcessing}
-                                                className="px-5 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors shadow-button disabled:opacity-50 cursor-pointer"
-                                            >
-                                                {isPaymentProcessing ? 'Processing...' : 'Get 50 Tokens — ₹399'}
-                                            </button>
-                                        </div>
-                                        <div className="filter blur-md pointer-events-none">
-                                            <JobCard
-                                                job={job}
-                                                profile={profile}
-                                                apiKeys={apiKeys}
-                                                onSave={toggleSaveJob}
-                                                isSaved={false}
-                                                onTokensUpdated={refreshTokens}
-                                            />
-                                        </div>
-                                    </motion.div>
-                                </div>
-                            );
-                        }
-                        if (shouldBlur) return null;
-                        return (
-                            <JobCard
-                                key={job.id || job.apply_url || `job-${i}`}
-                                job={job}
-                                profile={profile}
-                                apiKeys={apiKeys}
-                                onSave={toggleSaveJob}
-                                isSaved={savedJobIds.has(job.apply_url)}
-                                onApply={toggleAppliedJob}
-                                isApplied={appliedJobIds?.has(job.apply_url)}
-                                onTokensUpdated={refreshTokens}
-                            />
-                        );
-                    })}
-                </AnimatePresence>
-            </div>
+            {/* Smart search suggestions (shown when results are sparse) */}
+            {searchSuggestions && searchSuggestions.length > 0 && displayedJobs.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mt-2"
+                >
+                    <p className="text-xs font-medium text-amber-800 dark:text-amber-300 mb-2">
+                        Few results? Try searching for related roles:
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                        {searchSuggestions.map((title, i) => (
+                            <button
+                                key={i}
+                                onClick={() => onSuggestionClick?.(title)}
+                                className="px-3 py-1.5 text-xs font-medium bg-white dark:bg-[#1a1d27] border border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/20 hover:border-amber-300 transition-all cursor-pointer"
+                            >
+                                {title}
+                            </button>
+                        ))}
+                    </div>
+                </motion.div>
+            )}
+
+            {/* Job Cards — with company grouping */}
+            <GroupedJobList
+                displayedJobs={displayedJobs}
+                profile={profile}
+                apiKeys={apiKeys}
+                savedJobIds={savedJobIds}
+                appliedJobIds={appliedJobIds}
+                toggleSaveJob={toggleSaveJob}
+                toggleAppliedJob={toggleAppliedJob}
+                refreshTokens={refreshTokens}
+            />
         </>
+    );
+}
+
+// ─── Company Grouping ────────────────────────────────────────────────────────
+
+function CompanyGroupHeader({ company, jobs, isOpen, onToggle }) {
+    const bestScore = Math.max(...jobs.map(j => j.analysis?.fit_score || j.match_score || 0));
+    return (
+        <button
+            onClick={onToggle}
+            className="w-full flex items-center gap-3 p-3 px-4 bg-gradient-to-r from-surface-50 to-white dark:from-[#1e2130] dark:to-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-xl hover:border-brand-200 transition-all cursor-pointer"
+        >
+            <CompanyLogo company={company} size={28} colorIndex={0} />
+            <div className="flex-1 min-w-0 text-left">
+                <span className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">{company}</span>
+                <span className="text-[11px] text-gray-400 ml-2">{jobs.length} open roles</span>
+            </div>
+            <span className="text-[11px] font-semibold text-brand-600 bg-brand-50 dark:bg-brand-900/20 px-2 py-0.5 rounded-md">
+                Top: {Math.round(bestScore)}
+            </span>
+            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+    );
+}
+
+function GroupedJobList({ displayedJobs, profile, apiKeys, savedJobIds, appliedJobIds, toggleSaveJob, toggleAppliedJob, refreshTokens }) {
+    const [expandedGroups, setExpandedGroups] = useState({});
+    const GROUP_THRESHOLD = 3; // Group companies with 3+ jobs
+
+    // Count jobs per company
+    const companyCounts = {};
+    for (const job of displayedJobs) {
+        const co = (job.company || 'Unknown').trim();
+        companyCounts[co] = (companyCounts[co] || 0) + 1;
+    }
+
+    // Build render list: singles stay as-is, grouped companies get a header
+    const renderItems = [];
+    const processedCompanies = new Set();
+
+    for (let i = 0; i < displayedJobs.length; i++) {
+        const job = displayedJobs[i];
+        const co = (job.company || 'Unknown').trim();
+
+        if (companyCounts[co] >= GROUP_THRESHOLD && !processedCompanies.has(co)) {
+            // First encounter of a grouped company — insert group header
+            processedCompanies.add(co);
+            const groupJobs = displayedJobs.filter(j => (j.company || '').trim() === co);
+            renderItems.push({ type: 'group', company: co, jobs: groupJobs });
+        } else if (companyCounts[co] < GROUP_THRESHOLD) {
+            // Ungrouped — render normally
+            renderItems.push({ type: 'job', job, index: i });
+        }
+        // Grouped jobs that aren't the first encounter are skipped (rendered inside the group)
+    }
+
+    const toggleGroup = (company) => {
+        setExpandedGroups(prev => ({ ...prev, [company]: !prev[company] }));
+    };
+
+    return (
+        <div className="space-y-3 mt-4">
+            <AnimatePresence>
+                {renderItems.map((item, idx) => {
+                    if (item.type === 'group') {
+                        const isOpen = expandedGroups[item.company];
+                        return (
+                            <motion.div
+                                key={`group-${item.company}`}
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="space-y-2"
+                            >
+                                <CompanyGroupHeader
+                                    company={item.company}
+                                    jobs={item.jobs}
+                                    isOpen={isOpen}
+                                    onToggle={() => toggleGroup(item.company)}
+                                />
+                                <AnimatePresence>
+                                    {isOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="space-y-2 pl-3 border-l-2 border-brand-100 dark:border-brand-800 ml-4"
+                                        >
+                                            {item.jobs.map((job, j) => (
+                                                <JobCard
+                                                    key={job.id || job.apply_url || `group-${item.company}-${j}`}
+                                                    job={job}
+                                                    profile={profile}
+                                                    apiKeys={apiKeys}
+                                                    onSave={toggleSaveJob}
+                                                    isSaved={savedJobIds.has(job.apply_url)}
+                                                    onApply={toggleAppliedJob}
+                                                    isApplied={appliedJobIds?.has(job.apply_url)}
+                                                    onTokensUpdated={refreshTokens}
+                                                />
+                                            ))}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </motion.div>
+                        );
+                    }
+
+                    // Regular ungrouped job
+                    return (
+                        <JobCard
+                            key={item.job.id || item.job.apply_url || `job-${item.index}`}
+                            job={item.job}
+                            profile={profile}
+                            apiKeys={apiKeys}
+                            onSave={toggleSaveJob}
+                            isSaved={savedJobIds.has(item.job.apply_url)}
+                            onApply={toggleAppliedJob}
+                            isApplied={appliedJobIds?.has(item.job.apply_url)}
+                            onTokensUpdated={refreshTokens}
+                        />
+                    );
+                })}
+            </AnimatePresence>
+        </div>
     );
 }

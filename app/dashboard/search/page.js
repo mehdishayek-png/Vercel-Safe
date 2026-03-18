@@ -59,6 +59,21 @@ export default function SearchPage() {
         setSalaryMin, setSalaryCurrency, setIncludeMissingSalary, reset: resetFilters,
     } = app;
 
+    const [searchSuggestions, setSearchSuggestions] = useState(null);
+
+    const generateSearchSuggestions = async (currentTitle, currentProfile) => {
+        try {
+            const res = await fetch('/api/search-suggestions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: currentTitle, skills: currentProfile?.skills || [] }),
+            });
+            if (!res.ok) return null;
+            const data = await res.json();
+            return data.suggestions || null;
+        } catch { return null; }
+    };
+
     const handleFileUpload = async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -239,11 +254,19 @@ export default function SearchPage() {
                 }
             }
 
+            // Clear previous suggestions
+            setSearchSuggestions(null);
+
             // Deep analysis on top results (after streaming is complete)
             setJobs(currentJobs => {
                 if (currentJobs.length === 0) {
                     setSearchError('No matching jobs found. Try broadening your search.');
                     return currentJobs;
+                }
+
+                // Generate smart suggestions if results are sparse
+                if (currentJobs.length < 15) {
+                    generateSearchSuggestions(jobTitle, profile).then(s => s && setSearchSuggestions(s));
                 }
 
                 const top20 = currentJobs.slice(0, 20);
@@ -452,6 +475,7 @@ export default function SearchPage() {
                     toggleSaveJob={toggleSaveJob} toggleAppliedJob={toggleAppliedJob} appliedJobIds={appliedJobIds}
                     refreshTokens={refreshTokens} isPaywalled={isPaywalled}
                     findJobs={findJobs} freeVisibleJobs={FREE_VISIBLE_JOBS}
+                    searchSuggestions={searchSuggestions} onSuggestionClick={(title) => { setJobTitle(title); setSearchSuggestions(null); }}
                 />
             </div>
 
