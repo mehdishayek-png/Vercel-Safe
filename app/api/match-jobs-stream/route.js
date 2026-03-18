@@ -18,7 +18,6 @@ const ScanPayloadSchema = z.object({
     midasSearch: z.boolean().optional().default(false),
     filters: z.any().optional(),
   }).passthrough().optional().default({}),
-  apiKeys: z.any().optional()
 });
 
 export async function POST(request) {
@@ -51,7 +50,7 @@ export async function POST(request) {
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
-    const { profile, apiKeys, preferences } = validationResult.data;
+    const { profile, preferences } = validationResult.data;
 
     if (!profile || !profile.skills || profile.skills.length === 0) {
       return new Response(JSON.stringify({ error: 'Profile with skills required' }), {
@@ -113,7 +112,7 @@ export async function POST(request) {
             const scoredJobs = await Promise.all(
               jobs.map(async (job) => {
                 try {
-                  const score = await calculatePandaScore(job, profile, preferences, apiKeys || {});
+                  const score = await calculatePandaScore(job, profile, preferences, {});
                   return { ...job, pandaScore: score };
                 } catch {
                   return { ...job, pandaScore: null };
@@ -137,7 +136,7 @@ export async function POST(request) {
 
           const result = await fetchAllJobsStreaming(
             profile,
-            apiKeys || {},
+            {},
             onSourceComplete,
             onProgress,
             preferences

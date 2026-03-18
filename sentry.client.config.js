@@ -8,10 +8,24 @@ Sentry.init({
     debug: false,
     enabled: process.env.NODE_ENV === "production",
 
-    // Send console.log, console.warn, and console.error calls as logs to Sentry
+    // Only capture console.error calls as logs to Sentry
     integrations: [
-        Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
+        Sentry.consoleLoggingIntegration({ levels: ["error"] }),
     ],
-    // Enable logs to be sent to Sentry
-    enableLogs: true,
+    enableLogs: false,
+
+    // Scrub PII from error reports before sending to Sentry
+    beforeSend(event) {
+        if (event.request?.data) {
+            try {
+                const data = typeof event.request.data === 'string' ? JSON.parse(event.request.data) : event.request.data;
+                if (data.profile) data.profile = '[REDACTED]';
+                if (data.resume_text) data.resume_text = '[REDACTED]';
+                if (data.apiKeys) data.apiKeys = '[REDACTED]';
+                if (data.job?.description) data.job.description = '[REDACTED]';
+                event.request.data = typeof event.request.data === 'string' ? JSON.stringify(data) : data;
+            } catch {}
+        }
+        return event;
+    },
 });

@@ -10,6 +10,7 @@ const NAV_ITEMS = [
     { href: '/dashboard/search', icon: Search, label: 'Search Jobs' },
     { href: '/dashboard/saved', icon: Bookmark, label: 'Saved Jobs' },
     { href: '/dashboard/applications', icon: Briefcase, label: 'Applications' },
+    { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ];
 
 export function Sidebar({ isOpen, onClose }) {

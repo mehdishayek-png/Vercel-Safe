@@ -47,11 +47,11 @@ export async function POST(request) {
             }
         }
 
-        const { job, profile, apiKeys } = await request.json();
+        const { job, profile } = await request.json();
 
-        // Check for OpenRouter Key First
-        const openRouterKey = apiKeys?.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY;
-        const openAiKey = apiKeys?.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+        // Use server-side env vars only — never accept API keys from clients
+        const openRouterKey = process.env.OPENROUTER_API_KEY;
+        const openAiKey = process.env.OPENAI_API_KEY;
 
         let apiUrl = 'https://api.openai.com/v1/chat/completions';
         let apiKey = openAiKey;

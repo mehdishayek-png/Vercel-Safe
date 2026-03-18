@@ -13,7 +13,7 @@ export default function PrivacyPolicy() {
                             When you use Midas, we process the following data:
                         </p>
                         <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1 mt-2">
-                            <li><strong>Resume Data:</strong> Your uploaded PDF is parsed in-memory to extract skills, experience, and job preferences. We do NOT store your resume file on our servers.</li>
+                            <li><strong>Resume Data:</strong> Your uploaded PDF is parsed in-memory to extract skills, experience, and job preferences. We do NOT store your resume file on our servers. A text summary (up to 4,000 characters) is cached in your browser&apos;s local storage for convenience and may be sent to AI providers for job matching and analysis.</li>
                             <li><strong>Search Preferences:</strong> Location, job title, experience level, and skills you provide are used to query job search APIs.</li>
                             <li><strong>Account Data:</strong> When you sign in via Clerk (Google/email), your authentication ID is used to track your token balance and scan usage on our servers.</li>
                             <li><strong>Usage Data:</strong> Token balance, daily scan count, and deep scan usage are stored server-side in a secure Redis database (Upstash), tied to your authenticated account.</li>
@@ -43,6 +43,7 @@ export default function PrivacyPolicy() {
                             <li><strong>Clerk:</strong> For authentication. Clerk&apos;s privacy policy applies to account data.</li>
                             <li><strong>Razorpay:</strong> For payment processing. Razorpay&apos;s privacy policy governs all payment data.</li>
                             <li><strong>Upstash Redis:</strong> For server-side storage of token balances and usage counters. Data is encrypted in transit and at rest.</li>
+                            <li><strong>Vercel Analytics:</strong> We use Vercel Analytics to measure page performance and usage patterns. This data is anonymized and does not include personal information.</li>
                         </ul>
                     </section>
 
@@ -64,6 +65,9 @@ export default function PrivacyPolicy() {
                         <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Your Rights</h2>
                         <p className="text-gray-600 text-sm leading-relaxed">
                             You may request deletion of your server-side data (token balance, scan history) at any time by contacting us. You can clear all local data instantly via the dashboard.
+                        </p>
+                        <p className="text-gray-600 text-sm leading-relaxed mt-2">
+                            You can export or delete all your data at any time via the Settings page in your dashboard. This includes your profile, saved jobs, and application history.
                         </p>
                     </section>
 

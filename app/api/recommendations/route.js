@@ -33,7 +33,7 @@ export async function POST(request) {
         }
 
         const body = await request.json();
-        const { profile, savedJobs, appliedJobs, preferences, apiKeys, seenJobUrls } = body;
+        const { profile, savedJobs, appliedJobs, preferences, seenJobUrls } = body;
 
         if (!profile || !profile.skills || profile.skills.length === 0) {
             return Response.json({ error: 'Profile with skills required' }, { status: 400 });
@@ -72,7 +72,7 @@ export async function POST(request) {
 
         const result = await fetchAllJobs(
             enrichedProfile,
-            apiKeys || {},
+            {},
             null, // no progress callback
             recPreferences
         );
@@ -97,7 +97,7 @@ export async function POST(request) {
                             job,
                             enrichedProfile,
                             recPreferences,
-                            apiKeys || {}
+                            {}
                         );
                         return {
                             ...job,

@@ -21,7 +21,6 @@ const ScanPayloadSchema = z.object({
     midasSearch: z.boolean().optional().default(false),
     filters: z.any().optional(), // validated lower down by validateFilters
   }).passthrough().optional().default({}),
-  apiKeys: z.any().optional()
 });
 
 export async function POST(request) {
@@ -55,7 +54,7 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    const { profile, apiKeys, preferences } = validationResult.data;
+    const { profile, preferences } = validationResult.data;
 
     if (!profile || !profile.skills || profile.skills.length === 0) {
       return NextResponse.json({ error: 'Profile with skills required' }, { status: 400 });
@@ -98,7 +97,7 @@ export async function POST(request) {
       roleAnchor,
       dominantPlatform,
       source: querySource
-    } = await fetchAllJobs(profile, apiKeys, onProgress, preferences);
+    } = await fetchAllJobs(profile, {}, onProgress, preferences);
 
     // =========================================================
     // PRE-FILTER: narrows the pool before Panda sees it.
@@ -122,7 +121,7 @@ export async function POST(request) {
     };
 
     // Match using the reliable pipeline (keyword + LLM hybrid)
-    const matches = await matchJobs(filteredJobs, profile, apiKeys, onProgress, enrichedPreferences);
+    const matches = await matchJobs(filteredJobs, profile, {}, onProgress, enrichedPreferences);
 
     return NextResponse.json({
       matches,

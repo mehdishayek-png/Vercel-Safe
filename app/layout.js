@@ -47,6 +47,30 @@ export default function RootLayout({ children }) {
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body suppressHydrationWarning>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "WebApplication",
+                "name": "Midas Match",
+                "description": "AI-powered job matching engine. Upload your resume and match with jobs from 8+ sources.",
+                "url": "https://midasmatch.com",
+                "applicationCategory": "BusinessApplication",
+                "operatingSystem": "Web",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "0",
+                  "priceCurrency": "USD",
+                  "description": "Free tier with 5 daily scans"
+                },
+                "author": {
+                  "@type": "Organization",
+                  "name": "Midas"
+                }
+              })
+            }}
+          />
           <ToastProvider>
             {children}
             <Analytics />

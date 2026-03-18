@@ -110,7 +110,6 @@ export function AppProvider({ children }) {
                     savedJobs: savedJobsData,
                     appliedJobs: appliedJobsData,
                     preferences,
-                    apiKeys,
                     seenJobUrls,
                 }),
             });
@@ -137,7 +136,7 @@ export function AppProvider({ children }) {
         } finally {
             setIsLoadingRecs(false);
         }
-    }, [profile, savedJobsData, appliedJobsData, jobs, preferences, apiKeys, isLoadingRecs, recsLastFetched]);
+    }, [profile, savedJobsData, appliedJobsData, jobs, preferences, isLoadingRecs, recsLastFetched]);
 
     const refreshTokens = useCallback(async () => {
         try {

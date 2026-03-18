@@ -165,7 +165,6 @@ export default function SearchPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     profile: { ...profile, experience_years: experienceYears, headline: jobTitle },
-                    apiKeys,
                     preferences: { ...preferences, location: locationQuery, midasSearch, filters, exploreAdjacent }
                 })
             });
@@ -267,7 +266,7 @@ export default function SearchPage() {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
-                                    job, profile: { ...profile, experience_years: experienceYears, headline: jobTitle }, apiKeys
+                                    job, profile: { ...profile, experience_years: experienceYears, headline: jobTitle }
                                 })
                             }).then(r => r.json()).then(d => {
                                 if (d.analysis) updateJobWithAnalysis(job.id || job.apply_url, d.analysis);
