@@ -296,6 +296,18 @@ export function AppProvider({ children }) {
             }
         } catch {}
 
+        // Send welcome email on first visit (one-time)
+        try {
+            const welcomeSent = localStorage.getItem('midas_welcome_sent');
+            if (!welcomeSent && isSignedIn) {
+                setTimeout(() => {
+                    fetch('/api/email/welcome', { method: 'POST' })
+                        .then(res => { if (res.ok) localStorage.setItem('midas_welcome_sent', 'true'); })
+                        .catch(() => {});
+                }, 3000);
+            }
+        } catch {}
+
         // Return-visit notification: show if last visit was 2+ days ago
         try {
             const lastVisit = localStorage.getItem('midas_last_visit');

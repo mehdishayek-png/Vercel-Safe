@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { Redis } from '@upstash/redis';
+import { sendApplicationConfirmation } from '@/lib/email';
 
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
     ? new Redis({ url: process.env.UPSTASH_REDIS_REST_URL, token: process.env.UPSTASH_REDIS_REST_TOKEN })
@@ -49,6 +50,17 @@ export async function POST(request) {
         if (current.length > 200) current = current.slice(-200);
 
         await redis.set(key, current);
+
+        // Fire-and-forget application confirmation email
+        if (action === 'apply' || (action === 'save' && job?.type === 'applied')) {
+            currentUser().then(user => {
+                const email = user?.emailAddresses?.[0]?.emailAddress;
+                if (email) {
+                    sendApplicationConfirmation(email, user?.firstName || 'there', job).catch(() => {});
+                }
+            }).catch(() => {});
+        }
+
         return NextResponse.json({ success: true, count: current.length });
     } catch (err) {
         console.error('Failed to save job:', err);
