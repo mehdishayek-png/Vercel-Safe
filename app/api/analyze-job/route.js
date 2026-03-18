@@ -84,7 +84,8 @@ export async function POST(request) {
         Candidate Profile:
         Headline: ${profile.headline}
         Experience Years: ${profile.experience_years || 'Not specified'} (THIS IS THE AUTHORITATIVE NUMBER — use this for ALL experience comparisons, do NOT infer a different number from context)
-        Skills: ${profile.skills.join(', ')}
+        Skills: ${profile.skills.join(', ')}${profile.whatIDo ? `
+        What They Do (in their own words): ${profile.whatIDo}` : ''}
         
         Job Description:
         Title: ${job.title}
@@ -114,6 +115,12 @@ export async function POST(request) {
            - Missing 1-3 skills? **Ignore it.** People learn on the job.
            - Only penalize if candidate is from a COMPLETELY different domain (e.g. construction → software).
            - Focus scoring on **experience match**, not skill match.
+
+        3b. **"WHAT THEY DO" INTENT SIGNAL** (IF PROVIDED):
+           - If the candidate described what they do day-to-day, use it to judge role alignment.
+           - A strong mismatch between what they DO and what the job REQUIRES should lower the score.
+           - A strong alignment (even with different terminology) should boost the score.
+           - Example: candidate says "I build automated workflows" → "Process Automation Engineer" = great fit even if keywords differ.
         
         4. **FIT SCORE SCALE**: 
            - 80-100: Perfect match (Experience aligned, domain correct).
