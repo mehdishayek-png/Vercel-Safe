@@ -203,9 +203,16 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                             </span>
                         </div>
 
-                        {/* Summary */}
+                        {/* TL;DR from AI analysis (shown instead of raw JD when available) */}
+                        {(job.analysis?.tldr) && (
+                            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-1.5 italic">
+                                {job.analysis.tldr}
+                            </p>
+                        )}
+
+                        {/* Raw Summary */}
                         <div className="relative">
-                            <p className={`text-sm text-gray-500 dark:text-gray-400 leading-relaxed ${showFullDescription ? '' : 'line-clamp-2'}`}>
+                            <p className={`text-sm text-gray-500 dark:text-gray-400 leading-relaxed ${(job.analysis?.tldr) ? 'line-clamp-1' : showFullDescription ? '' : 'line-clamp-2'}`}>
                                 {cleanSummary}
                             </p>
                             {cleanSummary.length > 150 && (

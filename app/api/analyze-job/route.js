@@ -134,7 +134,8 @@ export async function POST(request) {
             "strong_signals": ["Signal 1", "Signal 2"], // Specific skills/exp that match well
             "gaps": ["Gap 1"], // Missing skills or requirements (be gentle but honest)
             "salary_estimate": "Estimated Ranges (e.g. $120k - $150k)", // Estimate based on role/location/company tiers
-            "verdict": "One sentence summary of why they should apply (or why NOT)."
+            "verdict": "One sentence summary of why they should apply (or why NOT).",
+            "tldr": "2-line plain English summary of the job. What the role does, what kind of company, and the key requirement. No jargon. Example: 'Support role at a fintech startup helping enterprise clients onboard. Needs 3+ years CX experience and strong communication skills.'"
         }
         `;
 
