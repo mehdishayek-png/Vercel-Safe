@@ -172,7 +172,11 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                     {postedDate}
                                 </span>
                             )}
-                            {job.match_score >= 80 ? (
+                            {job._pendingAnalysis ? (
+                                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-brand-50 dark:bg-brand-900/20 text-brand-500 border border-brand-100 dark:border-brand-800 animate-pulse">
+                                    Analyzing...
+                                </span>
+                            ) : job.match_score >= 80 ? (
                                 <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                                     Strong Match
                                 </span>
@@ -244,7 +248,13 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
 
                     {/* Score + Actions */}
                     <div className="flex flex-col items-center gap-2 shrink-0">
-                        <MatchRing score={analysis?.fit_score || job.match_score} />
+                        {job._pendingAnalysis ? (
+                            <div className="w-[52px] h-[52px] flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-full border-2 border-brand-100 border-t-brand-500 animate-spin" />
+                            </div>
+                        ) : (
+                            <MatchRing score={analysis?.fit_score || job.match_score} />
+                        )}
                         <div className="flex gap-1.5">
                             <button
                                 onClick={handleSaveWrapper}

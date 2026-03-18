@@ -269,8 +269,14 @@ export default function SearchPage() {
                     generateSearchSuggestions(jobTitle, profile).then(s => s && setSearchSuggestions(s));
                 }
 
+                // Mark top 20 as pending analysis — hides heuristic score until AI score arrives
                 const top20 = currentJobs.slice(0, 20);
-                const chunkSize = 10; // 10 parallel calls — 2 batches instead of 5
+                const top20Ids = new Set(top20.map(j => j.id || j.apply_url));
+                const markedJobs = currentJobs.map(j =>
+                    top20Ids.has(j.id || j.apply_url) ? { ...j, _pendingAnalysis: true } : j
+                );
+
+                const chunkSize = 10;
                 const totalBatches = Math.ceil(top20.length / chunkSize);
                 addLog(`AI Agent: Deep analysis on top ${top20.length} candidates...`);
                 setDeepAnalysisProgress({ current: 0, total: totalBatches });
@@ -279,7 +285,9 @@ export default function SearchPage() {
                 (async () => {
                     const updateJobWithAnalysis = (jobId, analysis) => {
                         setJobs(prev => prev.map(j => {
-                            if (j.id === jobId || j.apply_url === jobId) return { ...j, analysis, match_score: analysis.fit_score || j.match_score };
+                            if (j.id === jobId || j.apply_url === jobId) {
+                                return { ...j, analysis, match_score: analysis.fit_score || j.match_score, _pendingAnalysis: false };
+                            }
                             return j;
                         }).filter(j => !(j.analysis?.fit_score && j.analysis.fit_score < 35)));
                     };
@@ -304,7 +312,8 @@ export default function SearchPage() {
                         await Promise.all(promises);
                     }
 
-                    setJobs(prev => [...prev].sort((a, b) =>
+                    // Clear pending flags (in case some analyses failed) and sort by final score
+                    setJobs(prev => [...prev].map(j => ({ ...j, _pendingAnalysis: false })).sort((a, b) =>
                         (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0)
                     ));
                     setDeepAnalysisProgress(null);
@@ -312,7 +321,7 @@ export default function SearchPage() {
                     refreshTokens();
                 })();
 
-                return currentJobs;
+                return markedJobs;
             });
 
             refreshTokens();
