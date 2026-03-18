@@ -37,7 +37,7 @@ export function MatchResultsGrid({
     return (
         <>
             {/* Tab bar */}
-            <div className="flex items-center gap-1 border-b border-surface-200 mb-5">
+            <div className="flex items-center gap-1 border-b border-surface-200 mb-5 overflow-x-auto">
                 {tabs.map((tab) => (
                     <button
                         key={tab.key}
@@ -167,7 +167,7 @@ export function MatchResultsGrid({
                     </div>
 
                     {/* Feature cards grid */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="bg-gradient-to-br from-white to-indigo-50/40 rounded-xl border border-indigo-100/50 p-5 shadow-sm hover:shadow-md transition-shadow">
                             <div className="w-9 h-9 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-lg flex items-center justify-center mb-3">
                                 <BrainCircuit className="w-4.5 h-4.5 text-indigo-600" />
@@ -212,7 +212,7 @@ export function MatchResultsGrid({
                             <TrendingUp className="w-3.5 h-3.5 text-brand-500" />
                             How scoring works
                         </h3>
-                        <div className="grid grid-cols-3 gap-4 text-center">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                             <div className="bg-indigo-50/50 rounded-lg py-3 px-2">
                                 <div className="text-2xl font-bold text-indigo-600 mb-1">7</div>
                                 <div className="text-[11px] text-gray-500 font-medium">Scoring Signals</div>

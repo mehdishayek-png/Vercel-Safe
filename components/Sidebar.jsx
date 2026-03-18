@@ -1,7 +1,7 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Search, Bookmark, Briefcase, User, Settings, LogOut, ChevronLeft } from 'lucide-react';
+import { Home, Search, Bookmark, Briefcase, User, Settings, LogOut, ChevronLeft, X } from 'lucide-react';
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { useApp } from '@/contexts/AppContext';
 
@@ -12,7 +12,7 @@ const NAV_ITEMS = [
     { href: '/dashboard/applications', icon: Briefcase, label: 'Applications' },
 ];
 
-export function Sidebar() {
+export function Sidebar({ isOpen, onClose }) {
     const pathname = usePathname();
     const { user } = useUser();
     const { savedJobIds, appliedJobIds } = useApp();
@@ -29,14 +29,26 @@ export function Sidebar() {
     };
 
     return (
-        <aside className="w-[220px] shrink-0 bg-white border-r border-gray-100 text-gray-700 flex flex-col min-h-screen sticky top-0">
-            {/* Logo */}
-            <div className="px-5 h-12 flex items-center gap-2.5 border-b border-gray-100">
-                <div className="w-7 h-7 rounded-lg bg-gray-900 flex items-center justify-center text-white text-[11px] font-bold">
-                    M
+        <>
+            {/* Backdrop — mobile only */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 bg-black/30 z-50 md:hidden"
+                    onClick={onClose}
+                />
+            )}
+
+            <aside className={`fixed inset-y-0 left-0 z-50 w-[260px] bg-white border-r border-gray-100 text-gray-700 flex flex-col min-h-screen transform transition-transform duration-200 ease-in-out md:static md:translate-x-0 md:w-[220px] md:z-auto md:sticky md:top-0 md:shrink-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                {/* Logo */}
+                <div className="px-5 h-12 flex items-center gap-2.5 border-b border-gray-100">
+                    <div className="w-7 h-7 rounded-lg bg-gray-900 flex items-center justify-center text-white text-[11px] font-bold">
+                        M
+                    </div>
+                    <span className="text-[14px] font-semibold text-gray-900 tracking-tight flex-1">Midas Match</span>
+                    <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600 md:hidden cursor-pointer">
+                        <X className="w-5 h-5" />
+                    </button>
                 </div>
-                <span className="text-[14px] font-semibold text-gray-900 tracking-tight">Midas Match</span>
-            </div>
 
             {/* User info */}
             <div className="px-4 py-3.5 border-b border-gray-100">
@@ -78,6 +90,7 @@ export function Sidebar() {
                         <Link
                             key={href}
                             href={href}
+                            onClick={onClose}
                             className={`relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 group ${
                                 active
                                     ? 'bg-gray-900 text-white'
@@ -102,6 +115,7 @@ export function Sidebar() {
             <div className="px-3 py-3 border-t border-gray-100">
                 <Link
                     href="/"
+                    onClick={onClose}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-all"
                 >
                     <ChevronLeft className="w-4 h-4" />
@@ -116,5 +130,6 @@ export function Sidebar() {
                 <a href="/refund" className="hover:text-gray-500 transition-colors">Refund</a>
             </div>
         </aside>
+        </>
     );
 }

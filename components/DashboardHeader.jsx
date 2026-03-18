@@ -1,6 +1,6 @@
 'use client';
 import { usePathname } from 'next/navigation';
-import { HelpCircle, Coins, ChevronRight } from 'lucide-react';
+import { HelpCircle, Coins, ChevronRight, Menu } from 'lucide-react';
 import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -14,7 +14,7 @@ const PAGE_TITLES = {
     '/dashboard/applications': 'Applications',
 };
 
-export function DashboardHeader() {
+export function DashboardHeader({ onMenuClick }) {
     const pathname = usePathname();
     const { tokenBalance } = useApp();
     const [showGuide, setShowGuide] = useState(false);
@@ -24,8 +24,11 @@ export function DashboardHeader() {
 
     return (
         <>
-            <header className="h-12 px-6 flex items-center justify-between bg-white border-b border-gray-100 shrink-0 sticky top-0 z-40">
+            <header className="h-12 px-4 md:px-6 flex items-center justify-between bg-white border-b border-gray-100 shrink-0 sticky top-0 z-40">
                 <div className="flex items-center gap-2">
+                    <button onClick={onMenuClick} className="p-1.5 -ml-1 mr-1 text-gray-500 hover:text-gray-700 md:hidden cursor-pointer">
+                        <Menu className="w-5 h-5" />
+                    </button>
                     {isSubpage && (
                         <>
                             <Link href="/dashboard" className="text-[12px] text-gray-400 hover:text-gray-600 transition-colors font-medium">

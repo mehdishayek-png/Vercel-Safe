@@ -8,27 +8,27 @@ export function Hero({ onStart, onDemo }) {
             {/* Animated gradient mesh blobs */}
             <div className="absolute inset-0 -z-10">
                 {/* Original radial wash */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-gradient-to-b from-brand-100/50 via-accent-100/20 to-transparent rounded-full blur-[100px]" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] md:w-[900px] h-[300px] md:h-[600px] bg-gradient-to-b from-brand-100/50 via-accent-100/20 to-transparent rounded-full blur-[80px] md:blur-[100px]" />
 
                 {/* Purple/violet blob — top-left */}
                 <motion.div
                     animate={{ x: [0, 30, -20, 0], y: [0, -25, 15, 0] }}
                     transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute -top-20 -left-20 w-[500px] h-[500px] bg-violet-200/40 rounded-full blur-[120px]"
+                    className="absolute -top-20 -left-20 w-[250px] md:w-[500px] h-[250px] md:h-[500px] bg-violet-200/40 rounded-full blur-[80px] md:blur-[120px]"
                 />
 
                 {/* Teal blob — center-right */}
                 <motion.div
                     animate={{ x: [0, -25, 20, 0], y: [0, 20, -15, 0] }}
                     transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute top-1/4 right-0 w-[450px] h-[400px] bg-teal-200/30 rounded-full blur-[100px]"
+                    className="absolute top-1/4 right-0 w-[200px] md:w-[450px] h-[200px] md:h-[400px] bg-teal-200/30 rounded-full blur-[60px] md:blur-[100px]"
                 />
 
                 {/* Amber/warm blob — bottom */}
                 <motion.div
                     animate={{ x: [0, 15, -10, 0], y: [0, -10, 20, 0] }}
                     transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute bottom-0 left-1/3 w-[400px] h-[350px] bg-amber-100/20 rounded-full blur-[80px]"
+                    className="absolute bottom-0 left-1/3 w-[200px] md:w-[400px] h-[180px] md:h-[350px] bg-amber-100/20 rounded-full blur-[50px] md:blur-[80px]"
                 />
             </div>
 
@@ -51,7 +51,7 @@ export function Hero({ onStart, onDemo }) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.1 }}
-                    className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-gray-900 leading-[1.1]"
+                    className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-6 text-gray-900 leading-[1.1]"
                 >
                     Stop Searching.{' '}
                     <br className="hidden md:block" />

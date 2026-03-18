@@ -28,9 +28,9 @@ export default function Home() {
                 <section className="py-24 text-center relative overflow-hidden bg-gray-900">
                     {/* Animated gradient mesh for CTA */}
                     <div className="absolute inset-0 -z-0">
-                        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[400px] h-[400px] bg-violet-500/10 rounded-full blur-[120px] animate-pulse" />
-                        <div className="absolute top-1/3 right-1/4 w-[350px] h-[350px] bg-teal-500/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
-                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-brand-500/8 rounded-full blur-[80px]" />
+                        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-violet-500/10 rounded-full blur-[120px] animate-pulse" />
+                        <div className="absolute top-1/3 right-1/4 w-[175px] md:w-[350px] h-[175px] md:h-[350px] bg-teal-500/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[250px] md:w-[500px] h-[125px] md:h-[250px] bg-brand-500/8 rounded-full blur-[80px]" />
                     </div>
 
                     <div className="container mx-auto px-4 relative z-10">
@@ -44,8 +44,9 @@ export default function Home() {
                             href="/dashboard"
                             className="px-8 py-4 bg-white text-gray-900 rounded-xl font-semibold text-base hover:bg-gray-100 transition-colors inline-block shadow-lg shadow-white/10 hover:shadow-white/20"
                         >
-                            Launch Dashboard
+                            Start Matching — Free
                         </Link>
+                        <p className="text-sm text-gray-400 mt-3">Free to start · No credit card required</p>
                     </div>
                 </section>
 
@@ -88,13 +89,15 @@ export default function Home() {
                                 {/* Social links placeholders */}
                                 <div className="flex items-center gap-4">
                                     {[
-                                        { label: 'Twitter', path: 'M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z' },
-                                        { label: 'LinkedIn', path: 'M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 6a2 2 0 100-4 2 2 0 000 4z' },
-                                        { label: 'GitHub', path: 'M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22' },
-                                    ].map(({ label, path }) => (
+                                        { label: 'Twitter', href: 'https://x.com', path: 'M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z' },
+                                        { label: 'LinkedIn', href: 'https://linkedin.com', path: 'M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 6a2 2 0 100-4 2 2 0 000 4z' },
+                                        { label: 'GitHub', href: 'https://github.com', path: 'M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22' },
+                                    ].map(({ label, path, href }) => (
                                         <a
                                             key={label}
-                                            href="#"
+                                            href={href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
                                             aria-label={label}
                                             className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-500 hover:text-white transition-colors"
                                         >

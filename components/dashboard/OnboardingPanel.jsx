@@ -6,7 +6,7 @@ export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload }) {
             <div className="bg-white rounded-xl border border-surface-200 p-5">
                 <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="upload-zone p-10 text-center cursor-pointer"
+                    className="upload-zone p-6 md:p-10 text-center cursor-pointer"
                 >
                     <div className="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mx-auto mb-3">
                         {isParsing ? <Loader2 className="animate-spin text-brand-600" /> : <Upload className="text-brand-600 w-5 h-5" />}

@@ -494,7 +494,7 @@ export default function JobDetailPage() {
         : cleanDescription.slice(0, DESC_PREVIEW_LENGTH);
 
     return (
-        <div className="max-w-[1200px] space-y-5 pb-8">
+        <div className="max-w-[1200px] space-y-5 pb-8 px-4 lg:px-0">
             {/* Back */}
             <button
                 onClick={() => router.back()}
@@ -510,7 +510,7 @@ export default function JobDetailPage() {
                 <div className="h-1 bg-gradient-to-r from-teal-400 via-teal-500 to-sky-500" />
 
                 <div className="p-6">
-                    <div className="flex items-start justify-between gap-5">
+                    <div className="flex flex-col sm:flex-row items-start justify-between gap-4 sm:gap-5">
                         <div className="flex items-start gap-4 flex-1 min-w-0">
                             <CompanyLogo
                                 company={job.company}
@@ -519,7 +519,7 @@ export default function JobDetailPage() {
                                 colorIndex={0}
                             />
                             <div className="flex-1 min-w-0">
-                                <h1 className="text-[20px] font-semibold text-gray-900 leading-tight mb-2.5">
+                                <h1 className="text-[17px] sm:text-[20px] font-semibold text-gray-900 leading-tight mb-2.5">
                                     {stripHtml(job.title)}
                                 </h1>
                                 <div className="flex flex-wrap items-center gap-2 text-[13px] text-gray-500">
@@ -557,7 +557,7 @@ export default function JobDetailPage() {
                     </div>
 
                     {/* Quick stats row */}
-                    <div className="grid grid-cols-4 gap-3 mt-5">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mt-5">
                         <StatBox
                             label="Your Exp."
                             value={`${userExperienceYears || 0} yrs`}
@@ -589,7 +589,7 @@ export default function JobDetailPage() {
                     </div>
 
                     {/* Action buttons */}
-                    <div className="flex items-center gap-3 mt-5 pt-5 border-t border-gray-100">
+                    <div className="flex flex-wrap items-center gap-2 md:gap-3 mt-5 pt-5 border-t border-gray-100">
                         <button
                             onClick={() => {
                                 if (job.apply_url) window.open(job.apply_url, '_blank');
@@ -629,7 +629,7 @@ export default function JobDetailPage() {
             </div>
 
             {/* ===== THREE-COLUMN LAYOUT ===== */}
-            <div className="grid grid-cols-[1fr,280px,280px] gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr,280px,280px] gap-5">
                 {/* Left column — Main content */}
                 <div className="space-y-5">
                     {/* Why this fits you — AI insight card */}
@@ -667,7 +667,7 @@ export default function JobDetailPage() {
                             <h2 className="text-[13px] font-semibold text-gray-900">Job Description</h2>
                         </div>
                         <div className="px-5 py-4">
-                            <div className="text-[13px] text-gray-600 leading-relaxed whitespace-pre-wrap">
+                            <div className="text-[13px] text-gray-600 leading-relaxed whitespace-pre-wrap break-words">
                                 {displayDescription}
                                 {isDescriptionLong && !showFullDescription && '...'}
                             </div>
@@ -773,7 +773,7 @@ export default function JobDetailPage() {
                                             {copied ? <><CheckCheck className="w-3.5 h-3.5 text-teal-500" /> Copied!</> : <><Copy className="w-3.5 h-3.5" /> Copy</>}
                                         </button>
                                     </div>
-                                    <div className="text-[13px] text-gray-600 leading-relaxed whitespace-pre-wrap bg-gray-50 rounded-lg p-4 border border-gray-100">
+                                    <div className="text-[13px] text-gray-600 leading-relaxed whitespace-pre-wrap break-words bg-gray-50 rounded-lg p-4 border border-gray-100">
                                         {coverLetter}
                                     </div>
                                 </div>

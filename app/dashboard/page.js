@@ -128,7 +128,7 @@ export default function DashboardHome() {
             )}
 
             {/* Stats row — inspired by JobZen/HirePath */}
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 {[
                     {
                         label: 'Matches',
@@ -351,7 +351,7 @@ export default function DashboardHome() {
                 </div>
             )}
 
-            <div className="grid grid-cols-[1fr,340px] gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr,340px] gap-5">
                 {/* Recent Applications table */}
                 <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                     <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">

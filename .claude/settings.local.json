@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx next lint --no-cache)",
+      "Bash(node -c lib/matcher.js)",
+      "Bash(node -c lib/panda-matcher.js)",
+      "Bash(node -e \":*)",
+      "Bash(node -c lib/job-fetcher.js)",
+      "Bash(node -c lib/resume-parser.js)",
+      "Bash(node -c lib/tokens.js)",
+      "Bash(node -c lib/cache.js)",
+      "Bash(node -c lib/rate-limit.js)",
+      "Bash(node -c lib/rate-limiter.js)",
+      "Bash(node -c lib/feature-flags.js)",
+      "Bash(node -c lib/logger.js)",
+      "Bash(grep -r \"F2P\\\\|FarmVille\\\\|Game.*Designer\\\\|Game.*System\" 'A:/Google Dump/jobbot-vercel/jobbot-vercel/confident-mayer' --include=*.js --include=*.ts --include=*.json)"
+    ]
+  }
+}

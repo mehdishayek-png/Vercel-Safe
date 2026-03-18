@@ -43,7 +43,7 @@ export function Header({ onShowGuide, onClearData, tokenBalance }) {
                     {onClearData && (
                         <button
                             onClick={onClearData}
-                            className="px-2.5 py-1 text-xs font-medium text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                            className="hidden sm:block px-2.5 py-1 text-xs font-medium text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                         >
                             Clear
                         </button>
@@ -51,7 +51,7 @@ export function Header({ onShowGuide, onClearData, tokenBalance }) {
 
                     <Link
                         href="/dashboard"
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-lg transition-colors"
+                        className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-lg transition-colors"
                     >
                         <LayoutDashboard className="w-3.5 h-3.5" />
                         Dashboard

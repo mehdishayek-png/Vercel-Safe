@@ -340,9 +340,9 @@ export default function SearchPage() {
     const readinessScore = readinessChecks.reduce((acc, c) => c.passed ? acc + c.points : acc, 0);
 
     return (
-        <div className="flex gap-6 max-w-[1280px] w-full search-bg rounded-2xl p-5 -m-5 min-h-[calc(100vh-100px)]">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-[1280px] w-full search-bg rounded-2xl p-3 md:p-5 -m-3 md:-m-5 min-h-[calc(100vh-100px)]">
             {/* Left Panel */}
-            <div className="w-[380px] shrink-0 space-y-4 relative z-10">
+            <div className="w-full lg:w-[380px] shrink-0 space-y-4 relative z-10">
                 {/* Privacy */}
                 <div className="flex items-center gap-1.5 text-[11px] text-gray-500 p-2 px-3 bg-emerald-50 rounded-lg border border-emerald-200">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />

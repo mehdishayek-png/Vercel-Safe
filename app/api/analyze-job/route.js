@@ -145,6 +145,7 @@ export async function POST(request) {
 
         const response = await fetch(apiUrl, {
             method: 'POST',
+            signal: AbortSignal.timeout(25000),
             headers: headers,
             body: JSON.stringify(requestBody)
         });
