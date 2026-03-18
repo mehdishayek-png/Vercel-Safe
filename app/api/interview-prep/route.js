@@ -63,7 +63,7 @@ Make answer frameworks SPECIFIC to this candidate's experience — reference the
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         temperature: 0.4,
-        max_tokens: 1500,
+        max_tokens: 2500,
         messages: [{ role: 'user', content: prompt }],
       }),
       signal: AbortSignal.timeout(15000),
@@ -72,7 +72,9 @@ Make answer frameworks SPECIFIC to this candidate's experience — reference the
     if (!res.ok) throw new Error(`API error: ${res.status}`);
 
     const data = await res.json();
-    const text = (data.choices?.[0]?.message?.content || '').trim();
+    let text = (data.choices?.[0]?.message?.content || '').trim();
+    // Strip markdown code fences (```json ... ```) that Gemini Flash wraps around JSON
+    text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '');
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error('Failed to parse response');
 

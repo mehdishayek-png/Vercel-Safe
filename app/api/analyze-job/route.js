@@ -165,8 +165,12 @@ export async function POST(request) {
         const data = await response.json();
         let rawContent = (data.choices[0].message.content || '').trim();
         // Strip markdown code fences (```json ... ```) that Gemini sometimes wraps around JSON
-        rawContent = rawContent.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '');
-        const analysis = JSON.parse(rawContent);
+        // Handle both single-line and multiline fences
+        rawContent = rawContent.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?\s*```\s*$/i, '');
+        // Fallback: extract JSON object if fences weren't cleanly stripped
+        const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error('Failed to extract JSON from analysis response');
+        const analysis = JSON.parse(jsonMatch[0]);
 
         return NextResponse.json({ analysis });
 
