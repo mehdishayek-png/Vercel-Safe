@@ -492,8 +492,7 @@ export default function SearchPage() {
                     </>
                 )}
 
-                {/* Activity Log */}
-                <ActivityLog logs={logs} />
+                {/* Activity log removed — internal/dev only */}
             </div>
 
             {/* Right Panel — Results */}
