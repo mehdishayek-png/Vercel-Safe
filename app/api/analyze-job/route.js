@@ -22,16 +22,9 @@ export async function POST(request) {
             }
         }
 
-        // Server-side deep scan enforcement — applies to ALL users
-        if (!userId) {
-            return NextResponse.json({
-                error: 'Sign in to use Deep Scan.',
-                requiresAuth: true
-            }, { status: 401 });
-        }
-
-
-        if (!adminUser) {
+        // Server-side deep scan enforcement
+        // During beta: allow anonymous users with IP-based rate limiting
+        if (userId && !adminUser) {
             const usedCount = await getDeepScanCount(userId);
             if (usedCount >= FREE_DEEP_SCANS) {
                 // Past free limit — need tokens
