@@ -112,7 +112,7 @@ export function Hero({ onStart, onDemo }) {
                 >
                     <span className="text-xs text-gray-400 uppercase tracking-widest font-medium">Scanning jobs from</span>
                     <div className="flex flex-wrap justify-center gap-2">
-                        {['LinkedIn', 'Indeed', 'Google Jobs', 'Greenhouse', 'Lever', '350+ ATS'].map((source) => (
+                        {['LinkedIn', 'Indeed', 'Google Jobs', 'Career Pages', '350+ Sources'].map((source) => (
                             <span
                                 key={source}
                                 className={`px-3 py-1 rounded-full text-xs font-medium border ${

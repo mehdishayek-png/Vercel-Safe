@@ -37,7 +37,7 @@ export default function About() {
                             <div>
                                 <h3 className="text-sm font-semibold text-gray-800">Direct ATS Access</h3>
                                 <p className="text-gray-600 text-sm leading-relaxed mt-1">
-                                    We query 350+ company career pages directly via Greenhouse, Lever, and Ashby APIs &mdash; jobs that never appear on aggregator sites.
+                                    We query 350+ company career pages directly through API integrations &mdash; surfacing jobs that never appear on traditional aggregator sites.
                                 </p>
                             </div>
                             <div>

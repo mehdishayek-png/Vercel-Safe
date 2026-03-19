@@ -10,7 +10,7 @@ export default function TermsOfService() {
                     <section>
                         <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Service Description</h2>
                         <p className="text-gray-600 text-sm leading-relaxed">
-                            Midas is an AI-powered job matching platform that analyzes your resume and preferences to find relevant job opportunities from multiple sources including Google Jobs, WeWorkRemotely, Lever, RemoteOK, and others.
+                            Midas is an AI-powered job matching platform that analyzes your resume and preferences to find relevant job opportunities from multiple job databases and company career pages.
                         </p>
                     </section>
 

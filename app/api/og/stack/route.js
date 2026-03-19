@@ -102,10 +102,10 @@ export async function GET() {
 
             {[
               { name: 'Vercel', desc: 'Edge + Serverless' },
-              { name: 'Upstash Redis', desc: 'Caching + Rate Limiting' },
-              { name: 'Gemini Flash', desc: 'Query Planning + Scoring' },
-              { name: 'OpenRouter', desc: 'AI Gateway' },
-              { name: 'Resend', desc: 'Transactional Email' },
+              { name: 'Redis', desc: 'Caching + Rate Limiting' },
+              { name: 'LLM Pipeline', desc: 'Query Planning + Scoring' },
+              { name: 'AI Models', desc: 'Deep Analysis + Reasoning' },
+              { name: 'Email Service', desc: 'Transactional Alerts' },
             ].map((item) => (
               <div key={item.name} style={{
                 display: 'flex', flexDirection: 'column',
@@ -128,11 +128,11 @@ export async function GET() {
             }}>DATA SOURCES</div>
 
             {[
-              { name: 'SerpAPI', desc: 'Google Jobs (7 queries)' },
-              { name: 'Greenhouse API', desc: '270+ companies direct' },
-              { name: 'Lever API', desc: '130+ companies direct' },
-              { name: 'Ashby API', desc: '70+ companies direct' },
-              { name: 'RapidAPI', desc: 'LinkedIn + JSearch' },
+              { name: 'Google Jobs', desc: 'Primary search engine' },
+              { name: 'Career Pages', desc: '350+ companies direct' },
+              { name: 'LinkedIn', desc: 'Professional network' },
+              { name: 'Job Boards', desc: 'Multiple free sources' },
+              { name: 'RSS Feeds', desc: 'Remote-first boards' },
             ].map((item) => (
               <div key={item.name} style={{
                 display: 'flex', flexDirection: 'column',

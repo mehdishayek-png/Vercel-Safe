@@ -16,7 +16,7 @@ const categories = [
             },
             {
                 q: "What job sources do you scan?",
-                a: "We scan Google Jobs, LinkedIn, Indeed, Adzuna, RemoteOK, and 350+ company career pages directly via Greenhouse, Lever, and Ashby ATS APIs. This means you see jobs that often don\u2019t appear on traditional aggregators.",
+                a: "We scan multiple job databases simultaneously — including major search engines, professional networks, free job boards, and 350+ company career pages through direct API integrations. This means you see jobs that often don\u2019t appear on traditional aggregators.",
             },
         ],
     },
