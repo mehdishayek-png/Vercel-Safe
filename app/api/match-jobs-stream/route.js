@@ -59,6 +59,19 @@ export async function POST(request) {
       });
     }
 
+    // Structured log for beta monitoring
+    const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    console.log(JSON.stringify({
+      event: 'scan_started',
+      userId: userId || 'anonymous',
+      ip: ip.split(',')[0].trim(),
+      headline: profile.headline?.slice(0, 60),
+      skills: profile.skills?.slice(0, 5),
+      location: profile.location,
+      midasSearch: preferences?.midasSearch || false,
+      timestamp: new Date().toISOString(),
+    }));
+
     const scanCheck = await canScan(userId, preferences?.midasSearch);
     if (!scanCheck.allowed) {
       return new Response(JSON.stringify({
@@ -71,8 +84,8 @@ export async function POST(request) {
       });
     }
 
-    // Deduct: free scan or token
-    if (!scanCheck.adminPass) {
+    // Deduct: free scan or token (skip for anonymous beta users)
+    if (!scanCheck.adminPass && !scanCheck.anonymousPass) {
       if (scanCheck.isFree) {
         if (scanCheck.isMidasSearchFree) {
           await import('@/lib/tokens').then(m => m.incrementWeeklyMidasScan(userId));

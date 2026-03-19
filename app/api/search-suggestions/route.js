@@ -7,9 +7,9 @@ export const maxDuration = 10;
 export async function POST(request) {
   try {
     const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Sign in required.' }, { status: 401 });
-
-    const rl = await rateLimit(`search-suggestions:${userId}`, 10, 60); // 10 per minute
+    // Beta: allow anonymous users with IP-based rate limiting
+    const identifier = userId || request.headers.get('x-forwarded-for') || 'anonymous';
+    const rl = await rateLimit(`search-suggestions:${identifier}`, 10, 60); // 10 per minute
     if (!rl.allowed) return NextResponse.json({ error: 'Too many requests. Please slow down.' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } });
 
     const { title, skills } = await request.json();
