@@ -21,10 +21,10 @@ function Toast({ message, onClose }) {
 
 function SectionCard({ title, icon: Icon, children }) {
     return (
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-gray-100 flex items-center gap-2">
-                <Icon className="w-4 h-4 text-gray-400" />
-                <h2 className="text-[13px] font-semibold text-gray-900">{title}</h2>
+        <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-100 dark:border-[#2d3140] overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140] flex items-center gap-2">
+                <Icon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                <h2 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
             </div>
             <div className="p-5">{children}</div>
         </div>
@@ -32,7 +32,7 @@ function SectionCard({ title, icon: Icon, children }) {
 }
 
 function FieldLabel({ children }) {
-    return <label className="block text-[12px] font-medium text-gray-500 mb-1.5">{children}</label>;
+    return <label className="block text-[12px] font-medium text-gray-500 dark:text-gray-400 mb-1.5">{children}</label>;
 }
 
 function TextInput({ value, onChange, placeholder, type = 'text', ...props }) {
@@ -42,7 +42,7 @@ function TextInput({ value, onChange, placeholder, type = 'text', ...props }) {
             value={value}
             onChange={onChange}
             placeholder={placeholder}
-            className="w-full px-3 py-2 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors placeholder:text-gray-300"
+            className="w-full px-3 py-2 text-[13px] text-gray-900 dark:text-gray-200 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors placeholder:text-gray-300 dark:placeholder:text-gray-600"
             {...props}
         />
     );
@@ -53,7 +53,7 @@ function SelectInput({ value, onChange, children }) {
         <select
             value={value}
             onChange={onChange}
-            className="w-full px-3 py-2 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors appearance-none cursor-pointer"
+            className="w-full px-3 py-2 text-[13px] text-gray-900 dark:text-gray-200 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors appearance-none cursor-pointer"
         >
             {children}
         </select>
@@ -154,14 +154,14 @@ export default function SettingsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50/50">
+        <div className="min-h-screen bg-gray-50/50 dark:bg-[#13151d]">
             {toast && <Toast message={toast} onClose={() => setToast(null)} />}
 
             <div className="max-w-[800px] mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5">
                 {/* Page header */}
                 <div>
-                    <h1 className="text-[18px] font-bold text-gray-900">Settings</h1>
-                    <p className="text-[13px] text-gray-400 mt-0.5">Manage your profile, preferences, and data</p>
+                    <h1 className="text-[18px] font-bold text-gray-900 dark:text-gray-100">Settings</h1>
+                    <p className="text-[13px] text-gray-400 dark:text-gray-500 mt-0.5">Manage your profile, preferences, and data</p>
                 </div>
 
                 {/* ---- Profile Section ---- */}
@@ -239,11 +239,11 @@ export default function SettingsPage() {
                         {/* Skills */}
                         <div>
                             <FieldLabel>Skills</FieldLabel>
-                            <div className="flex flex-wrap gap-1.5 p-2.5 bg-gray-50 border border-gray-200 rounded-lg min-h-[44px]">
+                            <div className="flex flex-wrap gap-1.5 p-2.5 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg min-h-[44px]">
                                 {skills.map((skill) => (
                                     <span
                                         key={skill}
-                                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-gray-200 rounded-md text-[12px] font-medium text-gray-700 group"
+                                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2d3140] rounded-md text-[12px] font-medium text-gray-700 dark:text-gray-300 group"
                                     >
                                         {skill}
                                         <button
@@ -261,7 +261,7 @@ export default function SettingsPage() {
                                     onChange={(e) => setSkillInput(e.target.value)}
                                     onKeyDown={handleSkillKeyDown}
                                     placeholder={skills.length === 0 ? 'Type a skill and press Enter' : 'Add more...'}
-                                    className="flex-1 min-w-[120px] px-1 py-1 text-[12px] bg-transparent border-none outline-none placeholder:text-gray-300"
+                                    className="flex-1 min-w-[120px] px-1 py-1 text-[12px] bg-transparent border-none outline-none placeholder:text-gray-300 dark:placeholder:text-gray-600 dark:text-gray-200"
                                 />
                             </div>
                             <p className="text-[11px] text-gray-300 mt-1">Press Enter to add, Backspace to remove last</p>
@@ -270,7 +270,7 @@ export default function SettingsPage() {
                         <div className="flex justify-end pt-1">
                             <button
                                 onClick={handleSaveProfile}
-                                className="px-4 py-2 text-[13px] font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-lg transition-colors cursor-pointer"
+                                className="px-4 py-2 text-[13px] font-medium text-white bg-gray-900 dark:bg-gray-100 dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
                             >
                                 Save Profile
                             </button>
@@ -323,8 +323,8 @@ export default function SettingsPage() {
                         {/* Remote toggle */}
                         <div className="flex items-center justify-between py-2">
                             <div>
-                                <p className="text-[13px] font-medium text-gray-700">Remote Only</p>
-                                <p className="text-[11px] text-gray-400">Only show remote positions in search results</p>
+                                <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Remote Only</p>
+                                <p className="text-[11px] text-gray-400 dark:text-gray-500">Only show remote positions in search results</p>
                             </div>
                             <button
                                 onClick={() => setPreferences(prev => ({ ...prev, remoteOnly: !prev.remoteOnly }))}
@@ -341,7 +341,7 @@ export default function SettingsPage() {
                         <div className="flex justify-end pt-1">
                             <button
                                 onClick={handleSavePreferences}
-                                className="px-4 py-2 text-[13px] font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-lg transition-colors cursor-pointer"
+                                className="px-4 py-2 text-[13px] font-medium text-white bg-gray-900 dark:bg-gray-100 dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
                             >
                                 Save Preferences
                             </button>
@@ -356,13 +356,13 @@ export default function SettingsPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <FieldLabel>Email</FieldLabel>
-                                <div className="px-3 py-2 text-[13px] text-gray-600 bg-gray-50 border border-gray-200 rounded-lg">
+                                <div className="px-3 py-2 text-[13px] text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg">
                                     {user?.primaryEmailAddress?.emailAddress || 'Not signed in'}
                                 </div>
                             </div>
                             <div>
                                 <FieldLabel>Account Name</FieldLabel>
-                                <div className="px-3 py-2 text-[13px] text-gray-600 bg-gray-50 border border-gray-200 rounded-lg">
+                                <div className="px-3 py-2 text-[13px] text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg">
                                     {user?.fullName || user?.firstName || 'Not signed in'}
                                 </div>
                             </div>
@@ -370,28 +370,28 @@ export default function SettingsPage() {
 
                         {/* Token balance & scans */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                                <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#22252f] rounded-lg border border-gray-100 dark:border-[#2d3140]">
+                                <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center">
                                     <Coins className="w-4 h-4 text-amber-500" />
                                 </div>
                                 <div>
-                                    <p className="text-[12px] text-gray-400">Token Balance</p>
-                                    <p className="text-[15px] font-semibold text-gray-900">{tokenBalance}</p>
+                                    <p className="text-[12px] text-gray-400 dark:text-gray-500">Token Balance</p>
+                                    <p className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">{tokenBalance}</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                                <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center">
+                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#22252f] rounded-lg border border-gray-100 dark:border-[#2d3140]">
+                                <div className="w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center">
                                     <Zap className="w-4 h-4 text-teal-500" />
                                 </div>
                                 <div>
-                                    <p className="text-[12px] text-gray-400">Free Scans Today</p>
-                                    <p className="text-[15px] font-semibold text-gray-900">{freeScansRemaining} / {FREE_DAILY_SCANS}</p>
+                                    <p className="text-[12px] text-gray-400 dark:text-gray-500">Free Scans Today</p>
+                                    <p className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">{freeScansRemaining} / {FREE_DAILY_SCANS}</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Clear data */}
-                        <div className="pt-2 border-t border-gray-100">
+                        <div className="pt-2 border-t border-gray-100 dark:border-[#2d3140]">
                             {!showClearConfirm ? (
                                 <button
                                     onClick={() => setShowClearConfirm(true)}
@@ -430,14 +430,14 @@ export default function SettingsPage() {
                         {/* Export */}
                         <button
                             onClick={handleExportData}
-                            className="w-full flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-100 transition-colors cursor-pointer group"
+                            className="w-full flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#22252f] hover:bg-gray-100 dark:hover:bg-[#2a2d37] rounded-lg border border-gray-100 dark:border-[#2d3140] transition-colors cursor-pointer group"
                         >
-                            <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center group-hover:bg-violet-100 transition-colors">
+                            <div className="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center group-hover:bg-violet-100 dark:group-hover:bg-violet-900/50 transition-colors">
                                 <Download className="w-4 h-4 text-violet-500" />
                             </div>
                             <div className="text-left flex-1">
-                                <p className="text-[13px] font-medium text-gray-700">Export My Data</p>
-                                <p className="text-[11px] text-gray-400">Download profile, saved jobs, and applications as JSON</p>
+                                <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Export My Data</p>
+                                <p className="text-[11px] text-gray-400 dark:text-gray-500">Download profile, saved jobs, and applications as JSON</p>
                             </div>
                         </button>
 
@@ -445,14 +445,14 @@ export default function SettingsPage() {
                         {!showDeleteResumeConfirm ? (
                             <button
                                 onClick={() => setShowDeleteResumeConfirm(true)}
-                                className="w-full flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-100 transition-colors cursor-pointer group"
+                                className="w-full flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#22252f] hover:bg-gray-100 dark:hover:bg-[#2a2d37] rounded-lg border border-gray-100 dark:border-[#2d3140] transition-colors cursor-pointer group"
                             >
-                                <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition-colors">
+                                <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/30 flex items-center justify-center group-hover:bg-red-100 dark:group-hover:bg-red-900/50 transition-colors">
                                     <FileText className="w-4 h-4 text-red-400" />
                                 </div>
                                 <div className="text-left flex-1">
-                                    <p className="text-[13px] font-medium text-gray-700">Delete Resume Data</p>
-                                    <p className="text-[11px] text-gray-400">Remove the raw resume text from your profile</p>
+                                    <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Delete Resume Data</p>
+                                    <p className="text-[11px] text-gray-400 dark:text-gray-500">Remove the raw resume text from your profile</p>
                                 </div>
                             </button>
                         ) : (
@@ -479,14 +479,14 @@ export default function SettingsPage() {
                         {/* Privacy link */}
                         <a
                             href="/privacy"
-                            className="flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-100 transition-colors group"
+                            className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#22252f] hover:bg-gray-100 dark:hover:bg-[#2a2d37] rounded-lg border border-gray-100 dark:border-[#2d3140] transition-colors group"
                         >
-                            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                                <Shield className="w-4 h-4 text-gray-400" />
+                            <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-gray-700 transition-colors">
+                                <Shield className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                             </div>
                             <div className="text-left flex-1">
-                                <p className="text-[13px] font-medium text-gray-700">Privacy Policy</p>
-                                <p className="text-[11px] text-gray-400">Learn how we handle your data</p>
+                                <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Privacy Policy</p>
+                                <p className="text-[11px] text-gray-400 dark:text-gray-500">Learn how we handle your data</p>
                             </div>
                         </a>
                     </div>

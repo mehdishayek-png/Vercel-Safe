@@ -476,7 +476,7 @@ export default function JobDetailPage() {
             const res = await fetch('/api/cover-letter', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ job, profile, apiKey: apiKeys?.OPENROUTER_API_KEY }),
+                body: JSON.stringify({ job, profile }),
             });
             if (!res.ok) throw new Error('Failed to generate');
             const data = await res.json();

@@ -20,6 +20,15 @@ export async function POST(request) {
             razorpay_signature,
         } = await request.json();
 
+        // Validate required fields are non-empty strings
+        if (
+            typeof razorpay_order_id !== 'string' || !razorpay_order_id.trim() ||
+            typeof razorpay_payment_id !== 'string' || !razorpay_payment_id.trim() ||
+            typeof razorpay_signature !== 'string' || !razorpay_signature.trim()
+        ) {
+            return NextResponse.json({ error: 'Missing required payment fields' }, { status: 400 });
+        }
+
         // 1. Recreate the signature locally using the secret
         const body = razorpay_order_id + "|" + razorpay_payment_id;
         const expectedSignature = crypto
@@ -27,8 +36,12 @@ export async function POST(request) {
             .update(body.toString())
             .digest('hex');
 
-        // 2. Validate the signature matches
-        const isAuthentic = expectedSignature === razorpay_signature;
+        // 2. Validate the signature matches (timing-safe)
+        const isAuthentic = (() => {
+            try {
+                return crypto.timingSafeEqual(Buffer.from(expectedSignature, 'hex'), Buffer.from(razorpay_signature, 'hex'));
+            } catch { return false; }
+        })();
 
         if (isAuthentic) {
             // 3. Idempotency check — prevent double-crediting the same payment

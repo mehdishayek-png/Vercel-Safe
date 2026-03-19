@@ -140,6 +140,6 @@ export async function POST(request) {
     });
   } catch (e) {
     console.error('Match jobs error:', e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: 'Search failed. Please try again.' }, { status: 500 });
   }
 }

@@ -2,7 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GraduationCap, ChevronDown, Sparkles, Target, MessageSquare, Building2, Lightbulb, AlertTriangle, Mic, Loader2, BookOpen } from 'lucide-react';
+import { GraduationCap, ChevronDown, Sparkles, Target, MessageSquare, Building2, Lightbulb, AlertTriangle, Mic, Loader2, BookOpen, Search } from 'lucide-react';
+import Link from 'next/link';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 
 const TYPE_COLORS = {
@@ -58,7 +59,7 @@ function QuestionCard({ q, index }) {
                                 <p className="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed">{q.why_asked}</p>
                             </div>
                             <div className={`${colors.bg} rounded-lg p-3`}>
-                                <p className="text-[11px] font-semibold ${colors.text} uppercase tracking-wider mb-1">How to answer</p>
+                                <p className={`text-[11px] font-semibold ${colors.text} uppercase tracking-wider mb-1`}>How to answer</p>
                                 <p className="text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed">{q.answer_framework}</p>
                             </div>
                         </div>
@@ -133,6 +134,9 @@ export default function InterviewPrepPage() {
                     <p className="text-xs text-gray-500 dark:text-gray-400">
                         Run a search and save some jobs first. Your saved jobs and strong matches will appear here.
                     </p>
+                    <Link href="/dashboard/search" className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors">
+                        <Search className="w-4 h-4" /> Search Jobs
+                    </Link>
                 </div>
             ) : (
                 <div>

@@ -66,6 +66,6 @@ export async function POST(request) {
         return NextResponse.json({ success: true, count: current.length });
     } catch (err) {
         console.error('Failed to save job:', err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to save job. Please try again.' }, { status: 500 });
     }
 }

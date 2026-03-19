@@ -161,7 +161,8 @@ export async function POST(request) {
 
           controller.close();
         } catch (err) {
-          send({ type: 'error', message: err.message || 'An unexpected error occurred during streaming.' });
+          console.error('Stream error:', err);
+          send({ type: 'error', message: 'Search failed. Please try again.' });
           controller.close();
         }
       }
@@ -175,7 +176,8 @@ export async function POST(request) {
       }
     });
   } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), {
+    console.error('Match jobs stream error:', e);
+    return new Response(JSON.stringify({ error: 'Search failed. Please try again.' }), {
       status: 500, headers: { 'Content-Type': 'application/json' }
     });
   }

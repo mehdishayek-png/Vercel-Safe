@@ -13,7 +13,7 @@ function DotIndicator({ filled, total = 5 }) {
                 <div
                     key={i}
                     className={`w-[7px] h-[7px] rounded-full ${
-                        i < filled ? 'bg-teal-500' : 'bg-gray-200'
+                        i < filled ? 'bg-teal-500' : 'bg-gray-200 dark:bg-gray-700'
                     }`}
                 />
             ))}
@@ -56,20 +56,20 @@ function ScorePopover({ job, onClose }) {
     ];
 
     return (
-        <div ref={ref} className="absolute right-0 top-full mt-2 z-50 w-[min(90vw,320px)] bg-white rounded-xl shadow-xl border border-gray-200 p-5 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div ref={ref} className="absolute right-0 top-full mt-2 z-50 w-[min(90vw,320px)] bg-white dark:bg-[#1a1d27] rounded-xl shadow-xl border border-gray-200 dark:border-[#2d3140] p-5 animate-in fade-in slide-in-from-top-2 duration-200">
             {/* Top stats */}
-            <div className="flex items-baseline gap-6 mb-5 pb-4 border-b border-gray-100">
+            <div className="flex items-baseline gap-6 mb-5 pb-4 border-b border-gray-100 dark:border-[#2d3140]">
                 <div className="text-center">
-                    <div className="text-[22px] font-light text-gray-800">{experienceYears || '--'}</div>
-                    <div className="text-[10px] text-gray-400 mt-0.5">Relevant Experience</div>
+                    <div className="text-[22px] font-light text-gray-800 dark:text-gray-200">{experienceYears || '--'}</div>
+                    <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">Relevant Experience</div>
                 </div>
                 <div className="text-center">
-                    <div className="text-[22px] font-light text-gray-800">{skillCount}</div>
-                    <div className="text-[10px] text-gray-400 mt-0.5">Relevant Skills</div>
+                    <div className="text-[22px] font-light text-gray-800 dark:text-gray-200">{skillCount}</div>
+                    <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">Relevant Skills</div>
                 </div>
                 <div className="text-center">
-                    <div className="text-[22px] font-light text-gray-800">{Math.round(score)}%</div>
-                    <div className="text-[10px] text-gray-400 mt-0.5">Match Score</div>
+                    <div className="text-[22px] font-light text-gray-800 dark:text-gray-200">{Math.round(score)}%</div>
+                    <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">Match Score</div>
                 </div>
             </div>
 
@@ -81,10 +81,10 @@ function ScorePopover({ job, onClose }) {
                     return (
                         <div key={section.label}>
                             <div className="flex items-center justify-between mb-0.5">
-                                <span className="text-[13px] font-medium text-gray-700">{section.label}</span>
+                                <span className="text-[13px] font-medium text-gray-700 dark:text-gray-300">{section.label}</span>
                                 <DotIndicator filled={dots} />
                             </div>
-                            <p className="text-[11px] text-gray-400 leading-snug">{section.detail}</p>
+                            <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-snug">{section.detail}</p>
                         </div>
                     );
                 })}
@@ -99,7 +99,7 @@ function ScorePopover({ job, onClose }) {
                         localStorage.setItem(key, JSON.stringify(job));
                     } catch (e) { /* ignore */ }
                 }}
-                className="flex items-center justify-center gap-2 mt-5 pt-4 border-t border-gray-100 text-[13px] font-medium text-teal-600 hover:text-teal-700 transition-colors"
+                className="flex items-center justify-center gap-2 mt-5 pt-4 border-t border-gray-100 dark:border-[#2d3140] text-[13px] font-medium text-teal-600 hover:text-teal-700 transition-colors"
             >
                 View Full Analysis
             </Link>
@@ -227,17 +227,17 @@ export default function ApplicationsPage() {
         <div className="max-w-[1100px] space-y-0">
             {/* Page header */}
             <div className="mb-6">
-                <h1 className="text-[22px] font-semibold text-gray-900 tracking-tight">Applications</h1>
-                <p className="text-sm text-gray-400 mt-1">Track and manage your job applications</p>
+                <h1 className="text-[22px] font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Applications</h1>
+                <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Track and manage your job applications</p>
             </div>
 
             {filteredApps.length === 0 && filter === 'all' ? (
-                <div className="bg-white rounded-xl border border-gray-200 p-16 text-center">
-                    <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] p-16 text-center">
+                    <div className="w-16 h-16 bg-gray-50 dark:bg-[#13151d] rounded-2xl flex items-center justify-center mx-auto mb-5">
                         <Briefcase className="w-8 h-8 text-gray-300" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No Applications Yet</h3>
-                    <p className="text-sm text-gray-400 mb-8 max-w-md mx-auto leading-relaxed">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No Applications Yet</h3>
+                    <p className="text-sm text-gray-400 dark:text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">
                         Start by searching for jobs and marking them as applied. Your application history will appear here for easy tracking.
                     </p>
                     <Link
@@ -248,9 +248,9 @@ export default function ApplicationsPage() {
                     </Link>
                 </div>
             ) : (
-                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
                     {/* Tabs */}
-                    <div className="flex items-center justify-between border-b border-gray-200">
+                    <div className="flex items-center justify-between border-b border-gray-200 dark:border-[#2d3140]">
                         <div className="flex">
                             {tabs.map(tab => (
                                 <button
@@ -258,14 +258,14 @@ export default function ApplicationsPage() {
                                     onClick={() => setFilter(tab.id)}
                                     className={`relative px-5 py-3.5 text-[13px] font-medium transition-colors cursor-pointer ${
                                         filter === tab.id
-                                            ? 'text-gray-900'
-                                            : 'text-gray-400 hover:text-gray-600'
+                                            ? 'text-gray-900 dark:text-gray-100'
+                                            : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                                     }`}
                                 >
                                     {tab.label}
                                     {tab.count > 0 && (
                                         <span className={`ml-1.5 text-[11px] font-semibold px-1.5 py-0.5 rounded-full ${
-                                            filter === tab.id ? 'bg-teal-50 text-teal-600' : 'bg-gray-100 text-gray-400'
+                                            filter === tab.id ? 'bg-teal-50 text-teal-600' : 'bg-gray-100 dark:bg-[#22252f] text-gray-400 dark:text-gray-500'
                                         }`}>
                                             {tab.count}
                                         </span>
@@ -279,7 +279,7 @@ export default function ApplicationsPage() {
                         <div className="flex items-center gap-2 pr-4">
                             <button
                                 onClick={() => exportJobsToCSV(sortedApps)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#22252f] rounded-lg transition-colors cursor-pointer"
                             >
                                 <Download className="w-3.5 h-3.5" />
                                 Export
@@ -288,7 +288,7 @@ export default function ApplicationsPage() {
                     </div>
 
                     {/* Column headers */}
-                    <div className="hidden md:grid grid-cols-[40px,1fr,180px,120px,100px,80px] items-center gap-0 px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 text-[11px] font-medium text-gray-400 uppercase tracking-wider select-none">
+                    <div className="hidden md:grid grid-cols-[40px,1fr,180px,120px,100px,80px] items-center gap-0 px-4 py-2.5 bg-gray-50/80 dark:bg-[#13151d]/80 border-b border-gray-100 dark:border-[#2d3140] text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider select-none">
                         <div className="flex items-center justify-center">
                             <input
                                 type="checkbox"
@@ -297,16 +297,16 @@ export default function ApplicationsPage() {
                                 className="w-3.5 h-3.5 rounded border-gray-300 text-teal-500 focus:ring-teal-500 cursor-pointer"
                             />
                         </div>
-                        <button onClick={() => toggleSort('company')} className="flex items-center gap-1 text-left cursor-pointer hover:text-gray-600 transition-colors">
+                        <button onClick={() => toggleSort('company')} className="flex items-center gap-1 text-left cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                             Job
                             {sortField === 'company' && <ChevronDown className={`w-3 h-3 transition-transform ${sortDir === 'asc' ? 'rotate-180' : ''}`} />}
                         </button>
-                        <button onClick={() => toggleSort('score')} className="flex items-center gap-1 cursor-pointer hover:text-gray-600 transition-colors">
+                        <button onClick={() => toggleSort('score')} className="flex items-center gap-1 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                             Match
                             {sortField === 'score' && <ChevronDown className={`w-3 h-3 transition-transform ${sortDir === 'asc' ? 'rotate-180' : ''}`} />}
                         </button>
                         <div>Status</div>
-                        <button onClick={() => toggleSort('date')} className="flex items-center gap-1 cursor-pointer hover:text-gray-600 transition-colors">
+                        <button onClick={() => toggleSort('date')} className="flex items-center gap-1 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                             Applied
                             {sortField === 'date' && <ChevronDown className={`w-3 h-3 transition-transform ${sortDir === 'asc' ? 'rotate-180' : ''}`} />}
                         </button>
@@ -314,7 +314,7 @@ export default function ApplicationsPage() {
                     </div>
 
                     {/* Rows */}
-                    <div className="divide-y divide-gray-50">
+                    <div className="divide-y divide-gray-50 dark:divide-[#22252f]">
                         {filteredApps.map((job, i) => {
                             const jobId = job.apply_url || job.title;
                             const isSelected = selectedJobs.has(job.apply_url);
@@ -324,7 +324,7 @@ export default function ApplicationsPage() {
                                 <div
                                     key={jobId + i}
                                     className={`flex flex-col gap-2 p-4 md:grid md:grid-cols-[40px,1fr,180px,120px,100px,80px] md:items-center md:gap-0 md:px-4 md:py-3 transition-colors duration-100 group ${
-                                        isSelected ? 'bg-teal-50/40' : 'hover:bg-gray-50/70'
+                                        isSelected ? 'bg-teal-50/40' : 'hover:bg-gray-50/70 dark:hover:bg-[#22252f]/70'
                                     }`}
                                 >
                                     {/* Checkbox */}
@@ -350,13 +350,13 @@ export default function ApplicationsPage() {
                                                             localStorage.setItem(key, JSON.stringify(job));
                                                         } catch (e) { /* ignore */ }
                                                     }}
-                                                    className="text-[13px] font-medium text-gray-900 truncate hover:text-teal-600 transition-colors"
+                                                    className="text-[13px] font-medium text-gray-900 dark:text-gray-100 truncate hover:text-teal-600 transition-colors"
                                                 >
                                                     {stripHtml(job.title)}
                                                 </Link>
-                                                <Star className="w-3 h-3 text-gray-300 hover:text-amber-400 cursor-pointer transition-colors shrink-0 opacity-0 group-hover:opacity-100" />
+                                                <Star className="w-3 h-3 text-gray-300 hover:text-amber-400 cursor-pointer transition-colors shrink-0 sm:opacity-0 sm:group-hover:opacity-100" />
                                             </div>
-                                            <p className="text-[11px] text-gray-400 truncate mt-0.5">
+                                            <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate mt-0.5">
                                                 {stripHtml(job.company)}
                                                 {job.location && <> · {stripHtml(job.location)}</>}
                                                 {job.source && <> · <span className="text-gray-300">{job.source}</span></>}
@@ -397,7 +397,7 @@ export default function ApplicationsPage() {
                                     </div>
 
                                     {/* Date */}
-                                    <div className="text-[12px] text-gray-400">
+                                    <div className="text-[12px] text-gray-400 dark:text-gray-500">
                                         <div>{formatDate(job.applied_at)}</div>
                                         {getRelativeDate(job.applied_at) && (
                                             <div className="text-[10px] text-gray-300">{getRelativeDate(job.applied_at)}</div>
@@ -405,7 +405,7 @@ export default function ApplicationsPage() {
                                     </div>
 
                                     {/* Actions */}
-                                    <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="flex items-center gap-1 justify-end sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                         <Link
                                             href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
                                             onClick={() => {
@@ -444,8 +444,8 @@ export default function ApplicationsPage() {
                     </div>
 
                     {/* Footer / Bulk Actions Bar */}
-                    <div className={`px-5 py-2.5 border-t border-gray-100 flex items-center justify-between transition-colors ${
-                        selectedJobs.size > 0 ? 'bg-gray-900' : 'bg-gray-50/50'
+                    <div className={`px-5 py-2.5 border-t border-gray-100 dark:border-[#2d3140] flex items-center justify-between transition-colors ${
+                        selectedJobs.size > 0 ? 'bg-gray-900' : 'bg-gray-50/50 dark:bg-[#13151d]/50'
                     }`}>
                         {selectedJobs.size > 0 ? (
                             <>
@@ -503,7 +503,7 @@ export default function ApplicationsPage() {
                             </>
                         ) : (
                             <>
-                                <p className="text-[11px] text-gray-400">
+                                <p className="text-[11px] text-gray-400 dark:text-gray-500">
                                     Showing {filteredApps.length} application{filteredApps.length !== 1 ? 's' : ''}
                                 </p>
                                 <p className="text-[11px] text-gray-300">
@@ -517,13 +517,13 @@ export default function ApplicationsPage() {
 
             {/* Follow-up reminder */}
             {appliedJobsData.length > 0 && (
-                <div className="mt-5 bg-white border border-gray-200 rounded-xl p-4 flex items-start gap-3">
+                <div className="mt-5 bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2d3140] rounded-xl p-4 flex items-start gap-3">
                     <div className="w-8 h-8 rounded-full bg-teal-50 flex items-center justify-center shrink-0">
                         <RefreshCw className="w-3.5 h-3.5 text-teal-500" />
                     </div>
                     <div>
-                        <p className="text-[13px] font-medium text-gray-700">Follow-up reminder</p>
-                        <p className="text-[12px] text-gray-400 mt-0.5 leading-relaxed">
+                        <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Follow-up reminder</p>
+                        <p className="text-[12px] text-gray-400 dark:text-gray-500 mt-0.5 leading-relaxed">
                             Check back every 2–3 days to follow up on applications. Companies typically respond within 1–2 weeks.
                         </p>
                     </div>

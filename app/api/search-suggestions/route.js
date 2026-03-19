@@ -1,9 +1,17 @@
 import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { rateLimit } from '@/lib/rate-limit';
 
 export const maxDuration = 10;
 
 export async function POST(request) {
   try {
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json({ error: 'Sign in required.' }, { status: 401 });
+
+    const rl = await rateLimit(`search-suggestions:${userId}`, 10, 60); // 10 per minute
+    if (!rl.allowed) return NextResponse.json({ error: 'Too many requests. Please slow down.' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } });
+
     const { title, skills } = await request.json();
     if (!title) return NextResponse.json({ suggestions: null });
 

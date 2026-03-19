@@ -42,7 +42,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
             const res = await fetch('/api/cover-letter', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ job, profile, apiKey: apiKeys?.OPENROUTER_API_KEY }),
+                body: JSON.stringify({ job, profile }),
             });
             if (!res.ok) {
                 const err = await res.json().catch(() => ({}));

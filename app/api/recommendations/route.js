@@ -20,6 +20,7 @@ export const maxDuration = 60;
 export async function POST(request) {
     try {
         const { userId } = await auth();
+        if (!userId) return Response.json({ error: 'Sign in required.' }, { status: 401 });
 
         // Rate limit: 5 recommendation requests per minute
         const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
@@ -140,7 +141,7 @@ export async function POST(request) {
     } catch (err) {
         console.error('[RECOMMENDATIONS]', err);
         return Response.json(
-            { error: err.message || 'Failed to generate recommendations' },
+            { error: 'Failed to load recommendations.' },
             { status: 500 }
         );
     }

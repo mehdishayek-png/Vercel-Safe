@@ -10,9 +10,9 @@ export const maxDuration = 30;
  * Uses OpenRouter (Gemini Flash) for speed and cost.
  * Returns a 2-3 sentence description the user can edit.
  */
-async function generateWhatIDo(profile, apiKey) {
-  const effectiveKey = apiKey || process.env.OPENROUTER_API_KEY;
-  if (!effectiveKey) return '';
+async function generateWhatIDo(profile) {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) return '';
 
   const skills = (profile.skills || []).slice(0, 15).join(', ');
   const headline = profile.headline || '';
@@ -38,7 +38,7 @@ Write ONLY the description, nothing else. No quotes, no labels.`;
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${effectiveKey}`,
+        'Authorization': `Bearer ${apiKey}`,
         'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://midasmatch.com',
         'X-Title': 'Midas',
       },
@@ -73,7 +73,6 @@ export async function POST(request) {
 
     const formData = await request.formData();
     const file = formData.get('file');
-    const apiKey = formData.get('apiKey');
 
     if (!file) return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
 
@@ -91,16 +90,16 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid PDF file.' }, { status: 400 });
     }
 
-    const profile = await parseResumePDF(buffer, apiKey);
+    const profile = await parseResumePDF(buffer);
 
     // Enrich with search strategy (non-blocking — failures are graceful)
-    const strategy = await extractSearchStrategy(profile.resume_text || '', profile, apiKey);
+    const strategy = await extractSearchStrategy(profile.resume_text || '', profile);
     if (strategy) {
       profile.search_strategy = strategy;
     }
 
     // Generate "What I Do" summary from resume text (non-blocking)
-    const whatIDo = await generateWhatIDo(profile, apiKey);
+    const whatIDo = await generateWhatIDo(profile);
 
     return NextResponse.json({ profile, whatIDo });
   } catch (e) {

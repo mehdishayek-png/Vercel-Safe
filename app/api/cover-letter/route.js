@@ -12,10 +12,10 @@ export async function POST(request) {
     const rl = await rateLimit(`cover-letter:${userId}`, 15, 3600); // 15 per hour max
     if (!rl.allowed) return NextResponse.json({ error: 'Free limit reached, try tomorrow' }, { status: 429, headers: { 'Retry-After': rl.retryAfter } });
 
-    const { job, profile, apiKey } = await request.json();
+    const { job, profile } = await request.json();
 
-    const effectiveKey = apiKey || process.env.OPENROUTER_API_KEY;
-    if (!effectiveKey) return NextResponse.json({ error: 'No API key' }, { status: 400 });
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) return NextResponse.json({ error: 'No API key' }, { status: 400 });
 
     const skills = (profile.skills || []).slice(0, 20).join(', ');
 
@@ -44,7 +44,7 @@ Write the cover letter:`;
       signal: AbortSignal.timeout(15000),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${effectiveKey}`,
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
@@ -61,6 +61,7 @@ Write the cover letter:`;
 
     return NextResponse.json({ letter });
   } catch (e) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    console.error('Cover letter error:', e);
+    return NextResponse.json({ error: 'Failed to generate cover letter. Please try again.' }, { status: 500 });
   }
 }
