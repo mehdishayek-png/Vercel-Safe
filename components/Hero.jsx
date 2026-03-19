@@ -38,6 +38,7 @@ export function Hero({ onStart, onDemo }) {
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-r from-brand-500 to-violet-500"></span>
                     </span>
                     <span className="text-sm font-semibold bg-gradient-to-r from-brand-700 via-violet-600 to-accent-600 bg-clip-text text-transparent tracking-wide">AI-Powered Job Search Agent</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200 uppercase tracking-wider">Beta</span>
                 </motion.div>
 
                 {/* Headline */}

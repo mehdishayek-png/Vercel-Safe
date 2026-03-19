@@ -139,8 +139,8 @@ export function ScanControls({
                         <span className="flex items-center justify-center gap-2"><Loader2 className="w-3.5 h-3.5 animate-spin" />Scanning...</span>
                     ) : !isSignedIn ? 'Sign in to Scan'
                         : midasSearch
-                            ? 'Super Scan (Free)' // Beta: all scans free. Restore: isAdminUser || weeklyMidasScanCount < 1 ? 'Super Scan (Free)' : tokenBalance >= 2 ? 'Super Scan (2 tokens)' : 'Need 2 Tokens'
-                            : `Scan (${freeScansRemaining} free)`
+                            ? <span className="flex items-center justify-center gap-1.5">Super Scan (Free) <span className="text-[9px] font-bold px-1.5 py-0 rounded-full bg-amber-100 text-amber-700 border border-amber-200 uppercase tracking-wider leading-relaxed">Beta</span></span>
+                            : <span className="flex items-center justify-center gap-1.5">Scan ({freeScansRemaining} free) <span className="text-[9px] font-bold px-1.5 py-0 rounded-full bg-amber-100 text-amber-700 border border-amber-200 uppercase tracking-wider leading-relaxed">Beta</span></span>
                     }
                 </button>
             </div>
