@@ -125,6 +125,16 @@ export function Sidebar({ isOpen, onClose }) {
                 </Link>
             </div>
 
+            {/* Support banner */}
+            <div className="mx-3 mb-2 px-3 py-2.5 rounded-lg bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30">
+                <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-snug">
+                    Ran into an issue?{' '}
+                    <a href="mailto:midasmatchsupport@gmail.com" className="font-semibold underline underline-offset-2 hover:text-amber-900 dark:hover:text-amber-300 transition-colors">
+                        Contact support
+                    </a>
+                </p>
+            </div>
+
             {/* Footer links */}
             <div className="px-5 py-2.5 border-t border-gray-100 dark:border-[#2d3140] flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-gray-300 dark:text-gray-600">
                 <a href="/privacy" className="hover:text-gray-500 transition-colors">Privacy</a>

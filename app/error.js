@@ -52,6 +52,13 @@ export default function Error({ error, reset }) {
             Go Home
           </Link>
         </div>
+
+        <p className="mt-6 text-sm text-gray-500">
+          Still having trouble? Reach out to us at{' '}
+          <a href="mailto:midasmatchsupport@gmail.com" className="text-amber-400 hover:text-amber-300 underline underline-offset-2 transition-colors">
+            midasmatchsupport@gmail.com
+          </a>
+        </p>
       </div>
     </div>
   );
