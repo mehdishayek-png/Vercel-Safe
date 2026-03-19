@@ -18,10 +18,10 @@ export const metadata = {
     type: 'website',
     images: [
       {
-        url: '/og-image.png', // Must be an absolute URL in production, Next.js handles relative in app router if metadataBase is set or transforms it. Let's use metadataBase just in case or absolute via env
+        url: '/api/og',
         width: 1200,
         height: 630,
-        alt: 'Midas Preview',
+        alt: 'Midas Match — AI-Powered Job Matching',
       }
     ],
   },
@@ -29,7 +29,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Midas — AI Job Matching',
     description: 'Upload your resume and get AI-matched with jobs from 8+ sources.',
-    images: ['/og-image.png'],
+    images: ['/api/og'],
   },
   robots: {
     index: true,
