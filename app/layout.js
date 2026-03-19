@@ -13,7 +13,7 @@ export const metadata = {
   authors: [{ name: 'Midas' }],
   openGraph: {
     title: 'Midas — Find Your Perfect Job with AI',
-    description: 'Upload your resume and get matched with thousands of jobs from Google, LinkedIn, and 8+ sources. AI scoring + deep analysis.',
+    description: '1,000 jobs scanned. Only the best delivered. Upload your resume and get AI-matched with jobs from 8+ sources and 350+ company career pages.',
     siteName: 'Midas',
     type: 'website',
     images: [
