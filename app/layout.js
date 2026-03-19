@@ -18,7 +18,7 @@ export const metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://www.midasmatch.com/api/og',
+        url: 'https://www.midasmatch.com/og-image.png',
         width: 1200,
         height: 630,
         alt: 'Midas Match — AI-Powered Job Matching',
@@ -29,7 +29,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Midas — AI Job Matching',
     description: 'Upload your resume and get AI-matched with jobs from 8+ sources.',
-    images: ['https://www.midasmatch.com/api/og'],
+    images: ['https://www.midasmatch.com/og-image.png'],
   },
   robots: {
     index: true,
