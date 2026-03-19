@@ -133,7 +133,7 @@ export async function POST(request) {
             "fit_score": 85, // Integer 0-100.
             "strong_signals": ["Signal 1", "Signal 2"], // Specific skills/exp that match well
             "gaps": ["Gap 1"], // Missing skills or requirements (be gentle but honest)
-            "salary_estimate": "Estimated Ranges (e.g. $120k - $150k)", // Estimate based on role/location/company tiers
+            "salary_estimate": "Estimated salary range in LOCAL CURRENCY based on job location. Use ₹ for India (e.g. ₹8,00,000 - ₹15,00,000 per annum), $ for US (e.g. $120k - $150k), £ for UK, € for Europe. Always match the currency to where the job is located, not the candidate."
             "verdict": "One sentence summary of why they should apply (or why NOT).",
             "tldr": "2-line plain English summary of the job. What the role does, what kind of company, and the key requirement. No jargon. Example: 'Support role at a fintech startup helping enterprise clients onboard. Needs 3+ years CX experience and strong communication skills.'"
         }
