@@ -78,7 +78,7 @@ export default function Home() {
                         >
                             Get Started Free
                         </Link>
-                        <p className="text-sm text-gray-400 mt-3">Free to start · No credit card required</p>
+                        <p className="text-sm text-gray-400 mt-3">Free during beta</p>
                     </div>
                 </section>
 

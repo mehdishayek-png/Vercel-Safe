@@ -85,7 +85,7 @@ export function Hero({ onStart, onDemo }) {
                     transition={{ duration: 0.5, delay: 0.5 }}
                     className="text-[13px] text-gray-400 mt-4"
                 >
-                    No credit card required · 5 free scans daily
+                    Free during beta · 5 scans daily
                 </motion.p>
 
                 {/* Trust strip */}
