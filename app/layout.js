@@ -6,7 +6,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 
 
 export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://midasmatch.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.midasmatch.com'),
   title: 'Midas — AI-Powered Job Matching Engine',
   description: 'Upload your resume and instantly match with jobs from 8+ sources. AI-powered scoring, deep analysis, and location-aware matching across India, US, UK, and 190+ countries.',
   keywords: ['job matching', 'AI job search', 'resume matching', 'job finder', 'career', 'job search engine', 'AI resume'],
@@ -18,7 +18,7 @@ export const metadata = {
     type: 'website',
     images: [
       {
-        url: '/api/og',
+        url: 'https://www.midasmatch.com/api/og',
         width: 1200,
         height: 630,
         alt: 'Midas Match — AI-Powered Job Matching',
@@ -29,7 +29,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Midas — AI Job Matching',
     description: 'Upload your resume and get AI-matched with jobs from 8+ sources.',
-    images: ['/api/og'],
+    images: ['https://www.midasmatch.com/api/og'],
   },
   robots: {
     index: true,
