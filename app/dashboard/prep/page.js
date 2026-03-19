@@ -136,28 +136,50 @@ export default function InterviewPrepPage() {
                 </div>
             ) : (
                 <div>
-                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">Select a job to prep for</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-wider">Select a job to prep for</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {prepJobs.map((job, i) => {
                             const isSelected = selectedJob?.apply_url === job.apply_url;
                             const score = Math.round(job.analysis?.fit_score || job.match_score || 0);
+                            const scoreColor = score >= 80 ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800'
+                                : score >= 60 ? 'text-teal-600 bg-teal-50 dark:bg-teal-900/20 border-teal-200 dark:border-teal-800'
+                                : 'text-amber-600 bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800';
+                            const matchLabel = score >= 80 ? 'Strong Match' : score >= 60 ? 'Good Match' : 'Fair Match';
+                            const postedDate = job.date_posted ? (typeof job.date_posted === 'string' && job.date_posted.includes('ago') ? job.date_posted : new Date(job.date_posted).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) : null;
                             return (
                                 <button
                                     key={job.apply_url || i}
                                     onClick={() => generatePrep(job)}
                                     disabled={isLoading}
-                                    className={`flex items-center gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer disabled:opacity-50 ${
+                                    className={`group flex flex-col p-4 rounded-xl border text-left transition-all cursor-pointer disabled:opacity-50 hover:shadow-md ${
                                         isSelected
-                                            ? 'border-brand-300 bg-brand-50 dark:bg-brand-900/20 dark:border-brand-700'
-                                            : 'border-surface-200 dark:border-[#2d3140] hover:border-brand-200 hover:bg-surface-50 dark:hover:bg-[#22252f]'
+                                            ? 'border-brand-300 bg-brand-50/50 dark:bg-brand-900/20 dark:border-brand-700 shadow-md ring-1 ring-brand-200'
+                                            : 'border-surface-200 dark:border-[#2d3140] hover:border-brand-200 hover:bg-surface-50/50 dark:hover:bg-[#22252f]'
                                     }`}
                                 >
-                                    <CompanyLogo company={job.company} size={32} colorIndex={i} />
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-[13px] font-medium text-gray-900 dark:text-gray-100 truncate">{job.title}</p>
-                                        <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{job.company}</p>
+                                    {/* Top: Logo + Score */}
+                                    <div className="flex items-start justify-between w-full mb-3">
+                                        <CompanyLogo company={job.company} size={40} colorIndex={i} />
+                                        <div className={`text-lg font-bold px-2.5 py-0.5 rounded-lg border ${scoreColor}`}>{score}</div>
                                     </div>
-                                    <span className="text-[11px] font-bold text-brand-600 bg-brand-50 dark:bg-brand-900/20 px-2 py-0.5 rounded-md shrink-0">{score}</span>
+
+                                    {/* Title */}
+                                    <h3 className="text-[15px] font-semibold text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 mb-1.5">
+                                        {job.title}
+                                    </h3>
+
+                                    {/* Company + Location */}
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 font-medium mb-0.5">{job.company}</p>
+                                    {job.location && (
+                                        <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">{job.location}</p>
+                                    )}
+
+                                    {/* Footer: match badge + date + source */}
+                                    <div className="flex items-center gap-2 mt-auto pt-3 border-t border-surface-100 dark:border-[#2d3140]">
+                                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${scoreColor}`}>{matchLabel}</span>
+                                        {postedDate && <span className="text-[10px] text-gray-400">{postedDate}</span>}
+                                        {job.source && <span className="text-[10px] text-gray-400 ml-auto truncate max-w-[100px]">{job.source}</span>}
+                                    </div>
                                 </button>
                             );
                         })}
