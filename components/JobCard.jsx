@@ -147,48 +147,53 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
             {/* Top accent line */}
             <div className={`h-[2px] rounded-t-xl bg-gradient-to-r ${getMatchGradient(job.match_score)} opacity-0 group-hover:opacity-100 transition-opacity`} />
 
-            <div className="p-5">
-                <div className="flex justify-between items-start gap-4">
+            <div className="p-4 sm:p-5">
+                <div className="flex justify-between items-start gap-3 sm:gap-4">
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2.5 mb-1.5">
+                        {/* Title row — logo + title on own line, badges wrap below on mobile */}
+                        <div className="flex items-start gap-2 sm:gap-2.5 mb-1.5">
                             <CompanyLogo company={job.company} applyUrl={job.apply_url} size={32} colorIndex={0} />
-                            <h3 className="text-[15px] font-semibold text-gray-900 dark:text-gray-100 truncate">
-                                <Link
-                                    href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
-                                    onClick={() => {
-                                        try {
-                                            const key = `job_detail_${btoa(job.apply_url || job.title)}`;
-                                            localStorage.setItem(key, JSON.stringify(job));
-                                        } catch (e) { /* ignore quota errors */ }
-                                    }}
-                                    className="hover:text-brand-600 transition-colors"
-                                >
-                                    {cleanTitle}
-                                </Link>
-                            </h3>
-                            {job.date_posted && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-surface-50 text-gray-500 border border-surface-200 whitespace-nowrap shrink-0">
-                                    {postedDate}
-                                </span>
-                            )}
-                            {job._pendingAnalysis ? (
-                                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-brand-50 dark:bg-brand-900/20 text-brand-500 border border-brand-100 dark:border-brand-800 animate-pulse">
-                                    Analyzing...
-                                </span>
-                            ) : job.match_score >= 80 ? (
-                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                                    Strong Match
-                                </span>
-                            ) : job.match_score >= 60 ? (
-                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-400 border border-teal-100 dark:border-teal-800">
-                                    Good Match
-                                </span>
-                            ) : job.match_score >= 40 ? (
-                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800">
-                                    Fair Match
-                                </span>
-                            ) : null}
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-sm sm:text-[15px] font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 sm:truncate leading-snug">
+                                    <Link
+                                        href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                        onClick={() => {
+                                            try {
+                                                const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                                localStorage.setItem(key, JSON.stringify(job));
+                                            } catch (e) { /* ignore quota errors */ }
+                                        }}
+                                        className="hover:text-brand-600 transition-colors"
+                                    >
+                                        {cleanTitle}
+                                    </Link>
+                                </h3>
+                                <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                                    {job.date_posted && (
+                                        <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-surface-50 text-gray-500 border border-surface-200 whitespace-nowrap shrink-0">
+                                            {postedDate}
+                                        </span>
+                                    )}
+                                    {job._pendingAnalysis ? (
+                                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-brand-50 dark:bg-brand-900/20 text-brand-500 border border-brand-100 dark:border-brand-800 animate-pulse">
+                                            Analyzing...
+                                        </span>
+                                    ) : job.match_score >= 80 ? (
+                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                            Strong Match
+                                        </span>
+                                    ) : job.match_score >= 60 ? (
+                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-400 border border-teal-100 dark:border-teal-800">
+                                            Good Match
+                                        </span>
+                                    ) : job.match_score >= 40 ? (
+                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800">
+                                            Fair Match
+                                        </span>
+                                    ) : null}
+                                </div>
+                            </div>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2.5 text-xs text-gray-500 dark:text-gray-400 mb-3">
@@ -247,13 +252,15 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                     </div>
 
                     {/* Score + Actions */}
-                    <div className="flex flex-col items-center gap-2 shrink-0">
+                    <div className="flex flex-col items-center gap-1.5 sm:gap-2 shrink-0">
                         {job._pendingAnalysis ? (
-                            <div className="w-[52px] h-[52px] flex items-center justify-center">
-                                <div className="w-8 h-8 rounded-full border-2 border-brand-100 border-t-brand-500 animate-spin" />
+                            <div className="w-[44px] h-[44px] sm:w-[52px] sm:h-[52px] flex items-center justify-center">
+                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-brand-100 border-t-brand-500 animate-spin" />
                             </div>
                         ) : (
-                            <MatchRing score={analysis?.fit_score || job.match_score} />
+                            <div className="scale-90 sm:scale-100">
+                                <MatchRing score={analysis?.fit_score || job.match_score} />
+                            </div>
                         )}
                         <div className="flex gap-1.5">
                             <button
