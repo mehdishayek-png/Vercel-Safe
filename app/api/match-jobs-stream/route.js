@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { fetchAllJobsStreaming } from '@/lib/job-fetcher';
 import { calculatePandaScore } from '@/lib/panda-matcher';
-import { canScan, incrementDailyScan, deductToken } from '@/lib/tokens';
+import { canScan, incrementDailyScan, deductToken, incrementAnonymousScan } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 import { saveAlertProfile } from '@/lib/job-alerts';
 import { z } from 'zod';
@@ -72,7 +72,7 @@ export async function POST(request) {
       timestamp: new Date().toISOString(),
     }));
 
-    const scanCheck = await canScan(userId, preferences?.midasSearch);
+    const scanCheck = await canScan(userId, preferences?.midasSearch, ip.split(',')[0].trim());
     if (!scanCheck.allowed) {
       return new Response(JSON.stringify({
         error: scanCheck.error,
@@ -82,6 +82,11 @@ export async function POST(request) {
         status: scanCheck.requiresAuth ? 401 : 403,
         headers: { 'Content-Type': 'application/json' }
       });
+    }
+
+    // Track anonymous scans by IP
+    if (scanCheck.trackAnonymous && scanCheck.anonymousIp) {
+      await incrementAnonymousScan(scanCheck.anonymousIp);
     }
 
     // Deduct: free scan or token (skip for anonymous beta users)

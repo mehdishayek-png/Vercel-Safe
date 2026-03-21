@@ -104,6 +104,10 @@ export async function POST(request) {
     return NextResponse.json({ profile, whatIDo });
   } catch (e) {
     console.error('Parse resume error:', e);
-    return NextResponse.json({ error: 'Failed to parse resume. Please try a different PDF.' }, { status: 500 });
+    // Surface specific error messages from the parser for better user feedback
+    const message = e.message?.includes('Could not') || e.message?.includes('No readable text') || e.message?.includes('Could not extract any skills')
+      ? e.message
+      : 'Failed to parse resume. Please try a different PDF.';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

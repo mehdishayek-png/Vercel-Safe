@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { fetchAllJobs } from '@/lib/job-fetcher';
 import { matchJobs } from '@/lib/matcher';
-import { canScan, incrementDailyScan, deductToken } from '@/lib/tokens';
+import { canScan, incrementDailyScan, deductToken, incrementAnonymousScan } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 import { getFeatureFlags } from '@/lib/feature-flags';
 import { preFilterJobs, validateFilters } from '@/lib/pre-filter';
@@ -61,13 +61,19 @@ export async function POST(request) {
     }
 
     // Server-side scan limit enforcement — applies to ALL users
-    const scanCheck = await canScan(userId, preferences?.midasSearch);
+    const ip = (request.headers.get('x-forwarded-for') || 'unknown').split(',')[0].trim();
+    const scanCheck = await canScan(userId, preferences?.midasSearch, ip);
     if (!scanCheck.allowed) {
       return NextResponse.json({
         error: scanCheck.error,
         requiresAuth: scanCheck.requiresAuth || false,
         paywalled: !scanCheck.requiresAuth,
       }, { status: scanCheck.requiresAuth ? 401 : 403 });
+    }
+
+    // Track anonymous scans by IP
+    if (scanCheck.trackAnonymous && scanCheck.anonymousIp) {
+      await incrementAnonymousScan(scanCheck.anonymousIp);
     }
 
     // Deduct: free scan or token
