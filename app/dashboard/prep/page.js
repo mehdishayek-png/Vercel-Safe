@@ -36,7 +36,7 @@ function QuestionCard({ q, index }) {
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full flex items-start gap-3 p-4 text-left hover:bg-surface-50 dark:hover:bg-[#22252f] transition-colors cursor-pointer"
             >
-                <span className="text-[13px] font-bold text-gray-300 dark:text-gray-600 mt-0.5 shrink-0 w-6">{String(index + 1).padStart(2, '0')}</span>
+                <span className="text-[13px] font-bold text-gray-300 dark:text-gray-300 mt-0.5 shrink-0 w-6">{String(index + 1).padStart(2, '0')}</span>
                 <div className="flex-1 min-w-0">
                     <p className="text-[14px] font-medium text-gray-900 dark:text-gray-100 leading-snug">{q.question}</p>
                     <div className="flex items-center gap-2 mt-2">
@@ -57,8 +57,8 @@ function QuestionCard({ q, index }) {
                     >
                         <div className="px-4 pb-4 pl-[52px] space-y-3">
                             <div>
-                                <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Why they ask this</p>
-                                <p className="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed">{q.why_asked}</p>
+                                <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-300 uppercase tracking-wider mb-1">Why they ask this</p>
+                                <p className="text-[13px] text-gray-600 dark:text-gray-300 leading-relaxed">{q.why_asked}</p>
                             </div>
                             <div className={`${colors.bg} rounded-lg p-3`}>
                                 <p className={`text-[11px] font-semibold ${colors.text} uppercase tracking-wider mb-1`}>How to answer</p>
@@ -124,7 +124,7 @@ export default function InterviewPrepPage() {
                     <GraduationCap className="w-5 h-5 text-brand-600" />
                     Interview Prep
                 </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                     Select a job to generate personalized interview questions, answer frameworks, and company research.
                 </p>
             </div>
@@ -134,7 +134,7 @@ export default function InterviewPrepPage() {
                 <div className="bg-brand-50 dark:bg-brand-900/10 border border-brand-200 dark:border-brand-800 rounded-xl p-5 flex items-center justify-between gap-4">
                     <div>
                         <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Sign in to use Interview Prep</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Generate personalized questions, answer frameworks, and company research for your matched jobs.</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-300 mt-0.5">Generate personalized questions, answer frameworks, and company research for your matched jobs.</p>
                     </div>
                     <SignInButton mode="modal">
                         <button className="shrink-0 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors cursor-pointer">
@@ -147,9 +147,9 @@ export default function InterviewPrepPage() {
             {/* Job Selection */}
             {prepJobs.length === 0 ? (
                 <div className="bg-surface-50 dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-xl p-8 text-center">
-                    <BookOpen className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                    <BookOpen className="w-10 h-10 text-gray-300 dark:text-gray-300 mx-auto mb-3" />
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">No jobs to prep for yet</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-gray-500 dark:text-gray-300">
                         Run a search and save some jobs first. Your saved jobs and strong matches will appear here.
                     </p>
                     <Link href="/dashboard/search" className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors">
@@ -158,7 +158,7 @@ export default function InterviewPrepPage() {
                 </div>
             ) : (
                 <div>
-                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-wider">Select a job to prep for</p>
+                    <p className="text-xs font-medium text-gray-500 dark:text-gray-300 mb-4 uppercase tracking-wider">Select a job to prep for</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {prepJobs.map((job, i) => {
                             const isSelected = selectedJob?.apply_url === job.apply_url;
@@ -191,9 +191,9 @@ export default function InterviewPrepPage() {
                                     </h3>
 
                                     {/* Company + Location */}
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 font-medium mb-0.5">{job.company}</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mb-0.5">{job.company}</p>
                                     {job.location && (
-                                        <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">{job.location}</p>
+                                        <p className="text-xs text-gray-400 dark:text-gray-300 mb-3">{job.location}</p>
                                     )}
 
                                     {/* Footer: match badge + date + source */}
@@ -241,7 +241,7 @@ export default function InterviewPrepPage() {
                         <CompanyLogo company={selectedJob.company} size={40} colorIndex={0} />
                         <div>
                             <h2 className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">{selectedJob.title}</h2>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{selectedJob.company} {selectedJob.location ? `\u00B7 ${selectedJob.location}` : ''}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-300">{selectedJob.company} {selectedJob.location ? `\u00B7 ${selectedJob.location}` : ''}</p>
                         </div>
                     </div>
 
@@ -280,7 +280,7 @@ export default function InterviewPrepPage() {
                                 </div>
                                 <ul className="space-y-2">
                                     {(prep.company_research.talking_points || []).map((p, i) => (
-                                        <li key={i} className="flex items-start gap-2 text-[13px] text-gray-600 dark:text-gray-400">
+                                        <li key={i} className="flex items-start gap-2 text-[13px] text-gray-600 dark:text-gray-300">
                                             <span className="text-teal-500 mt-0.5 shrink-0">&bull;</span>
                                             {p}
                                         </li>
@@ -294,7 +294,7 @@ export default function InterviewPrepPage() {
                                 </div>
                                 <ul className="space-y-2">
                                     {(prep.company_research.questions_to_ask || []).map((q, i) => (
-                                        <li key={i} className="flex items-start gap-2 text-[13px] text-gray-600 dark:text-gray-400">
+                                        <li key={i} className="flex items-start gap-2 text-[13px] text-gray-600 dark:text-gray-300">
                                             <span className="text-amber-500 mt-0.5 shrink-0">&bull;</span>
                                             {q}
                                         </li>
@@ -313,7 +313,7 @@ export default function InterviewPrepPage() {
                             </div>
                             <ul className="space-y-2">
                                 {prep.skill_gaps_to_address.map((gap, i) => (
-                                    <li key={i} className="text-[13px] text-gray-600 dark:text-gray-400 flex items-start gap-2">
+                                    <li key={i} className="text-[13px] text-gray-600 dark:text-gray-300 flex items-start gap-2">
                                         <span className="text-amber-500 mt-0.5 shrink-0">&bull;</span>
                                         {gap}
                                     </li>

@@ -134,7 +134,7 @@ export function Hero({ onStart, onDemo }) {
                     transition={{ duration: 0.8, delay: 0.5 }}
                     className="mt-16 max-w-5xl mx-auto"
                 >
-                    <div className="relative rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-white dark:bg-[#1a1d27] shadow-2xl shadow-gray-200/50 dark:shadow-black/30 overflow-hidden">
+                    <div className="relative rounded-2xl border border-gray-200/60 dark:border-gray-600/60 bg-white dark:bg-[#1a1d27] shadow-2xl shadow-gray-200/50 dark:shadow-black/30 overflow-hidden">
                         {/* Browser chrome */}
                         <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 dark:bg-[#22252f] border-b border-gray-100 dark:border-[#2d3140]">
                             <div className="flex gap-1.5">
@@ -143,7 +143,7 @@ export function Hero({ onStart, onDemo }) {
                                 <div className="w-3 h-3 rounded-full bg-emerald-300" />
                             </div>
                             <div className="flex-1 mx-4">
-                                <div className="h-6 bg-gray-100 dark:bg-[#2d3140] rounded-md max-w-xs mx-auto flex items-center justify-center text-[10px] text-gray-400 dark:text-gray-500">
+                                <div className="h-6 bg-gray-100 dark:bg-[#2d3140] rounded-md max-w-xs mx-auto flex items-center justify-center text-[10px] text-gray-400 dark:text-gray-300">
                                     midasmatch.com/dashboard
                                 </div>
                             </div>

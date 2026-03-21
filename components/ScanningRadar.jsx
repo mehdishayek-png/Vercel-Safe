@@ -111,7 +111,7 @@ export function ScanningRadar() {
             >
                 Scanning Job Market...
             </motion.h3>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mb-6">
+            <p className="text-xs text-gray-400 dark:text-gray-300 mb-6">
                 {formatTime(elapsed)} elapsed • Usually takes about a minute
             </p>
 
@@ -137,7 +137,7 @@ export function ScanningRadar() {
                                 ? 'text-emerald-600 dark:text-emerald-400 line-through opacity-60'
                                 : i === currentStage
                                 ? 'text-gray-900 dark:text-gray-100 font-medium'
-                                : 'text-gray-300 dark:text-gray-600'
+                                : 'text-gray-300 dark:text-gray-300'
                         }`}>
                             {stage.label}
                         </span>
@@ -153,7 +153,7 @@ export function ScanningRadar() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.3 }}
-                    className="text-[11px] text-gray-400 dark:text-gray-500 text-center max-w-xs flex items-center gap-1.5"
+                    className="text-[11px] text-gray-400 dark:text-gray-300 text-center max-w-xs flex items-center gap-1.5"
                 >
                     <Sparkles className="w-3 h-3 text-amber-400 shrink-0" />
                     {TIPS[tipIndex]}

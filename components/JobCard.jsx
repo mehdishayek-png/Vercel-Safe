@@ -185,7 +185,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-2.5 text-xs text-gray-500 dark:text-gray-400 mb-3">
+                        <div className="flex flex-wrap items-center gap-2.5 text-xs text-gray-500 dark:text-gray-300 mb-3">
                             <span className="flex items-center gap-1 text-gray-700 dark:text-gray-300 font-medium">
                                 <Building2 className="w-3.5 h-3.5 text-gray-400" />
                                 {cleanCompany}
@@ -210,7 +210,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
 
                         {/* Raw Summary */}
                         <div className="relative">
-                            <p className={`text-sm text-gray-500 dark:text-gray-400 leading-relaxed ${(job.analysis?.tldr) ? 'line-clamp-1' : showFullDescription ? '' : 'line-clamp-2'}`}>
+                            <p className={`text-sm text-gray-500 dark:text-gray-300 leading-relaxed ${(job.analysis?.tldr) ? 'line-clamp-1' : showFullDescription ? '' : 'line-clamp-2'}`}>
                                 {cleanSummary}
                             </p>
                             {cleanSummary.length > 150 && (

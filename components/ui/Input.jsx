@@ -5,7 +5,7 @@ export const Input = forwardRef(({ className, icon: Icon, label, error, ...props
     return (
         <div className="space-y-1.5 w-full">
             {label && (
-                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 ml-1 uppercase tracking-wider">
+                <label className="text-xs font-medium text-gray-500 dark:text-gray-300 ml-1 uppercase tracking-wider">
                     {label}
                 </label>
             )}

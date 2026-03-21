@@ -68,7 +68,7 @@ export function Sidebar({ isOpen, onClose }) {
                             <p className="text-[12px] font-medium text-gray-900 dark:text-gray-100 truncate">
                                 {user?.firstName || 'User'}
                             </p>
-                            <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate">
+                            <p className="text-[10px] text-gray-400 dark:text-gray-300 truncate">
                                 {user?.primaryEmailAddress?.emailAddress || 'Job Seeker'}
                             </p>
                         </div>
@@ -96,14 +96,14 @@ export function Sidebar({ isOpen, onClose }) {
                             className={`relative flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-150 group ${
                                 active
                                     ? 'bg-brand-600 text-white'
-                                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-[#22252f]'
+                                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-[#22252f]'
                             }`}
                         >
-                            <Icon className={`w-4 h-4 ${active ? 'text-white' : 'text-gray-400 group-hover:text-gray-600 dark:text-gray-500 dark:group-hover:text-gray-300'}`} />
+                            <Icon className={`w-4 h-4 ${active ? 'text-white' : 'text-gray-400 group-hover:text-gray-600 dark:text-gray-300 dark:group-hover:text-gray-300'}`} />
                             <span className="flex-1">{label}</span>
                             {badge && (
                                 <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
-                                    active ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400 dark:bg-[#2d3140] dark:text-gray-500'
+                                    active ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400 dark:bg-[#2d3140] dark:text-gray-300'
                                 }`}>
                                     {badge}
                                 </span>
@@ -118,7 +118,7 @@ export function Sidebar({ isOpen, onClose }) {
                 <Link
                     href="/"
                     onClick={onClose}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium text-gray-400 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-500 dark:hover:text-gray-300 dark:hover:bg-[#22252f] transition-all"
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium text-gray-400 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-gray-300 dark:hover:bg-[#22252f] transition-all"
                 >
                     <ChevronLeft className="w-4 h-4" />
                     Back to Home
@@ -136,7 +136,7 @@ export function Sidebar({ isOpen, onClose }) {
             </div>
 
             {/* Footer links */}
-            <div className="px-5 py-2.5 border-t border-gray-100 dark:border-[#2d3140] flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-gray-300 dark:text-gray-600">
+            <div className="px-5 py-2.5 border-t border-gray-100 dark:border-[#2d3140] flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-gray-300 dark:text-gray-300">
                 <a href="/privacy" className="hover:text-gray-500 transition-colors">Privacy</a>
                 <a href="/terms" className="hover:text-gray-500 transition-colors">Terms</a>
                 <a href="/refund" className="hover:text-gray-500 transition-colors">Refund</a>

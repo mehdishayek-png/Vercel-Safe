@@ -43,7 +43,7 @@ export function HowItWorks() {
             <div className="container mx-auto px-4 max-w-4xl">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">How it works</h2>
-                    <p className="text-gray-500 dark:text-gray-400 text-lg">Three steps to your next opportunity.</p>
+                    <p className="text-gray-500 dark:text-gray-300 text-lg">Three steps to your next opportunity.</p>
                 </div>
 
                 <div className="relative">
@@ -74,7 +74,7 @@ export function HowItWorks() {
                                 </div>
                                 <div className="pt-1">
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">{s.title}</h3>
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{s.desc}</p>
+                                    <p className="text-gray-500 dark:text-gray-300 text-sm leading-relaxed">{s.desc}</p>
                                 </div>
                             </motion.div>
                         ))}

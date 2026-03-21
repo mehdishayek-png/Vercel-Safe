@@ -62,15 +62,15 @@ function ScorePopover({ job, onClose }) {
             <div className="flex items-baseline gap-6 mb-5 pb-4 border-b border-gray-100 dark:border-[#2d3140]">
                 <div className="text-center">
                     <div className="text-[22px] font-light text-gray-800 dark:text-gray-200">{experienceYears || '--'}</div>
-                    <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">Relevant Experience</div>
+                    <div className="text-[10px] text-gray-400 dark:text-gray-300 mt-0.5">Relevant Experience</div>
                 </div>
                 <div className="text-center">
                     <div className="text-[22px] font-light text-gray-800 dark:text-gray-200">{skillCount}</div>
-                    <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">Relevant Skills</div>
+                    <div className="text-[10px] text-gray-400 dark:text-gray-300 mt-0.5">Relevant Skills</div>
                 </div>
                 <div className="text-center">
                     <div className="text-[22px] font-light text-gray-800 dark:text-gray-200">{Math.round(score)}%</div>
-                    <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">Match Score</div>
+                    <div className="text-[10px] text-gray-400 dark:text-gray-300 mt-0.5">Match Score</div>
                 </div>
             </div>
 
@@ -85,7 +85,7 @@ function ScorePopover({ job, onClose }) {
                                 <span className="text-[13px] font-medium text-gray-700 dark:text-gray-300">{section.label}</span>
                                 <DotIndicator filled={dots} />
                             </div>
-                            <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-snug">{section.detail}</p>
+                            <p className="text-[11px] text-gray-400 dark:text-gray-300 leading-snug">{section.detail}</p>
                         </div>
                     );
                 })}
@@ -225,7 +225,7 @@ export default function ApplicationsPage() {
             {/* Page header */}
             <div className="mb-6">
                 <h1 className="text-[22px] font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Applications</h1>
-                <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Track and manage your job applications</p>
+                <p className="text-sm text-gray-400 dark:text-gray-300 mt-1">Track and manage your job applications</p>
             </div>
 
             {filteredApps.length === 0 && filter === 'all' ? (
@@ -234,7 +234,7 @@ export default function ApplicationsPage() {
                         <Briefcase className="w-8 h-8 text-gray-300" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No Applications Yet</h3>
-                    <p className="text-sm text-gray-400 dark:text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">
+                    <p className="text-sm text-gray-400 dark:text-gray-300 mb-8 max-w-md mx-auto leading-relaxed">
                         Start by searching for jobs and marking them as applied. Your application history will appear here for easy tracking.
                     </p>
                     <Link
@@ -256,13 +256,13 @@ export default function ApplicationsPage() {
                                     className={`relative px-5 py-3.5 text-[13px] font-medium transition-colors cursor-pointer ${
                                         filter === tab.id
                                             ? 'text-gray-900 dark:text-gray-100'
-                                            : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+                                            : 'text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300'
                                     }`}
                                 >
                                     {tab.label}
                                     {tab.count > 0 && (
                                         <span className={`ml-1.5 text-[11px] font-semibold px-1.5 py-0.5 rounded-full ${
-                                            filter === tab.id ? 'bg-teal-50 text-teal-600' : 'bg-gray-100 dark:bg-[#22252f] text-gray-400 dark:text-gray-500'
+                                            filter === tab.id ? 'bg-teal-50 text-teal-600' : 'bg-gray-100 dark:bg-[#22252f] text-gray-400 dark:text-gray-300'
                                         }`}>
                                             {tab.count}
                                         </span>
@@ -276,7 +276,7 @@ export default function ApplicationsPage() {
                         <div className="flex items-center gap-2 pr-4">
                             <button
                                 onClick={() => exportJobsToCSV(sortedApps)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#22252f] rounded-lg transition-colors cursor-pointer"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#22252f] rounded-lg transition-colors cursor-pointer"
                             >
                                 <Download className="w-3.5 h-3.5" />
                                 Export
@@ -285,7 +285,7 @@ export default function ApplicationsPage() {
                     </div>
 
                     {/* Column headers */}
-                    <div className="hidden md:grid grid-cols-[40px,1fr,180px,120px,100px,80px] items-center gap-0 px-4 py-2.5 bg-gray-50/80 dark:bg-[#13151d]/80 border-b border-gray-100 dark:border-[#2d3140] text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider select-none">
+                    <div className="hidden md:grid grid-cols-[40px,1fr,180px,120px,100px,80px] items-center gap-0 px-4 py-2.5 bg-gray-50/80 dark:bg-[#13151d]/80 border-b border-gray-100 dark:border-[#2d3140] text-[11px] font-medium text-gray-400 dark:text-gray-300 uppercase tracking-wider select-none">
                         <div className="flex items-center justify-center">
                             <input
                                 type="checkbox"
@@ -353,7 +353,7 @@ export default function ApplicationsPage() {
                                                 </Link>
                                                 <Star className="w-3 h-3 text-gray-300 hover:text-amber-400 cursor-pointer transition-colors shrink-0 sm:opacity-0 sm:group-hover:opacity-100" />
                                             </div>
-                                            <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate mt-0.5">
+                                            <p className="text-[11px] text-gray-400 dark:text-gray-300 truncate mt-0.5">
                                                 {stripHtml(job.company)}
                                                 {job.location && <> · {stripHtml(job.location)}</>}
                                                 {job.source && <> · <span className="text-gray-300">{job.source}</span></>}
@@ -394,7 +394,7 @@ export default function ApplicationsPage() {
                                     </div>
 
                                     {/* Date */}
-                                    <div className="text-[12px] text-gray-400 dark:text-gray-500">
+                                    <div className="text-[12px] text-gray-400 dark:text-gray-300">
                                         <div>{formatDate(job.applied_at)}</div>
                                         {getRelativeDate(job.applied_at) && (
                                             <div className="text-[10px] text-gray-300">{getRelativeDate(job.applied_at)}</div>
@@ -500,7 +500,7 @@ export default function ApplicationsPage() {
                             </>
                         ) : (
                             <>
-                                <p className="text-[11px] text-gray-400 dark:text-gray-500">
+                                <p className="text-[11px] text-gray-400 dark:text-gray-300">
                                     Showing {filteredApps.length} application{filteredApps.length !== 1 ? 's' : ''}
                                 </p>
                                 <p className="text-[11px] text-gray-300">
@@ -520,7 +520,7 @@ export default function ApplicationsPage() {
                     </div>
                     <div>
                         <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Follow-up reminder</p>
-                        <p className="text-[12px] text-gray-400 dark:text-gray-500 mt-0.5 leading-relaxed">
+                        <p className="text-[12px] text-gray-400 dark:text-gray-300 mt-0.5 leading-relaxed">
                             Check back every 2–3 days to follow up on applications. Companies typically respond within 1–2 weeks.
                         </p>
                     </div>

@@ -90,7 +90,7 @@ export default function SavedJobsPage() {
         <div className="max-w-[1100px] space-y-0">
             <div className="mb-6">
                 <h1 className="text-[22px] font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Saved Jobs</h1>
-                <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">{savedJobsData.length} job{savedJobsData.length !== 1 ? 's' : ''} bookmarked</p>
+                <p className="text-sm text-gray-400 dark:text-gray-300 mt-1">{savedJobsData.length} job{savedJobsData.length !== 1 ? 's' : ''} bookmarked</p>
             </div>
 
             {sortedJobs.length === 0 ? (
@@ -99,7 +99,7 @@ export default function SavedJobsPage() {
                         <Bookmark className="w-8 h-8 text-gray-300" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No Saved Jobs</h3>
-                    <p className="text-sm text-gray-400 dark:text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">
+                    <p className="text-sm text-gray-400 dark:text-gray-300 mb-8 max-w-md mx-auto leading-relaxed">
                         Save jobs you're interested in while searching. They'll appear here for easy access.
                     </p>
                     <Link
@@ -114,11 +114,11 @@ export default function SavedJobsPage() {
                     {/* Toolbar */}
                     <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 dark:border-[#2d3140]">
                         <div className="flex items-center gap-3">
-                            <span className="text-[12px] text-gray-400 dark:text-gray-500 font-medium">{sortedJobs.length} jobs</span>
+                            <span className="text-[12px] text-gray-400 dark:text-gray-300 font-medium">{sortedJobs.length} jobs</span>
                         </div>
                         <button
                             onClick={() => exportJobsToCSV(sortedJobs)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#22252f] rounded-lg transition-colors cursor-pointer"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#22252f] rounded-lg transition-colors cursor-pointer"
                         >
                             <Download className="w-3.5 h-3.5" />
                             Export
@@ -126,7 +126,7 @@ export default function SavedJobsPage() {
                     </div>
 
                     {/* Column headers */}
-                    <div className="hidden md:grid grid-cols-[40px,1fr,140px,120px,100px,80px] items-center gap-0 px-4 py-2.5 bg-gray-50/80 dark:bg-[#13151d]/80 border-b border-gray-100 dark:border-[#2d3140] text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider select-none">
+                    <div className="hidden md:grid grid-cols-[40px,1fr,140px,120px,100px,80px] items-center gap-0 px-4 py-2.5 bg-gray-50/80 dark:bg-[#13151d]/80 border-b border-gray-100 dark:border-[#2d3140] text-[11px] font-medium text-gray-400 dark:text-gray-300 uppercase tracking-wider select-none">
                         <div className="flex items-center justify-center">
                             <input
                                 type="checkbox"
@@ -190,7 +190,7 @@ export default function SavedJobsPage() {
                                                     {stripHtml(job.title)}
                                                 </Link>
                                             </div>
-                                            <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate mt-0.5">
+                                            <p className="text-[11px] text-gray-400 dark:text-gray-300 truncate mt-0.5">
                                                 {stripHtml(job.company)}
                                                 {job.location && <> · {stripHtml(job.location)}</>}
                                             </p>
@@ -200,13 +200,13 @@ export default function SavedJobsPage() {
                                     <div className="flex items-center gap-2.5">
                                         <DotIndicator filled={dots} />
                                         {score > 0 && (
-                                            <span className="text-[11px] text-gray-300 dark:text-gray-500">{Math.round(score)}%</span>
+                                            <span className="text-[11px] text-gray-300 dark:text-gray-300">{Math.round(score)}%</span>
                                         )}
                                     </div>
 
                                     <div>
                                         {job.source && (
-                                            <span className="text-[11px] text-gray-400 dark:text-gray-500">{job.source}</span>
+                                            <span className="text-[11px] text-gray-400 dark:text-gray-300">{job.source}</span>
                                         )}
                                     </div>
 
@@ -310,7 +310,7 @@ export default function SavedJobsPage() {
                                 </div>
                             </>
                         ) : (
-                            <p className="text-[11px] text-gray-400 dark:text-gray-500">
+                            <p className="text-[11px] text-gray-400 dark:text-gray-300">
                                 Showing {sortedJobs.length} job{sortedJobs.length !== 1 ? 's' : ''}
                             </p>
                         )}

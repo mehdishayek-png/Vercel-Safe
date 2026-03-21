@@ -164,7 +164,7 @@ export function MatchResultsGrid({
                                 <Search className="w-7 h-7 text-brand-600" />
                             </div>
                             <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Ready to find your next role</h2>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
+                            <p className="text-sm text-gray-500 dark:text-gray-300 max-w-md mx-auto leading-relaxed">
                                 Upload your resume on the left, set your preferences, and hit Scan. Midas will score thousands of live jobs against your profile in under a minute.
                             </p>
                         </div>
@@ -177,7 +177,7 @@ export function MatchResultsGrid({
                                 <BrainCircuit className="w-4.5 h-4.5 text-brand-600" />
                             </div>
                             <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 mb-1">AI-Powered Matching</h3>
-                            <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
+                            <p className="text-[11px] text-gray-500 dark:text-gray-300 leading-relaxed">
                                 Our scoring engine evaluates keyword overlap, seniority fit, location match, role family alignment, and job depth — not just keywords.
                             </p>
                         </div>
@@ -186,7 +186,7 @@ export function MatchResultsGrid({
                                 <Globe className="w-4.5 h-4.5 text-emerald-600" />
                             </div>
                             <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 mb-1">4 Job Sources</h3>
-                            <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
+                            <p className="text-[11px] text-gray-500 dark:text-gray-300 leading-relaxed">
                                 We aggregate from LinkedIn, Indeed, Glassdoor, and Fantastic.Jobs — casting a wide net so you don't miss opportunities.
                             </p>
                         </div>
@@ -195,7 +195,7 @@ export function MatchResultsGrid({
                                 <Target className="w-4.5 h-4.5 text-violet-600" />
                             </div>
                             <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 mb-1">Deep Analysis</h3>
-                            <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
+                            <p className="text-[11px] text-gray-500 dark:text-gray-300 leading-relaxed">
                                 Expand any job card to get AI-powered fit scores, salary estimates, skill gap analysis, and a personalized verdict.
                             </p>
                         </div>
@@ -204,7 +204,7 @@ export function MatchResultsGrid({
                                 <FileText className="w-4.5 h-4.5 text-sky-600" />
                             </div>
                             <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 mb-1">Cover Letters</h3>
-                            <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
+                            <p className="text-[11px] text-gray-500 dark:text-gray-300 leading-relaxed">
                                 Generate a tailored 2-paragraph cover letter for any matched job with a single click, then copy and customize.
                             </p>
                         </div>

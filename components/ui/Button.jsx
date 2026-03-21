@@ -20,7 +20,7 @@ export function Button({
         primary: "bg-brand-600 hover:bg-brand-700 text-white shadow-button border-0",
         secondary: "bg-white dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] text-gray-700 dark:text-gray-200 hover:bg-surface-50 dark:hover:bg-[#22252f] hover:text-gray-900 dark:hover:text-white shadow-button",
         outline: "bg-transparent border border-surface-200 dark:border-[#2d3140] text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-surface-300 dark:hover:border-[#3d4155]",
-        ghost: "bg-transparent text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-[#22252f]",
+        ghost: "bg-transparent text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-[#22252f]",
         accent: "bg-accent-600 hover:bg-accent-700 text-white shadow-button border-0",
     };
 

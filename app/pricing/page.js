@@ -63,7 +63,7 @@ export default function PricingPage() {
                     <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                         Simple, transparent pricing
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 text-lg max-w-xl mx-auto">
+                    <p className="text-gray-500 dark:text-gray-300 text-lg max-w-xl mx-auto">
                         Start for free. Buy tokens only when you need more
                         power.
                     </p>
@@ -80,7 +80,7 @@ export default function PricingPage() {
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                 Free
                             </h2>
-                            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                            <p className="text-gray-500 dark:text-gray-300 text-sm mt-1">
                                 Everything you need to start your job search
                             </p>
                             <div className="mt-4">
@@ -134,7 +134,7 @@ export default function PricingPage() {
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                 Token Pack
                             </h2>
-                            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                            <p className="text-gray-500 dark:text-gray-300 text-sm mt-1">
                                 For power users who want deeper insights
                             </p>
                             <div className="mt-4 flex items-baseline gap-2">

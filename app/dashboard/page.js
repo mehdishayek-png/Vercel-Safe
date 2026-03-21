@@ -102,7 +102,7 @@ export default function DashboardHome() {
                     <h1 className="text-[22px] font-semibold text-gray-900 dark:text-gray-100 tracking-tight">
                         {user?.firstName ? `Hi, ${user.firstName}` : profile ? `Hi, ${profile.name?.split(' ')[0] || 'there'}` : 'Welcome to Midas Match'}
                     </h1>
-                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+                    <p className="text-sm text-gray-400 dark:text-gray-300 mt-1">
                         {profile
                             ? "Here's an overview of your job search activity."
                             : 'Upload your resume to get started.'}
@@ -184,17 +184,17 @@ export default function DashboardHome() {
                         <div className={`absolute -top-4 -right-4 w-16 h-16 rounded-full ${stat.iconBg} opacity-30`} />
                         <div className="relative">
                             <div className="flex items-center justify-between mb-3">
-                                <span className="text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">{stat.label}</span>
+                                <span className="text-[11px] font-medium text-gray-400 dark:text-gray-300 uppercase tracking-wider">{stat.label}</span>
                                 <div className={`w-8 h-8 rounded-lg ${stat.iconBg} flex items-center justify-center`}>
                                     <stat.icon className={`w-4 h-4 ${stat.iconColor}`} />
                                 </div>
                             </div>
                             <div className="text-[28px] font-bold text-gray-900 dark:text-gray-100 leading-none">{stat.value}</div>
                             <div className="flex items-center justify-between mt-2">
-                                <p className="text-[11px] text-gray-400 dark:text-gray-500">{stat.sub}</p>
+                                <p className="text-[11px] text-gray-400 dark:text-gray-300">{stat.sub}</p>
                                 {stat.trend && (
                                     <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
-                                        stat.trendUp ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'
+                                        stat.trendUp ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-300'
                                     }`}>
                                         {stat.trendUp ? '↑' : '·'} {stat.trend}
                                     </span>
@@ -328,7 +328,7 @@ export default function DashboardHome() {
                                         <CompanyLogo company={job.company} applyUrl={job.apply_url} size={32} colorIndex={i} />
                                         <div className="flex-1 min-w-0">
                                             <p className="text-[13px] font-medium text-gray-900 dark:text-gray-100 truncate group-hover:text-teal-600 transition-colors">{stripHtml(job.title)}</p>
-                                            <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{stripHtml(job.company)}</p>
+                                            <p className="text-[11px] text-gray-400 dark:text-gray-300 truncate">{stripHtml(job.company)}</p>
                                         </div>
                                         <div className="flex items-center gap-3 shrink-0">
                                             {score > 0 && (
@@ -356,20 +356,20 @@ export default function DashboardHome() {
                                 </div>
                                 <div className="min-w-0">
                                     <p className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 truncate">{profile.name}</p>
-                                    <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{jobTitle || 'Job Seeker'}</p>
+                                    <p className="text-[11px] text-gray-400 dark:text-gray-300 truncate">{jobTitle || 'Job Seeker'}</p>
                                 </div>
                             </div>
                             <div className="space-y-2.5">
                                 <div className="flex justify-between text-[12px]">
-                                    <span className="text-gray-400 dark:text-gray-500">Experience</span>
+                                    <span className="text-gray-400 dark:text-gray-300">Experience</span>
                                     <span className="font-medium text-gray-700 dark:text-gray-300">{experienceYears} years</span>
                                 </div>
                                 <div className="flex justify-between text-[12px]">
-                                    <span className="text-gray-400 dark:text-gray-500">Skills</span>
+                                    <span className="text-gray-400 dark:text-gray-300">Skills</span>
                                     <span className="font-medium text-gray-700 dark:text-gray-300">{profile.skills?.length || 0} identified</span>
                                 </div>
                                 <div className="flex justify-between text-[12px]">
-                                    <span className="text-gray-400 dark:text-gray-500">Location</span>
+                                    <span className="text-gray-400 dark:text-gray-300">Location</span>
                                     <span className="font-medium text-gray-700 dark:text-gray-300">{preferences.city || preferences.state || preferences.country || 'Not set'}</span>
                                 </div>
                             </div>
@@ -389,7 +389,7 @@ export default function DashboardHome() {
                                 <div className="flex-1">
                                     <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100">Search Jobs</p>
                                 </div>
-                                <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600" />
+                                <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-300" />
                             </Link>
                             <Link href="/dashboard/saved" className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 dark:hover:bg-[#22252f] transition-colors group">
                                 <div className="w-8 h-8 rounded-lg bg-sky-50 dark:bg-sky-900/30 flex items-center justify-center">
@@ -397,9 +397,9 @@ export default function DashboardHome() {
                                 </div>
                                 <div className="flex-1">
                                     <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100">Saved Jobs</p>
-                                    {savedCount > 0 && <p className="text-[10px] text-gray-300 dark:text-gray-600">{savedCount} saved</p>}
+                                    {savedCount > 0 && <p className="text-[10px] text-gray-300 dark:text-gray-300">{savedCount} saved</p>}
                                 </div>
-                                <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600" />
+                                <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-300" />
                             </Link>
                             <Link href="/dashboard/applications" className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 dark:hover:bg-[#22252f] transition-colors group">
                                 <div className="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center">
@@ -407,9 +407,9 @@ export default function DashboardHome() {
                                 </div>
                                 <div className="flex-1">
                                     <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100">Applications</p>
-                                    {appliedCount > 0 && <p className="text-[10px] text-gray-300 dark:text-gray-600">{appliedCount} tracked</p>}
+                                    {appliedCount > 0 && <p className="text-[10px] text-gray-300 dark:text-gray-300">{appliedCount} tracked</p>}
                                 </div>
-                                <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600" />
+                                <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-300" />
                             </Link>
                         </div>
                     </div>

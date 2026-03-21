@@ -58,7 +58,7 @@ export function Features() {
             <div className="container mx-auto px-4 max-w-6xl">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">Built for precision, not noise</h2>
-                    <p className="text-gray-500 dark:text-gray-400 text-lg max-w-xl mx-auto">
+                    <p className="text-gray-500 dark:text-gray-300 text-lg max-w-xl mx-auto">
                         Everything you need to land your next role, powered by AI that actually understands your profile.
                     </p>
                 </div>
@@ -78,7 +78,7 @@ export function Features() {
 
                             <div className={`relative bg-white dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-xl p-6 hover:shadow-card-hover transition-all duration-300 group-hover:border-transparent ${f.hoverTint}`}>
                                 {/* Numbered badge top-right */}
-                                <span className="absolute top-4 right-4 text-[11px] font-bold text-gray-300 dark:text-gray-600 tracking-wider">
+                                <span className="absolute top-4 right-4 text-[11px] font-bold text-gray-300 dark:text-gray-300 tracking-wider">
                                     {String(i + 1).padStart(2, '0')}
                                 </span>
 
@@ -86,7 +86,7 @@ export function Features() {
                                     <f.icon className="w-5 h-5" />
                                 </div>
                                 <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">{f.title}</h3>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{f.desc}</p>
+                                <p className="text-gray-500 dark:text-gray-300 text-sm leading-relaxed">{f.desc}</p>
                             </div>
                         </motion.div>
                     ))}

@@ -49,7 +49,7 @@ export function GuideModal({ onClose }) {
                 <div className="p-8">
                     <div className="text-center mb-8">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1">How Midas Works</h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Three steps to your next role.</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-300">Three steps to your next role.</p>
                     </div>
 
                     <div className="space-y-5">
@@ -66,7 +66,7 @@ export function GuideModal({ onClose }) {
                                 </div>
                                 <div>
                                     <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-0.5">{step.title}</h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{step.desc}</p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-300 leading-relaxed">{step.desc}</p>
                                 </div>
                             </motion.div>
                         ))}

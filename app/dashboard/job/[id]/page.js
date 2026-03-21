@@ -85,10 +85,10 @@ function StatBox({ label, value, sublabel, icon: Icon, accentColor = 'teal' }) {
                 <div className={`w-5 h-5 rounded-md flex items-center justify-center ${iconColor}`}>
                     <Icon className="w-3 h-3" />
                 </div>
-                <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">{label}</span>
+                <span className="text-[10px] font-medium text-gray-400 dark:text-gray-300 uppercase tracking-wider">{label}</span>
             </div>
             <div className="text-xl font-semibold text-gray-900 dark:text-gray-100">{value}</div>
-            {sublabel && <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">{sublabel}</p>}
+            {sublabel && <p className="text-[10px] text-gray-400 dark:text-gray-300 mt-0.5">{sublabel}</p>}
         </div>
     );
 }
@@ -249,7 +249,7 @@ function SimilarJobCard({ job, index, onSave, isSaved }) {
             {job.heuristic_breakdown?.matches?.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2.5 ml-[44px]">
                     {job.heuristic_breakdown.matches.slice(0, 3).map((m, idx) => (
-                        <span key={idx} className="px-1.5 py-0.5 rounded text-[9px] bg-gray-50 dark:bg-[#22252f] border border-gray-100 dark:border-[#2d3140] text-gray-500 dark:text-gray-400 font-medium">
+                        <span key={idx} className="px-1.5 py-0.5 rounded text-[9px] bg-gray-50 dark:bg-[#22252f] border border-gray-100 dark:border-[#2d3140] text-gray-500 dark:text-gray-300 font-medium">
                             {m.skill}
                         </span>
                     ))}
@@ -397,10 +397,10 @@ export default function JobDetailPage() {
         return (
             <div className="max-w-3xl mx-auto py-16 text-center">
                 <div className="w-16 h-16 bg-gray-50 dark:bg-[#22252f] rounded-2xl flex items-center justify-center mx-auto mb-5">
-                    <Briefcase className="w-8 h-8 text-gray-300 dark:text-gray-600" />
+                    <Briefcase className="w-8 h-8 text-gray-300 dark:text-gray-300" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Job Not Found</h3>
-                <p className="text-sm text-gray-400 dark:text-gray-500 mb-8">This job may have expired or the link is invalid.</p>
+                <p className="text-sm text-gray-400 dark:text-gray-300 mb-8">This job may have expired or the link is invalid.</p>
                 <Link href="/dashboard/search" className="inline-flex items-center gap-2 px-6 py-2.5 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors">
                     <ArrowLeft className="w-4 h-4" /> Back to Search
                 </Link>
@@ -518,7 +518,7 @@ export default function JobDetailPage() {
                                 <h1 className="text-[17px] sm:text-[20px] font-semibold text-gray-900 dark:text-gray-100 leading-tight mb-2.5">
                                     {stripHtml(job.title)}
                                 </h1>
-                                <div className="flex flex-wrap items-center gap-2 text-[13px] text-gray-500 dark:text-gray-400">
+                                <div className="flex flex-wrap items-center gap-2 text-[13px] text-gray-500 dark:text-gray-300">
                                     <span className="flex items-center gap-1.5 font-medium text-gray-700 dark:text-gray-300">
                                         <Building2 className="w-4 h-4 text-gray-400" />
                                         {stripHtml(job.company)}
@@ -531,7 +531,7 @@ export default function JobDetailPage() {
                                     {job.source && (
                                         <>
                                             <span className="w-px h-4 bg-gray-200" />
-                                            <span className="px-2 py-0.5 rounded-md bg-gray-50 dark:bg-[#22252f] text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-[#2d3140] text-[11px] font-medium">
+                                            <span className="px-2 py-0.5 rounded-md bg-gray-50 dark:bg-[#22252f] text-gray-500 dark:text-gray-300 border border-gray-200 dark:border-[#2d3140] text-[11px] font-medium">
                                                 via {job.source}
                                             </span>
                                         </>
@@ -603,7 +603,7 @@ export default function JobDetailPage() {
                             className={`px-4 py-2.5 rounded-lg border text-[13px] font-medium transition-colors cursor-pointer ${
                                 isSaved
                                     ? 'bg-sky-50 dark:bg-sky-900/20 border-sky-200 dark:border-sky-800 text-sky-600 dark:text-sky-400'
-                                    : 'bg-white dark:bg-[#1a1d27] border-gray-200 dark:border-[#2d3140] text-gray-500 dark:text-gray-400 hover:text-sky-600 hover:border-sky-200'
+                                    : 'bg-white dark:bg-[#1a1d27] border-gray-200 dark:border-[#2d3140] text-gray-500 dark:text-gray-300 hover:text-sky-600 hover:border-sky-200'
                             }`}
                         >
                             <Bookmark className={`w-4 h-4 inline mr-1.5 ${isSaved ? 'fill-sky-500' : ''}`} />
@@ -614,7 +614,7 @@ export default function JobDetailPage() {
                             className={`px-4 py-2.5 rounded-lg border text-[13px] font-medium transition-colors cursor-pointer ${
                                 isApplied
                                     ? 'bg-teal-50 dark:bg-teal-900/20 border-teal-200 dark:border-teal-800 text-teal-600 dark:text-teal-400'
-                                    : 'bg-white dark:bg-[#1a1d27] border-gray-200 dark:border-[#2d3140] text-gray-500 dark:text-gray-400 hover:text-teal-600 hover:border-teal-200'
+                                    : 'bg-white dark:bg-[#1a1d27] border-gray-200 dark:border-[#2d3140] text-gray-500 dark:text-gray-300 hover:text-teal-600 hover:border-teal-200'
                             }`}
                         >
                             <Check className={`w-4 h-4 inline mr-1.5 ${isApplied ? 'stroke-[3]' : ''}`} />
@@ -665,7 +665,7 @@ export default function JobDetailPage() {
                         <div className="px-5 py-4">
                             {cleanDescription ? (
                                 <>
-                                    <div className="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap break-words">
+                                    <div className="text-[13px] text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap break-words">
                                         {displayDescription}
                                         {isDescriptionLong && !showFullDescription && '...'}
                                     </div>
@@ -680,9 +680,9 @@ export default function JobDetailPage() {
                                 </>
                             ) : (
                                 <div className="text-center py-6">
-                                    <AlertCircle className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                                    <p className="text-[13px] text-gray-400 dark:text-gray-500 mb-1">No description available for this listing.</p>
-                                    <p className="text-[11px] text-gray-300 dark:text-gray-600">Try viewing the full listing on the source site.</p>
+                                    <AlertCircle className="w-8 h-8 text-gray-300 dark:text-gray-300 mx-auto mb-2" />
+                                    <p className="text-[13px] text-gray-400 dark:text-gray-300 mb-1">No description available for this listing.</p>
+                                    <p className="text-[11px] text-gray-300 dark:text-gray-300">Try viewing the full listing on the source site.</p>
                                 </div>
                             )}
                         </div>
@@ -738,7 +738,7 @@ export default function JobDetailPage() {
                                         <Sparkles className="w-3.5 h-3.5 text-teal-500" />
                                         Verdict
                                     </h3>
-                                    <p className="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed">{analysis.verdict}</p>
+                                    <p className="text-[13px] text-gray-600 dark:text-gray-300 leading-relaxed">{analysis.verdict}</p>
                                     {analysis.salary_estimate && (
                                         <div className="mt-3 pt-3 border-t border-gray-200/60 dark:border-[#2d3140]">
                                             <span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Estimated Salary </span>
@@ -779,7 +779,7 @@ export default function JobDetailPage() {
                                             {copied ? <><CheckCheck className="w-3.5 h-3.5 text-teal-500" /> Copied!</> : <><Copy className="w-3.5 h-3.5" /> Copy</>}
                                         </button>
                                     </div>
-                                    <div className="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap break-words bg-gray-50 dark:bg-[#22252f] rounded-lg p-4 border border-gray-100 dark:border-[#2d3140]">
+                                    <div className="text-[13px] text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap break-words bg-gray-50 dark:bg-[#22252f] rounded-lg p-4 border border-gray-100 dark:border-[#2d3140]">
                                         {coverLetter}
                                     </div>
                                 </div>
@@ -806,7 +806,7 @@ export default function JobDetailPage() {
                                             <span className="text-[12px] font-medium text-gray-700 dark:text-gray-300">{section.label}</span>
                                             <DotIndicator filled={dots} />
                                         </div>
-                                        <p className="text-[10px] text-gray-400 dark:text-gray-500 leading-snug">{section.detail}</p>
+                                        <p className="text-[10px] text-gray-400 dark:text-gray-300 leading-snug">{section.detail}</p>
                                     </div>
                                 );
                             })}
@@ -838,13 +838,13 @@ export default function JobDetailPage() {
                             {/* User's unmatched skills */}
                             {profile?.skills && profile.skills.length > 0 && matches.length > 0 && (
                                 <div className="mt-3 pt-3 border-t border-gray-100 dark:border-[#2d3140]">
-                                    <h3 className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Your Other Skills</h3>
+                                    <h3 className="text-[10px] font-medium text-gray-400 dark:text-gray-300 uppercase tracking-wider mb-2">Your Other Skills</h3>
                                     <div className="flex flex-wrap gap-1">
                                         {profile.skills
                                             .filter(s => !matches.some(m => m.skill.toLowerCase() === s.toLowerCase()))
                                             .slice(0, 10)
                                             .map((skill, i) => (
-                                                <span key={i} className="px-1.5 py-0.5 rounded text-[10px] text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-[#22252f] border border-gray-100 dark:border-[#2d3140]">
+                                                <span key={i} className="px-1.5 py-0.5 rounded text-[10px] text-gray-400 dark:text-gray-300 bg-gray-50 dark:bg-[#22252f] border border-gray-100 dark:border-[#2d3140]">
                                                     {skill}
                                                 </span>
                                             ))}
@@ -868,18 +868,18 @@ export default function JobDetailPage() {
                             <div className="px-4 py-3 space-y-2.5">
                                 {requiredExp && (
                                     <div className="flex items-center justify-between text-[12px]">
-                                        <span className="text-gray-500 dark:text-gray-400">Experience</span>
+                                        <span className="text-gray-500 dark:text-gray-300">Experience</span>
                                         <span className="font-medium text-gray-700 dark:text-gray-300">{requiredExp} years</span>
                                     </div>
                                 )}
                                 {requiredEdu && (
                                     <div className="flex items-center justify-between text-[12px]">
-                                        <span className="text-gray-500 dark:text-gray-400">Education</span>
+                                        <span className="text-gray-500 dark:text-gray-300">Education</span>
                                         <span className="font-medium text-gray-700 dark:text-gray-300">{requiredEdu}</span>
                                     </div>
                                 )}
                                 <div className="flex items-center justify-between text-[12px]">
-                                    <span className="text-gray-500 dark:text-gray-400">Your Experience</span>
+                                    <span className="text-gray-500 dark:text-gray-300">Your Experience</span>
                                     <span className="font-medium text-gray-700 dark:text-gray-300">{userExperienceYears || 0} years</span>
                                 </div>
                             </div>
@@ -889,7 +889,7 @@ export default function JobDetailPage() {
                     {/* Apply CTA */}
                     {!isApplied && (
                         <div className="bg-gray-50 dark:bg-[#22252f] rounded-xl border border-gray-100 dark:border-[#2d3140] p-4 text-center">
-                            <p className="text-[12px] text-gray-500 dark:text-gray-400 mb-3">Ready to apply?</p>
+                            <p className="text-[12px] text-gray-500 dark:text-gray-300 mb-3">Ready to apply?</p>
                             <button
                                 onClick={() => {
                                     if (job.apply_url) window.open(job.apply_url, '_blank');
@@ -914,7 +914,7 @@ export default function JobDetailPage() {
                                 <Sparkles className="w-3.5 h-3.5 text-violet-500" />
                                 While you&apos;re here
                             </h2>
-                            <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">Jobs similar to this one</p>
+                            <p className="text-[10px] text-gray-400 dark:text-gray-300 mt-0.5">Jobs similar to this one</p>
                         </div>
 
                         {similarJobs.length > 0 ? (
@@ -932,10 +932,10 @@ export default function JobDetailPage() {
                         ) : (
                             <div className="p-6 text-center">
                                 <div className="w-10 h-10 bg-gray-50 dark:bg-[#22252f] rounded-xl flex items-center justify-center mx-auto mb-3">
-                                    <Briefcase className="w-5 h-5 text-gray-300 dark:text-gray-600" />
+                                    <Briefcase className="w-5 h-5 text-gray-300 dark:text-gray-300" />
                                 </div>
-                                <p className="text-[12px] text-gray-400 dark:text-gray-500 mb-1">No similar jobs found yet</p>
-                                <p className="text-[11px] text-gray-300 dark:text-gray-600 leading-relaxed">
+                                <p className="text-[12px] text-gray-400 dark:text-gray-300 mb-1">No similar jobs found yet</p>
+                                <p className="text-[11px] text-gray-300 dark:text-gray-300 leading-relaxed">
                                     Run a search first to build your job pool. Similar jobs will appear here automatically.
                                 </p>
                                 <Link
@@ -963,7 +963,7 @@ export default function JobDetailPage() {
                                 />
                                 <div>
                                     <h3 className="text-[13px] font-medium text-gray-900 dark:text-gray-100">{stripHtml(job.company)}</h3>
-                                    <p className="text-[11px] text-gray-400 dark:text-gray-500">{stripHtml(job.location) || 'Remote'}</p>
+                                    <p className="text-[11px] text-gray-400 dark:text-gray-300">{stripHtml(job.location) || 'Remote'}</p>
                                 </div>
                             </div>
 
@@ -978,7 +978,7 @@ export default function JobDetailPage() {
 
                                 return (
                                     <div className="mt-3 pt-3 border-t border-gray-100 dark:border-[#2d3140]">
-                                        <h4 className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+                                        <h4 className="text-[10px] font-medium text-gray-400 dark:text-gray-300 uppercase tracking-wider mb-2">
                                             More from {stripHtml(job.company)}
                                         </h4>
                                         <div className="space-y-2">
@@ -992,7 +992,7 @@ export default function JobDetailPage() {
                                                             localStorage.setItem(key, JSON.stringify(sj));
                                                         } catch (e) { /* ignore */ }
                                                     }}
-                                                    className="block text-[12px] text-gray-600 dark:text-gray-400 hover:text-teal-600 transition-colors truncate"
+                                                    className="block text-[12px] text-gray-600 dark:text-gray-300 hover:text-teal-600 transition-colors truncate"
                                                 >
                                                     {stripHtml(sj.title)}
                                                 </Link>

@@ -23,7 +23,7 @@ function SectionCard({ title, icon: Icon, children }) {
     return (
         <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-100 dark:border-[#2d3140] overflow-hidden">
             <div className="px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140] flex items-center gap-2">
-                <Icon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                <Icon className="w-4 h-4 text-gray-400 dark:text-gray-300" />
                 <h2 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
             </div>
             <div className="p-5">{children}</div>
@@ -32,7 +32,7 @@ function SectionCard({ title, icon: Icon, children }) {
 }
 
 function FieldLabel({ children }) {
-    return <label className="block text-[12px] font-medium text-gray-500 dark:text-gray-400 mb-1.5">{children}</label>;
+    return <label className="block text-[12px] font-medium text-gray-500 dark:text-gray-300 mb-1.5">{children}</label>;
 }
 
 function TextInput({ value, onChange, placeholder, type = 'text', ...props }) {
@@ -161,7 +161,7 @@ export default function SettingsPage() {
                 {/* Page header */}
                 <div>
                     <h1 className="text-[18px] font-bold text-gray-900 dark:text-gray-100">Settings</h1>
-                    <p className="text-[13px] text-gray-400 dark:text-gray-500 mt-0.5">Manage your profile, preferences, and data</p>
+                    <p className="text-[13px] text-gray-400 dark:text-gray-300 mt-0.5">Manage your profile, preferences, and data</p>
                 </div>
 
                 {/* ---- Profile Section ---- */}
@@ -324,7 +324,7 @@ export default function SettingsPage() {
                         <div className="flex items-center justify-between py-2">
                             <div>
                                 <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Remote Only</p>
-                                <p className="text-[11px] text-gray-400 dark:text-gray-500">Only show remote positions in search results</p>
+                                <p className="text-[11px] text-gray-400 dark:text-gray-300">Only show remote positions in search results</p>
                             </div>
                             <button
                                 onClick={() => setPreferences(prev => ({ ...prev, remoteOnly: !prev.remoteOnly }))}
@@ -356,13 +356,13 @@ export default function SettingsPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <FieldLabel>Email</FieldLabel>
-                                <div className="px-3 py-2 text-[13px] text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg">
+                                <div className="px-3 py-2 text-[13px] text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg">
                                     {user?.primaryEmailAddress?.emailAddress || 'Not signed in'}
                                 </div>
                             </div>
                             <div>
                                 <FieldLabel>Account Name</FieldLabel>
-                                <div className="px-3 py-2 text-[13px] text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg">
+                                <div className="px-3 py-2 text-[13px] text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg">
                                     {user?.fullName || user?.firstName || 'Not signed in'}
                                 </div>
                             </div>
@@ -375,7 +375,7 @@ export default function SettingsPage() {
                                     <Coins className="w-4 h-4 text-amber-500" />
                                 </div>
                                 <div>
-                                    <p className="text-[12px] text-gray-400 dark:text-gray-500">Token Balance</p>
+                                    <p className="text-[12px] text-gray-400 dark:text-gray-300">Token Balance</p>
                                     <p className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">{tokenBalance}</p>
                                 </div>
                             </div>
@@ -384,7 +384,7 @@ export default function SettingsPage() {
                                     <Zap className="w-4 h-4 text-teal-500" />
                                 </div>
                                 <div>
-                                    <p className="text-[12px] text-gray-400 dark:text-gray-500">Free Scans Today</p>
+                                    <p className="text-[12px] text-gray-400 dark:text-gray-300">Free Scans Today</p>
                                     <p className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">{freeScansRemaining} / {FREE_DAILY_SCANS}</p>
                                 </div>
                             </div>
@@ -437,7 +437,7 @@ export default function SettingsPage() {
                             </div>
                             <div className="text-left flex-1">
                                 <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Export My Data</p>
-                                <p className="text-[11px] text-gray-400 dark:text-gray-500">Download profile, saved jobs, and applications as JSON</p>
+                                <p className="text-[11px] text-gray-400 dark:text-gray-300">Download profile, saved jobs, and applications as JSON</p>
                             </div>
                         </button>
 
@@ -452,7 +452,7 @@ export default function SettingsPage() {
                                 </div>
                                 <div className="text-left flex-1">
                                     <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Delete Resume Data</p>
-                                    <p className="text-[11px] text-gray-400 dark:text-gray-500">Remove the raw resume text from your profile</p>
+                                    <p className="text-[11px] text-gray-400 dark:text-gray-300">Remove the raw resume text from your profile</p>
                                 </div>
                             </button>
                         ) : (
@@ -482,11 +482,11 @@ export default function SettingsPage() {
                             className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#22252f] hover:bg-gray-100 dark:hover:bg-[#2a2d37] rounded-lg border border-gray-100 dark:border-[#2d3140] transition-colors group"
                         >
                             <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-gray-700 transition-colors">
-                                <Shield className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                                <Shield className="w-4 h-4 text-gray-400 dark:text-gray-300" />
                             </div>
                             <div className="text-left flex-1">
                                 <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Privacy Policy</p>
-                                <p className="text-[11px] text-gray-400 dark:text-gray-500">Learn how we handle your data</p>
+                                <p className="text-[11px] text-gray-400 dark:text-gray-300">Learn how we handle your data</p>
                             </div>
                         </a>
                     </div>

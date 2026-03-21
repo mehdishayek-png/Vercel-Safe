@@ -32,10 +32,10 @@ export function DashboardHeader({ onMenuClick }) {
                     </button>
                     {isSubpage && (
                         <>
-                            <Link href="/dashboard" className="text-[12px] text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors font-medium">
+                            <Link href="/dashboard" className="text-[12px] text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300 transition-colors font-medium">
                                 Home
                             </Link>
-                            <ChevronRight className="w-3 h-3 text-gray-300 dark:text-gray-600" />
+                            <ChevronRight className="w-3 h-3 text-gray-300 dark:text-gray-300" />
                         </>
                     )}
                     <h1 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">{title}</h1>
@@ -43,8 +43,8 @@ export function DashboardHeader({ onMenuClick }) {
 
                 <div className="flex items-center gap-3">
                     {typeof tokenBalance === 'number' && (
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-50 dark:bg-[#22252f] border border-gray-100 dark:border-[#2d3140] text-[11px] font-medium text-gray-500 dark:text-gray-400">
-                            <Coins className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-50 dark:bg-[#22252f] border border-gray-100 dark:border-[#2d3140] text-[11px] font-medium text-gray-500 dark:text-gray-300">
+                            <Coins className="w-3 h-3 text-gray-400 dark:text-gray-300" />
                             {tokenBalance}
                         </div>
                     )}
@@ -53,7 +53,7 @@ export function DashboardHeader({ onMenuClick }) {
 
                     <button
                         onClick={() => setShowGuide(true)}
-                        className="p-2 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400 transition-colors cursor-pointer rounded-md hover:bg-gray-50 dark:hover:bg-[#22252f]"
+                        className="p-2 text-gray-300 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-400 transition-colors cursor-pointer rounded-md hover:bg-gray-50 dark:hover:bg-[#22252f]"
                     >
                         <HelpCircle className="w-4 h-4" />
                     </button>
