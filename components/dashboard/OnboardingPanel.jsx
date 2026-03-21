@@ -5,8 +5,12 @@ export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload }) {
         <>
             <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-surface-200 dark:border-[#2d3140] p-5">
                 <div
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Upload resume PDF"
                     onClick={() => fileInputRef.current?.click()}
-                    className="upload-zone p-6 md:p-10 text-center cursor-pointer"
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
+                    className="upload-zone p-6 md:p-10 text-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:focus:ring-offset-[#1a1d27] rounded-lg"
                 >
                     <div className="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mx-auto mb-3">
                         {isParsing ? <Loader2 className="animate-spin text-brand-600" /> : <Upload className="text-brand-600 w-5 h-5" />}
@@ -14,7 +18,7 @@ export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload }) {
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Upload Resume</p>
                     <p className="text-xs text-gray-400 mt-1">PDF &middot; Max 10MB</p>
                 </div>
-                <input ref={fileInputRef} type="file" accept=".pdf" className="hidden" onChange={handleFileUpload} />
+                <input ref={fileInputRef} type="file" accept=".pdf" className="hidden" onChange={handleFileUpload} aria-label="Choose PDF resume file" />
             </div>
 
             {/* Getting Started Guide */}

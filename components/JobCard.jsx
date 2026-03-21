@@ -9,6 +9,7 @@ import { CompanyLogo } from './ui/CompanyLogo';
 import { getMatchColor as getMatchColorUtil, getMatchGradient as getMatchGradientUtil } from '@/lib/match-colors';
 import { useRazorpay } from '../lib/useRazorpay';
 import { useToast } from './ui/Toast';
+import { stripHtmlForDisplay as stripHtmlShared } from '@/lib/strip-html';
 
 export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApplied, onTokensUpdated }) {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -75,29 +76,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
     };
     const postedDate = getFormattedDate(job.date_posted);
 
-    const stripHtml = (html) => {
-        if (!html) return '';
-        let text = html
-            // Decode entities first (handles double-encoded HTML)
-            .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-            .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
-            // Strip tags
-            .replace(/<br\s*\/?>/gi, '\n')
-            .replace(/<[^>]*>?/gm, '')
-            // Second decode pass for remaining entities
-            .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-            .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ');
-        // Strip embedded JSON objects/arrays (e.g. theme config data from scraped pages)
-        text = text.replace(/\{[\s\S]*?"[a-zA-Z_-]+"[\s\S]*?:[\s\S]*?\}/g, (match) => {
-            // Only strip if it looks like JSON (has key-value pairs), not natural text
-            if (match.includes('"') && match.includes(':') && (match.includes('{') && match.split('{').length > 2 || match.includes('":'))) {
-                try { JSON.parse(match); return ''; } catch { /* not valid JSON, check if it looks JSON-like */ }
-                if (/^\s*\{.*"[a-zA-Z_-]+":\s*["{[\d]/.test(match)) return '';
-            }
-            return match;
-        });
-        return text.trim();
-    };
+    const stripHtml = stripHtmlShared;
 
     const cleanTitle = stripHtml(job.title);
     const cleanCompany = stripHtml(job.company);

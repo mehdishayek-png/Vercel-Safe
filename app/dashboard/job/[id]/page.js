@@ -6,31 +6,9 @@ import Link from 'next/link';
 import { useApp } from '@/contexts/AppContext';
 import { useToast } from '@/components/ui/Toast';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
+import { stripHtmlForDisplay as stripHtml } from '@/lib/strip-html';
 
 // ---- Utilities ----
-
-function stripHtml(html) {
-    if (!html) return '';
-    let text = html
-        // Decode entities first (handles double-encoded HTML from Greenhouse/Lever)
-        .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
-        // Strip tags
-        .replace(/<br\s*\/?>/gi, '\n')
-        .replace(/<[^>]*>?/gm, '')
-        // Second decode pass
-        .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ');
-    // Strip embedded JSON objects/arrays (e.g. theme config data from scraped pages)
-    text = text.replace(/\{[\s\S]*?"[a-zA-Z_-]+"[\s\S]*?:[\s\S]*?\}/g, (match) => {
-        if (match.includes('"') && match.includes(':') && (match.includes('{') && match.split('{').length > 2 || match.includes('":'))) {
-            try { JSON.parse(match); return ''; } catch { /* not valid JSON */ }
-            if (/^\s*\{.*"[a-zA-Z_-]+":\s*["{[\d]/.test(match)) return '';
-        }
-        return match;
-    });
-    return text.trim();
-}
 
 function extractExperienceFromDescription(text) {
     if (!text) return null;

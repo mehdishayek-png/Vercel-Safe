@@ -16,11 +16,11 @@ const ScanPayloadSchema = z.object({
     skills: z.array(z.string().max(100)).max(50, "Maximum of 50 skills allowed"),
     experience_years: z.number().min(0).max(100).optional().default(0),
     location: z.string().max(200).optional().default(""),
-  }).passthrough(), // Allow other profile fields but strictly validate these
+  }).passthrough(),
   preferences: z.object({
     midasSearch: z.boolean().optional().default(false),
-    filters: z.any().optional(), // validated lower down by validateFilters
-  }).passthrough().optional().default({}),
+    filters: z.any().optional(),
+  }).optional().default({}),
 });
 
 export async function POST(request) {

@@ -18,6 +18,7 @@ export default function SearchPage() {
     const app = useApp();
     const toast = useToast();
     const resultsRef = useRef(null);
+    const streamJobCountRef = useRef(0);
 
     const [newSkill, setNewSkill] = useState('');
     const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -159,7 +160,7 @@ export default function SearchPage() {
     const findJobs = async () => {
         if (!profile) return;
         setIsMatching(true);
-        // Don't clear previous jobs — new results will merge in via streaming
+        streamJobCountRef.current = 0;
         setLogs([]);
         setSearchError(null);
         addLog("Starting job search agent...");
@@ -240,6 +241,7 @@ export default function SearchPage() {
 
                             if (newJobs.length > 0) {
                                 totalSourceJobs += newJobs.length;
+                                streamJobCountRef.current = totalSourceJobs;
                                 addLog(`+${newJobs.length} from ${event.source} (${totalSourceJobs} total)`);
                                 // Merge and sort by score
                                 setJobs(prev => {
@@ -270,7 +272,7 @@ export default function SearchPage() {
 
                 // Generate smart suggestions if results are sparse
                 if (currentJobs.length < 15) {
-                    generateSearchSuggestions(jobTitle, profile).then(s => s && setSearchSuggestions(s));
+                    generateSearchSuggestions(jobTitle, profile).then(s => s && setSearchSuggestions(s)).catch(() => {});
                 }
 
                 // Mark top 20 as pending analysis — hides heuristic score until AI score arrives
@@ -330,9 +332,9 @@ export default function SearchPage() {
 
             refreshTokens();
         } catch (err) {
-            const hasPartial = jobs.length > 0;
+            const hasPartial = streamJobCountRef.current > 0;
             const userMessage = hasPartial
-                ? `Partial failure: ${err.message}. Showing ${jobs.length} results.`
+                ? `Partial failure: ${err.message}. Showing ${streamJobCountRef.current} results.`
                 : `Search failed: ${err.message}`;
             addLog(`Warning: ${userMessage}`);
             setSearchError({ type: 'search', message: userMessage, canRetry: true });

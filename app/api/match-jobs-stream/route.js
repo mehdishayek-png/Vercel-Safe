@@ -18,7 +18,7 @@ const ScanPayloadSchema = z.object({
   preferences: z.object({
     midasSearch: z.boolean().optional().default(false),
     filters: z.any().optional(),
-  }).passthrough().optional().default({}),
+  }).optional().default({}),
 });
 
 export async function POST(request) {
@@ -89,21 +89,14 @@ export async function POST(request) {
       await incrementAnonymousScan(scanCheck.anonymousIp);
     }
 
-    // Deduct: free scan or token (skip for anonymous beta users)
-    if (!scanCheck.adminPass && !scanCheck.anonymousPass) {
-      if (scanCheck.isFree) {
-        if (scanCheck.isMidasSearchFree) {
-          await import('@/lib/tokens').then(m => m.incrementWeeklyMidasScan(userId));
-        } else {
-          await incrementDailyScan(userId);
-        }
-      } else {
-        const deducted = await deductToken(userId, scanCheck.tokenCost || 1);
-        if (!deducted.success) {
-          return new Response(JSON.stringify({ error: 'Failed to deduct token' }), {
-            status: 403, headers: { 'Content-Type': 'application/json' }
-          });
-        }
+    // Pre-check: if paid scan, verify balance is sufficient before starting
+    if (!scanCheck.adminPass && !scanCheck.anonymousPass && !scanCheck.isFree) {
+      const { getTokenBalance } = await import('@/lib/tokens');
+      const balance = await getTokenBalance(userId);
+      if (balance < (scanCheck.tokenCost || 1)) {
+        return new Response(JSON.stringify({ error: 'Insufficient token balance' }), {
+          status: 403, headers: { 'Content-Type': 'application/json' }
+        });
       }
     }
 
@@ -171,6 +164,27 @@ export async function POST(request) {
             roleAnchor: result.roleAnchor,
             dominantPlatform: result.dominantPlatform,
           });
+
+          // Deduct tokens/increment counters AFTER successful delivery
+          if (!scanCheck.adminPass && !scanCheck.anonymousPass) {
+            try {
+              if (scanCheck.isFree) {
+                if (scanCheck.isMidasSearchFree) {
+                  const { incrementWeeklyMidasScan } = await import('@/lib/tokens');
+                  await incrementWeeklyMidasScan(userId);
+                } else {
+                  await incrementDailyScan(userId);
+                }
+              } else {
+                const deducted = await deductToken(userId, scanCheck.tokenCost || 1);
+                if (!deducted.success) {
+                  send({ type: 'error', message: 'Token deduction failed after search. Please contact support.' });
+                }
+              }
+            } catch (deductErr) {
+              console.error('Post-stream token deduction error:', deductErr);
+            }
+          }
 
           // Save alert profile for daily job alerts (fire-and-forget)
           if (userId) {

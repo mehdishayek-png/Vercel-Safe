@@ -7,6 +7,15 @@ import { useFilters } from '../hooks/use-filters';
 
 const AppContext = createContext(null);
 
+function safeSetItem(key, value) {
+    try {
+        safeSetItem(key, value);
+    } catch {
+        // localStorage quota exceeded — silently fail
+        // Could add cleanup of old keys here if needed
+    }
+}
+
 export function AppProvider({ children }) {
     const { isSignedIn } = useAuth();
 
@@ -136,7 +145,7 @@ export function AppProvider({ children }) {
 
             // Cache recommendations
             try {
-                localStorage.setItem('midas_recommendations', JSON.stringify({
+                safeSetItem('midas_recommendations', JSON.stringify({
                     recs,
                     timestamp: Date.now(),
                 }));
@@ -157,7 +166,7 @@ export function AppProvider({ children }) {
                 setDailyScanCount(data.dailyScansUsed);
                 setWeeklyMidasScanCount(data.weeklyMidasScansUsed || 0);
                 if (data.isAdmin) setIsAdminUser(true);
-                localStorage.setItem('midas_tokens', data.tokens.toString());
+                safeSetItem('midas_tokens', data.tokens.toString());
             } else {
                 setTokenBalance(parseInt(localStorage.getItem('midas_tokens') || '0', 10));
             }
@@ -192,8 +201,8 @@ export function AppProvider({ children }) {
             } else {
                 next = prev.filter(j => j.apply_url !== jobId);
             }
-            localStorage.setItem('midas_saved_jobs', JSON.stringify(next.map(j => j.apply_url)));
-            localStorage.setItem('midas_saved_jobs_data', JSON.stringify(next));
+            safeSetItem('midas_saved_jobs', JSON.stringify(next.map(j => j.apply_url)));
+            safeSetItem('midas_saved_jobs_data', JSON.stringify(next));
             return next;
         });
         const isSaving = !savedJobIds.has(jobId);
@@ -221,8 +230,8 @@ export function AppProvider({ children }) {
             } else {
                 next = prev.filter(j => j.apply_url !== jobId);
             }
-            localStorage.setItem('midas_applied_jobs', JSON.stringify(next.map(j => j.apply_url)));
-            localStorage.setItem('midas_applied_jobs_data', JSON.stringify(next));
+            safeSetItem('midas_applied_jobs', JSON.stringify(next.map(j => j.apply_url)));
+            safeSetItem('midas_applied_jobs_data', JSON.stringify(next));
             return next;
         });
         // Sync to server
@@ -259,8 +268,8 @@ export function AppProvider({ children }) {
                     if (data.source === 'server' && data.jobs.length > 0) {
                         setSavedJobsData(data.jobs);
                         setSavedJobIds(new Set(data.jobs.map(j => j.apply_url)));
-                        localStorage.setItem('midas_saved_jobs', JSON.stringify(data.jobs.map(j => j.apply_url)));
-                        localStorage.setItem('midas_saved_jobs_data', JSON.stringify(data.jobs));
+                        safeSetItem('midas_saved_jobs', JSON.stringify(data.jobs.map(j => j.apply_url)));
+                        safeSetItem('midas_saved_jobs_data', JSON.stringify(data.jobs));
                         return;
                     }
                 }
@@ -318,7 +327,7 @@ export function AppProvider({ children }) {
             if (!welcomeSent && isSignedIn) {
                 setTimeout(() => {
                     fetch('/api/email/welcome', { method: 'POST' })
-                        .then(res => { if (res.ok) localStorage.setItem('midas_welcome_sent', 'true'); })
+                        .then(res => { if (res.ok) safeSetItem('midas_welcome_sent', 'true'); })
                         .catch(() => {});
                 }, 3000);
             }
@@ -334,7 +343,7 @@ export function AppProvider({ children }) {
                     setShowReturnNotification(true);
                 }
             }
-            localStorage.setItem('midas_last_visit', now.toString());
+            safeSetItem('midas_last_visit', now.toString());
         } catch {}
     }, []);
 
@@ -343,7 +352,7 @@ export function AppProvider({ children }) {
         if (profile) {
             try {
                 const profileToSave = { ...profile, experience_years: experienceYears, headline: jobTitle };
-                localStorage.setItem('midas_profile', JSON.stringify(profileToSave));
+                safeSetItem('midas_profile', JSON.stringify(profileToSave));
             } catch {}
         }
     }, [profile, experienceYears, jobTitle]);
@@ -351,21 +360,21 @@ export function AppProvider({ children }) {
     // Persist whatIDo
     useEffect(() => {
         if (whatIDo) {
-            try { localStorage.setItem('midas_what_i_do', whatIDo); } catch {}
+            try { safeSetItem('midas_what_i_do', whatIDo); } catch {}
         }
     }, [whatIDo]);
 
     // Persist preferences (country, state, city, remoteOnly)
     useEffect(() => {
         if (preferences.country) {
-            try { localStorage.setItem('midas_preferences', JSON.stringify(preferences)); } catch {}
+            try { safeSetItem('midas_preferences', JSON.stringify(preferences)); } catch {}
         }
     }, [preferences]);
 
     // Persist job results
     useEffect(() => {
         if (jobs.length > 0 && !isMatching) {
-            try { localStorage.setItem('midas_results', JSON.stringify({ jobs, timestamp: Date.now() })); }
+            try { safeSetItem('midas_results', JSON.stringify({ jobs, timestamp: Date.now() })); }
             catch {}
         }
     }, [jobs, isMatching]);
