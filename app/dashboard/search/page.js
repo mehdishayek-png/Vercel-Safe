@@ -382,135 +382,263 @@ export default function SearchPage() {
     ] : [];
     const readinessScore = readinessChecks.reduce((acc, c) => c.passed ? acc + c.points : acc, 0);
 
+    const neuralProfile = app.neuralProfile;
+    const ecosystemScore = neuralProfile?.ecosystemScore || 0;
+
+    // Compute skill gaps from top saved jobs
+    const topSkillGaps = (() => {
+        if (!profile?.skills || savedJobsData.length === 0) return [];
+        const allJobSkills = new Set();
+        savedJobsData.slice(0, 5).forEach(j => {
+            const desc = (j.description || j.summary || '').toLowerCase();
+            const common = ['python', 'javascript', 'typescript', 'react', 'node.js', 'aws', 'docker', 'kubernetes', 'sql', 'graphql', 'rust', 'go', 'java', 'c++', 'terraform', 'ci/cd', 'agile', 'scrum', 'figma', 'tableau', 'power bi', 'machine learning', 'deep learning', 'nlp', 'data engineering', 'microservices', 'redis', 'kafka', 'elasticsearch'];
+            common.forEach(s => { if (desc.includes(s)) allJobSkills.add(s); });
+        });
+        const userSkills = new Set(profile.skills.map(s => s.toLowerCase()));
+        return [...allJobSkills].filter(s => !userSkills.has(s)).slice(0, 4);
+    })();
+
+    // Market momentum from job data
+    const marketTrends = (() => {
+        if (jobs.length === 0) return [];
+        const sources = {};
+        jobs.forEach(j => { const s = j.source || 'Other'; sources[s] = (sources[s] || 0) + 1; });
+        return Object.entries(sources).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([name, count]) => ({
+            name, count, trend: count > 10 ? 'up' : 'stable'
+        }));
+    })();
+
     return (
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-[1280px] w-full search-bg rounded-2xl p-4 md:p-6 -m-3 md:-m-5 min-h-[calc(100vh-100px)]">
-            {/* Left Panel */}
-            <div className="w-full lg:w-[380px] shrink-0 space-y-4 relative z-10 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
-                {/* Privacy */}
-                <div className="flex items-center gap-1.5 text-[11px] text-slate-500 p-2.5 px-3.5 bg-emerald-50 rounded-xl border border-emerald-200 font-medium">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                    Resumes processed in-memory only. Never stored or used for training.
-                </div>
-
-                {/* Profile Readiness */}
-                {profile && (
-                    <button
-                        onClick={() => setReadinessOpen(!readinessOpen)}
-                        className="w-full flex items-center justify-between p-3 px-4 bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] cursor-pointer hover:bg-midas-surface-low/50 transition-colors shadow-sm"
-                    >
-                        <div className="flex items-center gap-2.5">
-                            <div className="w-7 h-7 rounded-xl bg-emerald-100 border-2 border-emerald-500 flex items-center justify-center">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
-                            </div>
-                            <span className="text-[13px] font-bold text-gray-900 dark:text-gray-100 font-headline">Profile Ready</span>
-                            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg">{readinessScore}</span>
+        <div className="max-w-[1400px] w-full -m-3 md:-m-5 p-4 md:p-6 min-h-[calc(100vh-100px)]">
+            {/* Top Bar — Profile Controls (collapsible) */}
+            <div className="mb-6">
+                {!profile ? (
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-1.5 text-[11px] text-slate-500 p-2.5 px-3.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800 font-medium">
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                            Resumes processed in-memory only. Never stored or used for training.
                         </div>
-                        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${readinessOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                )}
-
-                {readinessOpen && profile && (
-                    <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-3.5 -mt-2 space-y-1.5 shadow-sm">
-                        {readinessChecks.map((check, i) => (
-                            <div key={i} className="flex items-center justify-between py-1 text-[13px] text-gray-600 dark:text-gray-300">
-                                <div className="flex items-center gap-2">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={check.passed ? '#059669' : '#d1d5db'} strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                    {check.label}
-                                </div>
-                                {check.passed && <span className="text-[10px] text-emerald-500 font-bold">+{check.points}</span>}
+                        <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} />
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        {/* Compact profile bar */}
+                        <div className="flex flex-col lg:flex-row gap-4">
+                            <div className="flex-1 min-w-0">
+                                <CandidatePanel
+                                    profile={profile} jobTitle={jobTitle} setJobTitle={setJobTitle}
+                                    isEditingTitle={isEditingTitle} setIsEditingTitle={setIsEditingTitle}
+                                    newSkill={newSkill} setNewSkill={setNewSkill}
+                                    handleAddSkill={handleAddSkill} handleRemoveSkill={handleRemoveSkill}
+                                />
                             </div>
-                        ))}
+                            <div className="lg:w-[420px] shrink-0">
+                                <ScanControls
+                                    experienceYears={experienceYears} setExperienceYears={setExperienceYears}
+                                    preferences={preferences} setPreferences={setPreferences}
+                                    countries={countries} states={states} cities={cities}
+                                    exploreAdjacent={exploreAdjacent} setExploreAdjacent={setExploreAdjacent}
+                                    midasSearch={midasSearch} setMidasSearch={setMidasSearch}
+                                    tokensLoading={tokensLoading} tokenBalance={tokenBalance}
+                                    weeklyMidasScanCount={weeklyMidasScanCount} isAdminUser={isAdminUser}
+                                    isMatching={isMatching} isSignedIn={isSignedIn}
+                                    freeScansRemaining={freeScansRemaining}
+                                    findJobs={findJobs} onReset={() => { setProfile(null); }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* What I Do + Filters row */}
+                        <div className="flex flex-col lg:flex-row gap-4">
+                            <div className="flex-1 min-w-0">
+                                <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] overflow-hidden shadow-sm">
+                                    <button
+                                        onClick={() => setWhatIDoOpen(!whatIDoOpen)}
+                                        className="w-full flex items-center justify-between p-3 px-4 cursor-pointer hover:bg-midas-surface-low/50 transition-colors"
+                                    >
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] font-headline">
+                                            What I Do
+                                            <span className="text-slate-300 font-normal normal-case tracking-normal ml-1">(optional)</span>
+                                        </span>
+                                        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${whatIDoOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+                                    <AnimatePresence initial={false}>
+                                        {whatIDoOpen && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: 'auto', opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                transition={{ duration: 0.2, ease: 'easeInOut' }}
+                                                className="overflow-hidden"
+                                            >
+                                                <div className="px-4 pb-3 space-y-2">
+                                                    <textarea
+                                                        value={whatIDo}
+                                                        onChange={(e) => setWhatIDo(e.target.value)}
+                                                        placeholder="Describe what you do day-to-day in 2-3 sentences..."
+                                                        className="w-full text-[13px] text-gray-700 bg-midas-surface-low/50 border border-slate-200/60 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 placeholder:text-slate-300 dark:bg-[#22252f] dark:border-[#2d3140] dark:text-gray-200 dark:placeholder:text-gray-600"
+                                                        rows={3}
+                                                        maxLength={500}
+                                                    />
+                                                    <div className="text-[10px] text-slate-400 text-right">{whatIDo.length}/500</div>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            </div>
+                            <div className="lg:w-[420px] shrink-0">
+                                <FilterPanel
+                                    filters={filters} flags={flags} isActive={filtersActive} activeCount={filterCount} summary={filterSummary}
+                                    toggleWorkArrangement={toggleWorkArrangement} toggleWorkType={toggleWorkType} toggleRegion={toggleRegion} toggleCompanySize={toggleCompanySize}
+                                    setSalaryMin={setSalaryMin} setSalaryCurrency={setSalaryCurrency} setIncludeMissingSalary={setIncludeMissingSalary} reset={resetFilters}
+                                />
+                            </div>
+                        </div>
                     </div>
                 )}
-
-                {/* Resume Upload & Onboarding */}
-                {!profile && (
-                    <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} />
-                )}
-
-                {/* What I Do — collapsible optional description for better matching */}
-                {profile && (
-                    <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] overflow-hidden shadow-sm">
-                        <button
-                            onClick={() => setWhatIDoOpen(!whatIDoOpen)}
-                            className="w-full flex items-center justify-between p-3 px-4 cursor-pointer hover:bg-midas-surface-low/50 transition-colors"
-                        >
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] font-headline">
-                                What I Do
-                                <span className="text-slate-300 font-normal normal-case tracking-normal ml-1">(optional)</span>
-                            </span>
-                            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${whatIDoOpen ? 'rotate-180' : ''}`} />
-                        </button>
-                        <AnimatePresence initial={false}>
-                            {whatIDoOpen && (
-                                <motion.div
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: 'auto', opacity: 1 }}
-                                    exit={{ height: 0, opacity: 0 }}
-                                    transition={{ duration: 0.2, ease: 'easeInOut' }}
-                                    className="overflow-hidden"
-                                >
-                                    <div className="px-4 pb-3 space-y-2">
-                                        <textarea
-                                            value={whatIDo}
-                                            onChange={(e) => setWhatIDo(e.target.value)}
-                                            placeholder="Describe what you do day-to-day in 2-3 sentences. E.g., 'I help SaaS companies onboard enterprise clients. I run QBRs, build playbooks, and reduce churn.'"
-                                            className="w-full text-[13px] text-gray-700 bg-midas-surface-low/50 border border-slate-200/60 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 placeholder:text-slate-300 dark:bg-[#22252f] dark:border-[#2d3140] dark:text-gray-200 dark:placeholder:text-gray-600"
-                                            rows={3}
-                                            maxLength={500}
-                                        />
-                                        <div className="text-[10px] text-slate-400 text-right">{whatIDo.length}/500</div>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                )}
-
-                {profile && (
-                    <>
-                        <CandidatePanel
-                            profile={profile} jobTitle={jobTitle} setJobTitle={setJobTitle}
-                            isEditingTitle={isEditingTitle} setIsEditingTitle={setIsEditingTitle}
-                            newSkill={newSkill} setNewSkill={setNewSkill}
-                            handleAddSkill={handleAddSkill} handleRemoveSkill={handleRemoveSkill}
-                        />
-
-                        <ScanControls
-                            experienceYears={experienceYears} setExperienceYears={setExperienceYears}
-                            preferences={preferences} setPreferences={setPreferences}
-                            countries={countries} states={states} cities={cities}
-                            exploreAdjacent={exploreAdjacent} setExploreAdjacent={setExploreAdjacent}
-                            midasSearch={midasSearch} setMidasSearch={setMidasSearch}
-                            tokensLoading={tokensLoading} tokenBalance={tokenBalance}
-                            weeklyMidasScanCount={weeklyMidasScanCount} isAdminUser={isAdminUser}
-                            isMatching={isMatching} isSignedIn={isSignedIn}
-                            freeScansRemaining={freeScansRemaining}
-                            findJobs={findJobs} onReset={() => { /* Reset profile for re-upload but preserve existing job results */ setProfile(null); }}
-                        />
-
-                        <FilterPanel
-                            filters={filters} flags={flags} isActive={filtersActive} activeCount={filterCount} summary={filterSummary}
-                            toggleWorkArrangement={toggleWorkArrangement} toggleWorkType={toggleWorkType} toggleRegion={toggleRegion} toggleCompanySize={toggleCompanySize}
-                            setSalaryMin={setSalaryMin} setSalaryCurrency={setSalaryCurrency} setIncludeMissingSalary={setIncludeMissingSalary} reset={resetFilters}
-                        />
-                    </>
-                )}
-
-                {/* Activity log removed — internal/dev only */}
             </div>
 
-            {/* Right Panel — Results */}
-            <div className="flex-1 min-w-0 relative z-10" ref={resultsRef}>
-                <MatchResultsGrid
-                    jobs={jobs} activeTab={activeTab} setActiveTab={setActiveTab} sortBy={sortBy} setSortBy={setSortBy}
-                    displayedJobs={displayedJobs} isMatching={isMatching} searchError={searchError} setSearchError={setSearchError}
-                    deepAnalysisProgress={deepAnalysisProgress} savedJobIds={savedJobIds} profile={profile} apiKeys={apiKeys}
-                    toggleSaveJob={toggleSaveJob} toggleAppliedJob={toggleAppliedJob} appliedJobIds={appliedJobIds}
-                    refreshTokens={refreshTokens} isPaywalled={isPaywalled}
-                    findJobs={findJobs} freeVisibleJobs={FREE_VISIBLE_JOBS}
-                    searchSuggestions={searchSuggestions} onSuggestionClick={(title) => { setJobTitle(title); setSearchSuggestions(null); }}
-                />
+            {/* Main Content: Results + Intelligence Sidebar */}
+            <div className="flex flex-col lg:flex-row gap-6">
+                {/* Center — Results */}
+                <div className="flex-1 min-w-0 relative z-10" ref={resultsRef}>
+                    <MatchResultsGrid
+                        jobs={jobs} activeTab={activeTab} setActiveTab={setActiveTab} sortBy={sortBy} setSortBy={setSortBy}
+                        displayedJobs={displayedJobs} isMatching={isMatching} searchError={searchError} setSearchError={setSearchError}
+                        deepAnalysisProgress={deepAnalysisProgress} savedJobIds={savedJobIds} profile={profile} apiKeys={apiKeys}
+                        toggleSaveJob={toggleSaveJob} toggleAppliedJob={toggleAppliedJob} appliedJobIds={appliedJobIds}
+                        refreshTokens={refreshTokens} isPaywalled={isPaywalled}
+                        findJobs={findJobs} freeVisibleJobs={FREE_VISIBLE_JOBS}
+                        searchSuggestions={searchSuggestions} onSuggestionClick={(title) => { setJobTitle(title); setSearchSuggestions(null); }}
+                    />
+                </div>
+
+                {/* Right Sidebar — Intelligence Widgets */}
+                {profile && (
+                    <div className="w-full lg:w-[320px] shrink-0 space-y-4 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
+                        {/* Neural Profile Card */}
+                        <div className="bg-gradient-to-br from-brand-600 via-brand-700 to-secondary-DEFAULT rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+                            <div className="absolute -top-8 -right-8 w-32 h-32 bg-white/5 rounded-full blur-xl" />
+                            <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-white/5 rounded-full blur-lg" />
+                            <div className="relative">
+                                <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-white/60">Neural Profile</span>
+                                <div className="flex items-center justify-between mt-3">
+                                    <div>
+                                        <p className="text-4xl font-extrabold font-headline">{ecosystemScore || '—'}{ecosystemScore > 0 && <span className="text-lg text-white/60">%</span>}</p>
+                                        <p className="text-[10px] text-white/60 font-bold tracking-wider uppercase mt-1">Ecosystem Sync</p>
+                                    </div>
+                                    {/* Circular indicator */}
+                                    <div className="relative w-16 h-16">
+                                        <svg width="64" height="64" className="-rotate-90">
+                                            <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="5" />
+                                            <circle cx="32" cy="32" r="26" fill="none" stroke="white" strokeWidth="5"
+                                                strokeDasharray={`${2 * Math.PI * 26}`}
+                                                strokeDashoffset={`${2 * Math.PI * 26 * (1 - (ecosystemScore || 0) / 100)}`}
+                                                strokeLinecap="round" className="transition-all duration-700"
+                                            />
+                                        </svg>
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <Sparkles className="w-4 h-4 text-white/80" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Profile stat bars */}
+                                <div className="mt-5 space-y-3">
+                                    <div>
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className="text-[10px] font-semibold text-white/70">Experience Depth</span>
+                                            <span className="text-[10px] font-bold text-white/90">{Math.min(experienceYears * 8, 100)}%</span>
+                                        </div>
+                                        <div className="h-1.5 bg-white/15 rounded-full overflow-hidden">
+                                            <div className="h-full bg-white/70 rounded-full transition-all duration-500" style={{ width: `${Math.min(experienceYears * 8, 100)}%` }} />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className="text-[10px] font-semibold text-white/70">Market Relevance</span>
+                                            <span className="text-[10px] font-bold text-white/90">{jobs.length > 0 ? Math.min(Math.round(jobs.filter(j => (j.match_score || 0) >= 70).length / jobs.length * 100), 100) : 0}%</span>
+                                        </div>
+                                        <div className="h-1.5 bg-white/15 rounded-full overflow-hidden">
+                                            <div className="h-full bg-white/70 rounded-full transition-all duration-500" style={{ width: `${jobs.length > 0 ? Math.min(Math.round(jobs.filter(j => (j.match_score || 0) >= 70).length / jobs.length * 100), 100) : 0}%` }} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="/dashboard/ai-refinement" className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white/15 hover:bg-white/25 rounded-xl text-xs font-bold transition-colors cursor-pointer">
+                                    <Sparkles className="w-3.5 h-3.5" />
+                                    Optimize My Profile
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Market Momentum */}
+                        {marketTrends.length > 0 && (
+                            <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm">
+                                <h3 className="text-[10px] font-bold tracking-[0.15em] text-gray-400 uppercase mb-4">Market Momentum</h3>
+                                <div className="space-y-3">
+                                    {marketTrends.map((trend) => (
+                                        <div key={trend.name} className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-2 h-2 rounded-full ${trend.trend === 'up' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                                                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{trend.name}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-xs font-bold text-gray-500">{trend.count} roles</span>
+                                                {trend.trend === 'up' && (
+                                                    <span className="text-[10px] font-bold text-emerald-500">HOT</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Skill Bridge Gaps */}
+                        {topSkillGaps.length > 0 && (
+                            <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-[10px] font-bold tracking-[0.15em] text-gray-400 uppercase">Skill Bridge</h3>
+                                    <a href="/dashboard/skill-bridge" className="text-[10px] font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700 transition-colors">
+                                        View All
+                                    </a>
+                                </div>
+                                <div className="space-y-2.5">
+                                    {topSkillGaps.map((skill) => (
+                                        <div key={skill} className="flex items-center gap-2.5">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                                            <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">{skill}</span>
+                                            <span className="ml-auto text-[9px] font-bold tracking-wider uppercase text-amber-500">GAP</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <a href="/dashboard/skill-bridge" className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-[#22252f] hover:bg-gray-200 dark:hover:bg-[#2d3140] rounded-xl text-xs font-bold text-gray-700 dark:text-gray-300 transition-colors cursor-pointer">
+                                    Analyze Full Gap
+                                </a>
+                            </div>
+                        )}
+
+                        {/* Pipeline Quick Stats */}
+                        <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm">
+                            <h3 className="text-[10px] font-bold tracking-[0.15em] text-gray-400 uppercase mb-4">Pipeline</h3>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-gray-50 dark:bg-[#13151d] rounded-xl p-3 text-center">
+                                    <p className="text-xl font-extrabold text-gray-900 dark:text-white font-headline">{savedJobIds.size}</p>
+                                    <p className="text-[10px] text-gray-400 font-semibold mt-0.5">Saved</p>
+                                </div>
+                                <div className="bg-gray-50 dark:bg-[#13151d] rounded-xl p-3 text-center">
+                                    <p className="text-xl font-extrabold text-gray-900 dark:text-white font-headline">{appliedJobIds?.size || 0}</p>
+                                    <p className="text-[10px] text-gray-400 font-semibold mt-0.5">Applied</p>
+                                </div>
+                            </div>
+                            <a href="/dashboard/pipeline" className="mt-3 w-full flex items-center justify-center gap-2 text-xs font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700 transition-colors cursor-pointer">
+                                View Pipeline
+                            </a>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Loading Toast */}

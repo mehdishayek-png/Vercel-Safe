@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Lock, Search, Download, BrainCircuit, Target, Zap, ShieldCheck, TrendingUp, Globe, FileText, ChevronDown, Building2 } from 'lucide-react';
+import { Sparkles, Lock, Search, Download, BrainCircuit, Target, Zap, ShieldCheck, TrendingUp, Globe, FileText, ChevronDown, Building2, ArrowUpRight } from 'lucide-react';
 import { JobCard } from './JobCard';
 import { ScanningRadar } from './ScanningRadar';
 import { exportJobsToCSV } from '@/lib/export-csv';
 import { CompanyLogo } from './ui/CompanyLogo';
+import Link from 'next/link';
 
 export function MatchResultsGrid({
     jobs,
@@ -40,59 +41,80 @@ export function MatchResultsGrid({
 
     return (
         <>
-            {/* Tab bar */}
-            <div className="flex items-center gap-1 border-b border-slate-200/60 dark:border-[#2d3140] mb-5 overflow-x-auto">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.key}
-                        onClick={() => setActiveTab(tab.key)}
-                        className={`px-4 py-2.5 text-sm font-bold flex items-center gap-1.5 -mb-px border-b-2 transition-colors cursor-pointer font-headline ${
-                            activeTab === tab.key
-                                ? 'text-brand-600 border-brand-600'
-                                : 'text-slate-400 border-transparent hover:text-gray-600'
-                        }`}
-                    >
-                        {tab.label}
-                        <span className={`text-[11px] font-bold px-2 py-px rounded-full ${
-                            activeTab === tab.key
-                                ? 'bg-brand-50 text-brand-600'
-                                : 'bg-slate-100 text-slate-400'
-                        }`}>
-                            {tab.count}
-                        </span>
-                    </button>
-                ))}
+            {/* Neural Matches Header */}
+            <div className="mb-5">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                    <div className="flex items-center gap-3">
+                        <h2 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 font-headline tracking-tight">
+                            Neural Matches
+                        </h2>
+                        {jobs.length > 0 && (
+                            <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 border border-brand-100 dark:border-brand-800/30">
+                                {jobs.length}
+                            </span>
+                        )}
+                    </div>
 
-                {jobs.length > 0 && (
-                    <div className="ml-auto flex items-center gap-2">
-                    <button
-                        onClick={() => exportJobsToCSV(displayedJobs)}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
-                        title="Export to CSV"
-                    >
-                        <Download className="w-3.5 h-3.5" />
-                        CSV
-                    </button>
-                    <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-[#22252f] rounded-xl p-0.5">
-                        <button
-                            onClick={() => setSortBy('score')}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer font-headline ${
-                                sortBy === 'score' ? 'bg-white dark:bg-[#1a1d27] text-brand-600 shadow-sm' : 'text-slate-500 hover:text-gray-700 dark:hover:text-gray-300'
-                            }`}
-                        >
-                            Score
-                        </button>
-                        <button
-                            onClick={() => setSortBy('latest')}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer font-headline ${
-                                sortBy === 'latest' ? 'bg-white dark:bg-[#1a1d27] text-brand-600 shadow-sm' : 'text-slate-500 hover:text-gray-700 dark:hover:text-gray-300'
-                            }`}
-                        >
-                            Latest
-                        </button>
+                    {jobs.length > 0 && (
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => exportJobsToCSV(displayedJobs)}
+                                className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
+                                title="Export to CSV"
+                            >
+                                <Download className="w-3.5 h-3.5" />
+                                CSV
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                {/* Tabs + Sort */}
+                <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-[#2d3140]">
+                    <div className="flex items-center gap-1 overflow-x-auto">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.key}
+                                onClick={() => setActiveTab(tab.key)}
+                                className={`px-4 py-2.5 text-sm font-bold flex items-center gap-1.5 -mb-px border-b-2 transition-colors cursor-pointer font-headline whitespace-nowrap ${
+                                    activeTab === tab.key
+                                        ? 'text-brand-600 border-brand-600'
+                                        : 'text-slate-400 border-transparent hover:text-gray-600'
+                                }`}
+                            >
+                                {tab.label}
+                                <span className={`text-[11px] font-bold px-2 py-px rounded-full ${
+                                    activeTab === tab.key
+                                        ? 'bg-brand-50 text-brand-600'
+                                        : 'bg-slate-100 dark:bg-[#22252f] text-slate-400'
+                                }`}>
+                                    {tab.count}
+                                </span>
+                            </button>
+                        ))}
                     </div>
-                    </div>
-                )}
+
+                    {jobs.length > 0 && (
+                        <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-[#22252f] rounded-xl p-0.5 shrink-0">
+                            <button
+                                onClick={() => setSortBy('score')}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer font-headline ${
+                                    sortBy === 'score' ? 'bg-white dark:bg-[#1a1d27] text-brand-600 shadow-sm' : 'text-slate-500 hover:text-gray-700 dark:hover:text-gray-300'
+                                }`}
+                            >
+                                Top Matches
+                            </button>
+                            <button
+                                onClick={() => setSortBy('latest')}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer font-headline ${
+                                    sortBy === 'latest' ? 'bg-white dark:bg-[#1a1d27] text-brand-600 shadow-sm' : 'text-slate-500 hover:text-gray-700 dark:hover:text-gray-300'
+                                }`}
+                            >
+                                By Date
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Status Area */}
@@ -164,7 +186,7 @@ export function MatchResultsGrid({
                             </div>
                             <h2 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mb-2 font-headline">Ready to find your next role</h2>
                             <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-                                Upload your resume on the left, set your preferences, and hit Scan. Midas will score thousands of live jobs against your profile in under a minute.
+                                Upload your resume, set your preferences, and hit Scan. Midas will score thousands of live jobs against your profile in under a minute.
                             </p>
                         </div>
                     </div>
@@ -177,7 +199,7 @@ export function MatchResultsGrid({
                             </div>
                             <h3 className="text-[13px] font-bold text-gray-900 dark:text-gray-100 mb-1 font-headline">AI-Powered Matching</h3>
                             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                                Our scoring engine evaluates keyword overlap, seniority fit, location match, role family alignment, and job depth — not just keywords.
+                                Our scoring engine evaluates keyword overlap, seniority fit, location match, role family alignment, and job depth.
                             </p>
                         </div>
                         <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm hover:shadow-md transition-shadow">
@@ -195,7 +217,7 @@ export function MatchResultsGrid({
                             </div>
                             <h3 className="text-[13px] font-bold text-gray-900 dark:text-gray-100 mb-1 font-headline">Deep Analysis</h3>
                             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                                Expand any job card to get AI-powered fit scores, salary estimates, skill gap analysis, and a personalized verdict.
+                                Get AI-powered fit scores, salary estimates, skill gap analysis, and a personalized verdict for every match.
                             </p>
                         </div>
                         <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm hover:shadow-md transition-shadow">
@@ -204,7 +226,7 @@ export function MatchResultsGrid({
                             </div>
                             <h3 className="text-[13px] font-bold text-gray-900 dark:text-gray-100 mb-1 font-headline">Cover Letters</h3>
                             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                                Generate a tailored 2-paragraph cover letter for any matched job with a single click, then copy and customize.
+                                Generate a tailored 2-paragraph cover letter for any matched job with a single click.
                             </p>
                         </div>
                     </div>
