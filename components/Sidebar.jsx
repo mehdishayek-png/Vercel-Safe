@@ -43,7 +43,7 @@ export function Sidebar({ isOpen, onClose }) {
             <aside className={`fixed inset-y-0 left-0 z-50 w-[260px] bg-white dark:bg-[#1a1d27] border-r border-gray-100 dark:border-[#2d3140] text-gray-700 flex flex-col min-h-screen transform transition-transform duration-200 ease-in-out md:static md:translate-x-0 md:w-[220px] md:z-auto md:sticky md:top-0 md:shrink-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 {/* Logo */}
                 <div className="px-5 h-12 flex items-center gap-2.5 border-b border-gray-100 dark:border-[#2d3140]">
-                    <div className="w-7 h-7 rounded-lg bg-gray-900 dark:bg-indigo-600 flex items-center justify-center text-white text-[11px] font-bold">
+                    <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center text-white text-[11px] font-bold">
                         M
                     </div>
                     <span className="text-[14px] font-semibold text-gray-900 dark:text-white tracking-tight flex-1">Midas Match</span>
@@ -76,7 +76,7 @@ export function Sidebar({ isOpen, onClose }) {
                 </SignedIn>
                 <SignedOut>
                     <SignInButton mode="modal">
-                        <button className="w-full px-4 py-2 text-[12px] font-medium text-white bg-gray-900 dark:bg-indigo-600 hover:bg-gray-800 rounded-lg transition-colors cursor-pointer">
+                        <button className="w-full px-4 py-2 text-[12px] font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors cursor-pointer">
                             Sign In
                         </button>
                     </SignInButton>
@@ -95,7 +95,7 @@ export function Sidebar({ isOpen, onClose }) {
                             onClick={onClose}
                             className={`relative flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-150 group ${
                                 active
-                                    ? 'bg-gray-900 dark:bg-indigo-600 text-white'
+                                    ? 'bg-brand-600 text-white'
                                     : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-[#22252f]'
                             }`}
                         >

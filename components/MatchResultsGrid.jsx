@@ -41,7 +41,7 @@ export function MatchResultsGrid({
     return (
         <>
             {/* Tab bar */}
-            <div className="flex items-center gap-1 border-b border-surface-200 mb-5 overflow-x-auto">
+            <div className="flex items-center gap-1 border-b border-surface-200 dark:border-[#2d3140] mb-5 overflow-x-auto">
                 {tabs.map((tab) => (
                     <button
                         key={tab.key}
@@ -77,7 +77,7 @@ export function MatchResultsGrid({
                         <button
                             onClick={() => setSortBy('score')}
                             className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                                sortBy === 'score' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                                sortBy === 'score' ? 'bg-white dark:bg-[#1a1d27] text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
                             }`}
                         >
                             Score
@@ -85,7 +85,7 @@ export function MatchResultsGrid({
                         <button
                             onClick={() => setSortBy('latest')}
                             className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                                sortBy === 'latest' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                                sortBy === 'latest' ? 'bg-white dark:bg-[#1a1d27] text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
                             }`}
                         >
                             Latest
@@ -105,11 +105,11 @@ export function MatchResultsGrid({
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3"
+                        className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex items-start gap-3"
                     >
                         <div className="text-amber-500 mt-0.5 text-base">{searchError.type === 'resume' ? '📄' : '⚠️'}</div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm text-amber-800 font-medium">{searchError.message || searchError}</p>
+                            <p className="text-sm text-amber-800 dark:text-amber-300 font-medium">{searchError.message || searchError}</p>
                             <div className="flex gap-2 mt-2">
                                 {searchError.canRetry && (
                                     <button
@@ -155,7 +155,7 @@ export function MatchResultsGrid({
             {displayedJobs.length === 0 && !isMatching && !searchError && (
                 <div className="space-y-5 mt-2 relative z-10">
                     {/* Hero card */}
-                    <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-violet-50 rounded-2xl border border-indigo-100/60 p-8 text-center shadow-sm">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-indigo-900/20 dark:via-[#1a1d27] dark:to-violet-900/20 rounded-2xl border border-indigo-100/60 dark:border-indigo-800/30 p-8 text-center shadow-sm">
                         {/* Decorative blobs */}
                         <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-indigo-200/30 to-violet-200/20 rounded-full blur-2xl pointer-events-none" />
                         <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-tr from-teal-200/20 to-sky-200/15 rounded-full blur-2xl pointer-events-none" />
@@ -163,8 +163,8 @@ export function MatchResultsGrid({
                             <div className="w-14 h-14 bg-gradient-to-br from-indigo-100 to-violet-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
                                 <Search className="w-7 h-7 text-indigo-600" />
                             </div>
-                            <h2 className="text-xl font-bold text-gray-900 mb-2">Ready to find your next role</h2>
-                            <p className="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Ready to find your next role</h2>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
                                 Upload your resume on the left, set your preferences, and hit Scan. Midas will score thousands of live jobs against your profile in under a minute.
                             </p>
                         </div>
@@ -172,62 +172,62 @@ export function MatchResultsGrid({
 
                     {/* Feature cards grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div className="bg-gradient-to-br from-white to-indigo-50/40 rounded-xl border border-indigo-100/50 p-5 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="bg-gradient-to-br from-white to-indigo-50/40 dark:from-[#1a1d27] dark:to-indigo-900/10 rounded-xl border border-indigo-100/50 dark:border-indigo-800/30 p-5 shadow-sm hover:shadow-md transition-shadow">
                             <div className="w-9 h-9 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-lg flex items-center justify-center mb-3">
                                 <BrainCircuit className="w-4.5 h-4.5 text-indigo-600" />
                             </div>
-                            <h3 className="text-[13px] font-semibold text-gray-900 mb-1">AI-Powered Matching</h3>
-                            <p className="text-[11px] text-gray-400 leading-relaxed">
+                            <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 mb-1">AI-Powered Matching</h3>
+                            <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
                                 Our scoring engine evaluates keyword overlap, seniority fit, location match, role family alignment, and job depth — not just keywords.
                             </p>
                         </div>
-                        <div className="bg-gradient-to-br from-white to-emerald-50/40 rounded-xl border border-emerald-100/50 p-5 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="bg-gradient-to-br from-white to-emerald-50/40 dark:from-[#1a1d27] dark:to-emerald-900/10 rounded-xl border border-emerald-100/50 dark:border-emerald-800/30 p-5 shadow-sm hover:shadow-md transition-shadow">
                             <div className="w-9 h-9 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center mb-3">
                                 <Globe className="w-4.5 h-4.5 text-emerald-600" />
                             </div>
-                            <h3 className="text-[13px] font-semibold text-gray-900 mb-1">4 Job Sources</h3>
-                            <p className="text-[11px] text-gray-400 leading-relaxed">
+                            <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 mb-1">4 Job Sources</h3>
+                            <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
                                 We aggregate from LinkedIn, Indeed, Glassdoor, and Fantastic.Jobs — casting a wide net so you don't miss opportunities.
                             </p>
                         </div>
-                        <div className="bg-gradient-to-br from-white to-violet-50/40 rounded-xl border border-violet-100/50 p-5 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="bg-gradient-to-br from-white to-violet-50/40 dark:from-[#1a1d27] dark:to-violet-900/10 rounded-xl border border-violet-100/50 dark:border-violet-800/30 p-5 shadow-sm hover:shadow-md transition-shadow">
                             <div className="w-9 h-9 bg-gradient-to-br from-violet-100 to-purple-100 rounded-lg flex items-center justify-center mb-3">
                                 <Target className="w-4.5 h-4.5 text-violet-600" />
                             </div>
-                            <h3 className="text-[13px] font-semibold text-gray-900 mb-1">Deep Analysis</h3>
-                            <p className="text-[11px] text-gray-400 leading-relaxed">
+                            <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 mb-1">Deep Analysis</h3>
+                            <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
                                 Expand any job card to get AI-powered fit scores, salary estimates, skill gap analysis, and a personalized verdict.
                             </p>
                         </div>
-                        <div className="bg-gradient-to-br from-white to-sky-50/40 rounded-xl border border-sky-100/50 p-5 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="bg-gradient-to-br from-white to-sky-50/40 dark:from-[#1a1d27] dark:to-sky-900/10 rounded-xl border border-sky-100/50 dark:border-sky-800/30 p-5 shadow-sm hover:shadow-md transition-shadow">
                             <div className="w-9 h-9 bg-gradient-to-br from-sky-100 to-blue-100 rounded-lg flex items-center justify-center mb-3">
                                 <FileText className="w-4.5 h-4.5 text-sky-600" />
                             </div>
-                            <h3 className="text-[13px] font-semibold text-gray-900 mb-1">Cover Letters</h3>
-                            <p className="text-[11px] text-gray-400 leading-relaxed">
+                            <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 mb-1">Cover Letters</h3>
+                            <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
                                 Generate a tailored 2-paragraph cover letter for any matched job with a single click, then copy and customize.
                             </p>
                         </div>
                     </div>
 
                     {/* How scoring works */}
-                    <div className="bg-gradient-to-br from-white to-slate-50/50 rounded-xl border border-slate-200/60 p-5 shadow-sm">
+                    <div className="bg-gradient-to-br from-white to-slate-50/50 dark:from-[#1a1d27] dark:to-slate-900/20 rounded-xl border border-slate-200/60 dark:border-slate-700/30 p-5 shadow-sm">
                         <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-1.5">
                             <TrendingUp className="w-3.5 h-3.5 text-brand-500" />
                             How scoring works
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                            <div className="bg-indigo-50/50 rounded-lg py-3 px-2">
+                            <div className="bg-indigo-50/50 dark:bg-indigo-900/20 rounded-lg py-3 px-2">
                                 <div className="text-2xl font-bold text-indigo-600 mb-1">7</div>
                                 <div className="text-[11px] text-gray-500 font-medium">Scoring Signals</div>
                                 <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Keywords, seniority, location, role family, depth, recency, prestige</div>
                             </div>
-                            <div className="bg-emerald-50/50 rounded-lg py-3 px-2">
+                            <div className="bg-emerald-50/50 dark:bg-emerald-900/20 rounded-lg py-3 px-2">
                                 <div className="text-2xl font-bold text-emerald-600 mb-1">0–100</div>
                                 <div className="text-[11px] text-gray-500 font-medium">Match Score</div>
                                 <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Composite score with multipliers — 80+ is an excellent fit</div>
                             </div>
-                            <div className="bg-violet-50/50 rounded-lg py-3 px-2">
+                            <div className="bg-violet-50/50 dark:bg-violet-900/20 rounded-lg py-3 px-2">
                                 <div className="text-2xl font-bold text-violet-600 mb-1">&lt;60s</div>
                                 <div className="text-[11px] text-gray-500 font-medium">Scan Time</div>
                                 <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Fetches and scores hundreds of jobs in under a minute</div>

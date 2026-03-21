@@ -26,7 +26,7 @@ export function ResumeStrength({ profile, onTokensUpdated }) {
     const getStrokeColor = (s) => s >= 80 ? "stroke-brand-600" : s >= 50 ? "stroke-accent-500" : "stroke-red-400";
 
     return (
-        <div className="bg-white border border-surface-200 rounded-xl p-5 shadow-card">
+        <div className="bg-white dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-xl p-5 shadow-card">
             <div className="flex items-start justify-between mb-4">
                 <div className="flex gap-3 items-center">
                     <div className="relative w-12 h-12 flex items-center justify-center">
@@ -39,7 +39,7 @@ export function ResumeStrength({ profile, onTokensUpdated }) {
                         <span className={`absolute text-[13px] font-bold ${getColor(score)}`}>{score}</span>
                     </div>
                     <div>
-                        <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1.5">
                             <Target className={`w-3.5 h-3.5 ${getColor(score)}`} />
                             Profile Readiness
                         </h3>
@@ -53,18 +53,18 @@ export function ResumeStrength({ profile, onTokensUpdated }) {
             <div className="space-y-2">
                 {checks.map((check, i) => (
                     <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
-                        className="flex items-center justify-between text-[13px] p-2 rounded-lg bg-surface-50 border border-surface-100"
+                        className="flex items-center justify-between text-[13px] p-2 rounded-lg bg-surface-50 dark:bg-[#22252f] border border-surface-100 dark:border-[#2d3140]"
                     >
-                        <span className={`flex items-center gap-2 font-medium ${check.passed ? 'text-gray-700' : 'text-gray-400'}`}>
+                        <span className={`flex items-center gap-2 font-medium ${check.passed ? 'text-gray-700 dark:text-gray-200' : 'text-gray-400'}`}>
                             {check.passed ? <CheckCircle2 className="w-3.5 h-3.5 text-brand-500 shrink-0" /> : <CircleDashed className="w-3.5 h-3.5 text-gray-300 shrink-0" />}
                             {check.label}
                         </span>
-                        {check.passed && <span className="text-[10px] font-semibold text-brand-500 bg-brand-50 px-1.5 py-0.5 rounded-md">+{check.points}</span>}
+                        {check.passed && <span className="text-[10px] font-semibold text-brand-500 bg-brand-50 dark:bg-brand-900/20 px-1.5 py-0.5 rounded-md">+{check.points}</span>}
                     </motion.div>
                 ))}
             </div>
 
-            <div className="mt-4 pt-3 border-t border-surface-100">
+            <div className="mt-4 pt-3 border-t border-surface-100 dark:border-[#2d3140]">
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest flex items-center gap-1">
                         <Sparkles className="w-3 h-3 text-accent-500" /> Tokens
@@ -77,11 +77,11 @@ export function ResumeStrength({ profile, onTokensUpdated }) {
                         <span className="text-[9px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded uppercase tracking-wider">₹399 / 50</span>
                     )}
                 </div>
-                <div onClick={initiatePayment} className="cursor-pointer bg-brand-50 border border-brand-100 hover:border-brand-200 rounded-lg p-3 transition-colors">
+                <div onClick={initiatePayment} className="cursor-pointer bg-brand-50 dark:bg-brand-900/20 border border-brand-100 dark:border-brand-800 hover:border-brand-200 rounded-lg p-3 transition-colors">
                     <div className="flex items-start gap-2.5">
                         <Sparkles className="w-4 h-4 text-brand-500 shrink-0 mt-0.5" />
                         <div>
-                            <p className="text-xs font-semibold text-gray-900 mb-0.5">50x Deep Scan Pack</p>
+                            <p className="text-xs font-semibold text-gray-900 dark:text-gray-100 mb-0.5">50x Deep Scan Pack</p>
                             <p className="text-[11px] text-gray-500 leading-relaxed">Unlock AI analysis, salary estimates, and skill gaps for your top jobs.</p>
                         </div>
                     </div>

@@ -110,7 +110,7 @@ export default function DashboardHome() {
                 </div>
                 <Link
                     href="/dashboard/search"
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg text-[13px] font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg text-[13px] font-medium hover:bg-brand-700 transition-colors"
                 >
                     <Search className="w-3.5 h-3.5" /> New Search
                 </Link>

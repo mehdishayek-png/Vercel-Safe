@@ -19,8 +19,8 @@ function PillToggle({ label, description, active, onClick, disabled }) {
                 disabled
                     ? 'border-surface-100 bg-surface-50 text-gray-300 cursor-not-allowed'
                     : active
-                        ? 'border-brand-500 bg-brand-50 text-brand-700'
-                        : 'border-surface-200 bg-white text-gray-600 hover:border-brand-300 hover:text-brand-600',
+                        ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-400'
+                        : 'border-surface-200 dark:border-[#2d3140] bg-white dark:bg-[#1a1d27] text-gray-600 dark:text-gray-300 hover:border-brand-300 hover:text-brand-600',
             ].join(' ')}
         >
             {label}
@@ -49,15 +49,15 @@ export function FilterPanel({
     const masterOn = flags?.ADVANCED_FILTERS;
 
     return (
-        <div className="rounded-xl border border-surface-200 bg-white overflow-hidden">
+        <div className="rounded-xl border border-surface-200 dark:border-[#2d3140] bg-white dark:bg-[#1a1d27] overflow-hidden">
             <button
                 type="button"
                 onClick={() => setOpen(o => !o)}
-                className="w-full flex items-center justify-between px-4 py-3 hover:bg-surface-50 transition-colors cursor-pointer"
+                className="w-full flex items-center justify-between px-4 py-3 hover:bg-surface-50 dark:hover:bg-[#22252f] transition-colors cursor-pointer"
             >
                 <div className="flex items-center gap-2">
                     <SlidersHorizontal className="w-4 h-4 text-brand-500" />
-                    <span className="text-sm font-medium text-gray-900">Filters</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Filters</span>
                     {isActive && masterOn && (
                         <span className="text-[10px] font-bold bg-brand-600 text-white px-1.5 py-0.5 rounded-md">{activeCount}</span>
                     )}
@@ -131,9 +131,9 @@ export function FilterPanel({
                                 {masterOn && !flags?.SALARY_FILTER && <p className="text-[10px] text-gray-400 mb-2">Salary filter coming soon.</p>}
                                 <div className="flex gap-2">
                                     <input type="number" min={0} placeholder="Min salary..." value={filters.salaryMin ?? ''} onChange={e => setSalaryMin(e.target.value ? Number(e.target.value) : null)} disabled={!masterOn || !flags?.SALARY_FILTER}
-                                        className="flex-1 text-xs px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:border-brand-400 disabled:bg-surface-50 disabled:text-gray-300 placeholder:text-gray-300 text-gray-900" />
+                                        className="flex-1 text-xs px-3 py-2 border border-surface-200 dark:border-[#2d3140] rounded-lg focus:outline-none focus:border-brand-400 disabled:bg-surface-50 disabled:text-gray-300 placeholder:text-gray-300 text-gray-900 dark:text-gray-100 bg-white dark:bg-[#1a1d27]" />
                                     <select value={filters.salaryCurrency || 'INR'} onChange={e => setSalaryCurrency(e.target.value)} disabled={!masterOn || !flags?.SALARY_FILTER}
-                                        className="text-xs border border-surface-200 rounded-lg px-2 py-2 focus:outline-none focus:border-brand-400 text-gray-700 bg-white disabled:text-gray-300 disabled:bg-surface-50">
+                                        className="text-xs border border-surface-200 dark:border-[#2d3140] rounded-lg px-2 py-2 focus:outline-none focus:border-brand-400 text-gray-700 dark:text-gray-200 bg-white dark:bg-[#1a1d27] disabled:text-gray-300 disabled:bg-surface-50">
                                         {SALARY_CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                                     </select>
                                 </div>

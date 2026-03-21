@@ -257,11 +257,11 @@ body {
 
 /* Checkbox custom style */
 input[type="checkbox"] {
-  accent-color: #14b8a6;
+  accent-color: #4f46e5;
 }
 
 .dark input[type="checkbox"] {
-  accent-color: #2dd4bf;
+  accent-color: #818cf8;
 }
 
 /* Accessibility: respect reduced motion preferences */

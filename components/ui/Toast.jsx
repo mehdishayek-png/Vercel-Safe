@@ -12,9 +12,9 @@ const icons = {
 };
 
 const bgColors = {
-    success: 'bg-emerald-50 border-emerald-200',
-    error: 'bg-red-50 border-red-200',
-    warning: 'bg-amber-50 border-amber-200',
+    success: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800',
+    error: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800',
+    warning: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800',
 };
 
 export function ToastProvider({ children }) {
@@ -49,10 +49,10 @@ export function ToastProvider({ children }) {
                             className={`flex items-start gap-3 px-4 py-3 rounded-xl border shadow-lg backdrop-blur-sm ${bgColors[toast.type] || bgColors.success}`}
                         >
                             {icons[toast.type] || icons.success}
-                            <span className="text-sm text-gray-800 flex-1">{toast.message}</span>
+                            <span className="text-sm text-gray-800 dark:text-gray-200 flex-1">{toast.message}</span>
                             <button
                                 onClick={() => removeToast(toast.id)}
-                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                                 aria-label="Dismiss notification"
                             >
                                 <X className="w-4 h-4" />

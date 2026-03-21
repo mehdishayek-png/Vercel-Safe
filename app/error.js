@@ -41,7 +41,7 @@ export default function Error({ error, reset }) {
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
           <button
             onClick={() => reset()}
-            className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-gray-950 font-semibold text-sm hover:from-amber-400 hover:to-yellow-400 transition-all shadow-lg shadow-amber-500/25 cursor-pointer"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-sm transition-all shadow-lg shadow-brand-500/25 cursor-pointer"
           >
             Try Again
           </button>
@@ -55,7 +55,7 @@ export default function Error({ error, reset }) {
 
         <p className="mt-6 text-sm text-gray-500">
           Still having trouble? Reach out to us at{' '}
-          <a href="mailto:midasmatchsupport@gmail.com" className="text-amber-400 hover:text-amber-300 underline underline-offset-2 transition-colors">
+          <a href="mailto:midasmatchsupport@gmail.com" className="text-brand-400 hover:text-brand-300 underline underline-offset-2 transition-colors">
             midasmatchsupport@gmail.com
           </a>
         </p>
