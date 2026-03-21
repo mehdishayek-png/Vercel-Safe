@@ -26,7 +26,7 @@ export function DashboardPreview() {
                         Under the Hood
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-3 text-gray-900">Precision matching, not keyword spam</h2>
-                    <p className="text-gray-900 dark:text-white max-w-2xl mx-auto text-sm md:text-base">Every job is scored through independent multipliers — seniority alignment, location enforcement, role family detection, and semantic similarity.</p>
+                    <p className="text-gray-900 max-w-2xl mx-auto text-sm md:text-base">Every job is scored through independent multipliers — seniority alignment, location enforcement, role family detection, and semantic similarity.</p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
@@ -42,13 +42,13 @@ export function DashboardPreview() {
 
                 <div className="bg-white border border-surface-200 rounded-xl shadow-card p-5">
                     <div className="flex items-center gap-2 mb-4">
-                        <ShieldCheck className="w-4 h-4 text-gray-900 dark:text-white" />
-                        <span className="text-xs font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Active Multipliers</span>
+                        <ShieldCheck className="w-4 h-4 text-gray-900" />
+                        <span className="text-xs font-semibold text-gray-900 uppercase tracking-wider">Active Multipliers</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {MULTIPLIERS.map((m, i) => (
-                            <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-50 border border-surface-200 text-sm text-gray-900 dark:text-white">
-                                <m.icon className="w-3.5 h-3.5 text-gray-900 dark:text-white" />
+                            <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-50 border border-surface-200 text-sm text-gray-900">
+                                <m.icon className="w-3.5 h-3.5 text-gray-900" />
                                 {m.name}
                             </div>
                         ))}

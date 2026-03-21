@@ -31,19 +31,19 @@ export default function Home() {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 max-w-5xl mx-auto text-center">
                             <div>
                                 <div className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">1,000+</div>
-                                <div className="text-sm text-gray-900 dark:text-white mt-2 font-medium">Jobs Scanned Per Search</div>
+                                <div className="text-sm text-gray-900 mt-2 font-medium">Jobs Scanned Per Search</div>
                             </div>
                             <div>
                                 <div className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">350+</div>
-                                <div className="text-sm text-gray-900 dark:text-white mt-2 font-medium">Company Career Pages</div>
+                                <div className="text-sm text-gray-900 mt-2 font-medium">Company Career Pages</div>
                             </div>
                             <div>
                                 <div className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">8+</div>
-                                <div className="text-sm text-gray-900 dark:text-white mt-2 font-medium">Job Sources Aggregated</div>
+                                <div className="text-sm text-gray-900 mt-2 font-medium">Job Sources Aggregated</div>
                             </div>
                             <div>
                                 <div className="text-4xl md:text-5xl font-extrabold text-brand-600 dark:text-brand-400">&lt;60s</div>
-                                <div className="text-sm text-gray-900 dark:text-white mt-2 font-medium">Average Scan Time</div>
+                                <div className="text-sm text-gray-900 mt-2 font-medium">Average Scan Time</div>
                             </div>
                         </div>
                     </div>
