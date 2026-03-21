@@ -1,84 +1,74 @@
 import { motion } from 'framer-motion';
-import { Upload, Search, CheckCircle } from 'lucide-react';
+import { Brain, Network, ShieldCheck } from 'lucide-react';
 
 const steps = [
     {
-        icon: Upload,
-        num: "01",
-        title: "Upload Resume",
-        desc: "Drop your PDF. We extract skills, experience, and preferences in seconds."
+        icon: Brain,
+        title: '01. Cognitive Sync',
+        description: 'Our AI analyzes your latent skills, personality traits, and career goals to build a unique professional profile.',
+        color: 'bg-brand-600 text-white',
     },
     {
-        icon: Search,
-        num: "02",
-        title: "AI Scores Jobs",
-        desc: "Our engine scans multiple job boards and ranks matches through 10 scoring multipliers."
+        icon: Network,
+        title: '02. Market Pulsing',
+        description: 'Continuous scanning of thousands of high-tier roles, filtering for those that match your unique trajectory DNA.',
+        color: 'bg-secondary-DEFAULT text-white',
     },
     {
-        icon: CheckCircle,
-        num: "03",
-        title: "Apply With Confidence",
-        desc: "Review top-ranked matches with deep fit analysis, then apply to the ones that matter."
-    }
+        icon: ShieldCheck,
+        title: '03. Smart Intro',
+        description: 'Facilitated introductions that bypass traditional recruiters, placing your profile directly on the decision-maker\'s desk.',
+        color: 'bg-slate-600 text-white',
+    },
 ];
 
 export function HowItWorks() {
     return (
-        <section className="py-24 relative overflow-hidden">
-            {/* Subtle background gradient pattern */}
-            <div className="absolute inset-0 -z-10">
-                <div className="absolute inset-0 bg-gradient-to-b from-surface-50 via-white to-surface-50" />
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-100/20 rounded-full blur-[120px]" />
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent-100/15 rounded-full blur-[100px]" />
-                {/* Dot pattern overlay */}
-                <div
-                    className="absolute inset-0 opacity-[0.03]"
-                    style={{
-                        backgroundImage: 'radial-gradient(circle, #6366f1 1px, transparent 1px)',
-                        backgroundSize: '24px 24px',
-                    }}
-                />
-            </div>
-
-            <div className="container mx-auto px-4 max-w-4xl">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">How it works</h2>
-                    <p className="text-gray-900 text-lg">Three steps to your next opportunity.</p>
+        <section id="how-it-works" className="py-32 bg-white overflow-hidden">
+            <div className="max-w-7xl mx-auto px-8">
+                <div className="mb-20 text-center lg:text-left">
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="font-headline text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-gray-900"
+                    >
+                        Precision Workflow
+                    </motion.h2>
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.1 }}
+                        className="text-slate-500 text-lg max-w-2xl"
+                    >
+                        Three phases of cognitive alignment between your ambition and the market.
+                    </motion.p>
                 </div>
 
-                <div className="relative">
-                    {/* Vertical connecting timeline line */}
-                    <div className="absolute left-[2.25rem] top-8 bottom-8 w-px bg-gradient-to-b from-brand-200 via-brand-300 to-brand-200 hidden md:block" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-0 relative">
+                    {/* Connector line (desktop) */}
+                    <div className="hidden md:block absolute top-12 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent z-0" />
 
-                    <div className="space-y-6">
-                        {steps.map((s, i) => (
+                    {steps.map((step, i) => {
+                        const Icon = step.icon;
+                        return (
                             <motion.div
-                                key={i}
-                                initial={{ opacity: 0, x: -20 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true, amount: 0.2 }}
+                                key={step.title}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
                                 transition={{ delay: i * 0.15 }}
-                                className="flex items-start gap-5 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-sm border border-surface-200 dark:border-[#2d3140] rounded-xl p-6 relative"
+                                className="relative z-10 p-8 pt-0 group"
                             >
-                                {/* Timeline dot */}
-                                <div className="absolute -left-[5px] top-8 w-2.5 h-2.5 rounded-full bg-brand-500 border-2 border-white shadow-sm hidden md:block" />
-
-                                <div className="flex flex-col items-center shrink-0 gap-2">
-                                    {/* Large gradient number */}
-                                    <span className="text-2xl font-black bg-gradient-to-br from-brand-500 via-violet-500 to-accent-500 bg-clip-text text-transparent leading-none">
-                                        {s.num}
-                                    </span>
-                                    <div className="w-12 h-12 rounded-xl bg-brand-50 dark:bg-brand-900/20 border border-brand-100 dark:border-brand-800 flex items-center justify-center">
-                                        <s.icon className="w-5 h-5 text-brand-600" />
-                                    </div>
+                                <div className={`w-16 h-16 ${step.color} rounded-full flex items-center justify-center mb-10 shadow-lg group-hover:scale-110 transition-transform`}>
+                                    <Icon className="w-7 h-7" />
                                 </div>
-                                <div className="pt-1">
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">{s.title}</h3>
-                                    <p className="text-gray-900 text-sm leading-relaxed">{s.desc}</p>
-                                </div>
+                                <h3 className="font-headline text-2xl font-bold mb-4 text-gray-900">{step.title}</h3>
+                                <p className="text-slate-500 leading-relaxed">{step.description}</p>
                             </motion.div>
-                        ))}
-                    </div>
+                        );
+                    })}
                 </div>
             </div>
         </section>

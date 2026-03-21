@@ -8,7 +8,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Helvetica Neue', 'Helvetica', 'Arial', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        headline: ['Plus Jakarta Sans', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       colors: {
@@ -34,6 +36,12 @@ module.exports = {
           600: '#7c3aed',
           700: '#6d28d9',
         },
+        secondary: {
+          DEFAULT: '#712ae2',
+          light: '#8a4cfc',
+          dark: '#5a00c6',
+          fixed: '#eaddff',
+        },
         surface: {
           0: '#ffffff',
           50: '#f8f9fb',
@@ -41,15 +49,27 @@ module.exports = {
           200: '#e5e7eb',
           300: '#d1d5db',
         },
+        midas: {
+          bg: '#f9f9ff',
+          'surface-low': '#f0f3ff',
+          'surface-high': '#e2e8f8',
+          'surface-highest': '#dce2f3',
+          dark: '#151c27',
+        },
       },
       borderRadius: {
         DEFAULT: '12px',
+        '2xl': '1rem',
+        '3xl': '1.5rem',
+        '4xl': '2rem',
       },
       boxShadow: {
         'card': '0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06)',
         'card-hover': '0 4px 24px -4px rgba(0,0,0,0.08)',
         'elevated': '0 8px 30px -4px rgba(0,0,0,0.1)',
         'button': '0 1px 2px rgba(0,0,0,0.05)',
+        'glass': '0 8px 32px rgba(0,0,0,0.08)',
+        'hero': '0 32px 64px -16px rgba(0,0,0,0.1)',
       },
     },
   },

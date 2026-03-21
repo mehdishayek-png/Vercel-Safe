@@ -1,190 +1,115 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Play } from 'lucide-react';
+import { ArrowRight, Play, Zap, Star } from 'lucide-react';
 import { Button } from './ui/Button';
 
 export function Hero({ onStart, onDemo }) {
     return (
-        <section className="relative min-h-screen flex items-center justify-center pt-20 pb-10 overflow-hidden">
-            {/* Animated gradient mesh blobs */}
-            <div className="absolute inset-0 -z-10">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] md:w-[900px] h-[300px] md:h-[600px] bg-gradient-to-b from-brand-100/50 via-accent-100/20 to-transparent rounded-full blur-[80px] md:blur-[100px]" />
-                <motion.div
-                    animate={{ x: [0, 30, -20, 0], y: [0, -25, 15, 0] }}
-                    transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute -top-20 -left-20 w-[250px] md:w-[500px] h-[250px] md:h-[500px] bg-violet-200/40 rounded-full blur-[80px] md:blur-[120px]"
-                />
-                <motion.div
-                    animate={{ x: [0, -25, 20, 0], y: [0, 20, -15, 0] }}
-                    transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute top-1/4 right-0 w-[200px] md:w-[450px] h-[200px] md:h-[400px] bg-teal-200/30 rounded-full blur-[60px] md:blur-[100px]"
-                />
-                <motion.div
-                    animate={{ x: [0, 15, -10, 0], y: [0, -10, 20, 0] }}
-                    transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute bottom-0 left-1/3 w-[200px] md:w-[400px] h-[180px] md:h-[350px] bg-amber-100/20 rounded-full blur-[50px] md:blur-[80px]"
-                />
+        <section className="relative min-h-[90vh] flex items-center overflow-hidden px-8 pt-20">
+            {/* Background blobs */}
+            <div className="absolute inset-0 z-0">
+                <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-secondary-light/10 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-brand-600/10 rounded-full blur-[100px]" />
             </div>
 
-            <div className="container mx-auto px-4 text-center z-10 max-w-6xl">
-                {/* Badge */}
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-brand-50 via-violet-50 to-accent-50 border border-brand-200/60 mb-10 shadow-sm"
-                >
-                    <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-r from-brand-500 to-violet-500"></span>
-                    </span>
-                    <span className="text-sm font-semibold bg-gradient-to-r from-brand-700 via-violet-600 to-accent-600 bg-clip-text text-transparent tracking-wide">AI-Powered Job Search Agent</span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200 uppercase tracking-wider">Beta</span>
-                </motion.div>
-
-                {/* Headline */}
-                <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.1 }}
-                    className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 text-gray-900 leading-[1.05]"
-                >
-                    1,000 Jobs Scanned.{' '}
-                    <br className="hidden sm:block" />
-                    <span className="text-gradient">Only the Best Delivered.</span>
-                </motion.h1>
-
-                {/* Subheading */}
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="text-lg md:text-xl lg:text-2xl text-gray-900 max-w-3xl mx-auto mb-10 leading-relaxed"
-                >
-                    Upload your resume. Our AI scans 8+ sources, scores every job
-                    against your profile, and delivers only the matches worth your time.
-                </motion.p>
-
-                {/* CTAs */}
+            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10 w-full">
+                {/* Left: Copy */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-3"
+                    transition={{ duration: 0.6 }}
                 >
-                    <Button size="xl" onClick={onStart} icon={ArrowRight}>
-                        Get Started Free
-                    </Button>
-                    <Button variant="secondary" size="xl" onClick={onDemo} icon={Play}>
-                        See How It Works
-                    </Button>
-                </motion.div>
+                    <div className="inline-flex items-center px-4 py-2 rounded-full bg-midas-surface-high mb-8">
+                        <span className="w-2 h-2 rounded-full bg-secondary-DEFAULT ai-pulse mr-3" />
+                        <span className="text-xs font-bold tracking-wider uppercase text-slate-500">2026 Editorial AI Experience</span>
+                    </div>
 
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
-                    className="text-[13px] text-gray-900 mt-4"
-                >
-                    Free during beta · 5 scans daily
-                </motion.p>
+                    <h1 className="font-headline text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tighter leading-[1.05] text-gray-900 mb-8">
+                        The Midas Touch{' '}
+                        <br className="hidden sm:block" />
+                        <span className="text-gradient">in Job Searching.</span>
+                    </h1>
 
-                {/* Trust strip */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.6 }}
-                    className="mt-12 flex flex-wrap justify-center gap-x-8 gap-y-3"
-                >
-                    {['In-memory processing only', 'Resume never stored', 'Not used for AI training'].map((text) => (
-                        <span key={text} className="text-sm text-gray-900 flex items-center gap-2">
-                            <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
-                            {text}
-                        </span>
-                    ))}
-                </motion.div>
+                    <p className="text-lg md:text-xl text-slate-500 leading-relaxed mb-10 max-w-lg">
+                        Midas Match AI doesn't just find jobs; it orchestrates your career flow. Transform your professional trajectory with our predictive intelligence engine.
+                    </p>
 
-                {/* Source pills */}
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.8 }}
-                    className="mt-8 flex flex-col items-center gap-3"
-                >
-                    <span className="text-xs text-gray-900 uppercase tracking-widest font-medium">Scanning jobs from</span>
-                    <div className="flex flex-wrap justify-center gap-2">
-                        {['LinkedIn', 'Indeed', 'Google Jobs', 'Career Pages', '350+ Sources'].map((source) => (
-                            <span
-                                key={source}
-                                className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                                    source === '350+ ATS'
-                                        ? 'bg-brand-50 text-brand-600 border-brand-200/60'
-                                        : 'bg-gray-100 text-gray-900 border-gray-200/60'
-                                }`}
-                            >
-                                {source}
-                            </span>
-                        ))}
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <Button size="xl" onClick={onStart} className="bg-brand-600 text-white px-8 py-4 rounded-full text-lg font-bold shadow-xl shadow-brand-600/20 hover:scale-[1.02]">
+                            Start Your Evolution
+                        </Button>
+                        <button
+                            onClick={onDemo}
+                            className="flex items-center justify-center gap-2 text-gray-900 px-8 py-4 rounded-full text-lg font-bold hover:bg-midas-surface-low transition-colors cursor-pointer"
+                        >
+                            <Play className="w-5 h-5" />
+                            Watch the Flow
+                        </button>
                     </div>
                 </motion.div>
 
-                {/* Dashboard mockup */}
+                {/* Right: AI Scanning Card */}
                 <motion.div
-                    initial={{ opacity: 0, y: 40 }}
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.5 }}
-                    className="mt-16 max-w-5xl mx-auto"
+                    transition={{ duration: 0.7, delay: 0.2 }}
+                    className="relative"
                 >
-                    <div className="relative rounded-2xl border border-gray-200/60 dark:border-gray-600/60 bg-white dark:bg-[#1a1d27] shadow-2xl shadow-gray-200/50 dark:shadow-black/30 overflow-hidden">
-                        {/* Browser chrome */}
-                        <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 dark:bg-[#22252f] border-b border-gray-100 dark:border-[#2d3140]">
-                            <div className="flex gap-1.5">
-                                <div className="w-3 h-3 rounded-full bg-red-300" />
-                                <div className="w-3 h-3 rounded-full bg-amber-300" />
-                                <div className="w-3 h-3 rounded-full bg-emerald-300" />
-                            </div>
-                            <div className="flex-1 mx-4">
-                                <div className="h-6 bg-gray-100 dark:bg-[#2d3140] rounded-md max-w-xs mx-auto flex items-center justify-center text-[10px] text-gray-900">
-                                    midasmatch.com/dashboard
+                    <div className="glass-panel border border-slate-200/30 rounded-2xl p-8 shadow-hero relative overflow-hidden">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-8">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-full bg-brand-100 flex items-center justify-center">
+                                    <Zap className="w-6 h-6 text-brand-600" />
                                 </div>
+                                <div>
+                                    <h4 className="font-headline font-bold text-gray-900">Midas Engine</h4>
+                                    <p className="text-xs text-slate-400">Scanning global opportunities...</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <span className="text-2xl font-headline font-extrabold text-secondary-DEFAULT">98%</span>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Confidence</p>
                             </div>
                         </div>
-                        {/* Fake dashboard */}
-                        <div className="p-4 md:p-6 space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-gray-900 dark:bg-indigo-600 flex items-center justify-center text-white text-xs font-bold">M</div>
-                                    <div className="h-4 w-24 bg-gray-100 dark:bg-[#2d3140] rounded" />
-                                </div>
-                                <div className="flex gap-2">
-                                    <div className="h-8 w-20 bg-brand-50 dark:bg-brand-900/30 rounded-lg" />
-                                    <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-[#2d3140]" />
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {[
-                                    { company: 'Stripe', role: 'Customer Success Manager', score: 92 },
-                                    { company: 'Notion', role: 'CX Operations Lead', score: 87 },
-                                    { company: 'Datadog', role: 'Technical Account Manager', score: 81 },
-                                    { company: 'HubSpot', role: 'Client Solutions Specialist', score: 76 },
-                                ].map((job, i) => (
-                                    <div key={i} className="flex items-center justify-between p-3.5 rounded-xl border border-gray-100 dark:border-[#2d3140] bg-white dark:bg-[#1a1d27]">
-                                        <div className="flex items-center gap-3 min-w-0">
-                                            <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-[#2d3140] flex items-center justify-center text-[11px] font-bold text-gray-900">
-                                                {job.company[0]}
-                                            </div>
-                                            <div className="min-w-0">
-                                                <div className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 truncate">{job.role}</div>
-                                                <div className="text-[11px] text-gray-900">{job.company}</div>
-                                            </div>
-                                        </div>
-                                        <div className={`text-sm font-bold ${job.score >= 85 ? 'text-emerald-600' : 'text-teal-600'}`}>
-                                            {job.score}
-                                        </div>
+
+                        {/* Scan line effect */}
+                        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+                            <div className="w-full h-[2px] bg-secondary-DEFAULT shadow-[0_0_15px_rgba(113,42,226,0.8)] absolute top-0 animate-scan" />
+                        </div>
+
+                        {/* Job cards */}
+                        <div className="space-y-4">
+                            <motion.div
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.5 }}
+                                className="p-5 bg-white rounded-xl border border-slate-100 shadow-sm hover:-translate-y-1 transition-transform"
+                            >
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="text-xs font-bold text-secondary-DEFAULT mb-1">STRATEGIC MATCH</p>
+                                        <h5 className="font-headline font-bold text-lg text-gray-900">Product Visionary</h5>
+                                        <p className="text-sm text-slate-400">Nexus Dynamics &bull; Remote</p>
                                     </div>
-                                ))}
-                            </div>
+                                    <span className="bg-secondary-light text-white px-3 py-1 rounded-full text-[10px] font-bold">TOP MATCH</span>
+                                </div>
+                            </motion.div>
+
+                            <motion.div
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.7 }}
+                                className="p-5 bg-white rounded-xl border border-slate-100 opacity-60"
+                            >
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="text-xs font-bold text-brand-600 mb-1">GROWTH MATCH</p>
+                                        <h5 className="font-headline font-bold text-lg text-gray-900">Lead Architect</h5>
+                                        <p className="text-sm text-slate-400">Stellar Systems &bull; Zurich</p>
+                                    </div>
+                                </div>
+                            </motion.div>
                         </div>
-                        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white dark:from-[#1a1d27] to-transparent pointer-events-none" />
                     </div>
                 </motion.div>
             </div>
