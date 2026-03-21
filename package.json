@@ -7,7 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "vitest run"
+    "test": "vitest run",
+    "eval": "promptfoo eval",
+    "eval:view": "promptfoo view"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.39.0",
@@ -34,6 +36,7 @@
     "@types/react": "^18.3.0",
     "autoprefixer": "^10.4.0",
     "postcss": "^8.4.0",
+    "promptfoo": "^0.121.2",
     "tailwindcss": "^3.4.0",
     "vitest": "^4.0.18"
   }
