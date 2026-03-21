@@ -58,7 +58,7 @@ export function Hero({ onStart, onDemo }) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
-                    className="text-lg md:text-xl lg:text-2xl text-gray-700 max-w-3xl mx-auto mb-10 leading-relaxed"
+                    className="text-lg md:text-xl lg:text-2xl text-gray-900 dark:text-white max-w-3xl mx-auto mb-10 leading-relaxed"
                 >
                     Upload your resume. Our AI scans 8+ sources, scores every job
                     against your profile, and delivers only the matches worth your time.
@@ -83,7 +83,7 @@ export function Hero({ onStart, onDemo }) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.5 }}
-                    className="text-[13px] text-gray-500 mt-4"
+                    className="text-[13px] text-gray-900 dark:text-white mt-4"
                 >
                     Free during beta · 5 scans daily
                 </motion.p>
@@ -96,7 +96,7 @@ export function Hero({ onStart, onDemo }) {
                     className="mt-12 flex flex-wrap justify-center gap-x-8 gap-y-3"
                 >
                     {['In-memory processing only', 'Resume never stored', 'Not used for AI training'].map((text) => (
-                        <span key={text} className="text-sm text-gray-600 flex items-center gap-2">
+                        <span key={text} className="text-sm text-gray-900 dark:text-white flex items-center gap-2">
                             <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
                             {text}
                         </span>
@@ -110,7 +110,7 @@ export function Hero({ onStart, onDemo }) {
                     transition={{ duration: 0.8, delay: 0.8 }}
                     className="mt-8 flex flex-col items-center gap-3"
                 >
-                    <span className="text-xs text-gray-500 uppercase tracking-widest font-medium">Scanning jobs from</span>
+                    <span className="text-xs text-gray-900 dark:text-white uppercase tracking-widest font-medium">Scanning jobs from</span>
                     <div className="flex flex-wrap justify-center gap-2">
                         {['LinkedIn', 'Indeed', 'Google Jobs', 'Career Pages', '350+ Sources'].map((source) => (
                             <span
@@ -118,7 +118,7 @@ export function Hero({ onStart, onDemo }) {
                                 className={`px-3 py-1 rounded-full text-xs font-medium border ${
                                     source === '350+ ATS'
                                         ? 'bg-brand-50 text-brand-600 border-brand-200/60'
-                                        : 'bg-gray-100 text-gray-700 border-gray-200/60'
+                                        : 'bg-gray-100 text-gray-900 border-gray-200/60'
                                 }`}
                             >
                                 {source}
@@ -143,7 +143,7 @@ export function Hero({ onStart, onDemo }) {
                                 <div className="w-3 h-3 rounded-full bg-emerald-300" />
                             </div>
                             <div className="flex-1 mx-4">
-                                <div className="h-6 bg-gray-100 dark:bg-[#2d3140] rounded-md max-w-xs mx-auto flex items-center justify-center text-[10px] text-gray-400 dark:text-gray-300">
+                                <div className="h-6 bg-gray-100 dark:bg-[#2d3140] rounded-md max-w-xs mx-auto flex items-center justify-center text-[10px] text-gray-900 dark:text-white">
                                     midasmatch.com/dashboard
                                 </div>
                             </div>
@@ -169,12 +169,12 @@ export function Hero({ onStart, onDemo }) {
                                 ].map((job, i) => (
                                     <div key={i} className="flex items-center justify-between p-3.5 rounded-xl border border-gray-100 dark:border-[#2d3140] bg-white dark:bg-[#1a1d27]">
                                         <div className="flex items-center gap-3 min-w-0">
-                                            <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-[#2d3140] flex items-center justify-center text-[11px] font-bold text-gray-400">
+                                            <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-[#2d3140] flex items-center justify-center text-[11px] font-bold text-gray-900 dark:text-white">
                                                 {job.company[0]}
                                             </div>
                                             <div className="min-w-0">
                                                 <div className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 truncate">{job.role}</div>
-                                                <div className="text-[11px] text-gray-400">{job.company}</div>
+                                                <div className="text-[11px] text-gray-900 dark:text-white">{job.company}</div>
                                             </div>
                                         </div>
                                         <div className={`text-sm font-bold ${job.score >= 85 ? 'text-emerald-600' : 'text-teal-600'}`}>
