@@ -475,7 +475,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                 {/* Left Panel */}
                 <div className="w-[400px] shrink-0 py-5 space-y-4">
                     {/* Privacy */}
-                    <div className="flex items-center gap-1.5 text-[11px] text-ink-500 p-2 px-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                    <div className="flex items-center gap-1.5 text-[11px] text-gray-500 p-2 px-3 bg-emerald-50 rounded-lg border border-emerald-200">
                         <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                         Resumes processed in-memory only. Never stored or used for training.
                     </div>
@@ -484,23 +484,23 @@ export function JobDashboard({ apiKeys, onBack }) {
                     {profile && (
                         <button
                             onClick={() => setReadinessOpen(!readinessOpen)}
-                            className="w-full flex items-center justify-between p-2.5 px-3.5 bg-white rounded-[10px] border border-ink-200 cursor-pointer hover:bg-surface-50 transition-colors"
+                            className="w-full flex items-center justify-between p-2.5 px-3.5 bg-white rounded-xl border border-surface-200 cursor-pointer hover:bg-surface-50 transition-colors"
                         >
                             <div className="flex items-center gap-2">
                                 <div className="w-6 h-6 rounded-full bg-emerald-100 border-2 border-emerald-500 flex items-center justify-center">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
                                 </div>
-                                <span className="text-[13px] font-semibold text-ink-900">Profile Ready</span>
+                                <span className="text-[13px] font-semibold text-gray-900">Profile Ready</span>
                                 <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">{readinessScore}</span>
                             </div>
-                            <ChevronDown className={`w-4 h-4 text-ink-400 transition-transform ${readinessOpen ? 'rotate-180' : ''}`} />
+                            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${readinessOpen ? 'rotate-180' : ''}`} />
                         </button>
                     )}
 
                     {readinessOpen && profile && (
-                        <div className="bg-white rounded-[10px] border border-ink-200 p-3 -mt-2 space-y-1">
+                        <div className="bg-white rounded-xl border border-surface-200 p-3 -mt-2 space-y-1">
                             {readinessChecks.map((check, i) => (
-                                <div key={i} className="flex items-center justify-between py-1 text-[13px] text-ink-600">
+                                <div key={i} className="flex items-center justify-between py-1 text-[13px] text-gray-600">
                                     <div className="flex items-center gap-2">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={check.passed ? '#059669' : '#d1d5db'} strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
                                         {check.label}
@@ -572,7 +572,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                         initial={{ opacity: 0, y: 60 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 60 }}
-                        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-white border border-ink-200 rounded-[10px] px-5 py-3 shadow-elevated max-w-sm w-[85vw]"
+                        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-white border border-surface-200 rounded-xl px-5 py-3 shadow-elevated max-w-sm w-[85vw]"
                     >
                         <div className="flex items-center gap-3">
                             <div className="relative shrink-0">
@@ -580,10 +580,10 @@ export function JobDashboard({ apiKeys, onBack }) {
                                 <Sparkles className="w-3 h-3 text-brand-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium text-ink-900">
+                                <div className="text-sm font-medium text-gray-900">
                                     {deepAnalysisProgress ? 'AI Deep Analysis...' : 'Scanning...'}
                                 </div>
-                                <div className="text-[11px] text-ink-400 truncate">
+                                <div className="text-[11px] text-gray-400 truncate">
                                     {deepAnalysisProgress
                                         ? `Batch ${deepAnalysisProgress.current}/${deepAnalysisProgress.total}`
                                         : logs.length > 0 ? logs[logs.length - 1].message : 'Initializing...'}

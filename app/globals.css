@@ -2,39 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Helvetica Neue stack — native on Mac, falls back to Arial on Windows. No external font load = faster. */
+/* JetBrains Mono kept for code/monospace elements */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  --bg-app: #FAFAF7;
-  --bg-card: #FFFFFF;
-  --bg-card-hover: #F5F2ED;
-  --bg-elevated: #FFFFFF;
-  --primary: #C8962E;
-  --primary-light: #D4941A;
-  --accent: #15803D;
-  --text-primary: #1C1917;
-  --text-secondary: #57534E;
-  --text-muted: #A8A29E;
-  --border: #E8E4DD;
-  --border-light: #F5F2ED;
-  --radius: 10px;
-  --radius-sm: 6px;
-  --radius-lg: 14px;
+  --bg-app: #f8f9fb;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f9fafb;
+  --bg-elevated: #ffffff;
+  --primary: #4f46e5;
+  --primary-light: #6366f1;
+  --accent: #7c3aed;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --border: #e5e7eb;
+  --border-light: #f3f4f6;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
 }
 
 .dark {
-  --bg-app: #111110;
-  --bg-card: #1C1B19;
-  --bg-card-hover: #252420;
-  --bg-elevated: #252420;
-  --primary: #F5B731;
-  --primary-light: #FFCB4D;
-  --accent: #4ADE7B;
-  --text-primary: #FAFAF9;
-  --text-secondary: #A8A29E;
-  --text-muted: #78716C;
-  --border: #2E2B27;
-  --border-light: #1F1E1B;
+  --bg-app: #0f1117;
+  --bg-card: #1a1d27;
+  --bg-card-hover: #22252f;
+  --bg-elevated: #22252f;
+  --primary: #818cf8;
+  --primary-light: #a5b4fc;
+  --accent: #a78bfa;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border: #2d3140;
+  --border-light: #1f2231;
 }
 
 * {
@@ -42,7 +44,7 @@
 }
 
 body {
-  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background-color: var(--bg-app);
   color: var(--text-primary);
   margin: 0;
@@ -51,63 +53,108 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Dashboard background — warm, subtle */
+/* Dashboard area subtle background */
 .dashboard-bg {
   background-color: var(--bg-app);
+  background-image: radial-gradient(ellipse at 20% 0%, rgba(79, 70, 229, 0.03) 0%, transparent 50%),
+                     radial-gradient(ellipse at 80% 100%, rgba(124, 58, 237, 0.03) 0%, transparent 50%);
 }
 
 .dark .dashboard-bg {
   background-color: var(--bg-app);
+  background-image: radial-gradient(ellipse at 20% 0%, rgba(129, 140, 248, 0.05) 0%, transparent 50%),
+                     radial-gradient(ellipse at 80% 100%, rgba(167, 139, 250, 0.05) 0%, transparent 50%);
 }
 
-/* Search page background */
+/* Search page rich background — soft gradient blobs */
 .search-bg {
   position: relative;
   overflow: hidden;
-  background-color: #FAFAF7;
+  background-color: #fafaff;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 12% 8%, rgba(99, 102, 241, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 50% at 88% 15%, rgba(139, 92, 246, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 45% at 50% 85%, rgba(20, 184, 166, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 70% 55%, rgba(59, 130, 246, 0.04) 0%, transparent 50%);
+}
+
+.search-bg::before {
+  content: '';
+  position: absolute;
+  top: 40px;
+  right: 8%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.09) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(50px);
+  z-index: 0;
+}
+
+.search-bg::after {
+  content: '';
+  position: absolute;
+  bottom: 15%;
+  left: 3%;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(20, 184, 166, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(50px);
+  z-index: 0;
 }
 
 .dark .search-bg {
-  background-color: #111110;
+  background-color: #12141c;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 12% 8%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 50% at 88% 15%, rgba(139, 92, 246, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 45% at 50% 85%, rgba(20, 184, 166, 0.06) 0%, transparent 50%);
+}
+
+.dark .search-bg::before {
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%);
+}
+
+.dark .search-bg::after {
+  background: radial-gradient(circle, rgba(20, 184, 166, 0.1) 0%, transparent 70%);
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.02);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D6D1C9;
+  background: linear-gradient(180deg, #a5b4fc 0%, #c4b5fd 100%);
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #A8A29E;
+  background: linear-gradient(180deg, #818cf8 0%, #a78bfa 100%);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #2E2B27;
+  background: linear-gradient(180deg, #4338ca 0%, #6d28d9 100%);
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: #44403C;
-}
-
-/* Gold accent bar — the signature element */
-.gold-bar {
-  display: block;
-  width: 40px;
-  height: 3px;
-  background: #C8962E;
-  border-radius: 2px;
-}
-
-.dark .gold-bar {
-  background: #F5B731;
+/* Gradient Text */
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 /* Subtle card hover */
@@ -115,13 +162,13 @@ body {
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .card-hover:hover {
-  box-shadow: 0 4px 20px -4px rgba(28, 25, 23, 0.08);
-  border-color: #D6D1C9;
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.08);
+  border-color: #d1d5db;
 }
 
 .dark .card-hover:hover {
-  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.3);
-  border-color: #44403C;
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.3);
+  border-color: #3d4155;
 }
 
 /* Upload Zone */
@@ -132,51 +179,59 @@ body {
 }
 
 .upload-zone:hover {
-  border-color: var(--primary);
-  background: rgba(200, 150, 46, 0.04);
+  border-color: var(--primary-light);
+  background: rgba(79, 70, 229, 0.03);
 }
 
 .dark .upload-zone {
   border-color: var(--border);
 }
 .dark .upload-zone:hover {
-  border-color: var(--primary);
-  background: rgba(245, 183, 49, 0.05);
+  border-color: var(--primary-light);
+  background: rgba(129, 140, 248, 0.05);
 }
 
-/* Dot indicators */
+/* Dot indicators (Eightfold-style relevance) */
 .dot-indicator {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .dot-indicator .dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background-color: #E8E4DD;
+  background-color: #e5e7eb;
   transition: background-color 0.2s ease;
 }
 
 .dot-indicator .dot.filled {
-  background-color: #C8962E;
+  background-color: #4f46e5;
 }
 
 .dark .dot-indicator .dot {
-  background-color: #2E2B27;
+  background-color: #2d3140;
 }
 .dark .dot-indicator .dot.filled {
-  background-color: #F5B731;
+  background-color: #818cf8;
 }
 
-/* Checkbox */
-input[type="checkbox"] {
-  accent-color: #C8962E;
+/* Stat card gradient shimmer */
+.stat-card-gradient {
+  position: relative;
+  overflow: hidden;
 }
 
-.dark input[type="checkbox"] {
-  accent-color: #F5B731;
+.stat-card-gradient::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 40%;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+  pointer-events: none;
 }
 
 /* Popover animation */
@@ -195,12 +250,21 @@ input[type="checkbox"] {
   animation: fadeInSlide 0.15s ease-out;
 }
 
-/* Table row hover */
+/* Table row hover transition */
 .app-row {
   transition: background-color 0.1s ease;
 }
 
-/* Accessibility */
+/* Checkbox custom style */
+input[type="checkbox"] {
+  accent-color: #4f46e5;
+}
+
+.dark input[type="checkbox"] {
+  accent-color: #818cf8;
+}
+
+/* Accessibility: respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

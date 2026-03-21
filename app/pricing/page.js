@@ -47,7 +47,9 @@ export default function PricingPage() {
     const [openFaq, setOpenFaq] = useState(null);
 
     return (
-        <main className="min-h-screen bg-surface-50 dark:bg-ink-950 py-16 px-4">
+        <main
+            className="min-h-screen bg-white dark:bg-[#0f1117] py-16 px-4"
+        >
             <div className="max-w-5xl mx-auto">
                 <a
                     href="/"
@@ -57,35 +59,35 @@ export default function PricingPage() {
                 </a>
 
                 {/* Header */}
-                <div className="mb-14 max-w-xl">
-                    <span className="gold-bar mb-4" />
-                    <h1 className="font-display text-4xl font-bold text-ink-900 dark:text-ink-100 mb-3 tracking-tight">
+                <div className="text-center mb-14">
+                    <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                         Simple, transparent pricing
                     </h1>
-                    <p className="text-ink-500 dark:text-ink-400 text-lg">
-                        Start for free. Buy tokens only when you need more power.
+                    <p className="text-gray-500 dark:text-gray-400 text-lg max-w-xl mx-auto">
+                        Start for free. Buy tokens only when you need more
+                        power.
                     </p>
                 </div>
 
                 {/* Pricing Cards */}
-                <div className="grid md:grid-cols-2 gap-6 max-w-4xl mb-20">
+                <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-20">
                     {/* Free Plan */}
-                    <div className="border border-ink-200 dark:border-ink-800 rounded-[10px] p-8 flex flex-col bg-white dark:bg-[#1C1B19]">
+                    <div className="border border-gray-200 dark:border-[#2d3140] rounded-2xl p-8 flex flex-col bg-white dark:bg-[#1a1d27]">
                         <div className="mb-6">
-                            <span className="inline-block text-xs font-semibold tracking-wide uppercase bg-ink-100 dark:bg-ink-800 text-ink-600 dark:text-ink-300 px-3 py-1 rounded-md mb-4">
+                            <span className="inline-block text-xs font-semibold tracking-wide uppercase bg-gray-100 dark:bg-[#22252f] text-gray-600 dark:text-gray-300 px-3 py-1 rounded-full mb-4">
                                 Current Plan
                             </span>
-                            <h2 className="font-display text-2xl font-bold text-ink-900 dark:text-ink-100">
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                 Free
                             </h2>
-                            <p className="text-ink-500 dark:text-ink-400 text-sm mt-1">
+                            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
                                 Everything you need to start your job search
                             </p>
                             <div className="mt-4">
-                                <span className="font-display text-4xl font-bold text-ink-900 dark:text-ink-100">
-                                    \u20B90
+                                <span className="text-4xl font-bold text-gray-900 dark:text-gray-100">
+                                    ₹0
                                 </span>
-                                <span className="text-ink-400 text-sm ml-1">
+                                <span className="text-gray-400 text-sm ml-1">
                                     / forever
                                 </span>
                             </div>
@@ -95,10 +97,10 @@ export default function PricingPage() {
                             {freePlan.map((f, i) => (
                                 <li
                                     key={i}
-                                    className="flex items-start gap-2 text-sm text-ink-600 dark:text-ink-300"
+                                    className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300"
                                 >
                                     <svg
-                                        className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5"
+                                        className="w-5 h-5 text-green-500 shrink-0 mt-0.5"
                                         fill="none"
                                         stroke="currentColor"
                                         strokeWidth="2"
@@ -117,32 +119,32 @@ export default function PricingPage() {
 
                         <a
                             href="/dashboard"
-                            className="block w-full text-center py-3 px-6 rounded-[10px] border border-ink-200 dark:border-ink-800 text-ink-700 dark:text-ink-200 font-medium text-sm hover:bg-surface-100 dark:hover:bg-ink-800 transition-colors"
+                            className="block w-full text-center py-3 px-6 rounded-xl border border-gray-300 dark:border-[#2d3140] text-gray-700 dark:text-gray-200 font-medium text-sm hover:bg-gray-50 dark:hover:bg-[#22252f] transition-colors"
                         >
                             Get Started Free
                         </a>
                     </div>
 
                     {/* Token Pack */}
-                    <div className="relative border-2 border-brand-500 rounded-[10px] p-8 flex flex-col bg-white dark:bg-[#1C1B19]">
+                    <div className="relative border-2 border-brand-500 rounded-2xl p-8 flex flex-col bg-gradient-to-br from-brand-50/60 to-white dark:from-brand-900/20 dark:to-[#1a1d27]">
                         <div className="mb-6">
-                            <span className="inline-block text-xs font-semibold tracking-wide uppercase bg-brand-500 text-white px-3 py-1 rounded-md mb-4">
+                            <span className="inline-block text-xs font-semibold tracking-wide uppercase bg-brand-600 text-white px-3 py-1 rounded-full mb-4">
                                 Best Value
                             </span>
-                            <h2 className="font-display text-2xl font-bold text-ink-900 dark:text-ink-100">
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                 Token Pack
                             </h2>
-                            <p className="text-ink-500 dark:text-ink-400 text-sm mt-1">
+                            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
                                 For power users who want deeper insights
                             </p>
                             <div className="mt-4 flex items-baseline gap-2">
-                                <span className="font-display text-4xl font-bold text-ink-900 dark:text-ink-100">
-                                    \u20B9399
+                                <span className="text-4xl font-bold text-gray-900 dark:text-gray-100">
+                                    ₹399
                                 </span>
-                                <span className="text-ink-400 text-sm">
+                                <span className="text-gray-400 text-sm">
                                     / 50 tokens
                                 </span>
-                                <span className="text-xs text-ink-400 ml-1">
+                                <span className="text-xs text-gray-400 ml-1">
                                     (~$4.99)
                                 </span>
                             </div>
@@ -152,7 +154,7 @@ export default function PricingPage() {
                             {paidPlan.map((f, i) => (
                                 <li
                                     key={i}
-                                    className="flex items-start gap-2 text-sm text-ink-700 dark:text-ink-200"
+                                    className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-200"
                                 >
                                     <svg
                                         className="w-5 h-5 text-brand-500 shrink-0 mt-0.5"
@@ -174,7 +176,7 @@ export default function PricingPage() {
 
                         <a
                             href="/dashboard"
-                            className="block w-full text-center py-3 px-6 rounded-[10px] bg-brand-500 text-white font-medium text-sm hover:bg-brand-600 transition-colors"
+                            className="block w-full text-center py-3 px-6 rounded-xl bg-brand-600 text-white font-medium text-sm hover:bg-brand-700 transition-colors"
                         >
                             Buy Tokens
                         </a>
@@ -182,26 +184,26 @@ export default function PricingPage() {
                 </div>
 
                 {/* Feature Comparison */}
-                <div className="max-w-4xl mb-20">
-                    <h2 className="font-display text-2xl font-bold text-ink-900 dark:text-ink-100 mb-8 tracking-tight">
+                <div className="max-w-4xl mx-auto mb-20">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 text-center mb-8">
                         Feature comparison
                     </h2>
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="border-b border-ink-200 dark:border-ink-800">
-                                    <th className="text-left py-3 pr-4 text-ink-500 font-medium">
+                                <tr className="border-b border-gray-200 dark:border-[#2d3140]">
+                                    <th className="text-left py-3 pr-4 text-gray-500 font-medium">
                                         Feature
                                     </th>
-                                    <th className="text-center py-3 px-4 text-ink-500 font-medium">
+                                    <th className="text-center py-3 px-4 text-gray-500 font-medium">
                                         Free
                                     </th>
-                                    <th className="text-center py-3 pl-4 text-ink-500 font-medium">
+                                    <th className="text-center py-3 pl-4 text-gray-500 font-medium">
                                         Token Pack
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="text-ink-600 dark:text-ink-300">
+                            <tbody className="text-gray-600 dark:text-gray-300">
                                 {[
                                     ["Daily job scans", "5/day", "5/day + Midas Search"],
                                     ["AI deep analyses", "5/day", "5/day + token top-ups"],
@@ -214,9 +216,9 @@ export default function PricingPage() {
                                 ].map(([feature, free, paid], i) => (
                                     <tr
                                         key={i}
-                                        className="border-b border-ink-100 dark:border-ink-800"
+                                        className="border-b border-gray-100 dark:border-[#2d3140]"
                                     >
-                                        <td className="py-3 pr-4 text-ink-700 dark:text-ink-200">
+                                        <td className="py-3 pr-4 text-gray-700 dark:text-gray-200">
                                             {feature}
                                         </td>
                                         <td className="py-3 px-4 text-center">
@@ -233,22 +235,22 @@ export default function PricingPage() {
                 </div>
 
                 {/* FAQ Section */}
-                <div className="max-w-3xl">
-                    <h2 className="font-display text-2xl font-bold text-ink-900 dark:text-ink-100 mb-8 tracking-tight">
+                <div className="max-w-3xl mx-auto">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 text-center mb-8">
                         Frequently asked questions
                     </h2>
-                    <div className="divide-y divide-ink-200 dark:divide-ink-800 border-t border-b border-ink-200 dark:border-ink-800">
+                    <div className="divide-y divide-gray-200 dark:divide-[#2d3140] border-t border-b border-gray-200 dark:border-[#2d3140]">
                         {faqs.map((faq, i) => (
                             <div key={i}>
                                 <button
                                     onClick={() =>
                                         setOpenFaq(openFaq === i ? null : i)
                                     }
-                                    className="w-full flex items-center justify-between py-4 text-left text-sm font-medium text-ink-900 dark:text-ink-100 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
+                                    className="w-full flex items-center justify-between py-4 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
                                 >
                                     {faq.q}
                                     <svg
-                                        className={`w-5 h-5 shrink-0 text-ink-400 transition-transform ${openFaq === i ? "rotate-180" : ""}`}
+                                        className={`w-5 h-5 shrink-0 text-gray-400 transition-transform ${openFaq === i ? "rotate-180" : ""}`}
                                         fill="none"
                                         stroke="currentColor"
                                         strokeWidth="2"
@@ -262,7 +264,7 @@ export default function PricingPage() {
                                     </svg>
                                 </button>
                                 {openFaq === i && (
-                                    <p className="pb-4 text-sm text-ink-600 dark:text-ink-300 leading-relaxed">
+                                    <p className="pb-4 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                                         {faq.a}
                                     </p>
                                 )}
@@ -272,7 +274,7 @@ export default function PricingPage() {
                 </div>
 
                 {/* Footer Links */}
-                <div className="mt-12 text-xs text-ink-400 space-x-4">
+                <div className="text-center mt-12 text-xs text-gray-400 space-x-4">
                     <a href="/terms" className="hover:underline">
                         Terms of Service
                     </a>

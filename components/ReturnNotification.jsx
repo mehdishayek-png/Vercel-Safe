@@ -18,7 +18,7 @@ export function ReturnNotification() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="mx-6 mt-4 bg-gradient-to-r from-brand-600 to-accent-600 text-white rounded-[10px] px-5 py-4 flex items-center gap-4 shadow-lg"
+                className="mx-6 mt-4 bg-gradient-to-r from-brand-600 to-accent-600 text-white rounded-xl px-5 py-4 flex items-center gap-4 shadow-lg"
             >
                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
                     <Bell className="w-5 h-5" />

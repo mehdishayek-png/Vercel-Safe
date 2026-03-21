@@ -63,7 +63,7 @@ function DotIndicator({ filled, total = 5 }) {
                 <div
                     key={i}
                     className={`w-[9px] h-[9px] rounded-full transition-colors ${
-                        i < filled ? 'bg-teal-500' : 'bg-ink-200 dark:bg-[#2E2B27]'
+                        i < filled ? 'bg-teal-500' : 'bg-gray-200 dark:bg-[#2d3140]'
                     }`}
                 />
             ))}
@@ -80,15 +80,15 @@ function StatBox({ label, value, sublabel, icon: Icon, accentColor = 'teal' }) {
     };
     const iconColor = colorMap[accentColor] || colorMap.teal;
     return (
-        <div className="bg-white dark:bg-[#1C1B19] rounded-[10px] p-4 text-center border border-ink-100 dark:border-[#2E2B27] hover:border-ink-200 dark:hover:border-[#3A3732] transition-colors">
+        <div className="bg-white dark:bg-[#1a1d27] rounded-xl p-4 text-center border border-gray-100 dark:border-[#2d3140] hover:border-gray-200 dark:hover:border-[#3d4155] transition-colors">
             <div className="flex items-center justify-center gap-1.5 mb-1.5">
                 <div className={`w-5 h-5 rounded-md flex items-center justify-center ${iconColor}`}>
                     <Icon className="w-3 h-3" />
                 </div>
-                <span className="text-[10px] font-medium text-ink-400 dark:text-ink-500 uppercase tracking-wider">{label}</span>
+                <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">{label}</span>
             </div>
-            <div className="text-xl font-semibold text-ink-900 dark:text-ink-100">{value}</div>
-            {sublabel && <p className="text-[10px] text-ink-400 dark:text-ink-500 mt-0.5">{sublabel}</p>}
+            <div className="text-xl font-semibold text-gray-900 dark:text-gray-100">{value}</div>
+            {sublabel && <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">{sublabel}</p>}
         </div>
     );
 }
@@ -144,7 +144,7 @@ function ScoreGauge({ score, heuristicBreakdown, profile }) {
         { label: 'Title', value: titleScore },
     ];
 
-    const barColor = (v) => v >= 75 ? 'bg-teal-400' : v >= 55 ? 'bg-amber-400' : 'bg-ink-300';
+    const barColor = (v) => v >= 75 ? 'bg-teal-400' : v >= 55 ? 'bg-amber-400' : 'bg-gray-300';
 
     return (
         <div className="flex flex-col items-center gap-2">
@@ -189,14 +189,14 @@ function ScoreGauge({ score, heuristicBreakdown, profile }) {
             <div className="flex items-center gap-3">
                 {subScores.map(({ label, value }) => (
                     <div key={label} className="flex flex-col items-center gap-0.5">
-                        <span className="text-[9px] font-medium text-ink-400 uppercase tracking-wider">{label}</span>
-                        <div className="w-12 h-1 rounded-full bg-ink-100 overflow-hidden">
+                        <span className="text-[9px] font-medium text-gray-400 uppercase tracking-wider">{label}</span>
+                        <div className="w-12 h-1 rounded-full bg-gray-100 overflow-hidden">
                             <div
                                 className={`h-full rounded-full transition-all duration-700 ease-out ${barColor(value)}`}
                                 style={{ width: `${value}%` }}
                             />
                         </div>
-                        <span className="text-[9px] font-semibold text-ink-500">{value}</span>
+                        <span className="text-[9px] font-semibold text-gray-500">{value}</span>
                     </div>
                 ))}
             </div>
@@ -210,7 +210,7 @@ function SimilarJobCard({ job, index, onSave, isSaved }) {
     const accent = accentColors[index % accentColors.length];
 
     return (
-        <div className={`bg-white dark:bg-[#1C1B19] rounded-lg border border-ink-100 dark:border-[#2E2B27] hover:border-ink-200 dark:hover:border-[#3A3732] hover:shadow-sm transition-all p-4 border-l-[3px] ${accent}`}>
+        <div className={`bg-white dark:bg-[#1a1d27] rounded-lg border border-gray-100 dark:border-[#2d3140] hover:border-gray-200 dark:hover:border-[#3d4155] hover:shadow-sm transition-all p-4 border-l-[3px] ${accent}`}>
             <div className="flex items-start gap-3">
                 <CompanyLogo
                     company={job.company}
@@ -227,18 +227,18 @@ function SimilarJobCard({ job, index, onSave, isSaved }) {
                                 localStorage.setItem(key, JSON.stringify(job));
                             } catch (e) { /* ignore */ }
                         }}
-                        className="text-[13px] font-medium text-ink-900 dark:text-ink-100 hover:text-teal-600 transition-colors line-clamp-1"
+                        className="text-[13px] font-medium text-gray-900 dark:text-gray-100 hover:text-teal-600 transition-colors line-clamp-1"
                     >
                         {stripHtml(job.title)}
                     </Link>
-                    <p className="text-[11px] text-ink-400 mt-0.5 truncate">
+                    <p className="text-[11px] text-gray-400 mt-0.5 truncate">
                         {stripHtml(job.company)}
                         {job.location && <> &middot; {stripHtml(job.location)}</>}
                     </p>
                 </div>
                 {score > 0 && (
                     <span className={`text-[11px] font-semibold shrink-0 px-1.5 py-0.5 rounded-md ${
-                        score >= 75 ? 'bg-teal-50 text-teal-600' : score >= 55 ? 'bg-amber-50 text-amber-600' : 'bg-ink-50 text-ink-500'
+                        score >= 75 ? 'bg-teal-50 text-teal-600' : score >= 55 ? 'bg-amber-50 text-amber-600' : 'bg-gray-50 text-gray-500'
                     }`}>
                         {Math.round(score)}%
                     </span>
@@ -249,12 +249,12 @@ function SimilarJobCard({ job, index, onSave, isSaved }) {
             {job.heuristic_breakdown?.matches?.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2.5 ml-[44px]">
                     {job.heuristic_breakdown.matches.slice(0, 3).map((m, idx) => (
-                        <span key={idx} className="px-1.5 py-0.5 rounded text-[9px] bg-ink-50 dark:bg-[#252420] border border-ink-100 dark:border-[#2E2B27] text-ink-500 dark:text-ink-400 font-medium">
+                        <span key={idx} className="px-1.5 py-0.5 rounded text-[9px] bg-gray-50 dark:bg-[#22252f] border border-gray-100 dark:border-[#2d3140] text-gray-500 dark:text-gray-400 font-medium">
                             {m.skill}
                         </span>
                     ))}
                     {job.heuristic_breakdown.matches.length > 3 && (
-                        <span className="px-1 py-0.5 rounded text-[9px] text-ink-300">
+                        <span className="px-1 py-0.5 rounded text-[9px] text-gray-300">
                             +{job.heuristic_breakdown.matches.length - 3}
                         </span>
                     )}
@@ -263,13 +263,13 @@ function SimilarJobCard({ job, index, onSave, isSaved }) {
 
             <div className="flex items-center justify-between mt-3 ml-[44px]">
                 {job.source && (
-                    <span className="text-[10px] text-ink-300">{job.source}</span>
+                    <span className="text-[10px] text-gray-300">{job.source}</span>
                 )}
                 <div className="flex items-center gap-1.5">
                     <button
                         onClick={() => onSave(job)}
                         className={`p-1 rounded transition-colors cursor-pointer ${
-                            isSaved ? 'text-sky-500 bg-sky-50' : 'text-ink-300 hover:text-sky-500 hover:bg-sky-50'
+                            isSaved ? 'text-sky-500 bg-sky-50' : 'text-gray-300 hover:text-sky-500 hover:bg-sky-50'
                         }`}
                         title={isSaved ? 'Saved' : 'Save'}
                     >
@@ -396,12 +396,12 @@ export default function JobDetailPage() {
     if (!job || !derived) {
         return (
             <div className="max-w-3xl mx-auto py-16 text-center">
-                <div className="w-16 h-16 bg-ink-50 dark:bg-[#252420] rounded-[14px] flex items-center justify-center mx-auto mb-5">
-                    <Briefcase className="w-8 h-8 text-ink-300 dark:text-ink-600" />
+                <div className="w-16 h-16 bg-gray-50 dark:bg-[#22252f] rounded-2xl flex items-center justify-center mx-auto mb-5">
+                    <Briefcase className="w-8 h-8 text-gray-300 dark:text-gray-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-ink-900 dark:text-ink-100 mb-2">Job Not Found</h3>
-                <p className="text-sm text-ink-400 dark:text-ink-500 mb-8">This job may have expired or the link is invalid.</p>
-                <Link href="/dashboard/search" className="inline-flex items-center gap-2 px-6 py-2.5 bg-brand-500 text-white rounded-lg text-sm font-medium hover:bg-brand-500 transition-colors">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Job Not Found</h3>
+                <p className="text-sm text-gray-400 dark:text-gray-500 mb-8">This job may have expired or the link is invalid.</p>
+                <Link href="/dashboard/search" className="inline-flex items-center gap-2 px-6 py-2.5 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors">
                     <ArrowLeft className="w-4 h-4" /> Back to Search
                 </Link>
             </div>
@@ -494,14 +494,14 @@ export default function JobDetailPage() {
             {/* Back */}
             <button
                 onClick={() => router.back()}
-                className="flex items-center gap-1.5 text-[13px] text-ink-400 hover:text-ink-700 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 text-[13px] text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
             >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Back to results
             </button>
 
             {/* ===== HEADER CARD ===== */}
-            <div className="bg-white dark:bg-[#1C1B19] rounded-[10px] border border-ink-200 dark:border-[#2E2B27] overflow-hidden">
+            <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
                 {/* Top accent */}
                 <div className="h-1 bg-gradient-to-r from-teal-400 via-teal-500 to-sky-500" />
 
@@ -515,31 +515,31 @@ export default function JobDetailPage() {
                                 colorIndex={0}
                             />
                             <div className="flex-1 min-w-0">
-                                <h1 className="text-[17px] sm:text-[20px] font-semibold text-ink-900 dark:text-ink-100 leading-tight mb-2.5">
+                                <h1 className="text-[17px] sm:text-[20px] font-semibold text-gray-900 dark:text-gray-100 leading-tight mb-2.5">
                                     {stripHtml(job.title)}
                                 </h1>
-                                <div className="flex flex-wrap items-center gap-2 text-[13px] text-ink-500 dark:text-ink-400">
-                                    <span className="flex items-center gap-1.5 font-medium text-ink-700 dark:text-ink-300">
-                                        <Building2 className="w-4 h-4 text-ink-400" />
+                                <div className="flex flex-wrap items-center gap-2 text-[13px] text-gray-500 dark:text-gray-400">
+                                    <span className="flex items-center gap-1.5 font-medium text-gray-700 dark:text-gray-300">
+                                        <Building2 className="w-4 h-4 text-gray-400" />
                                         {stripHtml(job.company)}
                                     </span>
-                                    <span className="w-px h-4 bg-ink-200" />
+                                    <span className="w-px h-4 bg-gray-200" />
                                     <span className="flex items-center gap-1.5">
-                                        <MapPin className="w-4 h-4 text-ink-400" />
+                                        <MapPin className="w-4 h-4 text-gray-400" />
                                         {stripHtml(job.location) || 'Remote'}
                                     </span>
                                     {job.source && (
                                         <>
-                                            <span className="w-px h-4 bg-ink-200" />
-                                            <span className="px-2 py-0.5 rounded-md bg-ink-50 dark:bg-[#252420] text-ink-500 dark:text-ink-400 border border-ink-200 dark:border-[#2E2B27] text-[11px] font-medium">
+                                            <span className="w-px h-4 bg-gray-200" />
+                                            <span className="px-2 py-0.5 rounded-md bg-gray-50 dark:bg-[#22252f] text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-[#2d3140] text-[11px] font-medium">
                                                 via {job.source}
                                             </span>
                                         </>
                                     )}
                                     {job.date_posted && (
                                         <>
-                                            <span className="w-px h-4 bg-ink-200" />
-                                            <span className="flex items-center gap-1 text-ink-400 text-[12px]">
+                                            <span className="w-px h-4 bg-gray-200" />
+                                            <span className="flex items-center gap-1 text-gray-400 text-[12px]">
                                                 <Clock className="w-3.5 h-3.5" />
                                                 {stripHtml(job.date_posted)}
                                             </span>
@@ -585,7 +585,7 @@ export default function JobDetailPage() {
                     </div>
 
                     {/* Action buttons */}
-                    <div className="flex flex-wrap items-center gap-2 md:gap-3 mt-5 pt-5 border-t border-ink-100 dark:border-[#2E2B27]">
+                    <div className="flex flex-wrap items-center gap-2 md:gap-3 mt-5 pt-5 border-t border-gray-100 dark:border-[#2d3140]">
                         <button
                             onClick={() => {
                                 if (job.apply_url) window.open(job.apply_url, '_blank');
@@ -594,7 +594,7 @@ export default function JobDetailPage() {
                                     window.open(`https://www.google.com/search?q=${q}`, '_blank');
                                 }
                             }}
-                            className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-brand-500 hover:bg-brand-500 text-white rounded-lg text-[13px] font-medium transition-colors cursor-pointer"
+                            className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-[13px] font-medium transition-colors cursor-pointer"
                         >
                             Apply Now <ExternalLink className="w-3.5 h-3.5 opacity-50" />
                         </button>
@@ -603,7 +603,7 @@ export default function JobDetailPage() {
                             className={`px-4 py-2.5 rounded-lg border text-[13px] font-medium transition-colors cursor-pointer ${
                                 isSaved
                                     ? 'bg-sky-50 dark:bg-sky-900/20 border-sky-200 dark:border-sky-800 text-sky-600 dark:text-sky-400'
-                                    : 'bg-white dark:bg-[#1C1B19] border-ink-200 dark:border-[#2E2B27] text-ink-500 dark:text-ink-400 hover:text-sky-600 hover:border-sky-200'
+                                    : 'bg-white dark:bg-[#1a1d27] border-gray-200 dark:border-[#2d3140] text-gray-500 dark:text-gray-400 hover:text-sky-600 hover:border-sky-200'
                             }`}
                         >
                             <Bookmark className={`w-4 h-4 inline mr-1.5 ${isSaved ? 'fill-sky-500' : ''}`} />
@@ -614,7 +614,7 @@ export default function JobDetailPage() {
                             className={`px-4 py-2.5 rounded-lg border text-[13px] font-medium transition-colors cursor-pointer ${
                                 isApplied
                                     ? 'bg-teal-50 dark:bg-teal-900/20 border-teal-200 dark:border-teal-800 text-teal-600 dark:text-teal-400'
-                                    : 'bg-white dark:bg-[#1C1B19] border-ink-200 dark:border-[#2E2B27] text-ink-500 dark:text-ink-400 hover:text-teal-600 hover:border-teal-200'
+                                    : 'bg-white dark:bg-[#1a1d27] border-gray-200 dark:border-[#2d3140] text-gray-500 dark:text-gray-400 hover:text-teal-600 hover:border-teal-200'
                             }`}
                         >
                             <Check className={`w-4 h-4 inline mr-1.5 ${isApplied ? 'stroke-[3]' : ''}`} />
@@ -630,7 +630,7 @@ export default function JobDetailPage() {
                 <div className="space-y-5">
                     {/* Why this fits you — AI insight card */}
                     {analysis && !analysis.isBlurredTeaser && (
-                        <div className="bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-100 rounded-[10px] p-5">
+                        <div className="bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-100 rounded-xl p-5">
                             <div className="flex items-center gap-2 mb-3">
                                 <div className="w-6 h-6 rounded-lg bg-teal-100 flex items-center justify-center">
                                     <Lightbulb className="w-3.5 h-3.5 text-teal-600" />
@@ -658,14 +658,14 @@ export default function JobDetailPage() {
                     )}
 
                     {/* Job Description — FULL */}
-                    <div className="bg-white dark:bg-[#1C1B19] rounded-[10px] border border-ink-200 dark:border-[#2E2B27] overflow-hidden">
-                        <div className="px-5 py-3.5 border-b border-ink-100 dark:border-[#2E2B27]">
-                            <h2 className="text-[13px] font-semibold text-ink-900 dark:text-ink-100">Job Description</h2>
+                    <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
+                        <div className="px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140]">
+                            <h2 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">Job Description</h2>
                         </div>
                         <div className="px-5 py-4">
                             {cleanDescription ? (
                                 <>
-                                    <div className="text-[13px] text-ink-600 dark:text-ink-400 leading-relaxed whitespace-pre-wrap break-words">
+                                    <div className="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap break-words">
                                         {displayDescription}
                                         {isDescriptionLong && !showFullDescription && '...'}
                                     </div>
@@ -680,9 +680,9 @@ export default function JobDetailPage() {
                                 </>
                             ) : (
                                 <div className="text-center py-6">
-                                    <AlertCircle className="w-8 h-8 text-ink-300 dark:text-ink-600 mx-auto mb-2" />
-                                    <p className="text-[13px] text-ink-400 dark:text-ink-500 mb-1">No description available for this listing.</p>
-                                    <p className="text-[11px] text-ink-300 dark:text-ink-600">Try viewing the full listing on the source site.</p>
+                                    <AlertCircle className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                                    <p className="text-[13px] text-gray-400 dark:text-gray-500 mb-1">No description available for this listing.</p>
+                                    <p className="text-[11px] text-gray-300 dark:text-gray-600">Try viewing the full listing on the source site.</p>
                                 </div>
                             )}
                         </div>
@@ -690,10 +690,10 @@ export default function JobDetailPage() {
 
                     {/* AI Analysis */}
                     {analysis && !analysis.isBlurredTeaser && (
-                        <div className="bg-white dark:bg-[#1C1B19] rounded-[10px] border border-ink-200 dark:border-[#2E2B27] overflow-hidden">
-                            <div className="px-5 py-3.5 border-b border-ink-100 dark:border-[#2E2B27] flex items-center gap-2">
+                        <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
+                            <div className="px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140] flex items-center gap-2">
                                 <Sparkles className="w-3.5 h-3.5 text-teal-500" />
-                                <h2 className="text-[13px] font-semibold text-ink-900 dark:text-ink-100">AI Analysis</h2>
+                                <h2 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">AI Analysis</h2>
                             </div>
                             <div className="p-5 space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -733,16 +733,16 @@ export default function JobDetailPage() {
                                 </div>
 
                                 {/* Verdict */}
-                                <div className="bg-ink-50 dark:bg-[#252420] p-4 rounded-lg border border-ink-100 dark:border-[#2E2B27]">
-                                    <h3 className="text-ink-700 dark:text-ink-300 font-medium text-[12px] mb-2 flex items-center gap-1.5 uppercase tracking-wide">
+                                <div className="bg-gray-50 dark:bg-[#22252f] p-4 rounded-lg border border-gray-100 dark:border-[#2d3140]">
+                                    <h3 className="text-gray-700 dark:text-gray-300 font-medium text-[12px] mb-2 flex items-center gap-1.5 uppercase tracking-wide">
                                         <Sparkles className="w-3.5 h-3.5 text-teal-500" />
                                         Verdict
                                     </h3>
-                                    <p className="text-[13px] text-ink-600 dark:text-ink-400 leading-relaxed">{analysis.verdict}</p>
+                                    <p className="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed">{analysis.verdict}</p>
                                     {analysis.salary_estimate && (
-                                        <div className="mt-3 pt-3 border-t border-ink-200/60 dark:border-[#2E2B27]">
-                                            <span className="text-[10px] uppercase tracking-wider text-ink-400 font-medium">Estimated Salary </span>
-                                            <span className="text-ink-900 dark:text-ink-100 font-semibold text-[13px] ml-1">{analysis.salary_estimate}</span>
+                                        <div className="mt-3 pt-3 border-t border-gray-200/60 dark:border-[#2d3140]">
+                                            <span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Estimated Salary </span>
+                                            <span className="text-gray-900 dark:text-gray-100 font-semibold text-[13px] ml-1">{analysis.salary_estimate}</span>
                                         </div>
                                     )}
                                 </div>
@@ -751,10 +751,10 @@ export default function JobDetailPage() {
                     )}
 
                     {/* Cover Letter */}
-                    <div className="bg-white dark:bg-[#1C1B19] rounded-[10px] border border-ink-200 dark:border-[#2E2B27] overflow-hidden">
-                        <div className="px-5 py-3.5 border-b border-ink-100 dark:border-[#2E2B27] flex items-center gap-2">
+                    <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
+                        <div className="px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140] flex items-center gap-2">
                             <FileText className="w-3.5 h-3.5 text-teal-500" />
-                            <h2 className="text-[13px] font-semibold text-ink-900 dark:text-ink-100">Cover Letter</h2>
+                            <h2 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">Cover Letter</h2>
                         </div>
                         <div className="p-5">
                             {!coverLetter ? (
@@ -774,12 +774,12 @@ export default function JobDetailPage() {
                                     <div className="flex items-center justify-end mb-3">
                                         <button
                                             onClick={handleCopy}
-                                            className="flex items-center gap-1.5 text-[11px] font-medium text-ink-400 hover:text-teal-600 transition-colors px-3 py-1.5 rounded-md hover:bg-teal-50 cursor-pointer"
+                                            className="flex items-center gap-1.5 text-[11px] font-medium text-gray-400 hover:text-teal-600 transition-colors px-3 py-1.5 rounded-md hover:bg-teal-50 cursor-pointer"
                                         >
                                             {copied ? <><CheckCheck className="w-3.5 h-3.5 text-teal-500" /> Copied!</> : <><Copy className="w-3.5 h-3.5" /> Copy</>}
                                         </button>
                                     </div>
-                                    <div className="text-[13px] text-ink-600 dark:text-ink-400 leading-relaxed whitespace-pre-wrap break-words bg-ink-50 dark:bg-[#252420] rounded-lg p-4 border border-ink-100 dark:border-[#2E2B27]">
+                                    <div className="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap break-words bg-gray-50 dark:bg-[#22252f] rounded-lg p-4 border border-gray-100 dark:border-[#2d3140]">
                                         {coverLetter}
                                     </div>
                                 </div>
@@ -791,22 +791,22 @@ export default function JobDetailPage() {
                 {/* ===== MIDDLE SIDEBAR — Relevance & Skills ===== */}
                 <div className="space-y-5">
                     {/* Relevance Breakdown */}
-                    <div className="bg-white dark:bg-[#1C1B19] rounded-[10px] border border-ink-200 dark:border-[#2E2B27] overflow-hidden">
-                        <div className="px-4 py-3 border-b border-ink-100 dark:border-[#2E2B27] flex items-center gap-2">
+                    <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
+                        <div className="px-4 py-3 border-b border-gray-100 dark:border-[#2d3140] flex items-center gap-2">
                             <BrainCircuit className="w-3.5 h-3.5 text-teal-500" />
-                            <h2 className="text-[12px] font-semibold text-ink-900 dark:text-ink-100">Relevance</h2>
+                            <h2 className="text-[12px] font-semibold text-gray-900 dark:text-gray-100">Relevance</h2>
                         </div>
                         <div className="px-4 py-2">
                             {relevanceSections.map((section) => {
                                 const val = multipliers[section.key] ?? multipliers[section.fallback] ?? 0.8;
                                 const dots = multiplierToDots(val);
                                 return (
-                                    <div key={section.label} className="py-3 border-b border-ink-50 dark:border-[#2E2B27]/50 last:border-0">
+                                    <div key={section.label} className="py-3 border-b border-gray-50 dark:border-[#2d3140]/50 last:border-0">
                                         <div className="flex items-center justify-between mb-1">
-                                            <span className="text-[12px] font-medium text-ink-700 dark:text-ink-300">{section.label}</span>
+                                            <span className="text-[12px] font-medium text-gray-700 dark:text-gray-300">{section.label}</span>
                                             <DotIndicator filled={dots} />
                                         </div>
-                                        <p className="text-[10px] text-ink-400 dark:text-ink-500 leading-snug">{section.detail}</p>
+                                        <p className="text-[10px] text-gray-400 dark:text-gray-500 leading-snug">{section.detail}</p>
                                     </div>
                                 );
                             })}
@@ -814,9 +814,9 @@ export default function JobDetailPage() {
                     </div>
 
                     {/* Matched Skills */}
-                    <div className="bg-white dark:bg-[#1C1B19] rounded-[10px] border border-ink-200 dark:border-[#2E2B27] overflow-hidden">
-                        <div className="px-4 py-3 border-b border-ink-100 dark:border-[#2E2B27]">
-                            <h2 className="text-[12px] font-semibold text-ink-900 dark:text-ink-100">
+                    <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
+                        <div className="px-4 py-3 border-b border-gray-100 dark:border-[#2d3140]">
+                            <h2 className="text-[12px] font-semibold text-gray-900 dark:text-gray-100">
                                 Matched Skills
                                 {skillCount > 0 && <span className="ml-1.5 text-teal-500 font-normal">({skillCount})</span>}
                             </h2>
@@ -832,24 +832,24 @@ export default function JobDetailPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <p className="text-[11px] text-ink-400">No direct skill matches detected. The role may require adjacent skills.</p>
+                                <p className="text-[11px] text-gray-400">No direct skill matches detected. The role may require adjacent skills.</p>
                             )}
 
                             {/* User's unmatched skills */}
                             {profile?.skills && profile.skills.length > 0 && matches.length > 0 && (
-                                <div className="mt-3 pt-3 border-t border-ink-100 dark:border-[#2E2B27]">
-                                    <h3 className="text-[10px] font-medium text-ink-400 dark:text-ink-500 uppercase tracking-wider mb-2">Your Other Skills</h3>
+                                <div className="mt-3 pt-3 border-t border-gray-100 dark:border-[#2d3140]">
+                                    <h3 className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Your Other Skills</h3>
                                     <div className="flex flex-wrap gap-1">
                                         {profile.skills
                                             .filter(s => !matches.some(m => m.skill.toLowerCase() === s.toLowerCase()))
                                             .slice(0, 10)
                                             .map((skill, i) => (
-                                                <span key={i} className="px-1.5 py-0.5 rounded text-[10px] text-ink-400 dark:text-ink-500 bg-ink-50 dark:bg-[#252420] border border-ink-100 dark:border-[#2E2B27]">
+                                                <span key={i} className="px-1.5 py-0.5 rounded text-[10px] text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-[#22252f] border border-gray-100 dark:border-[#2d3140]">
                                                     {skill}
                                                 </span>
                                             ))}
                                         {profile.skills.length - matches.length > 10 && (
-                                            <span className="px-1.5 py-0.5 rounded text-[10px] text-ink-300">
+                                            <span className="px-1.5 py-0.5 rounded text-[10px] text-gray-300">
                                                 +{profile.skills.length - matches.length - 10} more
                                             </span>
                                         )}
@@ -861,26 +861,26 @@ export default function JobDetailPage() {
 
                     {/* Requirements (extracted) */}
                     {(requiredExp || requiredEdu) && (
-                        <div className="bg-white dark:bg-[#1C1B19] rounded-[10px] border border-ink-200 dark:border-[#2E2B27] overflow-hidden">
-                            <div className="px-4 py-3 border-b border-ink-100 dark:border-[#2E2B27]">
-                                <h2 className="text-[12px] font-semibold text-ink-900 dark:text-ink-100">Requirements</h2>
+                        <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
+                            <div className="px-4 py-3 border-b border-gray-100 dark:border-[#2d3140]">
+                                <h2 className="text-[12px] font-semibold text-gray-900 dark:text-gray-100">Requirements</h2>
                             </div>
                             <div className="px-4 py-3 space-y-2.5">
                                 {requiredExp && (
                                     <div className="flex items-center justify-between text-[12px]">
-                                        <span className="text-ink-500 dark:text-ink-400">Experience</span>
-                                        <span className="font-medium text-ink-700 dark:text-ink-300">{requiredExp} years</span>
+                                        <span className="text-gray-500 dark:text-gray-400">Experience</span>
+                                        <span className="font-medium text-gray-700 dark:text-gray-300">{requiredExp} years</span>
                                     </div>
                                 )}
                                 {requiredEdu && (
                                     <div className="flex items-center justify-between text-[12px]">
-                                        <span className="text-ink-500 dark:text-ink-400">Education</span>
-                                        <span className="font-medium text-ink-700 dark:text-ink-300">{requiredEdu}</span>
+                                        <span className="text-gray-500 dark:text-gray-400">Education</span>
+                                        <span className="font-medium text-gray-700 dark:text-gray-300">{requiredEdu}</span>
                                     </div>
                                 )}
                                 <div className="flex items-center justify-between text-[12px]">
-                                    <span className="text-ink-500 dark:text-ink-400">Your Experience</span>
-                                    <span className="font-medium text-ink-700 dark:text-ink-300">{userExperienceYears || 0} years</span>
+                                    <span className="text-gray-500 dark:text-gray-400">Your Experience</span>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">{userExperienceYears || 0} years</span>
                                 </div>
                             </div>
                         </div>
@@ -888,8 +888,8 @@ export default function JobDetailPage() {
 
                     {/* Apply CTA */}
                     {!isApplied && (
-                        <div className="bg-ink-50 dark:bg-[#252420] rounded-[10px] border border-ink-100 dark:border-[#2E2B27] p-4 text-center">
-                            <p className="text-[12px] text-ink-500 dark:text-ink-400 mb-3">Ready to apply?</p>
+                        <div className="bg-gray-50 dark:bg-[#22252f] rounded-xl border border-gray-100 dark:border-[#2d3140] p-4 text-center">
+                            <p className="text-[12px] text-gray-500 dark:text-gray-400 mb-3">Ready to apply?</p>
                             <button
                                 onClick={() => {
                                     if (job.apply_url) window.open(job.apply_url, '_blank');
@@ -898,7 +898,7 @@ export default function JobDetailPage() {
                                         window.open(`https://www.google.com/search?q=${q}`, '_blank');
                                     }
                                 }}
-                                className="w-full flex items-center justify-center gap-2 py-2.5 bg-brand-500 hover:bg-brand-500 text-white rounded-lg text-[13px] font-medium transition-colors cursor-pointer"
+                                className="w-full flex items-center justify-center gap-2 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-[13px] font-medium transition-colors cursor-pointer"
                             >
                                 Apply Now <ExternalLink className="w-3.5 h-3.5 opacity-50" />
                             </button>
@@ -908,13 +908,13 @@ export default function JobDetailPage() {
 
                 {/* ===== RIGHT SIDEBAR — Similar Jobs ===== */}
                 <div className="space-y-5">
-                    <div className="bg-white dark:bg-[#1C1B19] rounded-[10px] border border-ink-200 dark:border-[#2E2B27] overflow-hidden">
-                        <div className="px-4 py-3.5 border-b border-ink-100 dark:border-[#2E2B27]">
-                            <h2 className="text-[13px] font-semibold text-ink-900 dark:text-ink-100 flex items-center gap-2">
+                    <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
+                        <div className="px-4 py-3.5 border-b border-gray-100 dark:border-[#2d3140]">
+                            <h2 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                                 <Sparkles className="w-3.5 h-3.5 text-violet-500" />
                                 While you&apos;re here
                             </h2>
-                            <p className="text-[10px] text-ink-400 dark:text-ink-500 mt-0.5">Jobs similar to this one</p>
+                            <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">Jobs similar to this one</p>
                         </div>
 
                         {similarJobs.length > 0 ? (
@@ -931,11 +931,11 @@ export default function JobDetailPage() {
                             </div>
                         ) : (
                             <div className="p-6 text-center">
-                                <div className="w-10 h-10 bg-ink-50 dark:bg-[#252420] rounded-[10px] flex items-center justify-center mx-auto mb-3">
-                                    <Briefcase className="w-5 h-5 text-ink-300 dark:text-ink-600" />
+                                <div className="w-10 h-10 bg-gray-50 dark:bg-[#22252f] rounded-xl flex items-center justify-center mx-auto mb-3">
+                                    <Briefcase className="w-5 h-5 text-gray-300 dark:text-gray-600" />
                                 </div>
-                                <p className="text-[12px] text-ink-400 dark:text-ink-500 mb-1">No similar jobs found yet</p>
-                                <p className="text-[11px] text-ink-300 dark:text-ink-600 leading-relaxed">
+                                <p className="text-[12px] text-gray-400 dark:text-gray-500 mb-1">No similar jobs found yet</p>
+                                <p className="text-[11px] text-gray-300 dark:text-gray-600 leading-relaxed">
                                     Run a search first to build your job pool. Similar jobs will appear here automatically.
                                 </p>
                                 <Link
@@ -949,9 +949,9 @@ export default function JobDetailPage() {
                     </div>
 
                     {/* Company info card */}
-                    <div className="bg-white dark:bg-[#1C1B19] rounded-[10px] border border-ink-200 dark:border-[#2E2B27] overflow-hidden">
-                        <div className="px-4 py-3 border-b border-ink-100 dark:border-[#2E2B27]">
-                            <h2 className="text-[12px] font-semibold text-ink-900 dark:text-ink-100">About the Company</h2>
+                    <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
+                        <div className="px-4 py-3 border-b border-gray-100 dark:border-[#2d3140]">
+                            <h2 className="text-[12px] font-semibold text-gray-900 dark:text-gray-100">About the Company</h2>
                         </div>
                         <div className="p-4">
                             <div className="flex items-center gap-3 mb-3">
@@ -962,8 +962,8 @@ export default function JobDetailPage() {
                                     colorIndex={0}
                                 />
                                 <div>
-                                    <h3 className="text-[13px] font-medium text-ink-900 dark:text-ink-100">{stripHtml(job.company)}</h3>
-                                    <p className="text-[11px] text-ink-400 dark:text-ink-500">{stripHtml(job.location) || 'Remote'}</p>
+                                    <h3 className="text-[13px] font-medium text-gray-900 dark:text-gray-100">{stripHtml(job.company)}</h3>
+                                    <p className="text-[11px] text-gray-400 dark:text-gray-500">{stripHtml(job.location) || 'Remote'}</p>
                                 </div>
                             </div>
 
@@ -977,8 +977,8 @@ export default function JobDetailPage() {
                                 if (sameCompany.length === 0) return null;
 
                                 return (
-                                    <div className="mt-3 pt-3 border-t border-ink-100 dark:border-[#2E2B27]">
-                                        <h4 className="text-[10px] font-medium text-ink-400 dark:text-ink-500 uppercase tracking-wider mb-2">
+                                    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-[#2d3140]">
+                                        <h4 className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
                                             More from {stripHtml(job.company)}
                                         </h4>
                                         <div className="space-y-2">
@@ -992,7 +992,7 @@ export default function JobDetailPage() {
                                                             localStorage.setItem(key, JSON.stringify(sj));
                                                         } catch (e) { /* ignore */ }
                                                     }}
-                                                    className="block text-[12px] text-ink-600 dark:text-ink-400 hover:text-teal-600 transition-colors truncate"
+                                                    className="block text-[12px] text-gray-600 dark:text-gray-400 hover:text-teal-600 transition-colors truncate"
                                                 >
                                                     {stripHtml(sj.title)}
                                                 </Link>
@@ -1007,7 +1007,7 @@ export default function JobDetailPage() {
                                     href={job.apply_url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1.5 mt-3 pt-3 border-t border-ink-100 dark:border-[#2E2B27] text-[12px] font-medium text-teal-600 hover:text-teal-700 transition-colors"
+                                    className="flex items-center gap-1.5 mt-3 pt-3 border-t border-gray-100 dark:border-[#2d3140] text-[12px] font-medium text-teal-600 hover:text-teal-700 transition-colors"
                                 >
                                     View original listing <ExternalLink className="w-3 h-3 opacity-50" />
                                 </a>
