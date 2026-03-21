@@ -1,7 +1,7 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Search, Bookmark, Briefcase, User, Settings, LogOut, ChevronLeft, X, GraduationCap } from 'lucide-react';
+import { Home, Search, Bookmark, Briefcase, Settings, ChevronLeft, X, GraduationCap, Sparkles } from 'lucide-react';
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { useApp } from '@/contexts/AppContext';
 
@@ -40,108 +40,109 @@ export function Sidebar({ isOpen, onClose }) {
                 />
             )}
 
-            <aside className={`fixed inset-y-0 left-0 z-50 w-[260px] bg-white dark:bg-[#1a1d27] border-r border-gray-100 dark:border-[#2d3140] text-gray-700 flex flex-col min-h-screen transform transition-transform duration-200 ease-in-out md:static md:translate-x-0 md:w-[220px] md:z-auto md:sticky md:top-0 md:shrink-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <aside className={`fixed inset-y-0 left-0 z-50 w-[260px] bg-white dark:bg-[#1a1d27] border-r border-slate-100 dark:border-[#2d3140] flex flex-col min-h-screen transform transition-transform duration-200 ease-in-out md:static md:translate-x-0 md:w-[240px] md:z-auto md:sticky md:top-0 md:shrink-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 {/* Logo */}
-                <div className="px-5 h-12 flex items-center gap-2.5 border-b border-gray-100 dark:border-[#2d3140]">
-                    <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center text-white text-[11px] font-bold">
-                        M
+                <div className="px-5 h-14 flex items-center gap-3 border-b border-slate-100 dark:border-[#2d3140]">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-600 to-secondary-DEFAULT flex items-center justify-center shadow-md shadow-brand-600/20">
+                        <Sparkles className="w-4 h-4 text-white" />
                     </div>
-                    <span className="text-[14px] font-semibold text-gray-900 dark:text-white tracking-tight flex-1">Midas Match</span>
+                    <span className="text-[15px] font-bold text-gray-900 dark:text-white tracking-tight font-headline flex-1">Midas Match</span>
                     <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600 md:hidden cursor-pointer">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
-            {/* User info */}
-            <div className="px-4 py-3.5 border-b border-gray-100 dark:border-[#2d3140]">
-                <SignedIn>
-                    <div className="flex items-center gap-2.5">
-                        <UserButton
-                            afterSignOutUrl="/"
-                            appearance={{
-                                elements: {
-                                    avatarBox: "w-8 h-8",
-                                }
-                            }}
-                        />
-                        <div className="min-w-0">
-                            <p className="text-[12px] font-medium text-gray-900 dark:text-gray-100 truncate">
-                                {user?.firstName || 'User'}
-                            </p>
-                            <p className="text-[10px] text-gray-400 dark:text-gray-300 truncate">
-                                {user?.primaryEmailAddress?.emailAddress || 'Job Seeker'}
-                            </p>
+                {/* User info */}
+                <div className="px-4 py-4 border-b border-slate-100 dark:border-[#2d3140]">
+                    <SignedIn>
+                        <div className="flex items-center gap-3">
+                            <UserButton
+                                afterSignOutUrl="/"
+                                appearance={{
+                                    elements: {
+                                        avatarBox: "w-9 h-9",
+                                    }
+                                }}
+                            />
+                            <div className="min-w-0">
+                                <p className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 truncate font-headline">
+                                    {user?.firstName || 'User'}
+                                </p>
+                                <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">
+                                    {user?.primaryEmailAddress?.emailAddress || 'Job Seeker'}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                </SignedIn>
-                <SignedOut>
-                    <SignInButton mode="modal">
-                        <button className="w-full px-4 py-2 text-[12px] font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors cursor-pointer">
-                            Sign In
-                        </button>
-                    </SignInButton>
-                </SignedOut>
-            </div>
+                    </SignedIn>
+                    <SignedOut>
+                        <SignInButton mode="modal">
+                            <button className="w-full px-4 py-2.5 text-[13px] font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-colors cursor-pointer shadow-md shadow-brand-600/20">
+                                Sign In
+                            </button>
+                        </SignInButton>
+                    </SignedOut>
+                </div>
 
-            {/* Navigation */}
-            <nav className="flex-1 px-3 py-3 space-y-0.5">
-                {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
-                    const active = isActive(href);
-                    const badge = getBadge(href);
-                    return (
-                        <Link
-                            key={href}
-                            href={href}
-                            onClick={onClose}
-                            className={`relative flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-150 group ${
-                                active
-                                    ? 'bg-brand-600 text-white'
-                                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-[#22252f]'
-                            }`}
-                        >
-                            <Icon className={`w-4 h-4 ${active ? 'text-white' : 'text-gray-400 group-hover:text-gray-600 dark:text-gray-300 dark:group-hover:text-gray-300'}`} />
-                            <span className="flex-1">{label}</span>
-                            {badge && (
-                                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
-                                    active ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400 dark:bg-[#2d3140] dark:text-gray-300'
-                                }`}>
-                                    {badge}
-                                </span>
-                            )}
-                        </Link>
-                    );
-                })}
-            </nav>
+                {/* Navigation */}
+                <nav className="flex-1 px-3 py-4 space-y-1">
+                    <p className="px-3 mb-2 text-[10px] font-bold tracking-[0.15em] text-slate-400 uppercase">Menu</p>
+                    {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
+                        const active = isActive(href);
+                        const badge = getBadge(href);
+                        return (
+                            <Link
+                                key={href}
+                                href={href}
+                                onClick={onClose}
+                                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 group ${
+                                    active
+                                        ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20'
+                                        : 'text-slate-500 hover:text-gray-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-gray-100 dark:hover:bg-[#22252f]'
+                                }`}
+                            >
+                                <Icon className={`w-[18px] h-[18px] ${active ? 'text-white' : 'text-slate-400 group-hover:text-brand-500 dark:text-slate-500 dark:group-hover:text-slate-300'}`} />
+                                <span className="flex-1 font-headline">{label}</span>
+                                {badge && (
+                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                        active ? 'bg-white/20 text-white' : 'bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400'
+                                    }`}>
+                                        {badge}
+                                    </span>
+                                )}
+                            </Link>
+                        );
+                    })}
+                </nav>
 
-            {/* Bottom section */}
-            <div className="px-3 py-3 border-t border-gray-100 dark:border-[#2d3140]">
-                <Link
-                    href="/"
-                    onClick={onClose}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium text-gray-400 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-gray-300 dark:hover:bg-[#22252f] transition-all"
-                >
-                    <ChevronLeft className="w-4 h-4" />
-                    Back to Home
-                </Link>
-            </div>
+                {/* Bottom section */}
+                <div className="px-3 py-3 border-t border-slate-100 dark:border-[#2d3140]">
+                    <Link
+                        href="/"
+                        onClick={onClose}
+                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-medium text-slate-400 hover:text-gray-700 hover:bg-slate-50 dark:text-slate-500 dark:hover:text-slate-300 dark:hover:bg-[#22252f] transition-all"
+                    >
+                        <ChevronLeft className="w-4 h-4" />
+                        Back to Home
+                    </Link>
+                </div>
 
-            {/* Support banner */}
-            <div className="mx-3 mb-2 px-3 py-2.5 rounded-lg bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30">
-                <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-snug">
-                    Ran into an issue?{' '}
-                    <a href="mailto:midasmatchsupport@gmail.com" className="font-semibold underline underline-offset-2 hover:text-amber-900 dark:hover:text-amber-300 transition-colors">
-                        Contact support
-                    </a>
-                </p>
-            </div>
+                {/* Support banner */}
+                <div className="mx-3 mb-3 px-4 py-3 rounded-xl bg-gradient-to-br from-brand-50 to-secondary-DEFAULT/5 dark:from-brand-900/20 dark:to-secondary-DEFAULT/10 border border-brand-100 dark:border-brand-800/30">
+                    <p className="text-[11px] text-brand-700 dark:text-brand-400 leading-snug font-medium">
+                        Need help?{' '}
+                        <a href="mailto:midasmatchsupport@gmail.com" className="font-bold underline underline-offset-2 hover:text-brand-900 dark:hover:text-brand-300 transition-colors">
+                            Contact support
+                        </a>
+                    </p>
+                </div>
 
-            {/* Footer links */}
-            <div className="px-5 py-2.5 border-t border-gray-100 dark:border-[#2d3140] flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-gray-300 dark:text-gray-300">
-                <a href="/privacy" className="hover:text-gray-500 transition-colors">Privacy</a>
-                <a href="/terms" className="hover:text-gray-500 transition-colors">Terms</a>
-                <a href="/refund" className="hover:text-gray-500 transition-colors">Refund</a>
-            </div>
-        </aside>
+                {/* Footer links */}
+                <div className="px-5 py-3 border-t border-slate-100 dark:border-[#2d3140] flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-slate-400 dark:text-slate-500">
+                    <a href="/privacy" className="hover:text-brand-500 transition-colors">Privacy</a>
+                    <a href="/terms" className="hover:text-brand-500 transition-colors">Terms</a>
+                    <a href="/refund" className="hover:text-brand-500 transition-colors">Refund</a>
+                </div>
+            </aside>
         </>
     );
 }

@@ -12,12 +12,12 @@ export default function DashboardLayout({ children }) {
     return (
         <ErrorBoundary>
             <AppProvider>
-                <div className="flex min-h-screen bg-surface-50">
+                <div className="flex min-h-screen bg-midas-bg dark:bg-[#0f1117]">
                     <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
                     <div className="flex-1 flex flex-col min-w-0">
                         <DashboardHeader onMenuClick={() => setSidebarOpen(true)} />
                         <ReturnNotification />
-                        <main className="flex-1 px-4 py-4 md:px-6 md:py-5 dashboard-bg">
+                        <main className="flex-1 px-4 py-5 md:px-6 md:py-6 dashboard-bg">
                             {children}
                         </main>
                     </div>

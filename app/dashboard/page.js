@@ -1,5 +1,5 @@
 'use client';
-import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, Target, ChevronRight, Sparkles, Eye } from 'lucide-react';
+import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, Target, ChevronRight, Sparkles, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useApp } from '@/contexts/AppContext';
 import { useUser } from '@clerk/nextjs';
@@ -13,7 +13,7 @@ function DotIndicator({ filled, total = 5 }) {
                 <div
                     key={i}
                     className={`w-[6px] h-[6px] rounded-full ${
-                        i < filled ? 'bg-teal-500' : 'bg-gray-200 dark:bg-gray-700'
+                        i < filled ? 'bg-brand-600' : 'bg-slate-200 dark:bg-slate-700'
                     }`}
                 />
             ))}
@@ -39,7 +39,6 @@ export default function DashboardHome() {
         toggleSaveJob, savedJobIds, toggleAppliedJob, appliedJobIds,
     } = useApp();
 
-    // Top 5 jobs from latest scan — sorted by AI score if available, then heuristic
     const topPicks = [...jobs]
         .sort((a, b) => (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0))
         .slice(0, 5);
@@ -99,10 +98,10 @@ export default function DashboardHome() {
             {/* Greeting */}
             <div className="flex items-end justify-between">
                 <div>
-                    <h1 className="text-[22px] font-semibold text-gray-900 dark:text-gray-100 tracking-tight">
+                    <h1 className="font-headline text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">
                         {user?.firstName ? `Hi, ${user.firstName}` : profile ? `Hi, ${profile.name?.split(' ')[0] || 'there'}` : 'Welcome to Midas Match'}
                     </h1>
-                    <p className="text-sm text-gray-400 dark:text-gray-300 mt-1">
+                    <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
                         {profile
                             ? "Here's an overview of your job search activity."
                             : 'Upload your resume to get started.'}
@@ -110,7 +109,7 @@ export default function DashboardHome() {
                 </div>
                 <Link
                     href="/dashboard/search"
-                    className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg text-[13px] font-medium hover:bg-brand-700 transition-colors"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-brand-600 text-white rounded-xl text-[13px] font-bold hover:bg-brand-700 transition-colors shadow-md shadow-brand-600/20 font-headline"
                 >
                     <Search className="w-3.5 h-3.5" /> New Search
                 </Link>
@@ -118,23 +117,21 @@ export default function DashboardHome() {
 
             {/* Upload panel for new users */}
             {!profile && (
-                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] p-6">
+                <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-6 shadow-sm">
                     <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} />
                 </div>
             )}
 
-            {/* Stats row — inspired by JobZen/HirePath */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            {/* Stats row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                     {
                         label: 'Matches',
                         value: totalMatches,
                         icon: Target,
-                        color: 'teal',
-                        bg: 'bg-gradient-to-br from-teal-50 to-emerald-50/50 dark:from-teal-900/20 dark:to-emerald-900/20',
-                        iconBg: 'bg-teal-100 dark:bg-teal-900/40',
-                        iconColor: 'text-teal-600 dark:text-teal-400',
-                        borderColor: 'border-teal-100 dark:border-teal-800/30',
+                        gradient: 'from-brand-600 to-secondary-DEFAULT',
+                        iconBg: 'bg-brand-100 dark:bg-brand-900/40',
+                        iconColor: 'text-brand-600 dark:text-brand-400',
                         sub: totalMatches > 0 ? 'From latest scan' : 'Run a scan',
                         trend: totalMatches > 0 ? `${totalMatches} found` : null,
                         trendUp: totalMatches > 0,
@@ -143,11 +140,9 @@ export default function DashboardHome() {
                         label: 'Saved',
                         value: savedCount,
                         icon: Bookmark,
-                        color: 'sky',
-                        bg: 'bg-gradient-to-br from-sky-50 to-blue-50/50 dark:from-sky-900/20 dark:to-blue-900/20',
+                        gradient: 'from-sky-500 to-blue-600',
                         iconBg: 'bg-sky-100 dark:bg-sky-900/40',
                         iconColor: 'text-sky-600 dark:text-sky-400',
-                        borderColor: 'border-sky-100 dark:border-sky-800/30',
                         sub: savedCount > 0 ? 'Jobs bookmarked' : 'None yet',
                         trend: savedCount > 0 ? `${savedCount} saved` : null,
                         trendUp: savedCount > 0,
@@ -156,11 +151,9 @@ export default function DashboardHome() {
                         label: 'Applied',
                         value: appliedCount,
                         icon: Briefcase,
-                        color: 'violet',
-                        bg: 'bg-gradient-to-br from-violet-50 to-purple-50/50 dark:from-violet-900/20 dark:to-purple-900/20',
+                        gradient: 'from-secondary-DEFAULT to-purple-700',
                         iconBg: 'bg-violet-100 dark:bg-violet-900/40',
-                        iconColor: 'text-violet-600 dark:text-violet-400',
-                        borderColor: 'border-violet-100 dark:border-violet-800/30',
+                        iconColor: 'text-secondary-DEFAULT dark:text-violet-400',
                         sub: appliedCount > 0 ? 'Applications sent' : 'None yet',
                         trend: appliedCount > 0 ? `${appliedCount} tracked` : null,
                         trendUp: appliedCount > 0,
@@ -169,32 +162,30 @@ export default function DashboardHome() {
                         label: 'Avg Score',
                         value: avgScore || '—',
                         icon: TrendingUp,
-                        color: 'amber',
-                        bg: 'bg-gradient-to-br from-amber-50 to-orange-50/50 dark:from-amber-900/20 dark:to-orange-900/20',
+                        gradient: 'from-amber-500 to-orange-500',
                         iconBg: 'bg-amber-100 dark:bg-amber-900/40',
                         iconColor: 'text-amber-600 dark:text-amber-400',
-                        borderColor: 'border-amber-100 dark:border-amber-800/30',
                         sub: avgScore > 0 ? `${avgScore}/100 match` : 'No data',
                         trend: avgScore >= 70 ? 'Strong' : avgScore >= 50 ? 'Moderate' : null,
                         trendUp: avgScore >= 60,
                     },
                 ].map((stat) => (
-                    <div key={stat.label} className={`${stat.bg} rounded-xl border ${stat.borderColor} p-4 relative overflow-hidden`}>
-                        {/* Subtle accent circle */}
-                        <div className={`absolute -top-4 -right-4 w-16 h-16 rounded-full ${stat.iconBg} opacity-30`} />
+                    <div key={stat.label} className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                        {/* Gradient accent */}
+                        <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${stat.gradient}`} />
                         <div className="relative">
                             <div className="flex items-center justify-between mb-3">
-                                <span className="text-[11px] font-medium text-gray-400 dark:text-gray-300 uppercase tracking-wider">{stat.label}</span>
-                                <div className={`w-8 h-8 rounded-lg ${stat.iconBg} flex items-center justify-center`}>
+                                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] font-headline">{stat.label}</span>
+                                <div className={`w-8 h-8 rounded-xl ${stat.iconBg} flex items-center justify-center`}>
                                     <stat.icon className={`w-4 h-4 ${stat.iconColor}`} />
                                 </div>
                             </div>
-                            <div className="text-[28px] font-bold text-gray-900 dark:text-gray-100 leading-none">{stat.value}</div>
+                            <div className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 leading-none font-headline">{stat.value}</div>
                             <div className="flex items-center justify-between mt-2">
-                                <p className="text-[11px] text-gray-400 dark:text-gray-300">{stat.sub}</p>
+                                <p className="text-[11px] text-slate-400 dark:text-slate-500">{stat.sub}</p>
                                 {stat.trend && (
-                                    <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
-                                        stat.trendUp ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-300'
+                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                        stat.trendUp ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                                     }`}>
                                         {stat.trendUp ? '↑' : '·'} {stat.trend}
                                     </span>
@@ -205,36 +196,39 @@ export default function DashboardHome() {
                 ))}
             </div>
 
-            {/* ===== TOP PICKS — Best from latest scan ===== */}
+            {/* Top Picks */}
             {profile && (
-                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
-                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140]">
-                        <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center">
-                                <Sparkles className="w-3 h-3 text-white" />
+                <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] overflow-hidden shadow-sm">
+                    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-[#2d3140]">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-600 to-secondary-DEFAULT flex items-center justify-center shadow-sm">
+                                <Sparkles className="w-4 h-4 text-white" />
                             </div>
                             <div>
-                                <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">Top Picks</h3>
-                                <p className="text-[10px] text-gray-400">Best matches from your latest scan</p>
+                                <h3 className="text-[14px] font-bold text-gray-900 dark:text-gray-100 font-headline">Top Picks</h3>
+                                <p className="text-[11px] text-slate-400">Best matches from your latest scan</p>
                             </div>
                         </div>
                         <Link
                             href="/dashboard/search"
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 hover:text-teal-600 hover:bg-teal-50 dark:hover:bg-teal-900/20 rounded-lg transition-colors"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-xl transition-colors"
                         >
                             View all <ArrowRight className="w-3 h-3" />
                         </Link>
                     </div>
 
                     {topPicks.length === 0 ? (
-                        <div className="px-5 py-10 text-center">
-                            <p className="text-sm text-gray-400">Run a job search to see your top matches here</p>
-                            <Link href="/dashboard/search" className="text-[12px] text-teal-600 hover:text-teal-700 font-medium mt-2 inline-block">
+                        <div className="px-6 py-12 text-center">
+                            <div className="w-12 h-12 rounded-2xl bg-brand-50 dark:bg-brand-900/20 flex items-center justify-center mx-auto mb-3">
+                                <Search className="w-5 h-5 text-brand-400" />
+                            </div>
+                            <p className="text-sm text-slate-400 font-medium">Run a job search to see your top matches here</p>
+                            <Link href="/dashboard/search" className="text-[12px] text-brand-600 hover:text-brand-700 font-bold mt-2 inline-block">
                                 Search Jobs
                             </Link>
                         </div>
                     ) : (
-                        <div className="divide-y divide-gray-50 dark:divide-[#2d3140]">
+                        <div className="divide-y divide-slate-50 dark:divide-[#2d3140]">
                             {topPicks.map((job, i) => {
                                 const score = Math.round(job.analysis?.fit_score || job.match_score || 0);
                                 const dots = scoreToDots(score);
@@ -243,7 +237,7 @@ export default function DashboardHome() {
                                 return (
                                     <div
                                         key={job.apply_url || i}
-                                        className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 dark:hover:bg-[#22252f] transition-colors group"
+                                        className="flex items-center gap-3 px-6 py-3.5 hover:bg-midas-surface-low/50 dark:hover:bg-[#22252f] transition-colors group"
                                     >
                                         <CompanyLogo company={job.company} applyUrl={job.apply_url} size={36} colorIndex={i} />
                                         <div className="flex-1 min-w-0">
@@ -255,11 +249,11 @@ export default function DashboardHome() {
                                                         localStorage.setItem(key, JSON.stringify(job));
                                                     } catch (e) { /* ignore */ }
                                                 }}
-                                                className="text-[13px] font-medium text-gray-900 dark:text-gray-100 truncate hover:text-teal-600 transition-colors block"
+                                                className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 truncate hover:text-brand-600 transition-colors block font-headline"
                                             >
                                                 {stripHtml(job.title)}
                                             </Link>
-                                            <p className="text-[11px] text-gray-400 truncate mt-0.5">
+                                            <p className="text-[11px] text-slate-400 truncate mt-0.5">
                                                 {stripHtml(job.company)}
                                                 {job.location && <> · {stripHtml(job.location)}</>}
                                             </p>
@@ -267,7 +261,7 @@ export default function DashboardHome() {
 
                                         <div className="flex items-center gap-2.5 shrink-0">
                                             <DotIndicator filled={dots} />
-                                            <span className={`text-[11px] font-semibold ${score >= 70 ? 'text-teal-600' : score >= 50 ? 'text-amber-500' : 'text-gray-400'}`}>
+                                            <span className={`text-[12px] font-bold font-headline ${score >= 70 ? 'text-brand-600' : score >= 50 ? 'text-amber-500' : 'text-slate-400'}`}>
                                                 {score}
                                             </span>
                                         </div>
@@ -275,14 +269,14 @@ export default function DashboardHome() {
                                         <div className="flex items-center gap-1 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                             <button
                                                 onClick={() => toggleSaveJob(job)}
-                                                className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                                                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                                                     isSaved
-                                                        ? 'text-sky-500 bg-sky-50'
-                                                        : 'text-gray-300 hover:text-sky-500 hover:bg-sky-50'
+                                                        ? 'text-brand-600 bg-brand-50'
+                                                        : 'text-slate-300 hover:text-brand-500 hover:bg-brand-50'
                                                 }`}
                                                 title={isSaved ? 'Saved' : 'Save'}
                                             >
-                                                <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-sky-500' : ''}`} />
+                                                <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-brand-600' : ''}`} />
                                             </button>
                                         </div>
                                     </div>
@@ -295,22 +289,22 @@ export default function DashboardHome() {
 
             <div className="grid grid-cols-1 lg:grid-cols-[1fr,340px] gap-5">
                 {/* Recent Applications table */}
-                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
-                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140]">
-                        <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">Recent Applications</h3>
-                        <Link href="/dashboard/applications" className="text-[12px] text-teal-600 hover:text-teal-700 font-medium flex items-center gap-1">
+                <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] overflow-hidden shadow-sm">
+                    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-[#2d3140]">
+                        <h3 className="text-[14px] font-bold text-gray-900 dark:text-gray-100 font-headline">Recent Applications</h3>
+                        <Link href="/dashboard/applications" className="text-[12px] text-brand-600 hover:text-brand-700 font-semibold flex items-center gap-1">
                             View all <ArrowRight className="w-3 h-3" />
                         </Link>
                     </div>
                     {recentApplied.length === 0 ? (
-                        <div className="px-5 py-10 text-center">
-                            <p className="text-sm text-gray-300">No applications yet</p>
-                            <Link href="/dashboard/search" className="text-[12px] text-teal-600 hover:text-teal-700 font-medium mt-2 inline-block">
+                        <div className="px-6 py-12 text-center">
+                            <p className="text-sm text-slate-400">No applications yet</p>
+                            <Link href="/dashboard/search" className="text-[12px] text-brand-600 hover:text-brand-700 font-bold mt-2 inline-block">
                                 Start searching
                             </Link>
                         </div>
                     ) : (
-                        <div className="divide-y divide-gray-50 dark:divide-[#2d3140]">
+                        <div className="divide-y divide-slate-50 dark:divide-[#2d3140]">
                             {recentApplied.map((job, i) => {
                                 const score = job.analysis?.fit_score || job.match_score || 0;
                                 return (
@@ -323,20 +317,20 @@ export default function DashboardHome() {
                                                 localStorage.setItem(key, JSON.stringify(job));
                                             } catch (e) { /* ignore */ }
                                         }}
-                                        className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 dark:hover:bg-[#22252f] transition-colors group"
+                                        className="flex items-center gap-3 px-6 py-3.5 hover:bg-midas-surface-low/50 dark:hover:bg-[#22252f] transition-colors group"
                                     >
                                         <CompanyLogo company={job.company} applyUrl={job.apply_url} size={32} colorIndex={i} />
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-[13px] font-medium text-gray-900 dark:text-gray-100 truncate group-hover:text-teal-600 transition-colors">{stripHtml(job.title)}</p>
-                                            <p className="text-[11px] text-gray-400 dark:text-gray-300 truncate">{stripHtml(job.company)}</p>
+                                            <p className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 truncate group-hover:text-brand-600 transition-colors font-headline">{stripHtml(job.title)}</p>
+                                            <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">{stripHtml(job.company)}</p>
                                         </div>
                                         <div className="flex items-center gap-3 shrink-0">
                                             {score > 0 && (
-                                                <span className={`text-[11px] font-semibold ${score >= 70 ? 'text-teal-600' : score >= 50 ? 'text-amber-500' : 'text-gray-400'}`}>
+                                                <span className={`text-[12px] font-bold font-headline ${score >= 70 ? 'text-brand-600' : score >= 50 ? 'text-amber-500' : 'text-slate-400'}`}>
                                                     {Math.round(score)}%
                                                 </span>
                                             )}
-                                            <span className="text-[11px] text-gray-300">{formatDate(job.applied_at)}</span>
+                                            <span className="text-[11px] text-slate-400">{formatDate(job.applied_at)}</span>
                                         </div>
                                     </Link>
                                 );
@@ -349,67 +343,67 @@ export default function DashboardHome() {
                 <div className="space-y-4">
                     {/* Profile summary */}
                     {profile && (
-                        <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] p-5">
+                        <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm">
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="w-10 h-10 rounded-full bg-gray-900 dark:bg-gray-100 flex items-center justify-center text-white dark:text-gray-900 text-sm font-semibold">
+                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-600 to-secondary-DEFAULT flex items-center justify-center text-white text-sm font-bold shadow-md shadow-brand-600/20">
                                     {profile.name?.charAt(0)?.toUpperCase() || 'U'}
                                 </div>
                                 <div className="min-w-0">
-                                    <p className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 truncate">{profile.name}</p>
-                                    <p className="text-[11px] text-gray-400 dark:text-gray-300 truncate">{jobTitle || 'Job Seeker'}</p>
+                                    <p className="text-[14px] font-bold text-gray-900 dark:text-gray-100 truncate font-headline">{profile.name}</p>
+                                    <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">{jobTitle || 'Job Seeker'}</p>
                                 </div>
                             </div>
-                            <div className="space-y-2.5">
+                            <div className="space-y-3">
                                 <div className="flex justify-between text-[12px]">
-                                    <span className="text-gray-400 dark:text-gray-300">Experience</span>
-                                    <span className="font-medium text-gray-700 dark:text-gray-300">{experienceYears} years</span>
+                                    <span className="text-slate-400 dark:text-slate-500">Experience</span>
+                                    <span className="font-semibold text-gray-700 dark:text-gray-300 font-headline">{experienceYears} years</span>
                                 </div>
                                 <div className="flex justify-between text-[12px]">
-                                    <span className="text-gray-400 dark:text-gray-300">Skills</span>
-                                    <span className="font-medium text-gray-700 dark:text-gray-300">{profile.skills?.length || 0} identified</span>
+                                    <span className="text-slate-400 dark:text-slate-500">Skills</span>
+                                    <span className="font-semibold text-gray-700 dark:text-gray-300 font-headline">{profile.skills?.length || 0} identified</span>
                                 </div>
                                 <div className="flex justify-between text-[12px]">
-                                    <span className="text-gray-400 dark:text-gray-300">Location</span>
-                                    <span className="font-medium text-gray-700 dark:text-gray-300">{preferences.city || preferences.state || preferences.country || 'Not set'}</span>
+                                    <span className="text-slate-400 dark:text-slate-500">Location</span>
+                                    <span className="font-semibold text-gray-700 dark:text-gray-300 font-headline">{preferences.city || preferences.state || preferences.country || 'Not set'}</span>
                                 </div>
                             </div>
                         </div>
                     )}
 
                     {/* Quick navigation */}
-                    <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
-                        <div className="px-5 py-3 border-b border-gray-100 dark:border-[#2d3140]">
-                            <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">Quick Actions</h3>
+                    <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] overflow-hidden shadow-sm">
+                        <div className="px-5 py-3.5 border-b border-slate-100 dark:border-[#2d3140]">
+                            <h3 className="text-[13px] font-bold text-gray-900 dark:text-gray-100 font-headline">Quick Actions</h3>
                         </div>
-                        <div className="divide-y divide-gray-50 dark:divide-[#2d3140]">
-                            <Link href="/dashboard/search" className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 dark:hover:bg-[#22252f] transition-colors group">
-                                <div className="w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center">
-                                    <Search className="w-3.5 h-3.5 text-teal-500" />
+                        <div className="divide-y divide-slate-50 dark:divide-[#2d3140]">
+                            <Link href="/dashboard/search" className="flex items-center gap-3 px-5 py-3 hover:bg-midas-surface-low/50 dark:hover:bg-[#22252f] transition-colors group">
+                                <div className="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-900/30 flex items-center justify-center">
+                                    <Search className="w-3.5 h-3.5 text-brand-600" />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100">Search Jobs</p>
+                                    <p className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 font-headline">Search Jobs</p>
                                 </div>
-                                <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-300" />
+                                <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
                             </Link>
-                            <Link href="/dashboard/saved" className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 dark:hover:bg-[#22252f] transition-colors group">
-                                <div className="w-8 h-8 rounded-lg bg-sky-50 dark:bg-sky-900/30 flex items-center justify-center">
+                            <Link href="/dashboard/saved" className="flex items-center gap-3 px-5 py-3 hover:bg-midas-surface-low/50 dark:hover:bg-[#22252f] transition-colors group">
+                                <div className="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-900/30 flex items-center justify-center">
                                     <Bookmark className="w-3.5 h-3.5 text-sky-500" />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100">Saved Jobs</p>
-                                    {savedCount > 0 && <p className="text-[10px] text-gray-300 dark:text-gray-300">{savedCount} saved</p>}
+                                    <p className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 font-headline">Saved Jobs</p>
+                                    {savedCount > 0 && <p className="text-[10px] text-slate-400 dark:text-slate-500">{savedCount} saved</p>}
                                 </div>
-                                <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-300" />
+                                <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
                             </Link>
-                            <Link href="/dashboard/applications" className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 dark:hover:bg-[#22252f] transition-colors group">
-                                <div className="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center">
-                                    <Briefcase className="w-3.5 h-3.5 text-violet-500" />
+                            <Link href="/dashboard/applications" className="flex items-center gap-3 px-5 py-3 hover:bg-midas-surface-low/50 dark:hover:bg-[#22252f] transition-colors group">
+                                <div className="w-8 h-8 rounded-xl bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center">
+                                    <Briefcase className="w-3.5 h-3.5 text-secondary-DEFAULT" />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100">Applications</p>
-                                    {appliedCount > 0 && <p className="text-[10px] text-gray-300 dark:text-gray-300">{appliedCount} tracked</p>}
+                                    <p className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 font-headline">Applications</p>
+                                    {appliedCount > 0 && <p className="text-[10px] text-slate-400 dark:text-slate-500">{appliedCount} tracked</p>}
                                 </div>
-                                <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-300" />
+                                <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
                             </Link>
                         </div>
                     </div>
