@@ -76,19 +76,12 @@ export async function POST(request) {
       await incrementAnonymousScan(scanCheck.anonymousIp);
     }
 
-    // Deduct: free scan or token
-    if (!scanCheck.adminPass) {
-      if (scanCheck.isFree) {
-        if (scanCheck.isMidasSearchFree) {
-          await import('@/lib/tokens').then(m => m.incrementWeeklyMidasScan(userId));
-        } else {
-          await incrementDailyScan(userId);
-        }
-      } else {
-        const deducted = await deductToken(userId, scanCheck.tokenCost || 1);
-        if (!deducted.success) {
-          return NextResponse.json({ error: 'Failed to deduct token' }, { status: 403 });
-        }
+    // Pre-check: if paid scan, verify balance before starting
+    if (!scanCheck.adminPass && !scanCheck.isFree) {
+      const { getTokenBalance } = await import('@/lib/tokens');
+      const balance = await getTokenBalance(userId);
+      if (balance < (scanCheck.tokenCost || 1)) {
+        return NextResponse.json({ error: 'Insufficient token balance' }, { status: 403 });
       }
     }
 
@@ -128,6 +121,23 @@ export async function POST(request) {
 
     // Match using the reliable pipeline (keyword + LLM hybrid)
     const matches = await matchJobs(filteredJobs, profile, {}, onProgress, enrichedPreferences);
+
+    // Deduct tokens/increment counters AFTER successful work
+    if (!scanCheck.adminPass) {
+      try {
+        if (scanCheck.isFree) {
+          if (scanCheck.isMidasSearchFree) {
+            await import('@/lib/tokens').then(m => m.incrementWeeklyMidasScan(userId));
+          } else {
+            await incrementDailyScan(userId);
+          }
+        } else {
+          await deductToken(userId, scanCheck.tokenCost || 1);
+        }
+      } catch (deductErr) {
+        console.error('Post-search token deduction error:', deductErr);
+      }
+    }
 
     return NextResponse.json({
       matches,

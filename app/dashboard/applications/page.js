@@ -3,6 +3,7 @@ import { Briefcase, Search, ExternalLink, Clock, X, CheckCircle, RefreshCw, Star
 import Link from 'next/link';
 import { useApp } from '@/contexts/AppContext';
 import { exportJobsToCSV } from '@/lib/export-csv';
+import { stripHtml } from '@/lib/strip-html';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { useState, useRef, useEffect } from 'react';
 
@@ -197,10 +198,6 @@ export default function ApplicationsPage() {
         return 1;
     };
 
-    const stripHtml = (html) => {
-        if (!html) return '';
-        return html.replace(/<[^>]*>/g, '');
-    };
 
     const tabs = [
         { id: 'all', label: 'All Applications', count: appliedJobsData.length },

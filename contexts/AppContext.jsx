@@ -9,7 +9,7 @@ const AppContext = createContext(null);
 
 function safeSetItem(key, value) {
     try {
-        safeSetItem(key, value);
+        localStorage.setItem(key, value);
     } catch {
         // localStorage quota exceeded — silently fail
         // Could add cleanup of old keys here if needed

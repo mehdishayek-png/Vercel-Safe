@@ -161,7 +161,7 @@ export function MatchResultsGrid({
                         <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-tr from-teal-200/20 to-sky-200/15 rounded-full blur-2xl pointer-events-none" />
                         <div className="relative">
                             <div className="w-14 h-14 bg-gradient-to-br from-indigo-100 to-violet-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
-                                <Search className="w-7 h-7 text-indigo-600" />
+                                <Search className="w-7 h-7 text-brand-600" />
                             </div>
                             <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Ready to find your next role</h2>
                             <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
@@ -174,7 +174,7 @@ export function MatchResultsGrid({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="bg-gradient-to-br from-white to-indigo-50/40 dark:from-[#1a1d27] dark:to-indigo-900/10 rounded-xl border border-indigo-100/50 dark:border-indigo-800/30 p-5 shadow-sm hover:shadow-md transition-shadow">
                             <div className="w-9 h-9 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-lg flex items-center justify-center mb-3">
-                                <BrainCircuit className="w-4.5 h-4.5 text-indigo-600" />
+                                <BrainCircuit className="w-4.5 h-4.5 text-brand-600" />
                             </div>
                             <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 mb-1">AI-Powered Matching</h3>
                             <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
@@ -218,7 +218,7 @@ export function MatchResultsGrid({
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                             <div className="bg-indigo-50/50 dark:bg-indigo-900/20 rounded-lg py-3 px-2">
-                                <div className="text-2xl font-bold text-indigo-600 mb-1">7</div>
+                                <div className="text-2xl font-bold text-brand-600 mb-1">7</div>
                                 <div className="text-[11px] text-gray-500 font-medium">Scoring Signals</div>
                                 <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Keywords, seniority, location, role family, depth, recency, prestige</div>
                             </div>

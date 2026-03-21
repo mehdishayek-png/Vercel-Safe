@@ -3,6 +3,7 @@ import { Bookmark, Search, X, ExternalLink, ChevronDown, Star, Eye, Download, Ch
 import Link from 'next/link';
 import { useApp } from '@/contexts/AppContext';
 import { exportJobsToCSV } from '@/lib/export-csv';
+import { stripHtml } from '@/lib/strip-html';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { useState } from 'react';
 
@@ -58,10 +59,6 @@ export default function SavedJobsPage() {
         }
     };
 
-    const stripHtml = (html) => {
-        if (!html) return '';
-        return html.replace(/<[^>]*>/g, '');
-    };
 
     const getOverallDots = (job) => {
         const score = job.analysis?.fit_score || job.match_score || 0;
