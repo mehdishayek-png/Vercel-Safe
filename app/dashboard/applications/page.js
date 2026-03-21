@@ -14,7 +14,7 @@ function DotIndicator({ filled, total = 5 }) {
                 <div
                     key={i}
                     className={`w-[7px] h-[7px] rounded-full ${
-                        i < filled ? 'bg-teal-500' : 'bg-gray-200 dark:bg-gray-700'
+                        i < filled ? 'bg-brand-600' : 'bg-slate-200 dark:bg-slate-700'
                     }`}
                 />
             ))}
@@ -224,30 +224,30 @@ export default function ApplicationsPage() {
         <div className="max-w-[1100px] space-y-0">
             {/* Page header */}
             <div className="mb-6">
-                <h1 className="text-[22px] font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Applications</h1>
-                <p className="text-sm text-gray-400 dark:text-gray-300 mt-1">Track and manage your job applications</p>
+                <h1 className="font-headline text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Applications</h1>
+                <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Track and manage your job applications</p>
             </div>
 
             {filteredApps.length === 0 && filter === 'all' ? (
-                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] p-16 text-center">
-                    <div className="w-16 h-16 bg-gray-50 dark:bg-[#13151d] rounded-2xl flex items-center justify-center mx-auto mb-5">
-                        <Briefcase className="w-8 h-8 text-gray-300" />
+                <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-16 text-center shadow-sm">
+                    <div className="w-16 h-16 bg-brand-50 dark:bg-brand-900/20 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                        <Briefcase className="w-8 h-8 text-brand-400" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No Applications Yet</h3>
-                    <p className="text-sm text-gray-400 dark:text-gray-300 mb-8 max-w-md mx-auto leading-relaxed">
+                    <h3 className="text-lg font-extrabold text-gray-900 dark:text-gray-100 mb-2 font-headline">No Applications Yet</h3>
+                    <p className="text-sm text-slate-400 dark:text-slate-500 mb-8 max-w-md mx-auto leading-relaxed">
                         Start by searching for jobs and marking them as applied. Your application history will appear here for easy tracking.
                     </p>
                     <Link
                         href="/dashboard/search"
-                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-bold hover:bg-brand-700 transition-colors shadow-md shadow-brand-600/20 font-headline"
                     >
                         <Search className="w-4 h-4" /> Find Jobs
                     </Link>
                 </div>
             ) : (
-                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
+                <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] overflow-hidden shadow-sm">
                     {/* Tabs */}
-                    <div className="flex items-center justify-between border-b border-gray-200 dark:border-[#2d3140]">
+                    <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-[#2d3140]">
                         <div className="flex">
                             {tabs.map(tab => (
                                 <button
@@ -262,13 +262,13 @@ export default function ApplicationsPage() {
                                     {tab.label}
                                     {tab.count > 0 && (
                                         <span className={`ml-1.5 text-[11px] font-semibold px-1.5 py-0.5 rounded-full ${
-                                            filter === tab.id ? 'bg-teal-50 text-teal-600' : 'bg-gray-100 dark:bg-[#22252f] text-gray-400 dark:text-gray-300'
+                                            filter === tab.id ? 'bg-brand-50 text-brand-600' : 'bg-slate-100 dark:bg-[#22252f] text-slate-400 dark:text-slate-500'
                                         }`}>
                                             {tab.count}
                                         </span>
                                     )}
                                     {filter === tab.id && (
-                                        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-teal-500" />
+                                        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-600" />
                                     )}
                                 </button>
                             ))}
@@ -285,7 +285,7 @@ export default function ApplicationsPage() {
                     </div>
 
                     {/* Column headers */}
-                    <div className="hidden md:grid grid-cols-[40px,1fr,180px,120px,100px,80px] items-center gap-0 px-4 py-2.5 bg-gray-50/80 dark:bg-[#13151d]/80 border-b border-gray-100 dark:border-[#2d3140] text-[11px] font-medium text-gray-400 dark:text-gray-300 uppercase tracking-wider select-none">
+                    <div className="hidden md:grid grid-cols-[40px,1fr,180px,120px,100px,80px] items-center gap-0 px-5 py-2.5 bg-midas-surface-low/50 dark:bg-[#13151d]/80 border-b border-slate-100 dark:border-[#2d3140] text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] select-none font-headline">
                         <div className="flex items-center justify-center">
                             <input
                                 type="checkbox"
@@ -347,7 +347,7 @@ export default function ApplicationsPage() {
                                                             localStorage.setItem(key, JSON.stringify(job));
                                                         } catch (e) { /* ignore */ }
                                                     }}
-                                                    className="text-[13px] font-medium text-gray-900 dark:text-gray-100 truncate hover:text-teal-600 transition-colors"
+                                                    className="text-[13px] font-medium text-gray-900 dark:text-gray-100 truncate hover:text-brand-600 transition-colors"
                                                 >
                                                     {stripHtml(job.title)}
                                                 </Link>
@@ -387,7 +387,7 @@ export default function ApplicationsPage() {
 
                                     {/* Status */}
                                     <div>
-                                        <span className="inline-flex items-center gap-1 px-2 py-[3px] rounded-full text-[10px] font-semibold bg-teal-50 text-teal-600 border border-teal-100">
+                                        <span className="inline-flex items-center gap-1 px-2 py-[3px] rounded-full text-[10px] font-semibold bg-brand-50 text-brand-600 border border-brand-100">
                                             <CheckCircle className="w-2.5 h-2.5" />
                                             Applied
                                         </span>
@@ -411,7 +411,7 @@ export default function ApplicationsPage() {
                                                     localStorage.setItem(key, JSON.stringify(job));
                                                 } catch (e) { /* ignore */ }
                                             }}
-                                            className="p-1.5 text-gray-300 hover:text-teal-600 hover:bg-teal-50 rounded-md transition-colors"
+                                            className="p-1.5 text-gray-300 hover:text-brand-600 hover:bg-brand-50 rounded-md transition-colors"
                                             title="View details"
                                         >
                                             <Eye className="w-3.5 h-3.5" />
@@ -421,7 +421,7 @@ export default function ApplicationsPage() {
                                                 href={job.apply_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="p-1.5 text-gray-300 hover:text-teal-600 hover:bg-teal-50 rounded-md transition-colors"
+                                                className="p-1.5 text-gray-300 hover:text-brand-600 hover:bg-brand-50 rounded-md transition-colors"
                                                 title="Open original listing"
                                             >
                                                 <ExternalLink className="w-3.5 h-3.5" />
@@ -514,9 +514,9 @@ export default function ApplicationsPage() {
 
             {/* Follow-up reminder */}
             {appliedJobsData.length > 0 && (
-                <div className="mt-5 bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2d3140] rounded-xl p-4 flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-teal-50 flex items-center justify-center shrink-0">
-                        <RefreshCw className="w-3.5 h-3.5 text-teal-500" />
+                <div className="mt-5 bg-white dark:bg-[#1a1d27] border border-slate-200/60 dark:border-[#2d3140] rounded-2xl p-4 flex items-start gap-3 shadow-sm">
+                    <div className="w-8 h-8 rounded-xl bg-brand-50 flex items-center justify-center shrink-0">
+                        <RefreshCw className="w-3.5 h-3.5 text-brand-500" />
                     </div>
                     <div>
                         <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Follow-up reminder</p>

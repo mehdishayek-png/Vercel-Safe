@@ -120,24 +120,24 @@ export default function InterviewPrepPage() {
         <div className="max-w-4xl mx-auto space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <GraduationCap className="w-5 h-5 text-brand-600" />
+                <h1 className="font-headline text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight flex items-center gap-2">
+                    <GraduationCap className="w-6 h-6 text-brand-600" />
                     Interview Prep
                 </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
+                <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
                     Select a job to generate personalized interview questions, answer frameworks, and company research.
                 </p>
             </div>
 
             {/* Auth gate — show sign-in prompt upfront */}
             {!isSignedIn && (
-                <div className="bg-brand-50 dark:bg-brand-900/10 border border-brand-200 dark:border-brand-800 rounded-xl p-5 flex items-center justify-between gap-4">
+                <div className="bg-gradient-to-r from-brand-50 to-secondary-DEFAULT/5 dark:from-brand-900/10 dark:to-secondary-DEFAULT/5 border border-brand-200 dark:border-brand-800/30 rounded-2xl p-5 flex items-center justify-between gap-4 shadow-sm">
                     <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Sign in to use Interview Prep</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-300 mt-0.5">Generate personalized questions, answer frameworks, and company research for your matched jobs.</p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-gray-100 font-headline">Sign in to use Interview Prep</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Generate personalized questions, answer frameworks, and company research for your matched jobs.</p>
                     </div>
                     <SignInButton mode="modal">
-                        <button className="shrink-0 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors cursor-pointer">
+                        <button className="shrink-0 px-5 py-2.5 text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-colors cursor-pointer shadow-md shadow-brand-600/20 font-headline">
                             Sign In
                         </button>
                     </SignInButton>
@@ -146,13 +146,13 @@ export default function InterviewPrepPage() {
 
             {/* Job Selection */}
             {prepJobs.length === 0 ? (
-                <div className="bg-surface-50 dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-xl p-8 text-center">
-                    <BookOpen className="w-10 h-10 text-gray-300 dark:text-gray-300 mx-auto mb-3" />
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">No jobs to prep for yet</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-300">
+                <div className="bg-white dark:bg-[#1a1d27] border border-slate-200/60 dark:border-[#2d3140] rounded-2xl p-8 text-center shadow-sm">
+                    <BookOpen className="w-10 h-10 text-brand-400 mx-auto mb-3" />
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-1 font-headline">No jobs to prep for yet</h3>
+                    <p className="text-xs text-slate-400 dark:text-slate-500">
                         Run a search and save some jobs first. Your saved jobs and strong matches will appear here.
                     </p>
-                    <Link href="/dashboard/search" className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors">
+                    <Link href="/dashboard/search" className="inline-flex items-center gap-1.5 mt-3 text-sm font-bold text-brand-600 hover:text-brand-700 transition-colors font-headline">
                         <Search className="w-4 h-4" /> Search Jobs
                     </Link>
                 </div>

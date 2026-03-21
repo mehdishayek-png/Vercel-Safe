@@ -21,10 +21,12 @@ function Toast({ message, onClose }) {
 
 function SectionCard({ title, icon: Icon, children }) {
     return (
-        <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-100 dark:border-[#2d3140] overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140] flex items-center gap-2">
-                <Icon className="w-4 h-4 text-gray-400 dark:text-gray-300" />
-                <h2 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
+        <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] overflow-hidden shadow-sm">
+            <div className="px-5 py-4 border-b border-slate-100 dark:border-[#2d3140] flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-900/20 flex items-center justify-center">
+                    <Icon className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+                </div>
+                <h2 className="text-[14px] font-bold text-gray-900 dark:text-gray-100 font-headline">{title}</h2>
             </div>
             <div className="p-5">{children}</div>
         </div>
@@ -42,7 +44,7 @@ function TextInput({ value, onChange, placeholder, type = 'text', ...props }) {
             value={value}
             onChange={onChange}
             placeholder={placeholder}
-            className="w-full px-3 py-2 text-[13px] text-gray-900 dark:text-gray-200 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors placeholder:text-gray-300 dark:placeholder:text-gray-600"
+            className="w-full px-3 py-2.5 text-[13px] text-gray-900 dark:text-gray-200 bg-midas-surface-low/50 dark:bg-[#22252f] border border-slate-200/60 dark:border-[#2d3140] rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-slate-300 dark:placeholder:text-gray-600"
             {...props}
         />
     );
@@ -53,7 +55,7 @@ function SelectInput({ value, onChange, children }) {
         <select
             value={value}
             onChange={onChange}
-            className="w-full px-3 py-2 text-[13px] text-gray-900 dark:text-gray-200 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors appearance-none cursor-pointer"
+            className="w-full px-3 py-2.5 text-[13px] text-gray-900 dark:text-gray-200 bg-midas-surface-low/50 dark:bg-[#22252f] border border-slate-200/60 dark:border-[#2d3140] rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all appearance-none cursor-pointer"
         >
             {children}
         </select>
@@ -154,14 +156,14 @@ export default function SettingsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50/50 dark:bg-[#13151d]">
+        <div className="min-h-screen">
             {toast && <Toast message={toast} onClose={() => setToast(null)} />}
 
-            <div className="max-w-[800px] mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5">
+            <div className="max-w-[800px] mx-auto px-4 sm:px-6 py-2 sm:py-4 space-y-5">
                 {/* Page header */}
                 <div>
-                    <h1 className="text-[18px] font-bold text-gray-900 dark:text-gray-100">Settings</h1>
-                    <p className="text-[13px] text-gray-400 dark:text-gray-300 mt-0.5">Manage your profile, preferences, and data</p>
+                    <h1 className="font-headline text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Settings</h1>
+                    <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Manage your profile, preferences, and data</p>
                 </div>
 
                 {/* ---- Profile Section ---- */}
@@ -270,7 +272,7 @@ export default function SettingsPage() {
                         <div className="flex justify-end pt-1">
                             <button
                                 onClick={handleSaveProfile}
-                                className="px-4 py-2 text-[13px] font-medium text-white bg-gray-900 dark:bg-gray-100 dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
+                                className="px-5 py-2.5 text-[13px] font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-colors cursor-pointer shadow-md shadow-brand-600/20 font-headline"
                             >
                                 Save Profile
                             </button>
@@ -341,7 +343,7 @@ export default function SettingsPage() {
                         <div className="flex justify-end pt-1">
                             <button
                                 onClick={handleSavePreferences}
-                                className="px-4 py-2 text-[13px] font-medium text-white bg-gray-900 dark:bg-gray-100 dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
+                                className="px-5 py-2.5 text-[13px] font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-colors cursor-pointer shadow-md shadow-brand-600/20 font-headline"
                             >
                                 Save Preferences
                             </button>
