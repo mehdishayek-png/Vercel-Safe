@@ -58,7 +58,7 @@ export function Features() {
             <div className="container mx-auto px-4 max-w-6xl">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">Built for precision, not noise</h2>
-                    <p className="text-gray-500 dark:text-gray-300 text-lg max-w-xl mx-auto">
+                    <p className="text-gray-700 dark:text-gray-300 text-lg max-w-xl mx-auto">
                         Everything you need to land your next role, powered by AI that actually understands your profile.
                     </p>
                 </div>
@@ -86,7 +86,7 @@ export function Features() {
                                     <f.icon className="w-5 h-5" />
                                 </div>
                                 <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">{f.title}</h3>
-                                <p className="text-gray-500 dark:text-gray-300 text-sm leading-relaxed">{f.desc}</p>
+                                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{f.desc}</p>
                             </div>
                         </motion.div>
                     ))}

@@ -58,7 +58,7 @@ export function Hero({ onStart, onDemo }) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
-                    className="text-lg md:text-xl lg:text-2xl text-gray-500 max-w-3xl mx-auto mb-10 leading-relaxed"
+                    className="text-lg md:text-xl lg:text-2xl text-gray-700 max-w-3xl mx-auto mb-10 leading-relaxed"
                 >
                     Upload your resume. Our AI scans 8+ sources, scores every job
                     against your profile, and delivers only the matches worth your time.
@@ -83,7 +83,7 @@ export function Hero({ onStart, onDemo }) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.5 }}
-                    className="text-[13px] text-gray-400 mt-4"
+                    className="text-[13px] text-gray-500 mt-4"
                 >
                     Free during beta · 5 scans daily
                 </motion.p>
@@ -96,7 +96,7 @@ export function Hero({ onStart, onDemo }) {
                     className="mt-12 flex flex-wrap justify-center gap-x-8 gap-y-3"
                 >
                     {['In-memory processing only', 'Resume never stored', 'Not used for AI training'].map((text) => (
-                        <span key={text} className="text-sm text-gray-400 flex items-center gap-2">
+                        <span key={text} className="text-sm text-gray-600 flex items-center gap-2">
                             <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
                             {text}
                         </span>
@@ -110,7 +110,7 @@ export function Hero({ onStart, onDemo }) {
                     transition={{ duration: 0.8, delay: 0.8 }}
                     className="mt-8 flex flex-col items-center gap-3"
                 >
-                    <span className="text-xs text-gray-400 uppercase tracking-widest font-medium">Scanning jobs from</span>
+                    <span className="text-xs text-gray-500 uppercase tracking-widest font-medium">Scanning jobs from</span>
                     <div className="flex flex-wrap justify-center gap-2">
                         {['LinkedIn', 'Indeed', 'Google Jobs', 'Career Pages', '350+ Sources'].map((source) => (
                             <span
@@ -118,7 +118,7 @@ export function Hero({ onStart, onDemo }) {
                                 className={`px-3 py-1 rounded-full text-xs font-medium border ${
                                     source === '350+ ATS'
                                         ? 'bg-brand-50 text-brand-600 border-brand-200/60'
-                                        : 'bg-gray-100 text-gray-500 border-gray-200/60'
+                                        : 'bg-gray-100 text-gray-700 border-gray-200/60'
                                 }`}
                             >
                                 {source}
