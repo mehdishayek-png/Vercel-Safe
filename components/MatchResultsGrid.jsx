@@ -171,36 +171,36 @@ export function MatchResultsGrid({
 
                     {/* Feature cards grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div className="bg-white dark:from-[#1a1d27] dark:to-brand-900/10 rounded-2xl border border-slate-200/60 dark:border-brand-800/30 p-5 shadow-sm hover:shadow-md transition-shadow">
-                            <div className="w-10 h-10 bg-gradient-to-br from-brand-100 to-brand-50 rounded-xl flex items-center justify-center mb-3">
-                                <BrainCircuit className="w-5 h-5 text-brand-600" />
+                        <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm hover:shadow-md transition-shadow">
+                            <div className="w-10 h-10 bg-gradient-to-br from-brand-100 to-brand-50 dark:from-brand-900/40 dark:to-brand-800/20 rounded-xl flex items-center justify-center mb-3">
+                                <BrainCircuit className="w-5 h-5 text-brand-600 dark:text-brand-400" />
                             </div>
                             <h3 className="text-[13px] font-bold text-gray-900 dark:text-gray-100 mb-1 font-headline">AI-Powered Matching</h3>
                             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
                                 Our scoring engine evaluates keyword overlap, seniority fit, location match, role family alignment, and job depth — not just keywords.
                             </p>
                         </div>
-                        <div className="bg-white dark:from-[#1a1d27] dark:to-emerald-900/10 rounded-2xl border border-slate-200/60 dark:border-emerald-800/30 p-5 shadow-sm hover:shadow-md transition-shadow">
-                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-xl flex items-center justify-center mb-3">
-                                <Globe className="w-5 h-5 text-emerald-600" />
+                        <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm hover:shadow-md transition-shadow">
+                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/20 rounded-xl flex items-center justify-center mb-3">
+                                <Globe className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                             </div>
                             <h3 className="text-[13px] font-bold text-gray-900 dark:text-gray-100 mb-1 font-headline">4 Job Sources</h3>
                             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
                                 We aggregate from LinkedIn, Indeed, Glassdoor, and Fantastic.Jobs — casting a wide net so you don't miss opportunities.
                             </p>
                         </div>
-                        <div className="bg-white dark:from-[#1a1d27] dark:to-violet-900/10 rounded-2xl border border-slate-200/60 dark:border-violet-800/30 p-5 shadow-sm hover:shadow-md transition-shadow">
-                            <div className="w-10 h-10 bg-gradient-to-br from-violet-100 to-violet-50 rounded-xl flex items-center justify-center mb-3">
-                                <Target className="w-5 h-5 text-secondary-DEFAULT" />
+                        <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm hover:shadow-md transition-shadow">
+                            <div className="w-10 h-10 bg-gradient-to-br from-violet-100 to-violet-50 dark:from-violet-900/40 dark:to-violet-800/20 rounded-xl flex items-center justify-center mb-3">
+                                <Target className="w-5 h-5 text-secondary-DEFAULT dark:text-violet-400" />
                             </div>
                             <h3 className="text-[13px] font-bold text-gray-900 dark:text-gray-100 mb-1 font-headline">Deep Analysis</h3>
                             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
                                 Expand any job card to get AI-powered fit scores, salary estimates, skill gap analysis, and a personalized verdict.
                             </p>
                         </div>
-                        <div className="bg-white dark:from-[#1a1d27] dark:to-sky-900/10 rounded-2xl border border-slate-200/60 dark:border-sky-800/30 p-5 shadow-sm hover:shadow-md transition-shadow">
-                            <div className="w-10 h-10 bg-gradient-to-br from-sky-100 to-sky-50 rounded-xl flex items-center justify-center mb-3">
-                                <FileText className="w-5 h-5 text-sky-600" />
+                        <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm hover:shadow-md transition-shadow">
+                            <div className="w-10 h-10 bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-900/40 dark:to-sky-800/20 rounded-xl flex items-center justify-center mb-3">
+                                <FileText className="w-5 h-5 text-sky-600 dark:text-sky-400" />
                             </div>
                             <h3 className="text-[13px] font-bold text-gray-900 dark:text-gray-100 mb-1 font-headline">Cover Letters</h3>
                             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
@@ -210,26 +210,26 @@ export function MatchResultsGrid({
                     </div>
 
                     {/* How scoring works */}
-                    <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-slate-700/30 p-5 shadow-sm">
-                        <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mb-4 flex items-center gap-1.5 font-headline">
+                    <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm">
+                        <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] mb-4 flex items-center gap-1.5 font-headline">
                             <TrendingUp className="w-3.5 h-3.5 text-brand-500" />
                             How scoring works
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                             <div className="bg-brand-50/50 dark:bg-brand-900/20 rounded-xl py-4 px-3">
-                                <div className="text-2xl font-extrabold text-brand-600 mb-1 font-headline">7</div>
-                                <div className="text-[11px] text-slate-500 font-semibold font-headline">Scoring Signals</div>
-                                <div className="text-[10px] text-slate-400 mt-1 leading-relaxed">Keywords, seniority, location, role family, depth, recency, prestige</div>
+                                <div className="text-2xl font-extrabold text-brand-600 dark:text-brand-400 mb-1 font-headline">7</div>
+                                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold font-headline">Scoring Signals</div>
+                                <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">Keywords, seniority, location, role family, depth, recency, prestige</div>
                             </div>
                             <div className="bg-emerald-50/50 dark:bg-emerald-900/20 rounded-xl py-4 px-3">
-                                <div className="text-2xl font-extrabold text-emerald-600 mb-1 font-headline">0–100</div>
-                                <div className="text-[11px] text-slate-500 font-semibold font-headline">Match Score</div>
-                                <div className="text-[10px] text-slate-400 mt-1 leading-relaxed">Composite score with multipliers — 80+ is an excellent fit</div>
+                                <div className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mb-1 font-headline">0–100</div>
+                                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold font-headline">Match Score</div>
+                                <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">Composite score with multipliers — 80+ is an excellent fit</div>
                             </div>
                             <div className="bg-violet-50/50 dark:bg-violet-900/20 rounded-xl py-4 px-3">
-                                <div className="text-2xl font-extrabold text-secondary-DEFAULT mb-1 font-headline">&lt;60s</div>
-                                <div className="text-[11px] text-slate-500 font-semibold font-headline">Scan Time</div>
-                                <div className="text-[10px] text-slate-400 mt-1 leading-relaxed">Fetches and scores hundreds of jobs in under a minute</div>
+                                <div className="text-2xl font-extrabold text-secondary-DEFAULT dark:text-violet-400 mb-1 font-headline">&lt;60s</div>
+                                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold font-headline">Scan Time</div>
+                                <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">Fetches and scores hundreds of jobs in under a minute</div>
                             </div>
                         </div>
                     </div>
