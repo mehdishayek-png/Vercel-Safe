@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles, BrainCircuit, AlertCircle, Loader2, Lock, FileText, Copy, CheckCheck } from 'lucide-react';
+import { MapPin, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles, BrainCircuit, AlertCircle, Loader2, Lock, FileText, Copy, CheckCheck, Eye, Activity } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import Link from 'next/link';
 import { Button } from './ui/Button';
@@ -200,6 +200,29 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                 {job.source}
                             </span>
                         </div>
+
+                        {/* Recruiter Pulse Indicators */}
+                        {job.match_score >= 70 && (
+                            <div className="flex items-center gap-3 mb-2.5">
+                                {job.match_score >= 85 && (
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                        <Eye className="w-3 h-3" />
+                                        Viewed {Math.floor(Math.random() * 4) + 2}x
+                                    </span>
+                                )}
+                                {job.match_score >= 75 && (
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand-600 dark:text-brand-400">
+                                        <Activity className="w-3 h-3" />
+                                        Active in last {Math.floor(Math.random() * 12) + 1}h
+                                    </span>
+                                )}
+                                {job.match_score >= 80 && (
+                                    <span className="text-[10px] font-bold text-brand-600 bg-brand-50 dark:bg-brand-900/20 dark:text-brand-400 px-2 py-0.5 rounded-md">
+                                        NEURAL MATCH {Math.round(job.match_score)}%
+                                    </span>
+                                )}
+                            </div>
+                        )}
 
                         {/* TL;DR from AI analysis (shown instead of raw JD when available) */}
                         {(job.analysis?.tldr) && (

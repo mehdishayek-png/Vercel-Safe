@@ -1,13 +1,18 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Search, Bookmark, Briefcase, Settings, ChevronLeft, X, GraduationCap, Sparkles } from 'lucide-react';
+import { Home, Search, Bookmark, Briefcase, Settings, ChevronLeft, X, GraduationCap, Sparkles, Mic, Network, Target, SlidersHorizontal, LayoutGrid } from 'lucide-react';
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { useApp } from '@/contexts/AppContext';
 
 const NAV_ITEMS = [
     { href: '/dashboard', icon: Home, label: 'Home' },
-    { href: '/dashboard/search', icon: Search, label: 'Search Jobs' },
+    { href: '/dashboard/search', icon: Search, label: 'Opportunities' },
+    { href: '/dashboard/pipeline', icon: LayoutGrid, label: 'Pipeline' },
+    { href: '/dashboard/skill-bridge', icon: Target, label: 'Skill Analysis' },
+    { href: '/dashboard/network', icon: Network, label: 'Network' },
+    { href: '/dashboard/ai-refinement', icon: SlidersHorizontal, label: 'AI Refinement' },
+    { href: '/dashboard/voice-concierge', icon: Mic, label: 'Voice Concierge' },
     { href: '/dashboard/saved', icon: Bookmark, label: 'Saved Jobs' },
     { href: '/dashboard/applications', icon: Briefcase, label: 'Applications' },
     { href: '/dashboard/prep', icon: GraduationCap, label: 'Interview Prep' },
@@ -46,7 +51,10 @@ export function Sidebar({ isOpen, onClose }) {
                     <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-600 to-secondary-DEFAULT flex items-center justify-center shadow-md shadow-brand-600/20">
                         <Sparkles className="w-4 h-4 text-white" />
                     </div>
-                    <span className="text-[15px] font-bold text-gray-900 dark:text-white tracking-tight font-headline flex-1">Midas Match</span>
+                    <div className="flex-1 min-w-0">
+                        <span className="text-[15px] font-bold text-gray-900 dark:text-white tracking-tight font-headline block">Midas Match</span>
+                        <span className="text-[9px] font-bold tracking-[0.15em] text-gray-400 dark:text-gray-500 uppercase">AI Orchestration</span>
+                    </div>
                     <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600 md:hidden cursor-pointer">
                         <X className="w-5 h-5" />
                     </button>
