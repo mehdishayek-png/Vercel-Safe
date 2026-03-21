@@ -93,6 +93,9 @@ export default function SearchPage() {
             setJobs([]);
             try { localStorage.removeItem('midas_results'); } catch {}
 
+            // Clear any previous error (e.g. from a prior failed upload)
+            setSearchError(null);
+
             setProfile(data.profile);
             if (typeof data.profile.experience_years === 'number') setExperienceYears(data.profile.experience_years);
             if (data.profile.headline) setJobTitle(data.profile.headline);

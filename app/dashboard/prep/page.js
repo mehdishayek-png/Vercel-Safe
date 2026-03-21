@@ -4,6 +4,8 @@ import { useApp } from '@/contexts/AppContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, ChevronDown, Sparkles, Target, MessageSquare, Building2, Lightbulb, AlertTriangle, Mic, Loader2, BookOpen, Search } from 'lucide-react';
 import Link from 'next/link';
+import { useUser } from '@clerk/nextjs';
+import { SignInButton } from '@clerk/nextjs';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 
 const TYPE_COLORS = {
@@ -71,6 +73,7 @@ function QuestionCard({ q, index }) {
 }
 
 export default function InterviewPrepPage() {
+    const { isSignedIn } = useUser();
     const { profile, jobs, savedJobIds, experienceYears, jobTitle, whatIDo } = useApp();
     const [selectedJob, setSelectedJob] = useState(null);
     const [prep, setPrep] = useState(null);
@@ -125,6 +128,21 @@ export default function InterviewPrepPage() {
                     Select a job to generate personalized interview questions, answer frameworks, and company research.
                 </p>
             </div>
+
+            {/* Auth gate — show sign-in prompt upfront */}
+            {!isSignedIn && (
+                <div className="bg-brand-50 dark:bg-brand-900/10 border border-brand-200 dark:border-brand-800 rounded-xl p-5 flex items-center justify-between gap-4">
+                    <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Sign in to use Interview Prep</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Generate personalized questions, answer frameworks, and company research for your matched jobs.</p>
+                    </div>
+                    <SignInButton mode="modal">
+                        <button className="shrink-0 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors cursor-pointer">
+                            Sign In
+                        </button>
+                    </SignInButton>
+                </div>
+            )}
 
             {/* Job Selection */}
             {prepJobs.length === 0 ? (

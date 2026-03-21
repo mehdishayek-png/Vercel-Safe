@@ -237,6 +237,9 @@ export function JobDashboard({ apiKeys, onBack }) {
                 throw new Error(errData.error || `Failed to parse resume (${res.status})`);
             }
             const data = await res.json();
+            // Clear any previous error (e.g. from a prior failed upload)
+            setSearchError(null);
+
             setProfile(data.profile);
             if (typeof data.profile.experience_years === 'number') setExperienceYears(data.profile.experience_years);
             if (data.profile.headline) setJobTitle(data.profile.headline);

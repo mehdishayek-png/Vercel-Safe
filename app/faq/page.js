@@ -105,10 +105,10 @@ export default function FAQPage() {
                     Everything you need to know about Midas Match. Can&apos;t
                     find what you&apos;re looking for? Reach out to us at{" "}
                     <a
-                        href="mailto:support@midasmatch.com"
+                        href="mailto:midasmatchsupport@gmail.com"
                         className="text-indigo-600 hover:underline"
                     >
-                        support@midasmatch.com
+                        midasmatchsupport@gmail.com
                     </a>
                     .
                 </p>

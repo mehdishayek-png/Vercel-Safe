@@ -56,7 +56,7 @@ export function HowItWorks() {
                                 key={i}
                                 initial={{ opacity: 0, x: -20 }}
                                 whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
+                                viewport={{ once: true, amount: 0.2 }}
                                 transition={{ delay: i * 0.15 }}
                                 className="flex items-start gap-5 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-sm border border-surface-200 dark:border-[#2d3140] rounded-xl p-6 relative"
                             >

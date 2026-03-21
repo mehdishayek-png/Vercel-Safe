@@ -27,7 +27,7 @@ export default function RefundPolicy() {
                     <section>
                         <h2 className="text-xl font-semibold text-gray-900 mb-3">3. How to Request a Refund</h2>
                         <p className="text-gray-600 text-sm leading-relaxed">
-                            Email <a href="mailto:support@midasmatch.com" className="text-indigo-600 hover:underline">support@midasmatch.com</a> with:
+                            Email <a href="mailto:midasmatchsupport@gmail.com" className="text-indigo-600 hover:underline">midasmatchsupport@gmail.com</a> with:
                         </p>
                         <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1 mt-2">
                             <li>Your registered email address</li>
@@ -49,7 +49,7 @@ export default function RefundPolicy() {
                     <section>
                         <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Contact</h2>
                         <p className="text-gray-600 text-sm leading-relaxed">
-                            For billing or refund inquiries, contact us at <a href="mailto:support@midasmatch.com" className="text-indigo-600 hover:underline">support@midasmatch.com</a>.
+                            For billing or refund inquiries, contact us at <a href="mailto:midasmatchsupport@gmail.com" className="text-indigo-600 hover:underline">midasmatchsupport@gmail.com</a>.
                         </p>
                     </section>
                 </div>

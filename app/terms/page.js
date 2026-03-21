@@ -51,7 +51,7 @@ export default function TermsOfService() {
                     <section>
                         <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Contact</h2>
                         <p className="text-gray-600 text-sm leading-relaxed">
-                            For questions regarding these terms, contact us at <a href="mailto:support@midasmatch.com" className="text-indigo-600 hover:underline">support@midasmatch.com</a>.
+                            For questions regarding these terms, contact us at <a href="mailto:midasmatchsupport@gmail.com" className="text-indigo-600 hover:underline">midasmatchsupport@gmail.com</a>.
                         </p>
                     </section>
                 </div>

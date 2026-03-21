@@ -72,7 +72,7 @@ export default function About() {
                     <section>
                         <h2 className="text-xl font-semibold text-gray-900 mb-3">Contact</h2>
                         <p className="text-gray-600 text-sm leading-relaxed">
-                            Questions or feedback? Reach us at <a href="mailto:support@midasmatch.com" className="text-indigo-600 hover:underline">support@midasmatch.com</a>.
+                            Questions or feedback? Reach us at <a href="mailto:midasmatchsupport@gmail.com" className="text-indigo-600 hover:underline">midasmatchsupport@gmail.com</a>.
                         </p>
                         <p className="text-gray-600 text-sm leading-relaxed mt-3">
                             We read every message and typically respond within 24 hours.

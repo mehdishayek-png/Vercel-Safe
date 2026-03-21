@@ -77,7 +77,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
 
     const stripHtml = (html) => {
         if (!html) return '';
-        return html
+        let text = html
             // Decode entities first (handles double-encoded HTML)
             .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
             .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
@@ -87,6 +87,16 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
             // Second decode pass for remaining entities
             .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
             .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ');
+        // Strip embedded JSON objects/arrays (e.g. theme config data from scraped pages)
+        text = text.replace(/\{[\s\S]*?"[a-zA-Z_-]+"[\s\S]*?:[\s\S]*?\}/g, (match) => {
+            // Only strip if it looks like JSON (has key-value pairs), not natural text
+            if (match.includes('"') && match.includes(':') && (match.includes('{') && match.split('{').length > 2 || match.includes('":'))) {
+                try { JSON.parse(match); return ''; } catch { /* not valid JSON, check if it looks JSON-like */ }
+                if (/^\s*\{.*"[a-zA-Z_-]+":\s*["{[\d]/.test(match)) return '';
+            }
+            return match;
+        });
+        return text.trim();
     };
 
     const cleanTitle = stripHtml(job.title);
