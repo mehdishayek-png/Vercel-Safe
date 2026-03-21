@@ -57,7 +57,7 @@ export function Features() {
         <section className="py-24 relative">
             <div className="container mx-auto px-4 max-w-6xl">
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">Built for precision, not noise</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">Built for precision, not noise</h2>
                     <p className="text-gray-500 dark:text-gray-400 text-lg max-w-xl mx-auto">
                         Everything you need to land your next role, powered by AI that actually understands your profile.
                     </p>
