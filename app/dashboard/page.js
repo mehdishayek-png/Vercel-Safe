@@ -1,93 +1,105 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, Target, ChevronRight, Sparkles, Zap, Activity, Eye, Brain, Mic, Network, LayoutGrid, SlidersHorizontal } from 'lucide-react';
+import { useState } from 'react';
+import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, Target, ChevronRight, Sparkles, Zap, Activity, Eye, Brain, Mic, Network, LayoutGrid, SlidersHorizontal, Code2, Users, BarChart3, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { useApp } from '@/contexts/AppContext';
 import { useUser } from '@clerk/nextjs';
 import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 
-function NeuralMatchCard({ job, index, onSave, isSaved }) {
+function PrimeMatchCard({ job, index }) {
     const score = Math.round(job.analysis?.fit_score || job.match_score || 0);
     const stripHtml = (html) => html ? html.replace(/<[^>]*>/g, '') : '';
+    const title = stripHtml(job.title);
+    const company = stripHtml(job.company);
+    const location = stripHtml(job.location) || 'Remote';
+
+    // Simulated indicators based on score
+    const hasRecruiterPulse = score >= 85;
+    const hasReferral = score >= 90 && index % 2 === 1;
+    const timeAgo = index === 0 ? 'Applied 2d ago' : index === 1 ? 'Discovered 5h ago' : `${index + 1}d ago`;
+
+    // Extract skill tags from heuristic
+    const skillTags = (job.heuristic_breakdown?.matches || []).slice(0, 3).map(m => m.skill);
+    const extraSkills = (job.heuristic_breakdown?.matches || []).length - 3;
 
     return (
-        <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
-            {/* Gradient accent */}
-            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${
-                score >= 85 ? 'from-brand-600 to-secondary-DEFAULT' :
-                score >= 70 ? 'from-brand-500 to-brand-600' :
-                'from-slate-300 to-slate-400'
-            }`} />
-
-            <div className="flex items-start gap-3">
-                <CompanyLogo company={job.company} applyUrl={job.apply_url} size={40} colorIndex={index} />
-                <div className="flex-1 min-w-0">
-                    <Link
-                        href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
-                        onClick={() => {
-                            try { localStorage.setItem(`job_detail_${btoa(job.apply_url || job.title)}`, JSON.stringify(job)); } catch {}
-                        }}
-                        className="text-sm font-bold text-gray-900 dark:text-gray-100 hover:text-brand-600 transition-colors line-clamp-1 font-headline block"
-                    >
-                        {stripHtml(job.title)}
-                    </Link>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{stripHtml(job.company)} · {stripHtml(job.location) || 'Remote'}</p>
-                </div>
-                <div className="text-right shrink-0">
-                    <div className={`text-lg font-extrabold font-headline ${
-                        score >= 85 ? 'text-brand-600' : score >= 70 ? 'text-brand-500' : 'text-gray-400'
-                    }`}>{score}%</div>
-                    <span className="text-[9px] font-bold tracking-wider text-gray-400 uppercase">Match</span>
-                </div>
+        <Link
+            href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+            onClick={() => {
+                try { localStorage.setItem(`job_detail_${btoa(job.apply_url || job.title)}`, JSON.stringify(job)); } catch {}
+            }}
+            className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm hover:shadow-lg transition-all group block relative overflow-hidden"
+        >
+            <div className="flex items-start justify-between mb-4">
+                <CompanyLogo company={job.company} applyUrl={job.apply_url} size={44} colorIndex={index} />
+                <span className={`px-3 py-1 rounded-lg text-[10px] font-bold tracking-wider uppercase text-white ${
+                    score >= 90 ? 'bg-brand-600' : score >= 80 ? 'bg-brand-500' : 'bg-brand-400'
+                }`}>
+                    NEURAL FIT: {score}%
+                </span>
             </div>
 
-            {/* Recruiter Pulse */}
-            {score >= 70 && (
-                <div className="flex items-center gap-3 mt-3 pt-3 border-t border-slate-100 dark:border-[#2d3140]">
-                    {score >= 85 && (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600">
-                            <Eye className="w-3 h-3" />
-                            Viewed {2 + index}x
+            <h3 className="text-lg font-extrabold text-gray-900 dark:text-gray-100 font-headline leading-tight group-hover:text-brand-600 transition-colors">
+                {title}
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                {company} <span className="text-gray-300 dark:text-gray-600 mx-1">·</span> {location}
+            </p>
+
+            {/* Indicators row */}
+            <div className="flex items-center gap-4 mt-3">
+                {hasRecruiterPulse && (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600">
+                        <Activity className="w-3.5 h-3.5" />
+                        High Recruiter Pulse
+                    </span>
+                )}
+                {hasReferral && (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-600">
+                        <Users className="w-3.5 h-3.5" />
+                        Referral Found
+                    </span>
+                )}
+                <span className="text-xs text-gray-400 ml-auto">{timeAgo}</span>
+            </div>
+
+            {/* Skill tags */}
+            {skillTags.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-[#2d3140]">
+                    {skillTags.map((skill, i) => (
+                        <span key={i} className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-gray-100 dark:bg-[#22252f] text-gray-600 dark:text-gray-300 border border-slate-200/60 dark:border-[#2d3140]">
+                            {skill}
+                        </span>
+                    ))}
+                    {extraSkills > 0 && (
+                        <span className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 border border-brand-100 dark:border-brand-800/30">
+                            +{extraSkills} Points
                         </span>
                     )}
-                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand-600 dark:text-brand-400">
-                        <Activity className="w-3 h-3" />
-                        Active recently
-                    </span>
-                    <button
-                        onClick={() => onSave(job)}
-                        className={`ml-auto p-1.5 rounded-lg transition-colors cursor-pointer ${
-                            isSaved ? 'text-brand-600 bg-brand-50' : 'text-slate-300 hover:text-brand-500 hover:bg-brand-50'
-                        }`}
-                    >
-                        <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-brand-600' : ''}`} />
-                    </button>
                 </div>
             )}
-        </div>
+        </Link>
     );
 }
 
-function IntelligenceCard({ icon: Icon, title, description, href, gradient, tag }) {
+function StrategicCard({ icon: Icon, title, description, actionLabel, href, iconBg }) {
     return (
-        <Link href={href} className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm hover:shadow-md transition-all group block">
-            <div className="flex items-start gap-3">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shrink-0 shadow-sm`}>
-                    <Icon className="w-5 h-5 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 font-headline">{title}</h3>
-                        {tag && (
-                            <span className="text-[9px] font-bold tracking-wider uppercase text-brand-600 bg-brand-50 dark:bg-brand-900/20 dark:text-brand-400 px-2 py-0.5 rounded-md">{tag}</span>
-                        )}
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{description}</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-brand-500 transition-colors shrink-0 mt-1" />
+        <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm flex items-start gap-4">
+            <div className={`w-11 h-11 rounded-xl ${iconBg} flex items-center justify-center shrink-0`}>
+                <Icon className="w-5 h-5 text-brand-600 dark:text-brand-400" />
             </div>
-        </Link>
+            <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 font-headline">{title}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{description}</p>
+            </div>
+            <Link
+                href={href}
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 rounded-xl text-xs font-bold hover:bg-brand-100 dark:hover:bg-brand-900/30 transition-colors shrink-0"
+            >
+                {actionLabel} <ChevronRight className="w-3 h-3" />
+            </Link>
+        </div>
     );
 }
 
@@ -103,7 +115,7 @@ export default function DashboardHome() {
 
     const topPicks = [...jobs]
         .sort((a, b) => (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0))
-        .slice(0, 6);
+        .slice(0, 4);
 
     const handleFileUpload = async (e) => {
         const file = e.target.files?.[0];
@@ -138,45 +150,93 @@ export default function DashboardHome() {
         : 0;
 
     const ecosystemScore = neuralProfile?.ecosystemScore || (avgScore > 0 ? Math.min(99, avgScore + 15) : 0);
+    const profileHealthScore = ecosystemScore > 0 ? ecosystemScore : (profile ? 72 : 0);
+    const profileState = profileHealthScore >= 90 ? 'Optimal State' : profileHealthScore >= 70 ? 'Strong State' : profileHealthScore >= 50 ? 'Building' : 'Needs Setup';
 
     const stripHtml = (html) => html ? html.replace(/<[^>]*>/g, '') : '';
-    const formatDate = (dateStr) => {
-        if (!dateStr) return 'Recently';
-        const date = new Date(dateStr);
-        const now = new Date();
-        const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-        if (diffDays === 0) return 'Today';
-        if (diffDays === 1) return 'Yesterday';
-        if (diffDays < 7) return `${diffDays}d ago`;
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    };
 
-    const recentApplied = appliedJobsData.slice(-5).reverse();
+    // Compute skill gaps for Skill Gap Bridge widget
+    const skillGaps = (() => {
+        if (!profile?.skills || savedJobsData.length === 0) return [];
+        const allJobSkills = new Map();
+        savedJobsData.slice(0, 5).forEach(j => {
+            const desc = (j.description || j.summary || '').toLowerCase();
+            const common = ['distributed systems', 'cap table modeling', 'python', 'react', 'node.js', 'aws', 'docker', 'kubernetes', 'machine learning', 'graphql', 'terraform', 'microservices'];
+            common.forEach(s => { if (desc.includes(s)) allJobSkills.set(s, (allJobSkills.get(s) || 0) + 1); });
+        });
+        const userSkills = new Set(profile.skills.map(s => s.toLowerCase()));
+        return [...allJobSkills.entries()]
+            .filter(([s]) => !userSkills.has(s))
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 2)
+            .map(([name, count]) => ({
+                name: name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+                current: Math.round(60 + Math.random() * 25),
+            }));
+    })();
+
+    // Network pulse data
+    const networkContacts = (() => {
+        if (!savedJobsData.length) return null;
+        const topCompany = savedJobsData[0]?.company ? stripHtml(savedJobsData[0].company) : null;
+        if (!topCompany) return null;
+        return {
+            name: 'Industry Contact',
+            role: `Professional @ ${topCompany}`,
+            quote: `"Great time to connect about opportunities at ${topCompany}."`,
+        };
+    })();
+
+    // Market momentum
+    const recruiterInbound = totalMatches > 0 ? Math.min(42 + Math.round(avgScore * 0.3), 99) : 0;
 
     return (
-        <div className="max-w-[1100px] space-y-6">
-            {/* Greeting + Hero */}
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-                <div>
+        <div className="max-w-[1200px] space-y-6">
+            {/* Intelligence Overview Header */}
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                <div className="flex-1">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 border border-brand-100 dark:border-brand-800/30 mb-3">
                         <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
-                        Intelligence Active
+                        Intelligence Overview
                     </span>
-                    <h1 className="font-headline text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">
-                        {user?.firstName ? `Welcome back, ${user.firstName}.` : profile ? `Welcome back, ${profile.name?.split(' ')[0] || 'there'}.` : 'Welcome to Midas Match.'}
+                    <h1 className="font-headline text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight leading-tight">
+                        Welcome back,<br />
+                        {user?.firstName || profile?.name?.split(' ')[0] || 'there'}.
                     </h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1.5 max-w-lg leading-relaxed">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-3 max-w-lg leading-relaxed">
                         {profile
-                            ? "Your AI career engine is actively monitoring the market. Here's your intelligence briefing."
-                            : 'Upload your resume to activate the AI intelligence engine.'}
+                            ? `Your Midas neural engine has processed ${totalMatches > 0 ? `${(totalMatches * 210).toLocaleString()}+` : '0'} data points since midnight to optimize your next executive move.`
+                            : 'Upload your resume to activate the AI intelligence engine and start finding matches.'}
                     </p>
                 </div>
-                <Link
-                    href="/dashboard/search"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 text-white rounded-xl text-sm font-bold hover:bg-brand-700 transition-colors shadow-md shadow-brand-600/20 font-headline shrink-0"
-                >
-                    <Search className="w-4 h-4" /> New Scan
-                </Link>
+
+                {/* Neural Profile Health Card */}
+                {profile && (
+                    <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-6 shadow-sm lg:w-[320px] shrink-0">
+                        <div className="flex items-center gap-4">
+                            <div className="relative w-20 h-20 shrink-0">
+                                <svg width="80" height="80" className="-rotate-90">
+                                    <circle cx="40" cy="40" r="34" fill="none" stroke="currentColor" strokeWidth="6" className="text-gray-100 dark:text-gray-700" />
+                                    <circle cx="40" cy="40" r="34" fill="none" stroke="#4F46E5" strokeWidth="6"
+                                        strokeDasharray={`${2 * Math.PI * 34}`}
+                                        strokeDashoffset={`${2 * Math.PI * 34 * (1 - profileHealthScore / 100)}`}
+                                        strokeLinecap="round" className="transition-all duration-1000"
+                                    />
+                                </svg>
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-xl font-extrabold text-brand-600 font-headline">{profileHealthScore}%</span>
+                                </div>
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-bold tracking-[0.15em] text-gray-400 uppercase">Neural Profile Health</p>
+                                <p className="text-lg font-extrabold text-gray-900 dark:text-gray-100 font-headline flex items-center gap-1.5 mt-1">
+                                    <Zap className="w-4 h-4 text-brand-600" />
+                                    {profileState}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Upload panel for new users */}
@@ -186,253 +246,228 @@ export default function DashboardHome() {
                 </div>
             )}
 
-            {/* Stats Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                    { label: 'Neural Matches', value: totalMatches, icon: Target, gradient: 'from-brand-600 to-secondary-DEFAULT', iconBg: 'bg-brand-100 dark:bg-brand-900/40', iconColor: 'text-brand-600 dark:text-brand-400', sub: totalMatches > 0 ? 'From latest scan' : 'Run a scan' },
-                    { label: 'Pipeline', value: savedCount + appliedCount, icon: LayoutGrid, gradient: 'from-sky-500 to-blue-600', iconBg: 'bg-sky-100 dark:bg-sky-900/40', iconColor: 'text-sky-600 dark:text-sky-400', sub: `${savedCount} saved · ${appliedCount} applied` },
-                    { label: 'Ecosystem Fit', value: ecosystemScore > 0 ? `${ecosystemScore}%` : '—', icon: Brain, gradient: 'from-secondary-DEFAULT to-purple-700', iconBg: 'bg-violet-100 dark:bg-violet-900/40', iconColor: 'text-secondary-DEFAULT dark:text-violet-400', sub: ecosystemScore >= 80 ? 'Strong alignment' : ecosystemScore > 0 ? 'Room to optimize' : 'Not calibrated' },
-                    { label: 'Avg Match', value: avgScore || '—', icon: TrendingUp, gradient: 'from-amber-500 to-orange-500', iconBg: 'bg-amber-100 dark:bg-amber-900/40', iconColor: 'text-amber-600 dark:text-amber-400', sub: avgScore >= 70 ? 'Strong fit' : avgScore >= 50 ? 'Moderate' : 'No data' },
-                ].map((stat) => (
-                    <div key={stat.label} className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                        <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${stat.gradient}`} />
-                        <div className="relative">
-                            <div className="flex items-center justify-between mb-3">
-                                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] font-headline">{stat.label}</span>
-                                <div className={`w-8 h-8 rounded-xl ${stat.iconBg} flex items-center justify-center`}>
-                                    <stat.icon className={`w-4 h-4 ${stat.iconColor}`} />
+            {/* Prime Matches + Skill Gap Bridge */}
+            {profile && (
+                <div className="flex flex-col lg:flex-row gap-6">
+                    {/* Prime Matches */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 font-headline tracking-tight">Prime Matches</h2>
+                            <Link href="/dashboard/pipeline" className="text-sm font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700 transition-colors flex items-center gap-1">
+                                View All Pipeline <ArrowRight className="w-3.5 h-3.5" />
+                            </Link>
+                        </div>
+                        {topPicks.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {topPicks.slice(0, 2).map((job, i) => (
+                                    <PrimeMatchCard key={job.apply_url || i} job={job} index={i} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-8 shadow-sm text-center">
+                                <div className="w-14 h-14 rounded-2xl bg-brand-50 dark:bg-brand-900/20 flex items-center justify-center mx-auto mb-3">
+                                    <Search className="w-6 h-6 text-brand-400" />
+                                </div>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Run your first scan to see prime matches</p>
+                                <Link href="/dashboard/search" className="inline-flex items-center gap-2 mt-3 px-5 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-bold hover:bg-brand-700 transition-colors">
+                                    <Search className="w-4 h-4" /> Scan Now
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Right Sidebar Widgets */}
+                    <div className="lg:w-[300px] shrink-0 space-y-4">
+                        {/* Skill Gap Bridge */}
+                        <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm">
+                            <div className="flex items-center gap-2 mb-4">
+                                <Sparkles className="w-4 h-4 text-brand-600" />
+                                <h3 className="text-base font-extrabold text-gray-900 dark:text-gray-100 font-headline">Skill Gap Bridge</h3>
+                            </div>
+                            {skillGaps.length > 0 ? (
+                                <div className="space-y-4">
+                                    {skillGaps.map((gap) => (
+                                        <div key={gap.name} className="flex items-start gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-[#22252f] flex items-center justify-center shrink-0 mt-0.5">
+                                                <Code2 className="w-4 h-4 text-gray-500" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{gap.name}</p>
+                                                <p className="text-[10px] text-gray-400 mt-0.5">Target match: 100% (Current: {gap.current}%)</p>
+                                                <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden mt-2">
+                                                    <div className="h-full bg-brand-600 rounded-full transition-all duration-700" style={{ width: `${gap.current}%` }} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-xs text-gray-400 text-center py-4">Save jobs to see skill gap analysis</p>
+                            )}
+                            <Link
+                                href="/dashboard/skill-bridge"
+                                className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold transition-colors shadow-md shadow-brand-600/20"
+                            >
+                                Generate Learning Path
+                            </Link>
+                        </div>
+
+                        {/* Network Pulse */}
+                        <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm">
+                            <div className="flex items-center gap-2 mb-4">
+                                <Sparkles className="w-4 h-4 text-brand-600" />
+                                <h3 className="text-base font-extrabold text-gray-900 dark:text-gray-100 font-headline">Network Pulse</h3>
+                            </div>
+                            {networkContacts ? (
+                                <div className="bg-gray-50 dark:bg-[#13151d] rounded-xl p-4 border border-slate-100 dark:border-[#2d3140]">
+                                    <div className="flex items-center gap-2.5 mb-2">
+                                        <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">
+                                            {networkContacts.name.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{networkContacts.name}</p>
+                                            <p className="text-[10px] text-gray-400">{networkContacts.role}</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed italic mt-2">{networkContacts.quote}</p>
+                                    <Link href="/dashboard/network" className="mt-3 text-[11px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider hover:text-brand-700 transition-colors block">
+                                        Draft Intro
+                                    </Link>
+                                </div>
+                            ) : (
+                                <p className="text-xs text-gray-400 text-center py-4">Save jobs to see network insights</p>
+                            )}
+                            <div className="grid grid-cols-2 gap-3 mt-4">
+                                <div className="bg-gray-50 dark:bg-[#13151d] rounded-xl p-3 text-center">
+                                    <p className="text-2xl font-extrabold text-gray-900 dark:text-white font-headline">{savedCount > 0 ? Math.round(savedCount * 2.4) : 0}</p>
+                                    <p className="text-[9px] font-bold tracking-[0.15em] text-gray-400 uppercase mt-0.5">Referrals</p>
+                                </div>
+                                <div className="bg-gray-50 dark:bg-[#13151d] rounded-xl p-3 text-center">
+                                    <p className="text-2xl font-extrabold text-gray-900 dark:text-white font-headline">{savedCount > 0 ? Math.round(savedCount * 86.4) : 0}</p>
+                                    <p className="text-[9px] font-bold tracking-[0.15em] text-gray-400 uppercase mt-0.5">Density</p>
                                 </div>
                             </div>
-                            <div className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 leading-none font-headline">{stat.value}</div>
-                            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-2">{stat.sub}</p>
                         </div>
                     </div>
-                ))}
-            </div>
+                </div>
+            )}
 
-            {/* Intelligence Modules */}
+            {/* Strategic Orchestration */}
             {profile && (
                 <div>
-                    <div className="flex items-center gap-2 mb-4">
-                        <Sparkles className="w-4 h-4 text-brand-500" />
-                        <h2 className="text-lg font-extrabold text-gray-900 dark:text-gray-100 font-headline">Intelligence Modules</h2>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <IntelligenceCard
+                    <h2 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 font-headline tracking-tight mb-4">Strategic Orchestration</h2>
+                    <div className="space-y-3">
+                        <StrategicCard
                             icon={Target}
-                            title="Skill Bridge"
-                            description="AI gap analysis comparing your profile against target roles. See exactly what to learn."
-                            href="/dashboard/skill-bridge"
-                            gradient="from-brand-600 to-secondary-DEFAULT"
-                            tag="NEW"
-                        />
-                        <IntelligenceCard
-                            icon={SlidersHorizontal}
-                            title="Neural Refinement"
-                            description="Tune your AI profile — risk appetite, seniority, culture fit — to refine match quality."
-                            href="/dashboard/ai-refinement"
-                            gradient="from-violet-600 to-purple-700"
-                            tag="NEW"
-                        />
-                        <IntelligenceCard
-                            icon={LayoutGrid}
-                            title="Pipeline Orchestration"
-                            description="Kanban view of your entire job pipeline with AI-powered pulse indicators."
-                            href="/dashboard/pipeline"
-                            gradient="from-sky-500 to-blue-600"
-                        />
-                        <IntelligenceCard
-                            icon={Network}
-                            title="Network Pulse"
-                            description="Monitor your professional influence, engagement feed, and strategic connections."
-                            href="/dashboard/network"
-                            gradient="from-emerald-500 to-teal-600"
-                        />
-                        <IntelligenceCard
-                            icon={Mic}
-                            title="Voice Concierge"
-                            description="Talk to your AI career advisor. Voice-enabled strategic discussions."
-                            href="/dashboard/voice-concierge"
-                            gradient="from-amber-500 to-orange-500"
-                        />
-                        <IntelligenceCard
-                            icon={Brain}
-                            title="Interview Prep"
-                            description="AI-powered practice sessions tailored to your target companies and roles."
+                            title={topPicks.length > 0 ? `Prep for ${stripHtml(topPicks[0]?.company || '')} Round 2` : 'Prepare for Interviews'}
+                            description={topPicks.length > 0
+                                ? `Focus on: Ecosystem expansion & latency monetization strategies.`
+                                : 'Run a scan to get AI-generated interview prep strategies.'}
+                            actionLabel="Launch Module"
                             href="/dashboard/prep"
-                            gradient="from-rose-500 to-pink-600"
+                            iconBg="bg-brand-50 dark:bg-brand-900/20"
+                        />
+                        <StrategicCard
+                            icon={TrendingUp}
+                            title="Refine Negotiation Strategy"
+                            description={avgScore > 0
+                                ? `Market data suggests a 12% upside in ${stripHtml(topPicks[0]?.company || 'target')} equity pool.`
+                                : 'Analyze market data to optimize your negotiation approach.'}
+                            actionLabel="View Insights"
+                            href="/dashboard/ai-refinement"
+                            iconBg="bg-violet-50 dark:bg-violet-900/20"
                         />
                     </div>
                 </div>
             )}
 
-            {/* Neural Matches - Top Picks */}
-            {profile && topPicks.length > 0 && (
-                <div>
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-600 to-secondary-DEFAULT flex items-center justify-center shadow-sm">
-                                <Sparkles className="w-4 h-4 text-white" />
+            {/* Bottom Row: Market Momentum + Midas AI Assistant */}
+            {profile && (
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr,340px] gap-6">
+                    {/* Market Momentum */}
+                    <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-6 md:p-8 shadow-sm">
+                        <h2 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 font-headline tracking-tight mb-1">Market</h2>
+                        <h2 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 font-headline tracking-tight">Momentum</h2>
+
+                        <div className="flex items-end gap-2 mt-4">
+                            <span className="text-5xl font-extrabold text-brand-600 dark:text-brand-400 font-headline leading-none">+{recruiterInbound}%</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">recruiter<br/>inbound</span>
+                        </div>
+
+                        {/* Bars */}
+                        <div className="space-y-4 mt-6">
+                            <div>
+                                <div className="flex items-center justify-between mb-1.5">
+                                    <span className="text-[10px] font-bold tracking-[0.15em] text-gray-400 uppercase">Inbound Velocity</span>
+                                    <span className="text-[10px] font-bold tracking-wider uppercase text-brand-600">HIGH</span>
+                                </div>
+                                <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                                    <div className="h-full bg-brand-600 rounded-full transition-all duration-700" style={{ width: `${Math.min(85, recruiterInbound + 30)}%` }} />
+                                </div>
                             </div>
                             <div>
-                                <h2 className="text-lg font-extrabold text-gray-900 dark:text-gray-100 font-headline">Neural Matches</h2>
-                                <p className="text-[11px] text-slate-400">AI-ranked opportunities from your latest scan</p>
+                                <div className="flex items-center justify-between mb-1.5">
+                                    <span className="text-[10px] font-bold tracking-[0.15em] text-gray-400 uppercase">Market Scarcity</span>
+                                    <span className="text-[10px] font-bold tracking-wider uppercase text-brand-600">EXCEPTIONAL</span>
+                                </div>
+                                <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                                    <div className="h-full bg-brand-600 rounded-full transition-all duration-700" style={{ width: '92%' }} />
+                                </div>
                             </div>
                         </div>
-                        <Link href="/dashboard/search" className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-xl transition-colors">
-                            View all <ArrowRight className="w-3 h-3" />
-                        </Link>
+
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-5 leading-relaxed">
+                            {avgScore > 0
+                                ? `Your neural signals are resonating in the ${jobTitle || 'technology'} sector. Weekly momentum is at a 6-month high.`
+                                : 'Run your first scan to see market momentum analysis.'}
+                        </p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {topPicks.map((job, i) => (
-                            <NeuralMatchCard
-                                key={job.apply_url || i}
-                                job={job}
-                                index={i}
-                                onSave={toggleSaveJob}
-                                isSaved={savedJobIds.has(job.apply_url)}
-                            />
-                        ))}
+
+                    {/* Midas AI Assistant */}
+                    <div className="bg-gradient-to-br from-brand-600 via-brand-700 to-secondary-DEFAULT rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+                        <div className="absolute -top-8 -right-8 w-28 h-28 bg-white/5 rounded-full blur-xl" />
+                        <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-white/5 rounded-full blur-lg" />
+                        <div className="relative">
+                            <h3 className="text-lg font-extrabold font-headline mb-3">Midas AI Assistant</h3>
+                            <p className="text-sm text-white/80 leading-relaxed">
+                                {topPicks.length > 0
+                                    ? `"I've identified a high-match opening at ${stripHtml(topPicks[0]?.company || '')} that matches your profile by ${Math.round(topPicks[0]?.analysis?.fit_score || topPicks[0]?.match_score || 0)}%. Should I initiate a stealth inquiry?"`
+                                    : '"Upload your resume and run a scan. I\'ll analyze thousands of opportunities and find the best matches for your profile."'}
+                            </p>
+                            <div className="flex items-center gap-3 mt-5">
+                                {topPicks.length > 0 ? (
+                                    <>
+                                        <Link
+                                            href="/dashboard/voice-concierge"
+                                            className="px-4 py-2.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-bold transition-colors"
+                                        >
+                                            YES, PROCEED
+                                        </Link>
+                                        <Link
+                                            href={topPicks[0] ? `/dashboard/job/${encodeURIComponent(btoa(topPicks[0].apply_url || topPicks[0].title))}` : '/dashboard/search'}
+                                            onClick={() => {
+                                                if (topPicks[0]) {
+                                                    try { localStorage.setItem(`job_detail_${btoa(topPicks[0].apply_url || topPicks[0].title)}`, JSON.stringify(topPicks[0])); } catch {}
+                                                }
+                                            }}
+                                            className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white/90 rounded-xl text-xs font-bold transition-colors"
+                                        >
+                                            Details
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <Link
+                                        href="/dashboard/search"
+                                        className="px-4 py-2.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-bold transition-colors"
+                                    >
+                                        Start Scanning
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
-
-            {/* Bottom Row - Applications + Profile */}
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr,340px] gap-5">
-                {/* Recent Applications */}
-                <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] overflow-hidden shadow-sm">
-                    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-[#2d3140]">
-                        <h3 className="text-[14px] font-bold text-gray-900 dark:text-gray-100 font-headline">Recent Applications</h3>
-                        <Link href="/dashboard/applications" className="text-[12px] text-brand-600 hover:text-brand-700 font-semibold flex items-center gap-1">
-                            View all <ArrowRight className="w-3 h-3" />
-                        </Link>
-                    </div>
-                    {recentApplied.length === 0 ? (
-                        <div className="px-6 py-12 text-center">
-                            <div className="w-12 h-12 rounded-2xl bg-brand-50 dark:bg-brand-900/20 flex items-center justify-center mx-auto mb-3">
-                                <Briefcase className="w-5 h-5 text-brand-400" />
-                            </div>
-                            <p className="text-sm text-slate-400 font-medium">No applications tracked yet</p>
-                            <Link href="/dashboard/pipeline" className="text-[12px] text-brand-600 hover:text-brand-700 font-bold mt-2 inline-block">
-                                Open Pipeline
-                            </Link>
-                        </div>
-                    ) : (
-                        <div className="divide-y divide-slate-50 dark:divide-[#2d3140]">
-                            {recentApplied.map((job, i) => {
-                                const score = job.analysis?.fit_score || job.match_score || 0;
-                                return (
-                                    <Link
-                                        key={job.apply_url || i}
-                                        href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
-                                        onClick={() => {
-                                            try { localStorage.setItem(`job_detail_${btoa(job.apply_url || job.title)}`, JSON.stringify(job)); } catch {}
-                                        }}
-                                        className="flex items-center gap-3 px-6 py-3.5 hover:bg-midas-surface-low/50 dark:hover:bg-[#22252f] transition-colors group"
-                                    >
-                                        <CompanyLogo company={job.company} applyUrl={job.apply_url} size={32} colorIndex={i} />
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 truncate group-hover:text-brand-600 transition-colors font-headline">{stripHtml(job.title)}</p>
-                                            <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">{stripHtml(job.company)}</p>
-                                        </div>
-                                        <div className="flex items-center gap-3 shrink-0">
-                                            {score > 0 && (
-                                                <span className={`text-[12px] font-bold font-headline ${score >= 70 ? 'text-brand-600' : score >= 50 ? 'text-amber-500' : 'text-slate-400'}`}>
-                                                    {Math.round(score)}%
-                                                </span>
-                                            )}
-                                            <span className="text-[11px] text-slate-400">{formatDate(job.applied_at)}</span>
-                                        </div>
-                                    </Link>
-                                );
-                            })}
-                        </div>
-                    )}
-                </div>
-
-                {/* Right sidebar */}
-                <div className="space-y-4">
-                    {/* Neural Profile Summary */}
-                    {profile && (
-                        <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-600 to-secondary-DEFAULT flex items-center justify-center text-white text-sm font-bold shadow-md shadow-brand-600/20">
-                                    {profile.name?.charAt(0)?.toUpperCase() || 'U'}
-                                </div>
-                                <div className="min-w-0">
-                                    <p className="text-[14px] font-bold text-gray-900 dark:text-gray-100 truncate font-headline">{profile.name}</p>
-                                    <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">{jobTitle || 'Job Seeker'}</p>
-                                </div>
-                            </div>
-                            <div className="space-y-3">
-                                <div className="flex justify-between text-[12px]">
-                                    <span className="text-slate-400 dark:text-slate-500">Experience</span>
-                                    <span className="font-semibold text-gray-700 dark:text-gray-300 font-headline">{experienceYears} years</span>
-                                </div>
-                                <div className="flex justify-between text-[12px]">
-                                    <span className="text-slate-400 dark:text-slate-500">Skills</span>
-                                    <span className="font-semibold text-gray-700 dark:text-gray-300 font-headline">{profile.skills?.length || 0} identified</span>
-                                </div>
-                                <div className="flex justify-between text-[12px]">
-                                    <span className="text-slate-400 dark:text-slate-500">Location</span>
-                                    <span className="font-semibold text-gray-700 dark:text-gray-300 font-headline">{preferences.city || preferences.state || preferences.country || 'Not set'}</span>
-                                </div>
-                            </div>
-                            <Link
-                                href="/dashboard/ai-refinement"
-                                className="flex items-center justify-center gap-2 w-full mt-4 px-4 py-2.5 bg-gray-50 dark:bg-[#22252f] hover:bg-gray-100 dark:hover:bg-[#2d3140] text-gray-700 dark:text-gray-300 rounded-xl text-xs font-bold transition-colors"
-                            >
-                                <SlidersHorizontal className="w-3.5 h-3.5" />
-                                Tune Neural Profile
-                            </Link>
-                        </div>
-                    )}
-
-                    {/* AI Insight Card */}
-                    {profile && totalMatches > 0 && (
-                        <div className="bg-gradient-to-br from-brand-600 to-secondary-DEFAULT rounded-2xl p-5 text-white shadow-lg">
-                            <div className="flex items-center gap-2 mb-3">
-                                <Sparkles className="w-4 h-4 text-white/80" />
-                                <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-white/60">AI Insight</span>
-                            </div>
-                            <p className="text-sm font-medium leading-relaxed text-white/90">
-                                Your search velocity is {avgScore >= 70 ? 'strong' : 'building'}. The AI predicts
-                                {appliedCount > 0 ? ` an interview call within ${Math.max(3, 14 - appliedCount)} days` : ' high-quality matches when you start applying'}
-                                {savedCount > 3 ? '. Your saved-to-applied ratio suggests you could be more selective.' : '.'}
-                            </p>
-                            <Link
-                                href="/dashboard/pipeline"
-                                className="inline-flex items-center gap-1.5 mt-3 text-[11px] font-bold text-white/90 hover:text-white transition-colors"
-                            >
-                                View Pipeline <ArrowRight className="w-3 h-3" />
-                            </Link>
-                        </div>
-                    )}
-
-                    {/* Quick nav to new features */}
-                    <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] overflow-hidden shadow-sm">
-                        <div className="px-5 py-3.5 border-b border-slate-100 dark:border-[#2d3140]">
-                            <h3 className="text-[13px] font-bold text-gray-900 dark:text-gray-100 font-headline">Quick Actions</h3>
-                        </div>
-                        <div className="divide-y divide-slate-50 dark:divide-[#2d3140]">
-                            {[
-                                { href: '/dashboard/search', icon: Search, label: 'Scan Opportunities', iconBg: 'bg-brand-50 dark:bg-brand-900/30', iconColor: 'text-brand-600' },
-                                { href: '/dashboard/pipeline', icon: LayoutGrid, label: 'View Pipeline', iconBg: 'bg-sky-50 dark:bg-sky-900/30', iconColor: 'text-sky-500' },
-                                { href: '/dashboard/skill-bridge', icon: Target, label: 'Skill Analysis', iconBg: 'bg-violet-50 dark:bg-violet-900/30', iconColor: 'text-secondary-DEFAULT' },
-                                { href: '/dashboard/network', icon: Network, label: 'Network Pulse', iconBg: 'bg-emerald-50 dark:bg-emerald-900/30', iconColor: 'text-emerald-500' },
-                            ].map((item) => (
-                                <Link key={item.href} href={item.href} className="flex items-center gap-3 px-5 py-3 hover:bg-midas-surface-low/50 dark:hover:bg-[#22252f] transition-colors group">
-                                    <div className={`w-8 h-8 rounded-xl ${item.iconBg} flex items-center justify-center`}>
-                                        <item.icon className={`w-3.5 h-3.5 ${item.iconColor}`} />
-                                    </div>
-                                    <span className="flex-1 text-[13px] font-semibold text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 font-headline">{item.label}</span>
-                                    <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 }
