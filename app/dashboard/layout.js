@@ -12,7 +12,7 @@ export default function DashboardLayout({ children }) {
     return (
         <ErrorBoundary>
             <AppProvider>
-                <div className="flex min-h-screen bg-surface-50">
+                <div className="flex min-h-screen bg-surface-50 dark:bg-ink-950">
                     <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
                     <div className="flex-1 flex flex-col min-w-0">
                         <DashboardHeader onMenuClick={() => setSidebarOpen(true)} />

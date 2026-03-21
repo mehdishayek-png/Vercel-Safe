@@ -59,7 +59,7 @@ export default function RootLayout({ children }) {
     `,
           }} />
         </head>
-        <body suppressHydrationWarning>
+        <body className="font-sans" suppressHydrationWarning>
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{

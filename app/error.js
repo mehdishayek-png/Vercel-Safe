@@ -9,7 +9,7 @@ export default function Error({ error, reset }) {
   }, [error]);
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-gray-950 overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center bg-ink-950 overflow-hidden">
       {/* Decorative gradient blob */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-red-500/20 via-amber-500/10 to-transparent blur-3xl pointer-events-none" />
 
@@ -34,26 +34,26 @@ export default function Error({ error, reset }) {
           Something went wrong
         </h1>
 
-        <p className="mt-3 max-w-md mx-auto text-gray-400 text-base sm:text-lg">
+        <p className="mt-3 max-w-md mx-auto text-ink-400 text-base sm:text-lg">
           An unexpected error occurred. Please try again or return to the home page.
         </p>
 
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
           <button
             onClick={() => reset()}
-            className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-sm transition-all shadow-lg shadow-brand-500/25 cursor-pointer"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-[10px] bg-brand-500 hover:bg-brand-500 text-white font-semibold text-sm transition-all shadow-lg shadow-brand-500/25 cursor-pointer"
           >
             Try Again
           </button>
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-gray-700 text-gray-300 font-semibold text-sm hover:border-gray-500 hover:text-white transition-all"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-[10px] border border-ink-700 text-ink-300 font-semibold text-sm hover:border-ink-500 hover:text-white transition-all"
           >
             Go Home
           </Link>
         </div>
 
-        <p className="mt-6 text-sm text-gray-500">
+        <p className="mt-6 text-sm text-ink-500">
           Still having trouble? Reach out to us at{' '}
           <a href="mailto:midasmatchsupport@gmail.com" className="text-brand-400 hover:text-brand-300 underline underline-offset-2 transition-colors">
             midasmatchsupport@gmail.com

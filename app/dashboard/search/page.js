@@ -383,11 +383,11 @@ export default function SearchPage() {
     const readinessScore = readinessChecks.reduce((acc, c) => c.passed ? acc + c.points : acc, 0);
 
     return (
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-[1280px] w-full search-bg rounded-2xl p-3 md:p-5 -m-3 md:-m-5 min-h-[calc(100vh-100px)]">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-[1280px] w-full search-bg rounded-[14px] p-3 md:p-5 -m-3 md:-m-5 min-h-[calc(100vh-100px)]">
             {/* Left Panel */}
             <div className="w-full lg:w-[380px] shrink-0 space-y-4 relative z-10 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
                 {/* Privacy */}
-                <div className="flex items-center gap-1.5 text-[11px] text-gray-500 p-2 px-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                <div className="flex items-center gap-1.5 text-[11px] text-ink-500 p-2 px-3 bg-emerald-50 rounded-lg border border-emerald-200">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                     Resumes processed in-memory only. Never stored or used for training.
                 </div>
@@ -396,23 +396,23 @@ export default function SearchPage() {
                 {profile && (
                     <button
                         onClick={() => setReadinessOpen(!readinessOpen)}
-                        className="w-full flex items-center justify-between p-2.5 px-3.5 bg-white rounded-xl border border-surface-200 cursor-pointer hover:bg-surface-50 transition-colors"
+                        className="w-full flex items-center justify-between p-2.5 px-3.5 bg-white rounded-[10px] border border-ink-200 cursor-pointer hover:bg-surface-50 transition-colors"
                     >
                         <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-full bg-emerald-100 border-2 border-emerald-500 flex items-center justify-center">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
                             </div>
-                            <span className="text-[13px] font-semibold text-gray-900">Profile Ready</span>
+                            <span className="text-[13px] font-semibold text-ink-900">Profile Ready</span>
                             <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">{readinessScore}</span>
                         </div>
-                        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${readinessOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown className={`w-4 h-4 text-ink-400 transition-transform ${readinessOpen ? 'rotate-180' : ''}`} />
                     </button>
                 )}
 
                 {readinessOpen && profile && (
-                    <div className="bg-white rounded-xl border border-surface-200 p-3 -mt-2 space-y-1">
+                    <div className="bg-white rounded-[10px] border border-ink-200 p-3 -mt-2 space-y-1">
                         {readinessChecks.map((check, i) => (
-                            <div key={i} className="flex items-center justify-between py-1 text-[13px] text-gray-600">
+                            <div key={i} className="flex items-center justify-between py-1 text-[13px] text-ink-600">
                                 <div className="flex items-center gap-2">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={check.passed ? '#059669' : '#d1d5db'} strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
                                     {check.label}
@@ -430,16 +430,16 @@ export default function SearchPage() {
 
                 {/* What I Do — collapsible optional description for better matching */}
                 {profile && (
-                    <div className="bg-white rounded-xl border border-surface-200 overflow-hidden">
+                    <div className="bg-white rounded-[10px] border border-ink-200 overflow-hidden">
                         <button
                             onClick={() => setWhatIDoOpen(!whatIDoOpen)}
                             className="w-full flex items-center justify-between p-3 px-4 cursor-pointer hover:bg-surface-50 transition-colors"
                         >
-                            <span className="text-[12px] font-semibold text-gray-500 uppercase tracking-wider">
+                            <span className="text-[12px] font-semibold text-ink-500 uppercase tracking-wider">
                                 What I Do
-                                <span className="text-gray-300 font-normal normal-case tracking-normal ml-1">(optional)</span>
+                                <span className="text-ink-300 font-normal normal-case tracking-normal ml-1">(optional)</span>
                             </span>
-                            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${whatIDoOpen ? 'rotate-180' : ''}`} />
+                            <ChevronDown className={`w-4 h-4 text-ink-400 transition-transform duration-200 ${whatIDoOpen ? 'rotate-180' : ''}`} />
                         </button>
                         <AnimatePresence initial={false}>
                             {whatIDoOpen && (
@@ -455,11 +455,11 @@ export default function SearchPage() {
                                             value={whatIDo}
                                             onChange={(e) => setWhatIDo(e.target.value)}
                                             placeholder="Describe what you do day-to-day in 2-3 sentences. E.g., 'I help SaaS companies onboard enterprise clients. I run QBRs, build playbooks, and reduce churn.'"
-                                            className="w-full text-[13px] text-gray-700 bg-surface-50 border border-surface-200 rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 placeholder:text-gray-300 dark:bg-[#22252f] dark:border-[#2d3140] dark:text-gray-200 dark:placeholder:text-gray-600"
+                                            className="w-full text-[13px] text-ink-700 bg-surface-50 border border-ink-200 rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 placeholder:text-ink-300 dark:bg-[#252420] dark:border-[#2E2B27] dark:text-ink-200 dark:placeholder:text-ink-600"
                                             rows={3}
                                             maxLength={500}
                                         />
-                                        <div className="text-[10px] text-gray-300 text-right">{whatIDo.length}/500</div>
+                                        <div className="text-[10px] text-ink-300 text-right">{whatIDo.length}/500</div>
                                     </div>
                                 </motion.div>
                             )}
@@ -520,7 +520,7 @@ export default function SearchPage() {
                         initial={{ opacity: 0, y: 60 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 60 }}
-                        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-white border border-surface-200 rounded-xl px-5 py-3 shadow-elevated max-w-sm w-[85vw]"
+                        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-white border border-ink-200 rounded-[10px] px-5 py-3 shadow-elevated max-w-sm w-[85vw]"
                     >
                         <div className="flex items-center gap-3">
                             <div className="relative shrink-0">
@@ -528,10 +528,10 @@ export default function SearchPage() {
                                 <Sparkles className="w-3 h-3 text-brand-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium text-gray-900">
+                                <div className="text-sm font-medium text-ink-900">
                                     {deepAnalysisProgress ? 'AI Deep Analysis...' : 'Scanning...'}
                                 </div>
-                                <div className="text-[11px] text-gray-400 truncate">
+                                <div className="text-[11px] text-ink-400 truncate">
                                     {deepAnalysisProgress
                                         ? `Batch ${deepAnalysisProgress.current}/${deepAnalysisProgress.total}`
                                         : logs.length > 0 ? logs[logs.length - 1].message : 'Initializing...'}

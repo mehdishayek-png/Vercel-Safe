@@ -92,7 +92,7 @@ export function CompanyLogo({ company, applyUrl, size = 36, colorIndex = 0, clas
     if (imgSrc && !imgError) {
         return (
             <div
-                className={`rounded-full overflow-hidden bg-gray-50 border border-gray-100 shrink-0 flex items-center justify-center ${className}`}
+                className={`rounded-full overflow-hidden bg-ink-50 border border-ink-100 shrink-0 flex items-center justify-center ${className}`}
                 style={{ width: size, height: size }}
             >
                 <img

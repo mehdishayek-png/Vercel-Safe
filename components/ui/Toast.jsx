@@ -46,13 +46,13 @@ export function ToastProvider({ children }) {
                             initial={{ opacity: 0, y: 20, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                            className={`flex items-start gap-3 px-4 py-3 rounded-xl border shadow-lg backdrop-blur-sm ${bgColors[toast.type] || bgColors.success}`}
+                            className={`flex items-start gap-3 px-4 py-3 rounded-[10px] border shadow-lg backdrop-blur-sm ${bgColors[toast.type] || bgColors.success}`}
                         >
                             {icons[toast.type] || icons.success}
-                            <span className="text-sm text-gray-800 dark:text-gray-200 flex-1">{toast.message}</span>
+                            <span className="text-sm text-ink-800 dark:text-ink-200 flex-1">{toast.message}</span>
                             <button
                                 onClick={() => removeToast(toast.id)}
-                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                                className="text-ink-400 hover:text-ink-600 dark:hover:text-ink-300 transition-colors"
                                 aria-label="Dismiss notification"
                             >
                                 <X className="w-4 h-4" />

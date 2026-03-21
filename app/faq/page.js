@@ -86,7 +86,7 @@ export default function FAQPage() {
     };
 
     return (
-        <main className="min-h-screen bg-white dark:bg-[#0f1117] py-16 px-4">
+        <main className="min-h-screen bg-white dark:bg-ink-950 py-16 px-4">
             <div className="max-w-3xl mx-auto">
                 <a
                     href="/"
@@ -95,10 +95,10 @@ export default function FAQPage() {
                     &larr; Back to Midas
                 </a>
 
-                <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                <h1 className="text-4xl font-bold text-ink-900 dark:text-ink-100 mb-2">
                     Frequently Asked Questions
                 </h1>
-                <p className="text-gray-500 dark:text-gray-400 text-sm mb-12">
+                <p className="text-ink-500 dark:text-ink-400 text-sm mb-12">
                     Everything you need to know about Midas Match. Can&apos;t
                     find what you&apos;re looking for? Reach out to us at{" "}
                     <a
@@ -113,10 +113,10 @@ export default function FAQPage() {
                 <div className="space-y-10">
                     {categories.map((category, ci) => (
                         <section key={ci}>
-                            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                            <h2 className="text-xl font-semibold text-ink-900 dark:text-ink-100 mb-4">
                                 {category.title}
                             </h2>
-                            <div className="divide-y divide-gray-200 dark:divide-[#2d3140] border-t border-b border-gray-200 dark:border-[#2d3140]">
+                            <div className="divide-y divide-ink-200 dark:divide-[#2E2B27] border-t border-b border-ink-200 dark:border-[#2E2B27]">
                                 {category.items.map((item, ii) => {
                                     const key = `${ci}-${ii}`;
                                     const isOpen = !!openItems[key];
@@ -125,11 +125,11 @@ export default function FAQPage() {
                                             <button
                                                 onClick={() => toggle(ci, ii)}
                                                 aria-expanded={isOpen}
-                                                className="w-full flex items-center justify-between py-4 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
+                                                className="w-full flex items-center justify-between py-4 text-left text-sm font-medium text-ink-900 dark:text-ink-100 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
                                             >
                                                 {item.q}
                                                 <svg
-                                                    className={`w-5 h-5 shrink-0 text-gray-400 dark:text-gray-500 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                                                    className={`w-5 h-5 shrink-0 text-ink-400 dark:text-ink-500 transition-transform ${isOpen ? "rotate-180" : ""}`}
                                                     fill="none"
                                                     stroke="currentColor"
                                                     strokeWidth="2"
@@ -144,7 +144,7 @@ export default function FAQPage() {
                                                 </svg>
                                             </button>
                                             {isOpen && (
-                                                <p className="pb-4 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                                <p className="pb-4 text-sm text-ink-600 dark:text-ink-400 leading-relaxed">
                                                     {item.a}
                                                 </p>
                                             )}
@@ -157,35 +157,35 @@ export default function FAQPage() {
                 </div>
 
                 {/* Cross-links */}
-                <div className="mt-16 bg-gray-50 dark:bg-[#1a1d27] rounded-2xl p-8 text-center">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                <div className="mt-16 bg-ink-50 dark:bg-[#1C1B19] rounded-[14px] p-8 text-center">
+                    <h3 className="text-lg font-semibold text-ink-900 dark:text-ink-100 mb-2">
                         Still have questions?
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                    <p className="text-sm text-ink-500 dark:text-ink-400 mb-6">
                         Check our legal pages or get in touch.
                     </p>
                     <div className="flex flex-wrap justify-center gap-4 text-sm">
                         <a
                             href="/pricing"
-                            className="px-4 py-2 rounded-lg bg-brand-600 text-white hover:bg-brand-700 transition-colors"
+                            className="px-4 py-2 rounded-lg bg-brand-500 text-white hover:bg-brand-500 transition-colors"
                         >
                             View Pricing
                         </a>
                         <a
                             href="/terms"
-                            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2d3140] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#22252f] transition-colors"
+                            className="px-4 py-2 rounded-lg border border-ink-300 dark:border-[#2E2B27] text-ink-700 dark:text-ink-300 hover:bg-ink-50 dark:hover:bg-[#252420] transition-colors"
                         >
                             Terms of Service
                         </a>
                         <a
                             href="/privacy"
-                            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2d3140] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#22252f] transition-colors"
+                            className="px-4 py-2 rounded-lg border border-ink-300 dark:border-[#2E2B27] text-ink-700 dark:text-ink-300 hover:bg-ink-50 dark:hover:bg-[#252420] transition-colors"
                         >
                             Privacy Policy
                         </a>
                         <a
                             href="/refund"
-                            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2d3140] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#22252f] transition-colors"
+                            className="px-4 py-2 rounded-lg border border-ink-300 dark:border-[#2E2B27] text-ink-700 dark:text-ink-300 hover:bg-ink-50 dark:hover:bg-[#252420] transition-colors"
                         >
                             Refund Policy
                         </a>

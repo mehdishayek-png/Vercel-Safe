@@ -97,7 +97,7 @@ export function ScanningRadar() {
                 <motion.div
                     animate={{ scale: [1, 1.04, 1] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="relative z-10 bg-white dark:bg-[#1a1d27] p-3.5 rounded-full border border-brand-100 dark:border-brand-800 shadow-card"
+                    className="relative z-10 bg-white dark:bg-[#1C1B19] p-3.5 rounded-full border border-brand-100 dark:border-brand-800 shadow-card"
                 >
                     <BrainIcon />
                 </motion.div>
@@ -111,7 +111,7 @@ export function ScanningRadar() {
             >
                 Scanning Job Market...
             </motion.h3>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mb-6">
+            <p className="text-xs text-ink-400 dark:text-ink-500 mb-6">
                 {formatTime(elapsed)} elapsed • Usually takes about a minute
             </p>
 
@@ -124,7 +124,7 @@ export function ScanningRadar() {
                                 ? 'bg-emerald-500'
                                 : i === currentStage
                                 ? 'bg-brand-500 animate-pulse'
-                                : 'bg-gray-200 dark:bg-gray-700'
+                                : 'bg-ink-200 dark:bg-ink-700'
                         }`}>
                             {i < currentStage ? (
                                 <Check className="w-2.5 h-2.5 text-white" />
@@ -136,8 +136,8 @@ export function ScanningRadar() {
                             i < currentStage
                                 ? 'text-emerald-600 dark:text-emerald-400 line-through opacity-60'
                                 : i === currentStage
-                                ? 'text-gray-900 dark:text-gray-100 font-medium'
-                                : 'text-gray-300 dark:text-gray-600'
+                                ? 'text-ink-900 dark:text-ink-100 font-medium'
+                                : 'text-ink-300 dark:text-ink-600'
                         }`}>
                             {stage.label}
                         </span>
@@ -153,7 +153,7 @@ export function ScanningRadar() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.3 }}
-                    className="text-[11px] text-gray-400 dark:text-gray-500 text-center max-w-xs flex items-center gap-1.5"
+                    className="text-[11px] text-ink-400 dark:text-ink-500 text-center max-w-xs flex items-center gap-1.5"
                 >
                     <Sparkles className="w-3 h-3 text-amber-400 shrink-0" />
                     {TIPS[tipIndex]}

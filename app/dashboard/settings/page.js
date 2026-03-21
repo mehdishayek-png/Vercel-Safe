@@ -9,10 +9,10 @@ import {
 
 function Toast({ message, onClose }) {
     return (
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 bg-gray-900 text-white text-[13px] px-4 py-2.5 rounded-xl shadow-lg animate-fade-in">
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 bg-ink-900 text-white text-[13px] px-4 py-2.5 rounded-[10px] shadow-lg animate-fade-in">
             <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>{message}</span>
-            <button onClick={onClose} className="ml-2 text-gray-400 hover:text-white cursor-pointer">
+            <button onClick={onClose} className="ml-2 text-ink-400 hover:text-white cursor-pointer">
                 <X className="w-3.5 h-3.5" />
             </button>
         </div>
@@ -21,10 +21,10 @@ function Toast({ message, onClose }) {
 
 function SectionCard({ title, icon: Icon, children }) {
     return (
-        <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-100 dark:border-[#2d3140] overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140] flex items-center gap-2">
-                <Icon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                <h2 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
+        <div className="bg-white dark:bg-[#1C1B19] rounded-[10px] border border-ink-100 dark:border-[#2E2B27] overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-ink-100 dark:border-[#2E2B27] flex items-center gap-2">
+                <Icon className="w-4 h-4 text-ink-400 dark:text-ink-500" />
+                <h2 className="text-[13px] font-semibold text-ink-900 dark:text-ink-100">{title}</h2>
             </div>
             <div className="p-5">{children}</div>
         </div>
@@ -32,7 +32,7 @@ function SectionCard({ title, icon: Icon, children }) {
 }
 
 function FieldLabel({ children }) {
-    return <label className="block text-[12px] font-medium text-gray-500 dark:text-gray-400 mb-1.5">{children}</label>;
+    return <label className="block text-[12px] font-medium text-ink-500 dark:text-ink-400 mb-1.5">{children}</label>;
 }
 
 function TextInput({ value, onChange, placeholder, type = 'text', ...props }) {
@@ -42,7 +42,7 @@ function TextInput({ value, onChange, placeholder, type = 'text', ...props }) {
             value={value}
             onChange={onChange}
             placeholder={placeholder}
-            className="w-full px-3 py-2 text-[13px] text-gray-900 dark:text-gray-200 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors placeholder:text-gray-300 dark:placeholder:text-gray-600"
+            className="w-full px-3 py-2 text-[13px] text-ink-900 dark:text-ink-200 bg-ink-50 dark:bg-[#252420] border border-ink-200 dark:border-[#2E2B27] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors placeholder:text-ink-300 dark:placeholder:text-ink-600"
             {...props}
         />
     );
@@ -53,7 +53,7 @@ function SelectInput({ value, onChange, children }) {
         <select
             value={value}
             onChange={onChange}
-            className="w-full px-3 py-2 text-[13px] text-gray-900 dark:text-gray-200 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors appearance-none cursor-pointer"
+            className="w-full px-3 py-2 text-[13px] text-ink-900 dark:text-ink-200 bg-ink-50 dark:bg-[#252420] border border-ink-200 dark:border-[#2E2B27] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors appearance-none cursor-pointer"
         >
             {children}
         </select>
@@ -154,14 +154,14 @@ export default function SettingsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50/50 dark:bg-[#13151d]">
+        <div className="min-h-screen bg-ink-50/50 dark:bg-[#13151d]">
             {toast && <Toast message={toast} onClose={() => setToast(null)} />}
 
             <div className="max-w-[800px] mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5">
                 {/* Page header */}
                 <div>
-                    <h1 className="text-[18px] font-bold text-gray-900 dark:text-gray-100">Settings</h1>
-                    <p className="text-[13px] text-gray-400 dark:text-gray-500 mt-0.5">Manage your profile, preferences, and data</p>
+                    <h1 className="text-[18px] font-bold text-ink-900 dark:text-ink-100">Settings</h1>
+                    <p className="text-[13px] text-ink-400 dark:text-ink-500 mt-0.5">Manage your profile, preferences, and data</p>
                 </div>
 
                 {/* ---- Profile Section ---- */}
@@ -224,31 +224,31 @@ export default function SettingsPage() {
 
                         {/* What I Do */}
                         <div>
-                            <FieldLabel>What I Do <span className="text-gray-300 font-normal">(optional)</span></FieldLabel>
+                            <FieldLabel>What I Do <span className="text-ink-300 font-normal">(optional)</span></FieldLabel>
                             <textarea
                                 value={whatIDo}
                                 onChange={(e) => setWhatIDo(e.target.value)}
                                 placeholder="Describe what you do day-to-day in 2-3 sentences. E.g., 'I help SaaS companies onboard enterprise clients. I run QBRs, build playbooks, and reduce churn.'"
-                                className="w-full px-3 py-2 text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors placeholder:text-gray-300 resize-none dark:bg-[#22252f] dark:border-[#2d3140] dark:text-gray-200 dark:placeholder:text-gray-600"
+                                className="w-full px-3 py-2 text-[13px] text-ink-900 bg-ink-50 border border-ink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors placeholder:text-ink-300 resize-none dark:bg-[#252420] dark:border-[#2E2B27] dark:text-ink-200 dark:placeholder:text-ink-600"
                                 rows={3}
                                 maxLength={500}
                             />
-                            <div className="text-[10px] text-gray-300 text-right mt-1">{whatIDo.length}/500</div>
+                            <div className="text-[10px] text-ink-300 text-right mt-1">{whatIDo.length}/500</div>
                         </div>
 
                         {/* Skills */}
                         <div>
                             <FieldLabel>Skills</FieldLabel>
-                            <div className="flex flex-wrap gap-1.5 p-2.5 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg min-h-[44px]">
+                            <div className="flex flex-wrap gap-1.5 p-2.5 bg-ink-50 dark:bg-[#252420] border border-ink-200 dark:border-[#2E2B27] rounded-lg min-h-[44px]">
                                 {skills.map((skill) => (
                                     <span
                                         key={skill}
-                                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2d3140] rounded-md text-[12px] font-medium text-gray-700 dark:text-gray-300 group"
+                                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-[#1C1B19] border border-ink-200 dark:border-[#2E2B27] rounded-md text-[12px] font-medium text-ink-700 dark:text-ink-300 group"
                                     >
                                         {skill}
                                         <button
                                             onClick={() => removeSkill(skill)}
-                                            className="text-gray-300 hover:text-red-400 transition-colors cursor-pointer"
+                                            className="text-ink-300 hover:text-red-400 transition-colors cursor-pointer"
                                         >
                                             <X className="w-3 h-3" />
                                         </button>
@@ -261,16 +261,16 @@ export default function SettingsPage() {
                                     onChange={(e) => setSkillInput(e.target.value)}
                                     onKeyDown={handleSkillKeyDown}
                                     placeholder={skills.length === 0 ? 'Type a skill and press Enter' : 'Add more...'}
-                                    className="flex-1 min-w-[120px] px-1 py-1 text-[12px] bg-transparent border-none outline-none placeholder:text-gray-300 dark:placeholder:text-gray-600 dark:text-gray-200"
+                                    className="flex-1 min-w-[120px] px-1 py-1 text-[12px] bg-transparent border-none outline-none placeholder:text-ink-300 dark:placeholder:text-ink-600 dark:text-ink-200"
                                 />
                             </div>
-                            <p className="text-[11px] text-gray-300 mt-1">Press Enter to add, Backspace to remove last</p>
+                            <p className="text-[11px] text-ink-300 mt-1">Press Enter to add, Backspace to remove last</p>
                         </div>
 
                         <div className="flex justify-end pt-1">
                             <button
                                 onClick={handleSaveProfile}
-                                className="px-4 py-2 text-[13px] font-medium text-white bg-gray-900 dark:bg-gray-100 dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
+                                className="px-4 py-2 text-[13px] font-medium text-white bg-ink-900 dark:bg-ink-100 dark:text-ink-900 hover:bg-ink-800 dark:hover:bg-ink-200 rounded-lg transition-colors cursor-pointer"
                             >
                                 Save Profile
                             </button>
@@ -323,8 +323,8 @@ export default function SettingsPage() {
                         {/* Remote toggle */}
                         <div className="flex items-center justify-between py-2">
                             <div>
-                                <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Remote Only</p>
-                                <p className="text-[11px] text-gray-400 dark:text-gray-500">Only show remote positions in search results</p>
+                                <p className="text-[13px] font-medium text-ink-700 dark:text-ink-300">Remote Only</p>
+                                <p className="text-[11px] text-ink-400 dark:text-ink-500">Only show remote positions in search results</p>
                             </div>
                             <button
                                 onClick={() => setPreferences(prev => ({ ...prev, remoteOnly: !prev.remoteOnly }))}
@@ -333,7 +333,7 @@ export default function SettingsPage() {
                                 {preferences.remoteOnly ? (
                                     <ToggleRight className="w-8 h-8 text-emerald-500" />
                                 ) : (
-                                    <ToggleLeft className="w-8 h-8 text-gray-300" />
+                                    <ToggleLeft className="w-8 h-8 text-ink-300" />
                                 )}
                             </button>
                         </div>
@@ -341,7 +341,7 @@ export default function SettingsPage() {
                         <div className="flex justify-end pt-1">
                             <button
                                 onClick={handleSavePreferences}
-                                className="px-4 py-2 text-[13px] font-medium text-white bg-gray-900 dark:bg-gray-100 dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
+                                className="px-4 py-2 text-[13px] font-medium text-white bg-ink-900 dark:bg-ink-100 dark:text-ink-900 hover:bg-ink-800 dark:hover:bg-ink-200 rounded-lg transition-colors cursor-pointer"
                             >
                                 Save Preferences
                             </button>
@@ -356,13 +356,13 @@ export default function SettingsPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <FieldLabel>Email</FieldLabel>
-                                <div className="px-3 py-2 text-[13px] text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg">
+                                <div className="px-3 py-2 text-[13px] text-ink-600 dark:text-ink-400 bg-ink-50 dark:bg-[#252420] border border-ink-200 dark:border-[#2E2B27] rounded-lg">
                                     {user?.primaryEmailAddress?.emailAddress || 'Not signed in'}
                                 </div>
                             </div>
                             <div>
                                 <FieldLabel>Account Name</FieldLabel>
-                                <div className="px-3 py-2 text-[13px] text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-[#22252f] border border-gray-200 dark:border-[#2d3140] rounded-lg">
+                                <div className="px-3 py-2 text-[13px] text-ink-600 dark:text-ink-400 bg-ink-50 dark:bg-[#252420] border border-ink-200 dark:border-[#2E2B27] rounded-lg">
                                     {user?.fullName || user?.firstName || 'Not signed in'}
                                 </div>
                             </div>
@@ -370,28 +370,28 @@ export default function SettingsPage() {
 
                         {/* Token balance & scans */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#22252f] rounded-lg border border-gray-100 dark:border-[#2d3140]">
+                            <div className="flex items-center gap-3 p-3 bg-ink-50 dark:bg-[#252420] rounded-lg border border-ink-100 dark:border-[#2E2B27]">
                                 <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center">
                                     <Coins className="w-4 h-4 text-amber-500" />
                                 </div>
                                 <div>
-                                    <p className="text-[12px] text-gray-400 dark:text-gray-500">Token Balance</p>
-                                    <p className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">{tokenBalance}</p>
+                                    <p className="text-[12px] text-ink-400 dark:text-ink-500">Token Balance</p>
+                                    <p className="text-[15px] font-semibold text-ink-900 dark:text-ink-100">{tokenBalance}</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#22252f] rounded-lg border border-gray-100 dark:border-[#2d3140]">
+                            <div className="flex items-center gap-3 p-3 bg-ink-50 dark:bg-[#252420] rounded-lg border border-ink-100 dark:border-[#2E2B27]">
                                 <div className="w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center">
                                     <Zap className="w-4 h-4 text-teal-500" />
                                 </div>
                                 <div>
-                                    <p className="text-[12px] text-gray-400 dark:text-gray-500">Free Scans Today</p>
-                                    <p className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">{freeScansRemaining} / {FREE_DAILY_SCANS}</p>
+                                    <p className="text-[12px] text-ink-400 dark:text-ink-500">Free Scans Today</p>
+                                    <p className="text-[15px] font-semibold text-ink-900 dark:text-ink-100">{freeScansRemaining} / {FREE_DAILY_SCANS}</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Clear data */}
-                        <div className="pt-2 border-t border-gray-100 dark:border-[#2d3140]">
+                        <div className="pt-2 border-t border-ink-100 dark:border-[#2E2B27]">
                             {!showClearConfirm ? (
                                 <button
                                     onClick={() => setShowClearConfirm(true)}
@@ -407,7 +407,7 @@ export default function SettingsPage() {
                                     <div className="flex gap-2 shrink-0">
                                         <button
                                             onClick={() => setShowClearConfirm(false)}
-                                            className="px-3 py-1.5 text-[12px] font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                                            className="px-3 py-1.5 text-[12px] font-medium text-ink-600 bg-white border border-ink-200 rounded-lg hover:bg-ink-50 transition-colors cursor-pointer"
                                         >
                                             Cancel
                                         </button>
@@ -430,14 +430,14 @@ export default function SettingsPage() {
                         {/* Export */}
                         <button
                             onClick={handleExportData}
-                            className="w-full flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#22252f] hover:bg-gray-100 dark:hover:bg-[#2a2d37] rounded-lg border border-gray-100 dark:border-[#2d3140] transition-colors cursor-pointer group"
+                            className="w-full flex items-center gap-3 p-3 bg-ink-50 dark:bg-[#252420] hover:bg-ink-100 dark:hover:bg-[#2a2d37] rounded-lg border border-ink-100 dark:border-[#2E2B27] transition-colors cursor-pointer group"
                         >
                             <div className="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center group-hover:bg-violet-100 dark:group-hover:bg-violet-900/50 transition-colors">
                                 <Download className="w-4 h-4 text-violet-500" />
                             </div>
                             <div className="text-left flex-1">
-                                <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Export My Data</p>
-                                <p className="text-[11px] text-gray-400 dark:text-gray-500">Download profile, saved jobs, and applications as JSON</p>
+                                <p className="text-[13px] font-medium text-ink-700 dark:text-ink-300">Export My Data</p>
+                                <p className="text-[11px] text-ink-400 dark:text-ink-500">Download profile, saved jobs, and applications as JSON</p>
                             </div>
                         </button>
 
@@ -445,14 +445,14 @@ export default function SettingsPage() {
                         {!showDeleteResumeConfirm ? (
                             <button
                                 onClick={() => setShowDeleteResumeConfirm(true)}
-                                className="w-full flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#22252f] hover:bg-gray-100 dark:hover:bg-[#2a2d37] rounded-lg border border-gray-100 dark:border-[#2d3140] transition-colors cursor-pointer group"
+                                className="w-full flex items-center gap-3 p-3 bg-ink-50 dark:bg-[#252420] hover:bg-ink-100 dark:hover:bg-[#2a2d37] rounded-lg border border-ink-100 dark:border-[#2E2B27] transition-colors cursor-pointer group"
                             >
                                 <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/30 flex items-center justify-center group-hover:bg-red-100 dark:group-hover:bg-red-900/50 transition-colors">
                                     <FileText className="w-4 h-4 text-red-400" />
                                 </div>
                                 <div className="text-left flex-1">
-                                    <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Delete Resume Data</p>
-                                    <p className="text-[11px] text-gray-400 dark:text-gray-500">Remove the raw resume text from your profile</p>
+                                    <p className="text-[13px] font-medium text-ink-700 dark:text-ink-300">Delete Resume Data</p>
+                                    <p className="text-[11px] text-ink-400 dark:text-ink-500">Remove the raw resume text from your profile</p>
                                 </div>
                             </button>
                         ) : (
@@ -462,7 +462,7 @@ export default function SettingsPage() {
                                 <div className="flex gap-2 shrink-0">
                                     <button
                                         onClick={() => setShowDeleteResumeConfirm(false)}
-                                        className="px-3 py-1.5 text-[12px] font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                                        className="px-3 py-1.5 text-[12px] font-medium text-ink-600 bg-white border border-ink-200 rounded-lg hover:bg-ink-50 transition-colors cursor-pointer"
                                     >
                                         Cancel
                                     </button>
@@ -479,14 +479,14 @@ export default function SettingsPage() {
                         {/* Privacy link */}
                         <a
                             href="/privacy"
-                            className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#22252f] hover:bg-gray-100 dark:hover:bg-[#2a2d37] rounded-lg border border-gray-100 dark:border-[#2d3140] transition-colors group"
+                            className="flex items-center gap-3 p-3 bg-ink-50 dark:bg-[#252420] hover:bg-ink-100 dark:hover:bg-[#2a2d37] rounded-lg border border-ink-100 dark:border-[#2E2B27] transition-colors group"
                         >
-                            <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-gray-700 transition-colors">
-                                <Shield className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                            <div className="w-8 h-8 rounded-lg bg-ink-100 dark:bg-ink-800 flex items-center justify-center group-hover:bg-ink-200 dark:group-hover:bg-ink-700 transition-colors">
+                                <Shield className="w-4 h-4 text-ink-400 dark:text-ink-500" />
                             </div>
                             <div className="text-left flex-1">
-                                <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300">Privacy Policy</p>
-                                <p className="text-[11px] text-gray-400 dark:text-gray-500">Learn how we handle your data</p>
+                                <p className="text-[13px] font-medium text-ink-700 dark:text-ink-300">Privacy Policy</p>
+                                <p className="text-[11px] text-ink-400 dark:text-ink-500">Learn how we handle your data</p>
                             </div>
                         </a>
                     </div>

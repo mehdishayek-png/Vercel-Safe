@@ -35,21 +35,21 @@ export function GuideModal({ onClose }) {
                 initial={{ opacity: 0, scale: 0.96, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, y: 10 }}
-                className="relative bg-white dark:bg-[#1a1d27] rounded-2xl shadow-elevated max-w-lg w-full overflow-hidden border border-surface-200 dark:border-[#2d3140]"
+                className="relative bg-white dark:bg-[#1C1B19] rounded-[14px] shadow-elevated max-w-lg w-full overflow-hidden border border-ink-200 dark:border-[#2E2B27]"
             >
                 <div className="h-1 bg-gradient-to-r from-brand-500 via-accent-500 to-brand-500" />
 
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-lg hover:bg-surface-100 dark:hover:bg-[#22252f] transition-colors cursor-pointer"
+                    className="absolute top-4 right-4 p-1.5 text-ink-400 hover:text-ink-900 dark:hover:text-ink-100 rounded-lg hover:bg-surface-100 dark:hover:bg-[#252420] transition-colors cursor-pointer"
                 >
                     <X size={18} />
                 </button>
 
                 <div className="p-8">
                     <div className="text-center mb-8">
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1">How Midas Works</h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Three steps to your next role.</p>
+                        <h2 className="text-xl font-bold text-ink-900 dark:text-ink-100 mb-1">How Midas Works</h2>
+                        <p className="text-sm text-ink-500 dark:text-ink-400">Three steps to your next role.</p>
                     </div>
 
                     <div className="space-y-5">
@@ -61,12 +61,12 @@ export function GuideModal({ onClose }) {
                                 transition={{ delay: i * 0.1 }}
                                 className="flex items-start gap-4"
                             >
-                                <div className="w-10 h-10 rounded-xl bg-brand-50 dark:bg-brand-900/20 border border-brand-100 dark:border-brand-800 flex items-center justify-center shrink-0">
+                                <div className="w-10 h-10 rounded-[10px] bg-brand-50 dark:bg-brand-900/20 border border-brand-100 dark:border-brand-800 flex items-center justify-center shrink-0">
                                     <step.icon className="w-4 h-4 text-brand-600" />
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-0.5">{step.title}</h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{step.desc}</p>
+                                    <h3 className="font-semibold text-ink-900 dark:text-ink-100 text-sm mb-0.5">{step.title}</h3>
+                                    <p className="text-sm text-ink-500 dark:text-ink-400 leading-relaxed">{step.desc}</p>
                                 </div>
                             </motion.div>
                         ))}

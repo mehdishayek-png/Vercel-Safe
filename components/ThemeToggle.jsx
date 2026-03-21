@@ -6,7 +6,6 @@ export function ThemeToggle() {
     const [dark, setDark] = useState(false);
 
     useEffect(() => {
-        // Check localStorage or system preference
         const stored = localStorage.getItem('midas_theme');
         if (stored === 'dark') {
             setDark(true);
@@ -35,7 +34,7 @@ export function ThemeToggle() {
     return (
         <button
             onClick={toggle}
-            className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+            className="p-2 rounded-md text-ink-400 hover:text-ink-600 dark:text-ink-500 dark:hover:text-ink-300 hover:bg-surface-100 dark:hover:bg-ink-800 transition-colors cursor-pointer"
             aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
         >
             {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
