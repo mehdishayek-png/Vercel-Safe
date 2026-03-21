@@ -1,63 +1,49 @@
 'use client';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { Zap, TrendingUp, Sparkles, Eye, RotateCcw } from 'lucide-react';
+import { Zap, TrendingUp, Sparkles, Eye } from 'lucide-react';
 
-const SLIDERS = [
+const SLIDER_CONFIG = [
     {
         category: 'Risk & Hierarchy',
         items: [
-            { id: 'risk', label: 'Risk Appetite', left: 'Conservative', right: 'Aggressive', default: 45, valueLabel: 'CALCULATED' },
-            { id: 'seniority', label: 'Role Seniority', left: 'Contributor', right: 'Executive', default: 70, valueLabel: 'VP / HEAD OF' },
+            { id: 'risk', label: 'Risk Appetite', left: 'Conservative', right: 'Aggressive' },
+            { id: 'seniority', label: 'Role Seniority', left: 'Contributor', right: 'Executive' },
         ],
     },
     {
         category: 'Focus & Environment',
         items: [
-            { id: 'focus', label: 'Focus Equilibrium', left: 'Technical Depth', right: 'Strategic Leadership', default: 55, valueLabel: 'LEADERSHIP HEAVY' },
-            { id: 'culture', label: 'Culture Velocity', left: 'Established / Stable', right: 'Disruptive / Scaling', default: 75, valueLabel: 'HYPER-GROWTH' },
+            { id: 'focus', label: 'Focus Equilibrium', left: 'Technical Depth', right: 'Strategic Leadership' },
+            { id: 'culture', label: 'Culture Velocity', left: 'Established / Stable', right: 'Disruptive / Scaling' },
         ],
     },
 ];
 
-const INSIGHTS = [
-    {
-        icon: TrendingUp,
-        title: 'Startup Visibility +24%',
-        description: 'High growth appetite has unlocked 18 new stealth-mode opportunities in the Fintech sector.',
-    },
-    {
-        icon: Sparkles,
-        title: 'Equity Exposure Priority',
-        description: 'Neural weights now favor packages with >0.5% equity over pure base compensation.',
-    },
-    {
-        icon: Eye,
-        title: 'Enterprise Suppression',
-        description: 'Standard Fortune 500 listings have been deprioritized based on culture velocity settings.',
-    },
-];
+const VALUE_LABELS = {
+    risk: (v) => v > 65 ? 'AGGRESSIVE' : v > 35 ? 'CALCULATED' : 'CONSERVATIVE',
+    seniority: (v) => v > 75 ? 'EXECUTIVE' : v > 50 ? 'VP / HEAD OF' : v > 25 ? 'SENIOR' : 'MID-LEVEL',
+    focus: (v) => v > 65 ? 'LEADERSHIP HEAVY' : v > 35 ? 'BALANCED' : 'TECHNICAL DEPTH',
+    culture: (v) => v > 65 ? 'HYPER-GROWTH' : v > 35 ? 'GROWTH-STAGE' : 'ENTERPRISE',
+};
+
+const INSIGHT_ICONS = { TrendingUp, Sparkles, Eye };
 
 function NeuralSlider({ item, value, onChange }) {
-    const percentage = value;
+    const label = VALUE_LABELS[item.id]?.(value) || '';
     return (
         <div className="py-5">
             <div className="flex items-center justify-between mb-3">
                 <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">{item.label}</h3>
                 <span className="text-sm font-extrabold tracking-wide text-brand-600 dark:text-brand-400 font-headline">
-                    {item.valueLabel}
+                    {label}
                 </span>
             </div>
-            <div className="relative">
-                <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={value}
-                    onChange={(e) => onChange(parseInt(e.target.value))}
-                    className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-gray-200 dark:bg-gray-700 accent-brand-600 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-brand-600 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:shadow-brand-600/30 [&::-webkit-slider-thumb]:cursor-pointer"
-                />
-            </div>
+            <input
+                type="range" min="0" max="100" value={value}
+                onChange={(e) => onChange(parseInt(e.target.value))}
+                className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-gray-200 dark:bg-gray-700 accent-brand-600 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-brand-600 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:shadow-brand-600/30 [&::-webkit-slider-thumb]:cursor-pointer"
+            />
             <div className="flex justify-between mt-2">
                 <span className="text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wider">{item.left}</span>
                 <span className="text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wider">{item.right}</span>
@@ -67,23 +53,45 @@ function NeuralSlider({ item, value, onChange }) {
 }
 
 export default function AIRefinementPage() {
-    const { profile } = useApp();
-    const [sliderValues, setSliderValues] = useState(
-        Object.fromEntries(SLIDERS.flatMap(s => s.items).map(item => [item.id, item.default]))
-    );
+    const { profile, neuralProfile, setNeuralProfile } = useApp();
+    const [sliderValues, setSliderValues] = useState(neuralProfile?.sliderValues || { risk: 45, seniority: 70, focus: 55, culture: 75 });
     const [isSyncing, setIsSyncing] = useState(false);
+    const [syncError, setSyncError] = useState(null);
 
-    const ecosystemScore = 94;
+    const ecosystemScore = neuralProfile?.ecosystemScore || 0;
+    const insights = neuralProfile?.insights || [];
+    const topMatch = neuralProfile?.topMatch || null;
 
-    const handleCommit = () => {
+    const handleCommit = useCallback(async () => {
         setIsSyncing(true);
-        setTimeout(() => setIsSyncing(false), 2000);
-    };
+        setSyncError(null);
+        try {
+            const res = await fetch('/api/neural-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sliderValues, profile }),
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || 'Sync failed');
+            }
+            const data = await res.json();
+            setNeuralProfile({
+                sliderValues: data.sliderValues,
+                ecosystemScore: data.ecosystemScore,
+                insights: data.insights,
+                topMatch: data.topMatch,
+            });
+        } catch (err) {
+            setSyncError(err.message);
+        } finally {
+            setIsSyncing(false);
+        }
+    }, [sliderValues, profile, setNeuralProfile]);
 
     const handleReset = () => {
-        setSliderValues(
-            Object.fromEntries(SLIDERS.flatMap(s => s.items).map(item => [item.id, item.default]))
-        );
+        const defaults = { risk: 45, seniority: 70, focus: 55, culture: 75 };
+        setSliderValues(defaults);
     };
 
     return (
@@ -96,14 +104,14 @@ export default function AIRefinementPage() {
                     AI Neural Profile <span className="italic text-brand-600 dark:text-brand-400">Refinement.</span>
                 </h1>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-2xl leading-relaxed">
-                    Tune the intelligence that powers your matches. Use the neural controllers below to recalibrate how the Midas Engine prioritizes your career trajectory and alignment goals.
+                    Tune the intelligence that powers your matches. Use the neural controllers below to recalibrate how the Midas Engine prioritizes your career trajectory.
                 </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-[1fr,340px] gap-6">
                 {/* Left Column - Sliders */}
                 <div className="space-y-6">
-                    {SLIDERS.map((section) => (
+                    {SLIDER_CONFIG.map((section) => (
                         <div key={section.category} className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-6 md:p-8 shadow-sm">
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="w-2 h-2 rounded-full bg-brand-600" />
@@ -122,7 +130,10 @@ export default function AIRefinementPage() {
                         </div>
                     ))}
 
-                    {/* Action Buttons */}
+                    {syncError && (
+                        <p className="text-sm text-red-500 px-1">{syncError}</p>
+                    )}
+
                     <div className="flex items-center gap-4">
                         <button
                             onClick={handleCommit}
@@ -141,7 +152,7 @@ export default function AIRefinementPage() {
                     </div>
                 </div>
 
-                {/* Right Column - Match Projection */}
+                {/* Right Column */}
                 <div className="space-y-4">
                     {/* Ecosystem Score */}
                     <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-6 shadow-sm">
@@ -153,38 +164,49 @@ export default function AIRefinementPage() {
                             </span>
                         </div>
                         <div className="bg-gray-50 dark:bg-[#13151d] rounded-xl p-6 text-center">
-                            <span className="text-6xl font-extrabold text-gray-900 dark:text-white font-headline">{ecosystemScore}</span>
-                            <span className="text-2xl font-bold text-gray-400">%</span>
+                            <span className="text-6xl font-extrabold text-gray-900 dark:text-white font-headline">{ecosystemScore || '—'}</span>
+                            {ecosystemScore > 0 && <span className="text-2xl font-bold text-gray-400">%</span>}
                             <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase mt-2">Ecosystem Fit Score</p>
                         </div>
+                        {ecosystemScore === 0 && (
+                            <p className="text-xs text-gray-400 text-center mt-3">Commit your neural state to calculate your score</p>
+                        )}
                     </div>
 
                     {/* Insights */}
-                    <div className="space-y-3">
-                        {INSIGHTS.map((insight, i) => (
-                            <div key={i} className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm">
-                                <div className="flex gap-3">
-                                    <div className="w-9 h-9 rounded-xl bg-brand-50 dark:bg-brand-900/20 flex items-center justify-center shrink-0">
-                                        <insight.icon className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+                    {insights.length > 0 && (
+                        <div className="space-y-3">
+                            {insights.map((insight, i) => {
+                                const icons = [TrendingUp, Sparkles, Eye];
+                                const Icon = icons[i % icons.length];
+                                return (
+                                    <div key={i} className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-5 shadow-sm">
+                                        <div className="flex gap-3">
+                                            <div className="w-9 h-9 rounded-xl bg-brand-50 dark:bg-brand-900/20 flex items-center justify-center shrink-0">
+                                                <Icon className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">{insight.title}</h3>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{insight.description}</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">{insight.title}</h3>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{insight.description}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
 
                     {/* Top Match Card */}
-                    <div className="bg-gradient-to-br from-brand-600 to-secondary-DEFAULT rounded-2xl p-6 text-white shadow-lg">
-                        <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-white/70">Top Match Now</span>
-                        <h3 className="text-lg font-extrabold mt-2 font-headline">Principal Director of Product @ QuantumFlow</h3>
-                        <div className="flex items-center gap-2 mt-3">
-                            <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-white/20">SERIES C</span>
-                            <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-white/20">$240k - $280k</span>
+                    {topMatch && (
+                        <div className="bg-gradient-to-br from-brand-600 to-secondary-DEFAULT rounded-2xl p-6 text-white shadow-lg">
+                            <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-white/70">Top Match Now</span>
+                            <h3 className="text-lg font-extrabold mt-2 font-headline">{topMatch.title} @ {topMatch.company}</h3>
+                            <div className="flex items-center gap-2 mt-3">
+                                <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-white/20">{topMatch.stage}</span>
+                                <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-white/20">{topMatch.salary}</span>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>

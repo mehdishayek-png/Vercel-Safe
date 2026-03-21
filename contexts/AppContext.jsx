@@ -87,6 +87,22 @@ export function AppProvider({ children }) {
     const [recsError, setRecsError] = useState(null);
     const [recsLastFetched, setRecsLastFetched] = useState(null);
 
+    // Neural Profile (AI Refinement)
+    const [neuralProfile, setNeuralProfile] = useState(() => {
+        if (typeof window !== 'undefined') {
+            try {
+                const stored = localStorage.getItem('midas_neural_profile');
+                if (stored) return JSON.parse(stored);
+            } catch {}
+        }
+        return {
+            sliderValues: { risk: 45, seniority: 70, focus: 55, culture: 75 },
+            ecosystemScore: 0,
+            insights: [],
+            topMatch: null,
+        };
+    });
+
     const fetchRecommendations = useCallback(async (force = false) => {
         if (!profile || !profile.skills || profile.skills.length === 0) return;
         if (isLoadingRecs) return;
@@ -371,6 +387,13 @@ export function AppProvider({ children }) {
         }
     }, [preferences]);
 
+    // Persist neural profile
+    useEffect(() => {
+        if (neuralProfile) {
+            try { safeSetItem('midas_neural_profile', JSON.stringify(neuralProfile)); } catch {}
+        }
+    }, [neuralProfile]);
+
     // Persist job results
     useEffect(() => {
         if (jobs.length > 0 && !isMatching) {
@@ -468,6 +491,9 @@ export function AppProvider({ children }) {
         isLoadingRecs,
         recsError,
         fetchRecommendations,
+
+        // Neural Profile
+        neuralProfile, setNeuralProfile,
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
