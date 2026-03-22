@@ -1,7 +1,7 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Search, Bookmark, Briefcase, Settings, ChevronLeft, X, GraduationCap, Sparkles, Mic, Network, Target, SlidersHorizontal, LayoutGrid } from 'lucide-react';
+import { Home, Search, Bookmark, Briefcase, Settings, ChevronLeft, X, GraduationCap, Sparkles, Mic, Network, Target, SlidersHorizontal, LayoutGrid, Link2 } from 'lucide-react';
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { useApp } from '@/contexts/AppContext';
 
@@ -16,9 +16,10 @@ const NAV_ITEMS = [
 const SECONDARY_ITEMS = [
     { href: '/dashboard/ai-refinement', icon: SlidersHorizontal, label: 'AI Refinement' },
     { href: '/dashboard/voice-concierge', icon: Mic, label: 'Voice Concierge' },
+    { href: '/dashboard/referral', icon: Link2, label: 'Referral Bridge' },
     { href: '/dashboard/saved', icon: Bookmark, label: 'Saved Jobs' },
     { href: '/dashboard/applications', icon: Briefcase, label: 'Applications' },
-    { href: '/dashboard/prep', icon: GraduationCap, label: 'Interview Prep' },
+    { href: '/dashboard/prep', icon: GraduationCap, label: 'War Room' },
 ];
 
 export function Sidebar({ isOpen, onClose }) {
