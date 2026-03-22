@@ -5,6 +5,7 @@ import { ShieldCheck, ChevronDown, Sparkles } from 'lucide-react';
 import { FilterPanel } from '@/components/FilterPanel';
 import { MatchResultsGrid } from '@/components/MatchResultsGrid';
 import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
+import { NeuralProfileSummary } from '@/components/dashboard/NeuralProfileSummary';
 import { CandidatePanel } from '@/components/dashboard/CandidatePanel';
 import { ScanControls } from '@/components/dashboard/ScanControls';
 import { ActivityLog } from '@/components/dashboard/ActivityLog';
@@ -25,6 +26,7 @@ export default function SearchPage() {
     const [readinessOpen, setReadinessOpen] = useState(false);
     const [confirmClear, setConfirmClear] = useState(false);
     const [whatIDoOpen, setWhatIDoOpen] = useState(false);
+    const [showProfileSummary, setShowProfileSummary] = useState(true);
 
     const {
         profile, setProfile,
@@ -420,6 +422,17 @@ export default function SearchPage() {
                         </div>
                         <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} />
                     </div>
+                ) : showProfileSummary && jobs.length === 0 ? (
+                    <NeuralProfileSummary
+                        profile={profile}
+                        jobTitle={jobTitle}
+                        experienceYears={experienceYears}
+                        whatIDo={whatIDo}
+                        isMatching={isMatching}
+                        onEditSkills={() => setShowProfileSummary(false)}
+                        onRefineProfile={() => setShowProfileSummary(false)}
+                        onScanMarket={findJobs}
+                    />
                 ) : (
                     <div className="space-y-4">
                         {/* Compact profile bar */}
@@ -443,7 +456,7 @@ export default function SearchPage() {
                                     weeklyMidasScanCount={weeklyMidasScanCount} isAdminUser={isAdminUser}
                                     isMatching={isMatching} isSignedIn={isSignedIn}
                                     freeScansRemaining={freeScansRemaining}
-                                    findJobs={findJobs} onReset={() => { setProfile(null); }}
+                                    findJobs={findJobs} onReset={() => { setProfile(null); setShowProfileSummary(true); }}
                                 />
                             </div>
                         </div>

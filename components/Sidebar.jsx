@@ -11,12 +11,14 @@ const NAV_ITEMS = [
     { href: '/dashboard/pipeline', icon: LayoutGrid, label: 'Pipeline' },
     { href: '/dashboard/skill-bridge', icon: Target, label: 'Skill Analysis' },
     { href: '/dashboard/network', icon: Network, label: 'Network' },
+];
+
+const SECONDARY_ITEMS = [
     { href: '/dashboard/ai-refinement', icon: SlidersHorizontal, label: 'AI Refinement' },
     { href: '/dashboard/voice-concierge', icon: Mic, label: 'Voice Concierge' },
     { href: '/dashboard/saved', icon: Bookmark, label: 'Saved Jobs' },
     { href: '/dashboard/applications', icon: Briefcase, label: 'Applications' },
     { href: '/dashboard/prep', icon: GraduationCap, label: 'Interview Prep' },
-    { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ];
 
 export function Sidebar({ isOpen, onClose }) {
@@ -91,9 +93,8 @@ export function Sidebar({ isOpen, onClose }) {
                     </SignedOut>
                 </div>
 
-                {/* Navigation */}
-                <nav className="flex-1 px-3 py-4 space-y-1">
-                    <p className="px-3 mb-2 text-[10px] font-bold tracking-[0.15em] text-slate-400 uppercase">Menu</p>
+                {/* Primary Navigation */}
+                <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
                     {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
                         const active = isActive(href);
                         const badge = getBadge(href);
@@ -120,17 +121,62 @@ export function Sidebar({ isOpen, onClose }) {
                             </Link>
                         );
                     })}
+
+                    {/* Secondary items */}
+                    <div className="pt-3 mt-3 border-t border-slate-100 dark:border-[#2d3140] space-y-1">
+                        {SECONDARY_ITEMS.map(({ href, icon: Icon, label }) => {
+                            const active = isActive(href);
+                            const badge = getBadge(href);
+                            return (
+                                <Link
+                                    key={href}
+                                    href={href}
+                                    onClick={onClose}
+                                    className={`relative flex items-center gap-3 px-3 py-2 rounded-xl text-[12px] font-medium transition-all duration-150 group ${
+                                        active
+                                            ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20'
+                                            : 'text-slate-400 hover:text-gray-700 hover:bg-slate-50 dark:text-slate-500 dark:hover:text-gray-100 dark:hover:bg-[#22252f]'
+                                    }`}
+                                >
+                                    <Icon className={`w-[16px] h-[16px] ${active ? 'text-white' : 'text-slate-300 group-hover:text-brand-500 dark:text-slate-600 dark:group-hover:text-slate-300'}`} />
+                                    <span className="flex-1 font-headline">{label}</span>
+                                    {badge && (
+                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                            active ? 'bg-white/20 text-white' : 'bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400'
+                                        }`}>
+                                            {badge}
+                                        </span>
+                                    )}
+                                </Link>
+                            );
+                        })}
+                    </div>
                 </nav>
 
-                {/* Bottom section */}
-                <div className="px-3 py-3 border-t border-slate-100 dark:border-[#2d3140]">
+                {/* New Match Button */}
+                <div className="px-3 py-2">
                     <Link
-                        href="/"
+                        href="/dashboard/search"
                         onClick={onClose}
-                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-medium text-slate-400 hover:text-gray-700 hover:bg-slate-50 dark:text-slate-500 dark:hover:text-slate-300 dark:hover:bg-[#22252f] transition-all"
+                        className="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-[13px] font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-colors cursor-pointer shadow-md shadow-brand-600/20"
                     >
-                        <ChevronLeft className="w-4 h-4" />
-                        Back to Home
+                        New Match
+                    </Link>
+                </div>
+
+                {/* Settings */}
+                <div className="px-3 pb-2">
+                    <Link
+                        href="/dashboard/settings"
+                        onClick={onClose}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 group ${
+                            isActive('/dashboard/settings')
+                                ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20'
+                                : 'text-slate-400 hover:text-gray-700 hover:bg-slate-50 dark:text-slate-500 dark:hover:text-gray-100 dark:hover:bg-[#22252f]'
+                        }`}
+                    >
+                        <Settings className={`w-[18px] h-[18px] ${isActive('/dashboard/settings') ? 'text-white' : 'text-slate-400 group-hover:text-brand-500 dark:text-slate-500'}`} />
+                        <span className="flex-1 font-headline">Settings</span>
                     </Link>
                 </div>
 

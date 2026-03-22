@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useApp } from '@/contexts/AppContext';
 import { useUser } from '@clerk/nextjs';
 import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
+import { NeuralProfileSummary } from '@/components/dashboard/NeuralProfileSummary';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 
 function PrimeMatchCard({ job, index }) {
@@ -109,7 +110,7 @@ export default function DashboardHome() {
         profile, jobs, savedJobsData, appliedJobsData,
         isParsing, fileInputRef, setIsParsing, setProfile,
         experienceYears, setExperienceYears, jobTitle, setJobTitle, addLog,
-        preferences, setPreferences, neuralProfile,
+        preferences, setPreferences, neuralProfile, whatIDo,
         toggleSaveJob, savedJobIds, toggleAppliedJob, appliedJobIds,
     } = useApp();
 
@@ -242,6 +243,20 @@ export default function DashboardHome() {
             {/* Upload panel for new users */}
             {!profile && (
                 <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} />
+            )}
+
+            {/* Neural Profile Summary — shown when profile exists but no scan results yet */}
+            {profile && jobs.length === 0 && (
+                <NeuralProfileSummary
+                    profile={profile}
+                    jobTitle={jobTitle}
+                    experienceYears={experienceYears}
+                    whatIDo={whatIDo}
+                    isMatching={false}
+                    onRefineProfile={null}
+                    onEditSkills={null}
+                    onScanMarket={() => window.location.href = '/dashboard/search'}
+                />
             )}
 
             {/* Prime Matches + Skill Gap Bridge */}
