@@ -241,9 +241,7 @@ export default function DashboardHome() {
 
             {/* Upload panel for new users */}
             {!profile && (
-                <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-slate-200/60 dark:border-[#2d3140] p-6 shadow-sm">
-                    <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} />
-                </div>
+                <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} />
             )}
 
             {/* Prime Matches + Skill Gap Bridge */}
