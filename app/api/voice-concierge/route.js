@@ -19,7 +19,7 @@ export async function POST(request) {
     if (!apiKey) return NextResponse.json({ error: 'API not configured.' }, { status: 500 });
 
     const recentHistory = (conversationHistory || []).slice(-6).map(m =>
-      `${m.role === 'user' ? 'User' : 'Concierge'}: ${m.content}`
+      `${m.role === 'user' ? 'User' : 'Concierge'}: ${m.content || m.text || ''}`
     ).join('\n');
 
     const prompt = `You are the Midas Match Career Concierge — an expert AI career advisor. You help users with job search strategy, interview prep, salary negotiation, skill development, and career decisions.

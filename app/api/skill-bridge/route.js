@@ -84,7 +84,36 @@ Be specific about what's missing and how to address it.`;
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error('Failed to parse response');
 
-    const result = JSON.parse(match[0]);
+    const llmResult = JSON.parse(match[0]);
+
+    // Map LLM response to format the frontend expects
+    const ICON_MAP = { course: 'TrendingUp', project: 'Code2', mentorship: 'Users' };
+    const TAG_MAP = { course: 'SUGGESTED COURSE', project: 'PROJECT TO BUILD', mentorship: null };
+    const ACTION_MAP = { course: 'View Syllabus', project: 'Download Specs', mentorship: 'Request Introduction' };
+
+    const result = {
+      coreMatch: llmResult.coreMatch || 50,
+      skills: (llmResult.skills || []).map(s => ({
+        name: s.name,
+        level: Math.min(100, Math.max(0, s.level || 50)),
+        target: 100,
+        gap: s.status === 'strong' ? 0 : -(s.gap || (100 - (s.level || 50))),
+        status: s.status === 'strong' || s.status === 'met' ? 'met' : 'gap',
+      })),
+      bridgeActions: (llmResult.bridgeActions || []).map(a => ({
+        type: a.type || 'course',
+        icon: ICON_MAP[a.type] || 'TrendingUp',
+        title: a.title,
+        description: a.description,
+        tag: TAG_MAP[a.type] ?? 'SUGGESTED',
+        action: ACTION_MAP[a.type] || 'Learn More',
+      })),
+      estimatedWeeks: llmResult.estimatedWeeksToTarget || llmResult.estimatedWeeks || 4,
+      targetTitle: targetJob?.title || 'Target Role',
+      targetCompany: targetJob?.company || 'Target Company',
+      summary: llmResult.summary || '',
+    };
+
     return NextResponse.json(result);
   } catch (e) {
     console.error('Skill bridge error:', e);

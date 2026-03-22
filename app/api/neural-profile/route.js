@@ -12,16 +12,25 @@ export async function POST(request) {
     const rl = await rateLimit(`neural-profile:${userId}`, 20, 3600);
     if (!rl.allowed) return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
 
-    const { profile, sliders } = await request.json();
+    const body = await request.json();
+    const profile = body.profile;
+    // Accept both frontend format (sliderValues: {risk, seniority, focus, culture})
+    // and design format (sliders: {riskAppetite, roleSeniority, focusEquilibrium, cultureVelocity})
+    const sv = body.sliderValues || body.sliders || {};
+    const risk = sv.risk ?? sv.riskAppetite ?? 50;
+    const seniority = sv.seniority ?? sv.roleSeniority ?? 50;
+    const focus = sv.focus ?? sv.focusEquilibrium ?? 50;
+    const culture = sv.culture ?? sv.cultureVelocity ?? 50;
+
     if (!profile) return NextResponse.json({ error: 'Profile required.' }, { status: 400 });
 
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) return NextResponse.json({ error: 'API not configured.' }, { status: 500 });
 
-    const riskLabel = sliders?.riskAppetite > 75 ? 'Aggressive' : sliders?.riskAppetite > 40 ? 'Calculated' : 'Conservative';
-    const seniorityLabel = sliders?.roleSeniority > 75 ? 'Executive/VP' : sliders?.roleSeniority > 40 ? 'Senior/Lead' : 'Mid-Level';
-    const focusLabel = sliders?.focusEquilibrium > 60 ? 'Leadership-Heavy' : sliders?.focusEquilibrium > 35 ? 'Balanced' : 'Technical-Deep';
-    const cultureLabel = sliders?.cultureVelocity > 70 ? 'Hyper-Growth/Startup' : sliders?.cultureVelocity > 40 ? 'Growth-Stage' : 'Established/Enterprise';
+    const riskLabel = risk > 75 ? 'Aggressive' : risk > 40 ? 'Calculated' : 'Conservative';
+    const seniorityLabel = seniority > 75 ? 'Executive/VP' : seniority > 40 ? 'Senior/Lead' : 'Mid-Level';
+    const focusLabel = focus > 60 ? 'Leadership-Heavy' : focus > 35 ? 'Balanced' : 'Technical-Deep';
+    const cultureLabel = culture > 70 ? 'Hyper-Growth/Startup' : culture > 40 ? 'Growth-Stage' : 'Established/Enterprise';
 
     const prompt = `You are a career positioning AI. Analyze how a professional's preferences affect their job match strategy.
 
@@ -32,10 +41,10 @@ Profile:
 - Industry: ${profile.industry || 'Not specified'}
 
 Career Preferences:
-- Risk Appetite: ${riskLabel} (${sliders?.riskAppetite || 50}/100)
-- Target Seniority: ${seniorityLabel} (${sliders?.roleSeniority || 50}/100)
-- Focus: ${focusLabel} (${sliders?.focusEquilibrium || 50}/100)
-- Culture Preference: ${cultureLabel} (${sliders?.cultureVelocity || 50}/100)
+- Risk Appetite: ${riskLabel} (${risk}/100)
+- Target Seniority: ${seniorityLabel} (${seniority}/100)
+- Focus: ${focusLabel} (${focus}/100)
+- Culture Preference: ${cultureLabel} (${culture}/100)
 
 Based on these preferences, return ONLY valid JSON:
 {
@@ -85,7 +94,26 @@ Generate 2-3 insights. ecosystemScore should reflect how well their preferences 
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error('Failed to parse response');
 
-    const result = JSON.parse(match[0]);
+    const llmResult = JSON.parse(match[0]);
+
+    // Map response to format the frontend expects
+    const result = {
+      ecosystemScore: llmResult.ecosystemScore || 50,
+      insights: (llmResult.insights || []).map(i => ({
+        title: i.title,
+        description: i.description,
+        impact: i.impact || 'neutral',
+      })),
+      topMatch: llmResult.topMatch ? {
+        title: llmResult.topMatch.title,
+        company: llmResult.topMatch.company_type || llmResult.topMatch.company || 'Target Company',
+        stage: llmResult.topMatch.company_type || 'GROWTH',
+        salary: llmResult.topMatch.salary_range || llmResult.topMatch.salary || '$150k - $200k',
+      } : null,
+      sliderValues: { risk, seniority, focus, culture },
+      adjustments: llmResult.adjustments || [],
+      syncedAt: new Date().toISOString(),
+    };
     return NextResponse.json(result);
   } catch (e) {
     console.error('Neural profile error:', e);
