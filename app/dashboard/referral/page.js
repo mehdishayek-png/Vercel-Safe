@@ -58,6 +58,9 @@ export default function ReferralBridgePage() {
     const { profile, jobs, savedJobIds } = useApp();
     const [selectedJob, setSelectedJob] = useState(null);
     const [copied, setCopied] = useState(false);
+    const [outreach, setOutreach] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const topJobs = [...jobs]
         .filter(j => savedJobIds.has(j.apply_url) || (j.analysis?.fit_score || j.match_score || 0) >= 70)
@@ -65,17 +68,39 @@ export default function ReferralBridgePage() {
         .slice(0, 10);
 
     const score = selectedJob ? Math.round(selectedJob.analysis?.fit_score || selectedJob.match_score || 0) : 0;
-    const userName = profile?.name || 'there';
 
-    const generateOutreach = (job) => {
-        const company = job?.company || 'the company';
-        const title = job?.title || 'this role';
-        return `Hi! Hope things are going well.\n\nI noticed ${company} is looking for a ${title}. Based on my background in ${profile?.industry || 'the field'}, I think it could be a strong fit.\n\nWould you be open to putting in a warm referral? I'd love to connect with the team and learn more about how I could contribute.\n\nThanks so much!`;
+    const generateOutreach = async (job) => {
+        setSelectedJob(job);
+        setIsLoading(true);
+        setError(null);
+        setOutreach(null);
+        try {
+            const res = await fetch('/api/referral-outreach', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ profile, job }),
+            });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || 'Failed to generate outreach');
+            }
+            const data = await res.json();
+            setOutreach(data);
+        } catch (e) {
+            setError(e.message);
+            // Fallback to simple template if API fails
+            setOutreach({
+                outreachMessage: `Hi! Hope things are going well.\n\nI noticed ${job.company} is looking for a ${job.title}. Based on my background in ${profile?.industry || 'the field'}, I think it could be a strong fit.\n\nWould you be open to putting in a warm referral?\n\nThanks!`,
+                strategy: { conversionLikelihood: score, steps: [], keyStrengthsToHighlight: profile?.skills?.slice(0, 3) || [] },
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleCopy = () => {
-        if (!selectedJob) return;
-        navigator.clipboard.writeText(generateOutreach(selectedJob));
+        if (!outreach?.outreachMessage) return;
+        navigator.clipboard.writeText(outreach.outreachMessage);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -114,8 +139,9 @@ export default function ReferralBridgePage() {
                                         return (
                                             <button
                                                 key={job.apply_url || i}
-                                                onClick={() => setSelectedJob(job)}
-                                                className="group flex flex-col p-5 rounded-2xl bg-white dark:bg-[#1a1d27] border border-slate-200/60 dark:border-[#2d3140] text-left transition-all cursor-pointer hover:shadow-lg hover:border-brand-300"
+                                                onClick={() => generateOutreach(job)}
+                                                disabled={isLoading}
+                                                className="group flex flex-col p-5 rounded-2xl bg-white dark:bg-[#1a1d27] border border-slate-200/60 dark:border-[#2d3140] text-left transition-all cursor-pointer hover:shadow-lg hover:border-brand-300 disabled:opacity-50"
                                             >
                                                 <div className="flex items-start justify-between w-full mb-3">
                                                     <CompanyLogo company={job.company} size={44} colorIndex={i} />
@@ -158,7 +184,7 @@ export default function ReferralBridgePage() {
                                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1">Match Score</span>
                                     </div>
                                 </div>
-                                <button onClick={() => setSelectedJob(null)} className="absolute top-4 right-4 text-xs text-slate-400 hover:text-slate-600 cursor-pointer">
+                                <button onClick={() => { setSelectedJob(null); setOutreach(null); setError(null); }} className="absolute top-4 right-4 text-xs text-slate-400 hover:text-slate-600 cursor-pointer">
                                     Change Role
                                 </button>
                             </section>
@@ -209,7 +235,12 @@ export default function ReferralBridgePage() {
                                     </div>
 
                                     <div className="bg-slate-50 dark:bg-[#22252f] p-6 rounded-xl border border-slate-200/50 dark:border-[#2d3140] text-gray-900 dark:text-gray-100 leading-relaxed relative whitespace-pre-line text-sm">
-                                        {generateOutreach(selectedJob)}
+                                        {isLoading ? (
+                                            <div className="text-center py-4">
+                                                <div className="w-6 h-6 border-2 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                                                <p className="text-xs text-slate-400">Generating AI-personalized outreach...</p>
+                                            </div>
+                                        ) : outreach?.outreachMessage || 'Select a role to generate outreach.'}
                                         <div className="absolute bottom-4 right-4 flex items-center gap-2">
                                             {copied && <span className="text-[10px] text-emerald-500 font-bold uppercase">Copied!</span>}
                                             <div className={`w-2 h-2 rounded-full ${copied ? 'bg-emerald-500' : 'bg-slate-300'}`} />
@@ -249,7 +280,7 @@ export default function ReferralBridgePage() {
                                                 strokeDasharray="276" strokeDashoffset="55" strokeWidth="8" strokeLinecap="round" />
                                         </svg>
                                         <div className="absolute inset-0 flex items-center justify-center">
-                                            <span className="text-xl font-headline font-black text-gray-900 dark:text-gray-100">80%</span>
+                                            <span className="text-xl font-headline font-black text-gray-900 dark:text-gray-100">{outreach?.strategy?.conversionLikelihood || score}%</span>
                                         </div>
                                     </div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Likelihood to Refer</span>
@@ -270,11 +301,11 @@ export default function ReferralBridgePage() {
                                         A warm referral increases your interview conversion rate by <span className="text-brand-300 font-bold">4.2x</span> compared to cold applications.
                                     </p>
                                     <div className="space-y-4 pt-4">
-                                        {[
+                                        {(outreach?.strategy?.steps || [
                                             'Referral bypasses initial ATS resume filters.',
                                             'Profile flagged directly to the Hiring Manager.',
                                             '90% likelihood of First Round within 72 hours.',
-                                        ].map((step, i) => (
+                                        ]).map((step, i) => (
                                             <div key={i} className="flex gap-4">
                                                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-xs font-bold">{i + 1}</div>
                                                 <p className="text-xs text-slate-400">{step}</p>
