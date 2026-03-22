@@ -2,104 +2,114 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { rateLimit } from '@/lib/rate-limit';
 
-export const maxDuration = 10;
+export const maxDuration = 20;
 
-/**
- * POST /api/network-pulse
- *
- * Returns network analytics data including:
- * - Thought leadership score
- * - Network density clusters
- * - Engagement feed items
- * - Voice strategy suggestions
- */
 export async function POST(request) {
-    try {
-        const { userId } = await auth();
+  try {
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json({ error: 'Sign in required.' }, { status: 401 });
 
-        const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
-        const rl = await rateLimit(rateLimitId + ':network-pulse', 10, 60);
-        if (!rl.allowed) {
-            return NextResponse.json(
-                { error: `Too many requests. Try again in ${rl.retryAfter} seconds.` },
-                { status: 429 }
-            );
-        }
+    const rl = await rateLimit(`network-pulse:${userId}`, 15, 3600);
+    if (!rl.allowed) return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
 
-        const { profile, savedJobs, appliedJobs } = await request.json();
+    const { profile, savedJobs, appliedJobs } = await request.json();
+    if (!profile) return NextResponse.json({ error: 'Profile required.' }, { status: 400 });
 
-        if (!profile) {
-            return NextResponse.json({ error: 'Profile required' }, { status: 400 });
-        }
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) return NextResponse.json({ error: 'API not configured.' }, { status: 500 });
 
-        // Compute thought leadership score based on profile + activity
-        const activityScore = Math.min(30, (savedJobs?.length || 0) * 2 + (appliedJobs?.length || 0) * 5);
-        const skillScore = Math.min(40, (profile.skills?.length || 0) * 4);
-        const experienceScore = Math.min(30, (profile.experience_years || 0) * 3);
-        const thoughtLeadershipScore = Math.min(99, activityScore + skillScore + experienceScore);
+    // Build real company clusters from actual data
+    const companyFrequency = {};
+    [...(savedJobs || []), ...(appliedJobs || [])].forEach(job => {
+      const company = job.company || job.job_company;
+      if (company) companyFrequency[company] = (companyFrequency[company] || 0) + 1;
+    });
+    const topCompanies = Object.entries(companyFrequency)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([name, count]) => `${name} (${count} roles)`);
 
-        // Percentile (rough estimate)
-        const percentile = thoughtLeadershipScore >= 80 ? 'Top 2%' :
-            thoughtLeadershipScore >= 60 ? 'Top 10%' :
-            thoughtLeadershipScore >= 40 ? 'Top 25%' : 'Top 50%';
+    const prompt = `You are a career networking strategist. Analyze this professional's positioning and generate actionable networking advice.
 
-        // Build network clusters from saved/applied companies
-        const companyCounts = {};
-        [...(savedJobs || []), ...(appliedJobs || [])].forEach(job => {
-            const company = job.company;
-            if (company) companyCounts[company] = (companyCounts[company] || 0) + 1;
-        });
+Professional Profile:
+- Role: ${profile.headline || 'Not specified'}
+- Experience: ${profile.experience_years || 'Not specified'} years
+- Skills: ${(profile.skills || []).slice(0, 10).join(', ')}
+- Industry: ${profile.industry || 'Not specified'}
+${profile.whatIDo ? `- Focus: ${profile.whatIDo}` : ''}
 
-        const clusters = Object.entries(companyCounts)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 5)
-            .map(([company, count]) => ({
-                company,
-                connections: count,
-                letter: company.charAt(0).toUpperCase(),
-                size: count >= 5 ? 'lg' : count >= 3 ? 'md' : 'sm',
-            }));
+Their Job Search Activity:
+- ${(savedJobs || []).length} saved jobs
+- ${(appliedJobs || []).length} applications
+- Top target companies: ${topCompanies.join(', ') || 'None yet'}
 
-        // If no real data, provide illustrative clusters
-        const networkClusters = clusters.length >= 2 ? clusters : [
-            { company: 'Your Network', connections: (savedJobs?.length || 0) + (appliedJobs?.length || 0), letter: 'Y', size: 'lg' },
-            { company: 'Industry', connections: Math.floor(Math.random() * 20) + 5, letter: 'I', size: 'md' },
-        ];
-
-        // Stats
-        const stats = {
-            views: Math.round(thoughtLeadershipScore * 25 + Math.random() * 200),
-            reach: Math.round(thoughtLeadershipScore * 180 + Math.random() * 1000),
-            engagementRate: (2 + Math.random() * 3).toFixed(1),
-        };
-
-        // Generate voice strategies based on profile skills
-        const topSkills = (profile.skills || []).slice(0, 3);
-        const strategies = topSkills.length > 0 ? [
-            {
-                tag: 'HIGH IMPACT',
-                title: `Share insights on ${topSkills[0]} best practices.`,
-                description: `Target recruiters are actively tracking ${topSkills[0]} discussions.`,
-                action: 'Draft Suggestion',
-            },
-            {
-                tag: 'TREND MATCH',
-                title: `Comment on emerging trends in ${topSkills[1] || topSkills[0]}.`,
-                description: `Aligns with your expertise and recent job descriptions in your target roles.`,
-                action: 'Generate Draft',
-            },
-        ] : [];
-
-        return NextResponse.json({
-            thoughtLeadershipScore,
-            percentile,
-            networkClusters,
-            stats,
-            strategies,
-            lastSynced: new Date().toISOString(),
-        });
-    } catch (err) {
-        console.error('Network pulse error:', err);
-        return NextResponse.json({ error: 'Failed to generate network pulse' }, { status: 500 });
+Generate a networking strategy. Return ONLY valid JSON:
+{
+  "thoughtLeadership": {
+    "score": 65,
+    "tier": "Growing|Established|Influential",
+    "summary": "One sentence about their professional visibility"
+  },
+  "strategies": [
+    {
+      "title": "Strategy title (specific, actionable)",
+      "description": "Why this matters and how to execute it (2 sentences)",
+      "priority": "high|medium",
+      "platform": "LinkedIn|Twitter|Industry Events|Direct Outreach"
     }
+  ],
+  "contentIdeas": [
+    "Specific post/article topic they could write about based on their expertise"
+  ],
+  "targetConnections": [
+    {
+      "roleType": "e.g. Engineering Manager at [target company]",
+      "reason": "Why connecting with this person type helps",
+      "approach": "How to reach out"
+    }
+  ]
+}
+
+Generate 2-3 strategies, 2-3 content ideas, and 2 target connection types. Be specific to their industry and skills.`;
+
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://midasmatch.com',
+        'X-Title': 'Midas',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        temperature: 0.4,
+        max_tokens: 1200,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+      signal: AbortSignal.timeout(15000),
+    });
+
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+
+    const data = await res.json();
+    let text = (data.choices?.[0]?.message?.content || '').trim();
+    text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '');
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('Failed to parse response');
+
+    const result = JSON.parse(match[0]);
+
+    // Attach real company data (not fabricated)
+    result.companyClusters = topCompanies;
+    result.activityStats = {
+      savedCount: (savedJobs || []).length,
+      appliedCount: (appliedJobs || []).length,
+      uniqueCompanies: Object.keys(companyFrequency).length,
+    };
+
+    return NextResponse.json(result);
+  } catch (e) {
+    console.error('Network pulse error:', e);
+    return NextResponse.json({ error: 'Failed to analyze network.' }, { status: 500 });
+  }
 }

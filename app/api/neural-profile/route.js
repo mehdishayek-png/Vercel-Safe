@@ -2,130 +2,93 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { rateLimit } from '@/lib/rate-limit';
 
-export const maxDuration = 10;
+export const maxDuration = 20;
 
-/**
- * POST /api/neural-profile
- *
- * Persists and retrieves the user's neural profile settings.
- * Settings include: risk appetite, seniority preference,
- * focus equilibrium, and culture velocity.
- */
 export async function POST(request) {
-    try {
-        const { userId } = await auth();
+  try {
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json({ error: 'Sign in required.' }, { status: 401 });
 
-        const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
-        const rl = await rateLimit(rateLimitId + ':neural-profile', 20, 60);
-        if (!rl.allowed) {
-            return NextResponse.json(
-                { error: `Too many requests. Try again in ${rl.retryAfter} seconds.` },
-                { status: 429 }
-            );
-        }
+    const rl = await rateLimit(`neural-profile:${userId}`, 20, 3600);
+    if (!rl.allowed) return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
 
-        const { sliderValues, profile } = await request.json();
+    const { profile, sliders } = await request.json();
+    if (!profile) return NextResponse.json({ error: 'Profile required.' }, { status: 400 });
 
-        if (!sliderValues) {
-            return NextResponse.json({ error: 'Slider values required' }, { status: 400 });
-        }
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) return NextResponse.json({ error: 'API not configured.' }, { status: 500 });
 
-        // Compute ecosystem score based on slider configuration + profile
-        const ecosystemScore = computeEcosystemScore(sliderValues, profile);
+    const riskLabel = sliders?.riskAppetite > 75 ? 'Aggressive' : sliders?.riskAppetite > 40 ? 'Calculated' : 'Conservative';
+    const seniorityLabel = sliders?.roleSeniority > 75 ? 'Executive/VP' : sliders?.roleSeniority > 40 ? 'Senior/Lead' : 'Mid-Level';
+    const focusLabel = sliders?.focusEquilibrium > 60 ? 'Leadership-Heavy' : sliders?.focusEquilibrium > 35 ? 'Balanced' : 'Technical-Deep';
+    const cultureLabel = sliders?.cultureVelocity > 70 ? 'Hyper-Growth/Startup' : sliders?.cultureVelocity > 40 ? 'Growth-Stage' : 'Established/Enterprise';
 
-        // Generate insights based on slider values
-        const insights = generateInsights(sliderValues);
+    const prompt = `You are a career positioning AI. Analyze how a professional's preferences affect their job match strategy.
 
-        // Generate top match based on profile tuning
-        const topMatch = generateTopMatch(sliderValues);
+Profile:
+- Role: ${profile.headline || 'Not specified'}
+- Experience: ${profile.experience_years || 'Not specified'} years
+- Skills: ${(profile.skills || []).slice(0, 10).join(', ')}
+- Industry: ${profile.industry || 'Not specified'}
 
-        return NextResponse.json({
-            ecosystemScore,
-            insights,
-            topMatch,
-            sliderValues,
-            syncedAt: new Date().toISOString(),
-        });
-    } catch (err) {
-        console.error('Neural profile error:', err);
-        return NextResponse.json({ error: 'Failed to sync neural profile' }, { status: 500 });
+Career Preferences:
+- Risk Appetite: ${riskLabel} (${sliders?.riskAppetite || 50}/100)
+- Target Seniority: ${seniorityLabel} (${sliders?.roleSeniority || 50}/100)
+- Focus: ${focusLabel} (${sliders?.focusEquilibrium || 50}/100)
+- Culture Preference: ${cultureLabel} (${sliders?.cultureVelocity || 50}/100)
+
+Based on these preferences, return ONLY valid JSON:
+{
+  "ecosystemScore": 82,
+  "insights": [
+    {
+      "title": "Insight title",
+      "description": "How this preference combination affects their opportunities (1-2 sentences)",
+      "impact": "positive|neutral|caution"
     }
+  ],
+  "topMatch": {
+    "title": "Specific role title that fits these preferences",
+    "company_type": "Type of company (e.g. Series B AI startup)",
+    "salary_range": "$180k - $220k",
+    "why": "Why this is a strong fit given their preferences (1 sentence)"
+  },
+  "adjustments": [
+    "One specific suggestion to improve their match quality"
+  ]
 }
 
-function computeEcosystemScore(sliders, profile) {
-    // Base score from profile completeness
-    let score = 50;
-    if (profile?.skills?.length > 5) score += 10;
-    if (profile?.experience_years > 3) score += 10;
-    if (profile?.name) score += 5;
+Generate 2-3 insights. ecosystemScore should reflect how well their preferences align with current market opportunities (be honest, not inflated).`;
 
-    // Slider calibration bonus — more refined settings = higher score
-    const riskBalance = Math.abs(sliders.risk - 50) / 50; // How opinionated
-    const seniorityConfidence = sliders.seniority / 100;
-    const focusClarity = Math.abs(sliders.focus - 50) / 50;
-    const cultureDecision = sliders.culture / 100;
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://midasmatch.com',
+        'X-Title': 'Midas',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        temperature: 0.3,
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+      signal: AbortSignal.timeout(15000),
+    });
 
-    // Reward having clear preferences
-    score += Math.round((riskBalance + seniorityConfidence + focusClarity + cultureDecision) * 6.25);
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
 
-    return Math.min(99, Math.max(40, score));
-}
+    const data = await res.json();
+    let text = (data.choices?.[0]?.message?.content || '').trim();
+    text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '');
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('Failed to parse response');
 
-function generateInsights(sliders) {
-    const insights = [];
-
-    if (sliders.culture > 60) {
-        insights.push({
-            title: `Startup Visibility +${Math.round((sliders.culture - 50) * 0.5)}%`,
-            description: 'High growth appetite has unlocked stealth-mode opportunities in high-growth sectors.',
-        });
-    }
-
-    if (sliders.risk > 55) {
-        insights.push({
-            title: 'Equity Exposure Priority',
-            description: 'Neural weights now favor packages with equity over pure base compensation.',
-        });
-    } else {
-        insights.push({
-            title: 'Stability Priority Active',
-            description: 'Enterprise and established companies prioritized for reliable compensation.',
-        });
-    }
-
-    if (sliders.seniority > 60) {
-        insights.push({
-            title: 'Enterprise Suppression',
-            description: 'Standard mid-level listings deprioritized based on seniority settings.',
-        });
-    } else {
-        insights.push({
-            title: 'Growth Roles Prioritized',
-            description: 'Roles with clear advancement paths and mentorship programs are weighted higher.',
-        });
-    }
-
-    return insights;
-}
-
-function generateTopMatch(sliders) {
-    const isStartup = sliders.culture > 60;
-    const isSenior = sliders.seniority > 60;
-    const isTechnical = sliders.focus < 50;
-
-    const roles = [
-        { title: 'Principal Director of Product', company: 'QuantumFlow', stage: 'SERIES C', salary: '$240k - $280k' },
-        { title: 'VP of Engineering', company: 'NexaAI', stage: 'SERIES B', salary: '$260k - $320k' },
-        { title: 'Staff Software Engineer', company: 'Anthropic', stage: 'GROWTH', salary: '$220k - $300k' },
-        { title: 'Head of Design', company: 'Linear', stage: 'SERIES B', salary: '$200k - $260k' },
-        { title: 'Senior Product Manager', company: 'Stripe', stage: 'ESTABLISHED', salary: '$190k - $250k' },
-    ];
-
-    let idx = 0;
-    if (isStartup && isSenior) idx = 1;
-    else if (isTechnical && isSenior) idx = 2;
-    else if (!isTechnical && isSenior) idx = 3;
-    else if (!isSenior) idx = 4;
-
-    return roles[idx];
+    const result = JSON.parse(match[0]);
+    return NextResponse.json(result);
+  } catch (e) {
+    console.error('Neural profile error:', e);
+    return NextResponse.json({ error: 'Failed to analyze preferences.' }, { status: 500 });
+  }
 }
