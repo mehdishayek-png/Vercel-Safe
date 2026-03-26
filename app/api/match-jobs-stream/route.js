@@ -18,8 +18,8 @@ const ScanPayloadSchema = z.object({
   preferences: z.object({
     midasSearch: z.boolean().optional().default(false),
     filters: z.any().optional(),
-  }).optional().default({}),
-});
+  }).passthrough().optional().default({}),
+}).passthrough();
 
 export async function POST(request) {
   // ---- Auth, rate-limit, token checks (same as /api/match-jobs) ----
