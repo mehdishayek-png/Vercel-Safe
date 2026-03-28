@@ -1,13 +1,23 @@
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { fetchATSJobs } from '@/lib/ats-fetcher';
 import { getUniqueQueries, addJobsToPool } from '@/lib/job-alerts';
 
 export const maxDuration = 60;
 
+function verifyCronSecret(authHeader) {
+    const expected = process.env.CRON_SECRET;
+    if (!authHeader || !expected) return false;
+    const token = authHeader.replace('Bearer ', '');
+    try {
+        return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected));
+    } catch { return false; }
+}
+
 export async function GET(request) {
-    // Verify cron secret
+    // Verify cron secret (timing-safe)
     const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    if (!verifyCronSecret(authHeader)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

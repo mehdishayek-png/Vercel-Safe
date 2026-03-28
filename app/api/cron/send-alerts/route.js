@@ -1,14 +1,24 @@
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { calculatePandaScore } from '@/lib/panda-matcher';
 import { getAllAlertUserIds, getAlertProfile, getJobPool, getSeenJobs, markJobsSeen } from '@/lib/job-alerts';
 import { sendJobAlerts } from '@/lib/email';
 
 export const maxDuration = 60;
 
+function verifyCronSecret(authHeader) {
+    const expected = process.env.CRON_SECRET;
+    if (!authHeader || !expected) return false;
+    const token = authHeader.replace('Bearer ', '');
+    try {
+        return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected));
+    } catch { return false; }
+}
+
 export async function GET(request) {
-    // Verify cron secret
+    // Verify cron secret (timing-safe)
     const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    if (!verifyCronSecret(authHeader)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

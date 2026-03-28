@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { Redis } from '@upstash/redis';
 import { creditTokens, TOKEN_PACK_SIZE } from '@/lib/tokens';
 import { validateOrigin } from '@/lib/csrf';
+import { rateLimit } from '@/lib/rate-limit';
 
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
     ? new Redis({ url: process.env.UPSTASH_REDIS_REST_URL, token: process.env.UPSTASH_REDIS_REST_TOKEN })
@@ -14,6 +15,14 @@ export async function POST(request) {
 
     try {
         const { userId } = await auth();
+
+        // Rate limit: 10 attempts per 15 minutes per user/IP
+        const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anon';
+        const rl = await rateLimit(`razorpay-verify:${rateLimitId}`, 10, 900);
+        if (!rl.allowed) {
+            return NextResponse.json({ error: 'Too many verification attempts. Please try again later.' }, { status: 429 });
+        }
+
         const {
             razorpay_order_id,
             razorpay_payment_id,
