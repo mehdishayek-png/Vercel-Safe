@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   experimental: {
+    instrumentationHook: true,
     serverComponentsExternalPackages: ['pdf-parse'],
     serverActions: {
       bodySizeLimit: '10mb',

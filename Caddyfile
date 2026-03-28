@@ -1,0 +1,6 @@
+# Replace with your actual domain when deploying to VPS
+# Caddy automatically provisions Let's Encrypt SSL certificates
+
+midasmatch.com {
+    reverse_proxy app:3000
+}
