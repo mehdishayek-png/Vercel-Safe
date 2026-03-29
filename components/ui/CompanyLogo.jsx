@@ -65,7 +65,7 @@ export function CompanyLogo({ company, applyUrl, size = 36, colorIndex = 0, clas
     const [imgSrc, setImgSrc] = useState(() => {
         const domain = guessDomain(company, applyUrl);
         if (!domain) return null;
-        return `https://logo.clearbit.com/${domain}`;
+        return `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=128`;
     });
 
     const cleanCompany = (company || '').replace(/<[^>]*>/g, '').trim();
@@ -76,8 +76,8 @@ export function CompanyLogo({ company, applyUrl, size = 36, colorIndex = 0, clas
     const bgColor = AVATAR_COLORS[Math.abs(colorIndex) % AVATAR_COLORS.length];
 
     const handleError = () => {
-        // If clearbit failed, try Google Favicon
-        if (imgSrc && imgSrc.includes('clearbit')) {
+        // If Google favicon failed, try Google s2 favicons
+        if (imgSrc && imgSrc.includes('gstatic.com')) {
             const domain = guessDomain(company, applyUrl);
             if (domain) {
                 setImgSrc(`https://www.google.com/s2/favicons?domain=${domain}&sz=128`);
