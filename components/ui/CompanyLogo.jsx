@@ -26,6 +26,10 @@ function guessDomain(company, applyUrl) {
                 'myworkdayjobs.com', 'jobs.lever.co', 'boards.greenhouse.io',
                 'google.com', 'naukri.com', 'shine.com', 'timesjobs.com',
                 'foundit.in', 'internshala.com', 'simplyhired.com',
+                'apna.co', 'instahyre.com', 'cutshort.io',
+                'remotive.com', 'himalayas.app', 'jobicy.com', 'arbeitnow.com',
+                'weworkremotely.com', 'findwork.dev', 'devitjobs.uk', 'jooble.org',
+                'news.ycombinator.com', 'remoteok.com',
             ];
             if (!genericDomains.some(d => host.endsWith(d))) {
                 return host;

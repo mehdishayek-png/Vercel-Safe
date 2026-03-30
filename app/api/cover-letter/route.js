@@ -7,9 +7,9 @@ export const maxDuration = 15;
 export async function POST(request) {
   try {
     const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
 
-    const rl = await rateLimit(`cover-letter:${userId}`, 15, 3600); // 15 per hour max
+    const rl = await rateLimit(`cover-letter:${rateLimitId}`, 15, 3600); // 15 per hour max
     if (!rl.allowed) return NextResponse.json({ error: 'Free limit reached, try tomorrow' }, { status: 429, headers: { 'Retry-After': rl.retryAfter } });
 
     const { job, profile } = await request.json();
