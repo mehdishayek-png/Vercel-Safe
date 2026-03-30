@@ -1,6 +1,7 @@
 'use client';
-import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, Target, ChevronRight, Sparkles, Eye } from 'lucide-react';
+import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, Target, ChevronRight, Sparkles, Eye, Brain, FileText, ShieldCheck, Loader2, AlertCircle, Lightbulb, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { useUser } from '@clerk/nextjs';
 import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
@@ -38,6 +39,79 @@ export default function DashboardHome() {
         preferences, setPreferences,
         toggleSaveJob, savedJobIds, toggleAppliedJob, appliedJobIds,
     } = useApp();
+
+    // --- Search Insights state ---
+    const [insights, setInsights] = useState(null);
+    const [isLoadingInsights, setIsLoadingInsights] = useState(false);
+    const [insightsError, setInsightsError] = useState(null);
+
+    // --- Resume Health state ---
+    const [resumeHealth, setResumeHealth] = useState(null);
+    const [isLoadingResumeHealth, setIsLoadingResumeHealth] = useState(false);
+    const [resumeHealthError, setResumeHealthError] = useState(null);
+    const [expandedWording, setExpandedWording] = useState({});
+
+    const handleRefreshInsights = async () => {
+        setIsLoadingInsights(true);
+        setInsightsError(null);
+        try {
+            let savedJobs = savedJobsData;
+            if (!savedJobs?.length) {
+                try {
+                    const stored = localStorage.getItem('midas_saved_jobs_data');
+                    if (stored) savedJobs = JSON.parse(stored);
+                } catch (e) { /* ignore */ }
+            }
+            let recentScanJobs = jobs;
+            if (!recentScanJobs?.length) {
+                try {
+                    const stored = localStorage.getItem('midas_results');
+                    if (stored) {
+                        const parsed = JSON.parse(stored);
+                        recentScanJobs = parsed.jobs || [];
+                    }
+                } catch (e) { /* ignore */ }
+            }
+            const res = await fetch('/api/career-insights', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ profile, savedJobs: savedJobs || [], recentScanJobs: recentScanJobs || [] }),
+            });
+            if (!res.ok) throw new Error('Failed to fetch insights');
+            const data = await res.json();
+            setInsights(data);
+        } catch (err) {
+            setInsightsError(err.message);
+        } finally {
+            setIsLoadingInsights(false);
+        }
+    };
+
+    const handleCheckResumeHealth = async () => {
+        setIsLoadingResumeHealth(true);
+        setResumeHealthError(null);
+        try {
+            let targetJobs = savedJobsData;
+            if (!targetJobs?.length) {
+                try {
+                    const stored = localStorage.getItem('midas_saved_jobs_data');
+                    if (stored) targetJobs = JSON.parse(stored);
+                } catch (e) { /* ignore */ }
+            }
+            const res = await fetch('/api/resume-gaps', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ profile, targetJobs: targetJobs || [] }),
+            });
+            if (!res.ok) throw new Error('Failed to check resume health');
+            const data = await res.json();
+            setResumeHealth(data);
+        } catch (err) {
+            setResumeHealthError(err.message);
+        } finally {
+            setIsLoadingResumeHealth(false);
+        }
+    };
 
     // Top 5 jobs from latest scan — sorted by AI score if available, then heuristic
     const topPicks = [...jobs]
@@ -204,6 +278,263 @@ export default function DashboardHome() {
                     </div>
                 ))}
             </div>
+
+            {/* ===== SEARCH INSIGHTS ===== */}
+            {profile && (
+                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140]">
+                        <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center">
+                                <Brain className="w-3 h-3 text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">Search Insights</h3>
+                                <p className="text-[10px] text-gray-400">
+                                    {insights?.one_liner || 'AI-powered analysis of your job search patterns'}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {insights?.search_health && (
+                                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                                    insights.search_health === 'on_track'
+                                        ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
+                                        : insights.search_health === 'needs_adjustment'
+                                        ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'
+                                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                                }`}>
+                                    {insights.search_health === 'on_track' ? 'On Track' : insights.search_health === 'needs_adjustment' ? 'Needs Adjustment' : 'Unfocused'}
+                                </span>
+                            )}
+                            <button
+                                onClick={handleRefreshInsights}
+                                disabled={isLoadingInsights}
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-violet-600 hover:text-violet-700 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                            >
+                                {isLoadingInsights ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                                {isLoadingInsights ? 'Analyzing...' : 'Refresh Insights'}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="p-5">
+                        {insightsError && (
+                            <p className="text-[12px] text-red-500 mb-3">{insightsError}</p>
+                        )}
+                        {!insights && !isLoadingInsights ? (
+                            <div className="text-center py-6">
+                                <p className="text-sm text-gray-300 dark:text-gray-600">Run a few scans and save some jobs, then check back for personalized insights.</p>
+                            </div>
+                        ) : isLoadingInsights && !insights ? (
+                            <div className="flex items-center justify-center gap-2 py-6 text-[13px] text-gray-400">
+                                <Loader2 className="w-4 h-4 animate-spin" /> Analyzing your search patterns...
+                            </div>
+                        ) : insights?.insights?.length > 0 ? (
+                            <div className="space-y-3">
+                                {insights.insights.slice(0, 3).map((insight, i) => {
+                                    const typeColors = {
+                                        strength: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400',
+                                        opportunity: 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400',
+                                        warning: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
+                                        pattern: 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400',
+                                    };
+                                    return (
+                                        <div key={i} className="bg-gray-50 dark:bg-[#22252f] rounded-lg border border-gray-100 dark:border-[#2d3140] p-4">
+                                            <div className="flex items-start gap-3">
+                                                <div className="flex-1">
+                                                    {insight.type && (
+                                                        <span className={`inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded-full mb-2 ${typeColors[insight.type] || typeColors.pattern}`}>
+                                                            {insight.type}
+                                                        </span>
+                                                    )}
+                                                    <p className="text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed">{insight.observation}</p>
+                                                    {insight.suggestion && (
+                                                        <p className="text-[12px] text-gray-400 dark:text-gray-500 mt-1.5 flex items-start gap-1.5">
+                                                            <Lightbulb className="w-3 h-3 mt-0.5 shrink-0 text-amber-400" />
+                                                            {insight.suggestion}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                {insight.action?.type && insight.action.type !== 'none' && (
+                                                    <button
+                                                        onClick={() => {
+                                                            if (insight.action.url) window.location.href = insight.action.url;
+                                                        }}
+                                                        className="shrink-0 px-3 py-1.5 text-[11px] font-medium text-teal-600 hover:text-teal-700 hover:bg-teal-50 dark:hover:bg-teal-900/20 rounded-lg transition-colors cursor-pointer"
+                                                    >
+                                                        {insight.action.label || 'Take action'} <ArrowRight className="w-3 h-3 inline ml-0.5" />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : insights ? (
+                            <div className="text-center py-6">
+                                <p className="text-sm text-gray-300 dark:text-gray-600">Run a few scans and save some jobs, then check back for personalized insights.</p>
+                            </div>
+                        ) : null}
+                    </div>
+                </div>
+            )}
+
+            {/* ===== RESUME HEALTH ===== */}
+            {profile && (
+                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140]">
+                        <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center">
+                                <ShieldCheck className="w-3 h-3 text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">Resume Health</h3>
+                                <p className="text-[10px] text-gray-400">
+                                    {resumeHealth?.overall_readiness || 'Check how your resume stacks up against saved jobs'}
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={handleCheckResumeHealth}
+                            disabled={isLoadingResumeHealth}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                        >
+                            {isLoadingResumeHealth ? <Loader2 className="w-3 h-3 animate-spin" /> : <FileText className="w-3 h-3" />}
+                            {isLoadingResumeHealth ? 'Checking...' : 'Check Resume Health'}
+                        </button>
+                    </div>
+
+                    <div className="p-5">
+                        {resumeHealthError && (
+                            <p className="text-[12px] text-red-500 mb-3">{resumeHealthError}</p>
+                        )}
+                        {!profile?.skills?.length || (!savedJobsData?.length && !resumeHealth) ? (
+                            !resumeHealth && !isLoadingResumeHealth ? (
+                                <div className="text-center py-6">
+                                    <p className="text-sm text-gray-300 dark:text-gray-600">Upload your resume and save some jobs first.</p>
+                                </div>
+                            ) : null
+                        ) : null}
+                        {isLoadingResumeHealth && !resumeHealth && (
+                            <div className="flex items-center justify-center gap-2 py-6 text-[13px] text-gray-400">
+                                <Loader2 className="w-4 h-4 animate-spin" /> Analyzing your resume...
+                            </div>
+                        )}
+                        {resumeHealth && (
+                            <div className="space-y-5">
+                                {/* Readiness Score Gauge */}
+                                {typeof resumeHealth.readiness_score === 'number' && (
+                                    <div className="flex items-center gap-5">
+                                        <div className="relative flex items-center justify-center" style={{ width: 72, height: 72 }}>
+                                            <svg width={72} height={72} className="transform -rotate-90">
+                                                <circle cx={36} cy={36} r={30} stroke="#f3f4f6" strokeWidth={5} fill="transparent" />
+                                                <circle
+                                                    cx={36} cy={36} r={30}
+                                                    stroke={resumeHealth.readiness_score >= 75 ? '#14b8a6' : resumeHealth.readiness_score >= 55 ? '#f59e0b' : '#9ca3af'}
+                                                    strokeWidth={5} fill="transparent"
+                                                    strokeDasharray={30 * 2 * Math.PI}
+                                                    strokeDashoffset={30 * 2 * Math.PI - (resumeHealth.readiness_score / 100) * 30 * 2 * Math.PI}
+                                                    strokeLinecap="round"
+                                                    className="transition-all duration-1000 ease-out"
+                                                />
+                                            </svg>
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <span className="text-[18px] font-bold" style={{ color: resumeHealth.readiness_score >= 75 ? '#14b8a6' : resumeHealth.readiness_score >= 55 ? '#f59e0b' : '#9ca3af' }}>
+                                                    {Math.round(resumeHealth.readiness_score)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-medium">Readiness Score</p>
+                                            {resumeHealth.overall_readiness && (
+                                                <p className="text-[13px] text-gray-700 dark:text-gray-300 mt-0.5">{resumeHealth.overall_readiness}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Missing High Impact Skills */}
+                                {resumeHealth.missing_high_impact?.length > 0 && (
+                                    <div>
+                                        <h4 className="text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-2.5 flex items-center gap-1.5">
+                                            <AlertCircle className="w-3.5 h-3.5 text-amber-500" /> Missing Skills
+                                        </h4>
+                                        <div className="space-y-1.5">
+                                            {resumeHealth.missing_high_impact.map((item, i) => {
+                                                const priorityStyles = {
+                                                    critical: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
+                                                    recommended: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
+                                                    nice_to_have: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
+                                                };
+                                                const priority = item.priority || 'recommended';
+                                                return (
+                                                    <div key={i} className="flex items-center gap-2 text-[12px]">
+                                                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${priorityStyles[priority] || priorityStyles.recommended}`}>
+                                                            {priority.replace('_', ' ')}
+                                                        </span>
+                                                        <span className="text-gray-700 dark:text-gray-300">{typeof item === 'string' ? item : item.skill || item.name}</span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Wording Improvements */}
+                                {resumeHealth.wording_improvements?.length > 0 && (
+                                    <div>
+                                        <h4 className="text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-2.5 flex items-center gap-1.5">
+                                            <FileText className="w-3.5 h-3.5 text-sky-500" /> Wording Improvements
+                                        </h4>
+                                        <div className="space-y-2">
+                                            {resumeHealth.wording_improvements.map((item, i) => (
+                                                <div key={i} className="border border-gray-100 dark:border-[#2d3140] rounded-lg overflow-hidden">
+                                                    <button
+                                                        onClick={() => setExpandedWording(prev => ({ ...prev, [i]: !prev[i] }))}
+                                                        className="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 dark:bg-[#22252f] hover:bg-gray-100 dark:hover:bg-[#282b36] transition-colors text-left cursor-pointer"
+                                                    >
+                                                        <span className="text-[12px] font-medium text-gray-700 dark:text-gray-300">{item.title || item.section || `Improvement ${i + 1}`}</span>
+                                                        {expandedWording[i] ? <ChevronUp className="w-3.5 h-3.5 text-gray-400" /> : <ChevronDown className="w-3.5 h-3.5 text-gray-400" />}
+                                                    </button>
+                                                    {expandedWording[i] && (
+                                                        <div className="px-4 py-3 text-[12px] text-gray-600 dark:text-gray-400 leading-relaxed bg-white dark:bg-[#1a1d27] space-y-1.5">
+                                                            {item.current && <p><span className="font-medium text-gray-500">Current:</span> {item.current}</p>}
+                                                            {item.suggested && <p><span className="font-medium text-teal-600">Suggested:</span> {item.suggested}</p>}
+                                                            {item.reason && <p className="text-[11px] text-gray-400">{item.reason}</p>}
+                                                            {typeof item === 'string' && <p>{item}</p>}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Red Flags */}
+                                {resumeHealth.red_flags?.length > 0 && (
+                                    <div>
+                                        <h4 className="text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-2.5 flex items-center gap-1.5">
+                                            <AlertCircle className="w-3.5 h-3.5 text-red-500" /> Red Flags
+                                        </h4>
+                                        <div className="space-y-2">
+                                            {resumeHealth.red_flags.map((flag, i) => (
+                                                <div key={i} className="bg-red-50/50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30 rounded-lg p-3">
+                                                    <p className="text-[12px] text-red-700 dark:text-red-400 leading-relaxed">{typeof flag === 'string' ? flag : flag.text || flag.issue}</p>
+                                                    {flag.fix && (
+                                                        <p className="text-[11px] text-red-600/70 dark:text-red-400/60 mt-1 flex items-start gap-1.5">
+                                                            <Lightbulb className="w-3 h-3 mt-0.5 shrink-0" /> {flag.fix}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* ===== TOP PICKS — Best from latest scan ===== */}
             {profile && (

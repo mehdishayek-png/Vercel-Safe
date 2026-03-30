@@ -1,7 +1,7 @@
 'use client';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
-import { ArrowLeft, ExternalLink, Bookmark, Check, MapPin, Building2, Clock, Sparkles, BrainCircuit, FileText, Copy, CheckCheck, Loader2, AlertCircle, Briefcase, ChevronRight, GraduationCap, Target, BadgeCheck, Eye, ChevronDown, Lightbulb } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Bookmark, Check, MapPin, Building2, Clock, Sparkles, BrainCircuit, FileText, Copy, CheckCheck, Loader2, AlertCircle, Briefcase, ChevronRight, GraduationCap, Target, BadgeCheck, Eye, ChevronDown, Lightbulb, Shield, MessageSquare, DollarSign, ArrowUpRight, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
 import { useApp } from '@/contexts/AppContext';
 import { useToast } from '@/components/ui/Toast';
@@ -322,6 +322,10 @@ export default function JobDetailPage() {
     const [isLoadingCoverLetter, setIsLoadingCoverLetter] = useState(false);
     const [copied, setCopied] = useState(false);
     const [showFullDescription, setShowFullDescription] = useState(false);
+    const [negotiationData, setNegotiationData] = useState(null);
+    const [isLoadingNegotiation, setIsLoadingNegotiation] = useState(false);
+    const [showNegotiation, setShowNegotiation] = useState(false);
+    const [expandedScripts, setExpandedScripts] = useState({});
 
     useEffect(() => {
         try {
@@ -493,6 +497,30 @@ export default function JobDetailPage() {
         await navigator.clipboard.writeText(coverLetter);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
+    };
+
+    const handleNegotiation = async () => {
+        if (negotiationData) { setShowNegotiation(true); return; }
+        setIsLoadingNegotiation(true);
+        setShowNegotiation(true);
+        try {
+            const res = await fetch('/api/salary-negotiation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ job, profile, analysis }),
+            });
+            if (!res.ok) throw new Error('Failed to generate negotiation playbook');
+            const data = await res.json();
+            setNegotiationData(data);
+        } catch (err) {
+            toast(err.message || 'Negotiation playbook failed', 'error');
+        } finally {
+            setIsLoadingNegotiation(false);
+        }
+    };
+
+    const toggleScript = (idx) => {
+        setExpandedScripts(prev => ({ ...prev, [idx]: !prev[idx] }));
     };
 
     // Description truncation
@@ -748,7 +776,80 @@ export default function JobDetailPage() {
                                             <span className="text-gray-900 font-semibold text-[13px] ml-1">{analysis.salary_estimate}</span>
                                         </div>
                                     )}
+                                    {analysis.salary_read?.leverage_notes && (
+                                        <div className="mt-2 pt-2 border-t border-gray-200/40">
+                                            <span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Leverage Notes </span>
+                                            <p className="text-[12px] text-gray-600 mt-1 leading-relaxed">{analysis.salary_read.leverage_notes}</p>
+                                        </div>
+                                    )}
                                 </div>
+
+                                {/* Concerns — new optional field */}
+                                {analysis.concerns?.length > 0 && (
+                                    <div>
+                                        <h3 className="text-gray-700 font-medium text-[12px] mb-2.5 flex items-center gap-1.5 uppercase tracking-wide">
+                                            <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+                                            Concerns
+                                        </h3>
+                                        <div className="space-y-2">
+                                            {analysis.concerns.map((concern, i) => {
+                                                const severityStyles = {
+                                                    serious: 'bg-red-50/60 border-red-200 text-red-700',
+                                                    notable: 'bg-amber-50/60 border-amber-200 text-amber-700',
+                                                    minor: 'bg-gray-50 border-gray-200 text-gray-600',
+                                                };
+                                                const badgeStyles = {
+                                                    serious: 'bg-red-100 text-red-700',
+                                                    notable: 'bg-amber-100 text-amber-700',
+                                                    minor: 'bg-gray-100 text-gray-500',
+                                                };
+                                                const severity = concern.severity || 'minor';
+                                                return (
+                                                    <div key={i} className={`p-3 rounded-lg border ${severityStyles[severity] || severityStyles.minor}`}>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <span className={`text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${badgeStyles[severity] || badgeStyles.minor}`}>
+                                                                {severity}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-[12px] leading-relaxed">{concern.text || concern}</p>
+                                                        {concern.mitigation && (
+                                                            <p className="text-[11px] mt-1.5 opacity-80 flex items-start gap-1.5">
+                                                                <Lightbulb className="w-3 h-3 mt-0.5 shrink-0" />
+                                                                {concern.mitigation}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Hidden Opportunity — new optional field */}
+                                {analysis.hidden_opportunity && (
+                                    <div className="bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200 rounded-lg p-4">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="w-6 h-6 rounded-lg bg-violet-100 flex items-center justify-center">
+                                                <Sparkles className="w-3.5 h-3.5 text-violet-600" />
+                                            </div>
+                                            <h3 className="text-violet-800 font-medium text-[12px] uppercase tracking-wide">Hidden Opportunity</h3>
+                                        </div>
+                                        <p className="text-[13px] text-violet-700/80 leading-relaxed">{analysis.hidden_opportunity}</p>
+                                    </div>
+                                )}
+
+                                {/* Application Advice — new optional field */}
+                                {analysis.application_advice && (
+                                    <div className="bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200 rounded-lg p-4 flex items-start gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center shrink-0">
+                                            <ArrowUpRight className="w-4 h-4 text-teal-600" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-teal-800 font-semibold text-[12px] uppercase tracking-wide mb-1">Application Advice</h3>
+                                            <p className="text-[13px] text-teal-700/80 leading-relaxed">{analysis.application_advice}</p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
@@ -787,6 +888,128 @@ export default function JobDetailPage() {
                                     </div>
                                 </div>
                             )}
+                        </div>
+                    </div>
+
+                    {/* ===== NEGOTIATION PLAYBOOK ===== */}
+                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                        <div className="px-5 py-3.5 border-b border-gray-100 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Shield className="w-3.5 h-3.5 text-violet-500" />
+                                <h2 className="text-[13px] font-semibold text-gray-900">Negotiation Playbook</h2>
+                            </div>
+                            {negotiationData && (
+                                <button
+                                    onClick={() => setShowNegotiation(!showNegotiation)}
+                                    className="text-[11px] text-gray-400 hover:text-gray-600 cursor-pointer"
+                                >
+                                    {showNegotiation ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                </button>
+                            )}
+                        </div>
+                        <div className="p-5">
+                            {!negotiationData && !isLoadingNegotiation ? (
+                                <button
+                                    onClick={handleNegotiation}
+                                    className="flex items-center gap-2 text-[13px] font-medium text-violet-600 hover:text-violet-700 transition-colors py-2 px-4 rounded-lg hover:bg-violet-50 cursor-pointer"
+                                >
+                                    <Shield className="w-4 h-4" /> Generate Negotiation Playbook
+                                </button>
+                            ) : isLoadingNegotiation ? (
+                                <div className="flex items-center gap-2 text-[13px] text-gray-400 py-2">
+                                    <Loader2 className="w-4 h-4 animate-spin" /> Building your playbook...
+                                </div>
+                            ) : negotiationData && showNegotiation ? (
+                                <div className="space-y-4">
+                                    {/* Market Context */}
+                                    {negotiationData.market_context && (
+                                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                            <h3 className="text-gray-700 font-medium text-[12px] mb-2 uppercase tracking-wide">Market Context</h3>
+                                            <p className="text-[13px] text-gray-600 leading-relaxed">{negotiationData.market_context}</p>
+                                        </div>
+                                    )}
+
+                                    {/* Your Position */}
+                                    {negotiationData.your_position && (
+                                        <div className="bg-violet-50/50 p-4 rounded-lg border border-violet-100">
+                                            <h3 className="text-violet-700 font-medium text-[12px] mb-2 uppercase tracking-wide">Your Position</h3>
+                                            <p className="text-[13px] text-violet-700/80 leading-relaxed">{negotiationData.your_position}</p>
+                                        </div>
+                                    )}
+
+                                    {/* Strategy */}
+                                    {negotiationData.strategy && (
+                                        <div className="bg-teal-50/50 p-4 rounded-lg border border-teal-100">
+                                            <h3 className="text-teal-700 font-medium text-[12px] mb-2.5 uppercase tracking-wide flex items-center gap-1.5">
+                                                <Target className="w-3.5 h-3.5" /> Strategy
+                                            </h3>
+                                            <div className="space-y-2">
+                                                {negotiationData.strategy.timing && (
+                                                    <div className="flex items-start gap-2 text-[12px]">
+                                                        <span className="text-teal-600 font-semibold shrink-0 w-14">Timing</span>
+                                                        <span className="text-teal-700/80">{negotiationData.strategy.timing}</span>
+                                                    </div>
+                                                )}
+                                                {negotiationData.strategy.anchor && (
+                                                    <div className="flex items-start gap-2 text-[12px]">
+                                                        <span className="text-teal-600 font-semibold shrink-0 w-14">Anchor</span>
+                                                        <span className="text-teal-700/80">{negotiationData.strategy.anchor}</span>
+                                                    </div>
+                                                )}
+                                                {negotiationData.strategy.floor && (
+                                                    <div className="flex items-start gap-2 text-[12px]">
+                                                        <span className="text-teal-600 font-semibold shrink-0 w-14">Floor</span>
+                                                        <span className="text-teal-700/80">{negotiationData.strategy.floor}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Scripts */}
+                                    {negotiationData.scripts?.length > 0 && (
+                                        <div>
+                                            <h3 className="text-gray-700 font-medium text-[12px] mb-2.5 uppercase tracking-wide flex items-center gap-1.5">
+                                                <MessageSquare className="w-3.5 h-3.5 text-violet-500" /> Scripts
+                                            </h3>
+                                            <div className="space-y-2">
+                                                {negotiationData.scripts.map((script, i) => (
+                                                    <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
+                                                        <button
+                                                            onClick={() => toggleScript(i)}
+                                                            className="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 hover:bg-gray-100 transition-colors text-left cursor-pointer"
+                                                        >
+                                                            <span className="text-[12px] font-medium text-gray-700">{script.title || script.scenario || `Script ${i + 1}`}</span>
+                                                            {expandedScripts[i] ? <ChevronUp className="w-3.5 h-3.5 text-gray-400" /> : <ChevronDown className="w-3.5 h-3.5 text-gray-400" />}
+                                                        </button>
+                                                        {expandedScripts[i] && (
+                                                            <div className="px-4 py-3 text-[12px] text-gray-600 leading-relaxed whitespace-pre-wrap bg-white">
+                                                                {script.text || script.script || script.content}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Non-salary levers */}
+                                    {negotiationData.non_salary_levers?.length > 0 && (
+                                        <div>
+                                            <h3 className="text-gray-700 font-medium text-[12px] mb-2.5 uppercase tracking-wide flex items-center gap-1.5">
+                                                <DollarSign className="w-3.5 h-3.5 text-amber-500" /> Non-Salary Levers
+                                            </h3>
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {negotiationData.non_salary_levers.map((lever, i) => (
+                                                    <span key={i} className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200/50">
+                                                        {typeof lever === 'string' ? lever : lever.name || lever.label}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : null}
                         </div>
                     </div>
                 </div>
