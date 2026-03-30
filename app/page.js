@@ -18,31 +18,31 @@ const DashboardPreview = dynamic(() => import('@/components/DashboardPreview').t
 export default function Home() {
     return (
         <ErrorBoundary>
-            <main className="min-h-screen bg-white text-gray-900 overflow-x-hidden selection:bg-brand-100">
+            <main className="min-h-screen bg-surface-50 dark:bg-[#0f1117] text-gray-900 dark:text-gray-100 overflow-x-hidden selection:bg-brand-100">
                 <Header />
                 <Hero
                     onStart={() => window.location.href = '/dashboard/search'}
                     onDemo={() => document.getElementById('preview')?.scrollIntoView({ behavior: 'smooth' })}
                 />
 
-                {/* Social proof / stats strip */}
-                <section className="py-16 bg-gray-50 dark:bg-[#12141c]">
+                {/* Stats strip */}
+                <section className="py-16 bg-white dark:bg-[#1a1d27] border-y border-surface-200 dark:border-[#2d3140]">
                     <div className="container mx-auto px-4">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 max-w-5xl mx-auto text-center">
                             <div>
-                                <div className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">1,000+</div>
-                                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Jobs Scanned Per Search</div>
+                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">1,000+</div>
+                                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Jobs Per Search</div>
                             </div>
                             <div>
-                                <div className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">350+</div>
+                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">350+</div>
                                 <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Company Career Pages</div>
                             </div>
                             <div>
-                                <div className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">8+</div>
-                                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Job Sources Aggregated</div>
+                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">8+</div>
+                                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Sources Aggregated</div>
                             </div>
                             <div>
-                                <div className="text-4xl md:text-5xl font-extrabold text-brand-600 dark:text-brand-400">&lt;60s</div>
+                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-brand-600 dark:text-brand-400">&lt;60s</div>
                                 <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Average Scan Time</div>
                             </div>
                         </div>
@@ -57,40 +57,46 @@ export default function Home() {
                 <HowItWorks />
 
                 {/* Final CTA */}
-                <section className="py-24 text-center relative overflow-hidden bg-gray-900">
-                    {/* Animated gradient mesh for CTA */}
+                <section className="py-28 text-center relative overflow-hidden bg-gray-900 dark:bg-[#0a0b0f]">
                     <div className="absolute inset-0 -z-0">
-                        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-violet-500/10 rounded-full blur-[120px] animate-pulse" />
-                        <div className="absolute top-1/3 right-1/4 w-[175px] md:w-[350px] h-[175px] md:h-[350px] bg-teal-500/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
-                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[250px] md:w-[500px] h-[125px] md:h-[250px] bg-brand-500/8 rounded-full blur-[80px]" />
+                        <div className="absolute inset-0 bg-gradient-to-tr from-brand-600/15 via-transparent to-accent-600/10" />
+                        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-violet-500/10 rounded-full blur-[120px]" />
+                        <div className="absolute top-1/3 right-1/4 w-[175px] md:w-[350px] h-[175px] md:h-[350px] bg-brand-500/10 rounded-full blur-[100px]" />
                     </div>
 
                     <div className="container mx-auto px-4 relative z-10">
-                        <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-white">
+                        <h2 className="font-headline text-4xl md:text-6xl font-extrabold mb-6 tracking-tight text-white">
                             Ready to find your <span className="text-gradient">next role?</span>
                         </h2>
-                        <p className="text-gray-400 mb-8 text-lg max-w-lg mx-auto">
-                            Join thousands of job seekers using AI to find better matches, faster.
+                        <p className="text-gray-400 mb-10 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+                            Join thousands of job seekers who stopped scrolling job boards and started getting matched.
                         </p>
-                        <Link
-                            href="/dashboard/search"
-                            className="px-8 py-4 bg-white text-gray-900 rounded-xl font-semibold text-base hover:bg-gray-100 transition-colors inline-block shadow-lg shadow-white/10 hover:shadow-white/20"
-                        >
-                            Get Started Free
-                        </Link>
-                        <p className="text-sm text-gray-400 mt-3">Free during beta</p>
+                        <div className="flex flex-col sm:flex-row justify-center gap-4">
+                            <Link
+                                href="/dashboard/search"
+                                className="px-10 py-5 bg-white text-gray-900 rounded-full font-bold text-lg hover:bg-gray-100 transition-all inline-block shadow-lg shadow-white/10 hover:shadow-white/20 hover:scale-[1.02] active:scale-95"
+                            >
+                                Get Started Free
+                            </Link>
+                            <Link
+                                href="/pricing"
+                                className="px-10 py-5 border-2 border-white/20 text-white rounded-full font-bold text-lg hover:bg-white/10 transition-all inline-block"
+                            >
+                                View Pricing
+                            </Link>
+                        </div>
+                        <p className="text-sm text-gray-500 mt-6">5 free searches per day. No credit card needed.</p>
                     </div>
                 </section>
 
                 <footer className="py-12 bg-gray-950 text-sm">
                     <div className="container mx-auto px-4">
-                        {/* Tagline */}
                         <div className="text-center mb-8">
                             <div className="flex items-center justify-center gap-2.5 mb-2">
-                                <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center text-white text-sm font-bold">
+                                <div className="w-8 h-8 rounded-xl bg-flow-gradient flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-brand-600/20">
                                     M
                                 </div>
-                                <span className="text-base font-bold text-white tracking-tight">Midas</span>
+                                <span className="font-headline text-lg font-bold text-white tracking-tight">Midas Match</span>
                             </div>
                             <p className="text-gray-500 text-sm">AI-powered job matching that actually works.</p>
                         </div>
@@ -127,7 +133,7 @@ export default function Home() {
                             </div>
 
                             <p className="text-gray-600 text-center mt-6">
-                                &copy; 2026 Midas. All rights reserved.
+                                &copy; 2026 Midas Match. All rights reserved.
                             </p>
                         </div>
                     </div>

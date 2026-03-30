@@ -8,7 +8,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Helvetica Neue', 'Helvetica', 'Arial', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        sans: ['Inter', 'Helvetica Neue', 'Helvetica', 'Arial', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        headline: ['Plus Jakarta Sans', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       colors: {
@@ -36,20 +37,25 @@ module.exports = {
         },
         surface: {
           0: '#ffffff',
-          50: '#f8f9fb',
-          100: '#f3f4f6',
-          200: '#e5e7eb',
-          300: '#d1d5db',
+          50: '#f9f9ff',
+          100: '#f0f3ff',
+          200: '#e2e8f8',
+          300: '#dce2f3',
         },
       },
       borderRadius: {
-        DEFAULT: '12px',
+        DEFAULT: '16px',
+        'sm': '12px',
+        'lg': '24px',
+        'xl': '32px',
       },
       boxShadow: {
         'card': '0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06)',
-        'card-hover': '0 4px 24px -4px rgba(0,0,0,0.08)',
-        'elevated': '0 8px 30px -4px rgba(0,0,0,0.1)',
+        'card-hover': '0 8px 30px -4px rgba(0,0,0,0.08)',
+        'elevated': '0 12px 40px -8px rgba(0,0,0,0.12)',
         'button': '0 1px 2px rgba(0,0,0,0.05)',
+        'glass': '0 8px 32px rgba(0,0,0,0.06)',
+        'glow': '0 0 40px -8px rgba(79, 70, 229, 0.3)',
       },
     },
   },

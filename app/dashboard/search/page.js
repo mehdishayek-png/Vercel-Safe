@@ -378,11 +378,11 @@ export default function SearchPage() {
     const readinessScore = readinessChecks.reduce((acc, c) => c.passed ? acc + c.points : acc, 0);
 
     return (
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-[1280px] w-full search-bg rounded-2xl p-3 md:p-5 -m-3 md:-m-5 min-h-[calc(100vh-100px)]">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-[1280px] w-full search-bg rounded-2xl p-3 md:p-6 -m-3 md:-m-5 min-h-[calc(100vh-100px)]">
             {/* Left Panel */}
             <div className="w-full lg:w-[380px] shrink-0 space-y-4 relative z-10">
                 {/* Privacy */}
-                <div className="flex items-center gap-1.5 text-[11px] text-gray-500 p-2 px-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                <div className="flex items-center gap-1.5 text-[11px] text-gray-500 p-2.5 px-3.5 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-200/60 dark:border-emerald-800/30">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                     Resumes processed in-memory only. Never stored or used for training.
                 </div>
@@ -391,7 +391,7 @@ export default function SearchPage() {
                 {profile && (
                     <button
                         onClick={() => setReadinessOpen(!readinessOpen)}
-                        className="w-full flex items-center justify-between p-2.5 px-3.5 bg-white rounded-xl border border-surface-200 cursor-pointer hover:bg-surface-50 transition-colors"
+                        className="w-full flex items-center justify-between p-2.5 px-3.5 bg-white dark:bg-[#1a1d27] rounded-xl border border-surface-200 dark:border-[#2d3140] cursor-pointer hover:bg-surface-50 dark:hover:bg-[#22252f] transition-colors"
                     >
                         <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-full bg-emerald-100 border-2 border-emerald-500 flex items-center justify-center">
@@ -405,7 +405,7 @@ export default function SearchPage() {
                 )}
 
                 {readinessOpen && profile && (
-                    <div className="bg-white rounded-xl border border-surface-200 p-3 -mt-2 space-y-1">
+                    <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-surface-200 dark:border-[#2d3140] p-3 -mt-2 space-y-1">
                         {readinessChecks.map((check, i) => (
                             <div key={i} className="flex items-center justify-between py-1 text-[13px] text-gray-600">
                                 <div className="flex items-center gap-2">
@@ -425,7 +425,7 @@ export default function SearchPage() {
 
                 {/* What I Do — collapsible optional description for better matching */}
                 {profile && (
-                    <div className="bg-white rounded-xl border border-surface-200 overflow-hidden">
+                    <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-surface-200 dark:border-[#2d3140] overflow-hidden">
                         <button
                             onClick={() => setWhatIDoOpen(!whatIDoOpen)}
                             className="w-full flex items-center justify-between p-3 px-4 cursor-pointer hover:bg-surface-50 transition-colors"
@@ -515,7 +515,7 @@ export default function SearchPage() {
                         initial={{ opacity: 0, y: 60 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 60 }}
-                        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-white border border-surface-200 rounded-xl px-5 py-3 shadow-elevated max-w-sm w-[85vw]"
+                        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-white/90 dark:bg-[#1a1d27]/90 backdrop-blur-xl border border-surface-200 dark:border-[#2d3140] rounded-2xl px-5 py-3 shadow-elevated max-w-sm w-[85vw]"
                     >
                         <div className="flex items-center gap-3">
                             <div className="relative shrink-0">

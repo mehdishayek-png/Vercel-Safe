@@ -92,36 +92,36 @@ export default function SavedJobsPage() {
     return (
         <div className="max-w-[1100px] space-y-0">
             <div className="mb-6">
-                <h1 className="text-[22px] font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Saved Jobs</h1>
-                <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">{savedJobsData.length} job{savedJobsData.length !== 1 ? 's' : ''} bookmarked</p>
+                <h1 className="text-[22px] font-headline font-bold text-gray-900 dark:text-gray-100 tracking-tight">Saved Jobs</h1>
+                <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Your bookmarked opportunities — {savedJobsData.length} job{savedJobsData.length !== 1 ? 's' : ''} saved</p>
             </div>
 
             {sortedJobs.length === 0 ? (
-                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] p-16 text-center">
-                    <div className="w-16 h-16 bg-gray-50 dark:bg-[#13151d] rounded-2xl flex items-center justify-center mx-auto mb-5">
+                <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-surface-200 dark:border-[#2d3140] shadow-card p-16 text-center">
+                    <div className="w-16 h-16 bg-surface-50 dark:bg-[#13151d] rounded-2xl flex items-center justify-center mx-auto mb-5">
                         <Bookmark className="w-8 h-8 text-gray-300" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No Saved Jobs</h3>
+                    <h3 className="text-lg font-headline font-semibold text-gray-900 dark:text-gray-100 mb-2">No Saved Jobs</h3>
                     <p className="text-sm text-gray-400 dark:text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">
                         Save jobs you're interested in while searching. They'll appear here for easy access.
                     </p>
                     <Link
                         href="/dashboard/search"
-                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
                     >
                         <Search className="w-4 h-4" /> Find Jobs
                     </Link>
                 </div>
             ) : (
-                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
+                <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-surface-200 dark:border-[#2d3140] shadow-card overflow-hidden">
                     {/* Toolbar */}
-                    <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 dark:border-[#2d3140]">
+                    <div className="flex items-center justify-between px-4 py-2.5 border-b border-surface-200 dark:border-[#2d3140]">
                         <div className="flex items-center gap-3">
                             <span className="text-[12px] text-gray-400 dark:text-gray-500 font-medium">{sortedJobs.length} jobs</span>
                         </div>
                         <button
                             onClick={() => exportJobsToCSV(sortedJobs)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#22252f] rounded-lg transition-colors cursor-pointer"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-surface-50 dark:hover:bg-[#22252f] rounded-xl transition-colors cursor-pointer"
                         >
                             <Download className="w-3.5 h-3.5" />
                             Export
@@ -129,7 +129,7 @@ export default function SavedJobsPage() {
                     </div>
 
                     {/* Column headers */}
-                    <div className="hidden md:grid grid-cols-[40px,1fr,140px,120px,100px,80px] items-center gap-0 px-4 py-2.5 bg-gray-50/80 dark:bg-[#13151d]/80 border-b border-gray-100 dark:border-[#2d3140] text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider select-none">
+                    <div className="hidden md:grid grid-cols-[40px,1fr,140px,120px,100px,80px] items-center gap-0 px-4 py-2.5 bg-surface-50/80 dark:bg-[#13151d]/80 border-b border-surface-200 dark:border-[#2d3140] text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider select-none">
                         <div className="flex items-center justify-center">
                             <input
                                 type="checkbox"
@@ -236,14 +236,14 @@ export default function SavedJobsPage() {
                                                     localStorage.setItem(key, JSON.stringify(job));
                                                 } catch (e) { /* ignore */ }
                                             }}
-                                            className="p-1.5 text-gray-300 hover:text-teal-600 hover:bg-teal-50 rounded-md transition-colors"
+                                            className="p-1.5 text-gray-300 hover:text-teal-600 hover:bg-teal-50 rounded-xl transition-colors"
                                             title="View details"
                                         >
                                             <Eye className="w-3.5 h-3.5" />
                                         </Link>
                                         <button
                                             onClick={() => toggleSaveJob(job)}
-                                            className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
+                                            className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
                                             title="Unsave"
                                         >
                                             <X className="w-3.5 h-3.5" />
@@ -255,8 +255,8 @@ export default function SavedJobsPage() {
                     </div>
 
                     {/* Footer / Bulk Actions Bar */}
-                    <div className={`px-5 py-2.5 border-t border-gray-100 dark:border-[#2d3140] flex items-center justify-between transition-colors ${
-                        selectedJobs.size > 0 ? 'bg-gray-900 dark:bg-[#13151d]' : 'bg-gray-50/50 dark:bg-[#13151d]/50'
+                    <div className={`px-5 py-2.5 border-t border-surface-200 dark:border-[#2d3140] flex items-center justify-between transition-colors ${
+                        selectedJobs.size > 0 ? 'bg-gray-900 dark:bg-[#13151d]' : 'bg-surface-50/50 dark:bg-[#13151d]/50'
                     }`}>
                         {selectedJobs.size > 0 ? (
                             <>
@@ -280,7 +280,7 @@ export default function SavedJobsPage() {
                                             });
                                             setSelectedJobs(new Set());
                                         }}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer"
+                                        className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-colors cursor-pointer"
                                         title="Mark selected as applied"
                                     >
                                         <Check className="w-3 h-3" />
@@ -291,7 +291,7 @@ export default function SavedJobsPage() {
                                             const selected = sortedJobs.filter(j => selectedJobs.has(j.apply_url));
                                             exportJobsToCSV(selected);
                                         }}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer"
+                                        className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-colors cursor-pointer"
                                         title="Export selected as CSV"
                                     >
                                         <Download className="w-3 h-3" />
@@ -304,7 +304,7 @@ export default function SavedJobsPage() {
                                             selected.forEach(job => toggleSaveJob(job));
                                             setSelectedJobs(new Set());
                                         }}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-md transition-colors cursor-pointer"
+                                        className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-colors cursor-pointer"
                                         title="Unsave selected"
                                     >
                                         <Trash2 className="w-3 h-3" />

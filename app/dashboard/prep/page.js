@@ -28,7 +28,7 @@ function QuestionCard({ q, index }) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className={`border ${colors.border} rounded-xl overflow-hidden`}
+            className={`border ${colors.border} rounded-2xl overflow-hidden`}
         >
             <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -58,7 +58,7 @@ function QuestionCard({ q, index }) {
                                 <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Why they ask this</p>
                                 <p className="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed">{q.why_asked}</p>
                             </div>
-                            <div className={`${colors.bg} rounded-lg p-3`}>
+                            <div className={`${colors.bg} rounded-xl p-3`}>
                                 <p className={`text-[11px] font-semibold ${colors.text} uppercase tracking-wider mb-1`}>How to answer</p>
                                 <p className="text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed">{q.answer_framework}</p>
                             </div>
@@ -117,7 +117,7 @@ export default function InterviewPrepPage() {
         <div className="max-w-4xl mx-auto space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <h1 className="text-xl font-headline font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                     <GraduationCap className="w-5 h-5 text-brand-600" />
                     Interview Prep
                 </h1>
@@ -128,9 +128,9 @@ export default function InterviewPrepPage() {
 
             {/* Job Selection */}
             {prepJobs.length === 0 ? (
-                <div className="bg-surface-50 dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-xl p-8 text-center">
+                <div className="bg-surface-50 dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-2xl p-8 text-center">
                     <BookOpen className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">No jobs to prep for yet</h3>
+                    <h3 className="text-sm font-headline font-semibold text-gray-900 dark:text-gray-100 mb-1">No jobs to prep for yet</h3>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
                         Run a search and save some jobs first. Your saved jobs and strong matches will appear here.
                     </p>
@@ -155,16 +155,16 @@ export default function InterviewPrepPage() {
                                     key={job.apply_url || i}
                                     onClick={() => generatePrep(job)}
                                     disabled={isLoading}
-                                    className={`group flex flex-col p-4 rounded-xl border text-left transition-all cursor-pointer disabled:opacity-50 hover:shadow-md ${
+                                    className={`group flex flex-col p-4 rounded-2xl border text-left transition-all cursor-pointer disabled:opacity-50 hover:shadow-card ${
                                         isSelected
-                                            ? 'border-brand-300 bg-brand-50/50 dark:bg-brand-900/20 dark:border-brand-700 shadow-md ring-1 ring-brand-200'
+                                            ? 'border-brand-300 bg-brand-50/50 dark:bg-brand-900/20 dark:border-brand-700 shadow-card ring-1 ring-brand-200'
                                             : 'border-surface-200 dark:border-[#2d3140] hover:border-brand-200 hover:bg-surface-50/50 dark:hover:bg-[#22252f]'
                                     }`}
                                 >
                                     {/* Top: Logo + Score */}
                                     <div className="flex items-start justify-between w-full mb-3">
                                         <CompanyLogo company={job.company} size={40} colorIndex={i} />
-                                        <div className={`text-lg font-bold px-2.5 py-0.5 rounded-lg border ${scoreColor}`}>{score}</div>
+                                        <div className={`text-lg font-bold px-2.5 py-0.5 rounded-xl border ${scoreColor}`}>{score}</div>
                                     </div>
 
                                     {/* Title */}
@@ -196,17 +196,17 @@ export default function InterviewPrepPage() {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="bg-brand-50 dark:bg-brand-900/10 border border-brand-200 dark:border-brand-800 rounded-xl p-6 text-center"
+                    className="bg-brand-50 dark:bg-brand-900/10 border border-brand-200 dark:border-brand-800 rounded-2xl p-6 text-center"
                 >
                     <Loader2 className="w-6 h-6 text-brand-600 animate-spin mx-auto mb-2" />
-                    <p className="text-sm font-medium text-brand-700 dark:text-brand-400">Generating your interview prep for {selectedJob?.title} at {selectedJob?.company}...</p>
+                    <p className="text-sm font-headline font-medium text-brand-700 dark:text-brand-400">Generating your interview prep for {selectedJob?.title} at {selectedJob?.company}...</p>
                     <p className="text-xs text-brand-500 mt-1">This takes a few seconds</p>
                 </motion.div>
             )}
 
             {/* Error */}
             {error && (
-                <div className="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-xl p-4 text-sm text-red-700 dark:text-red-400">
+                <div className="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-2xl p-4 text-sm text-red-700 dark:text-red-400">
                     {error}
                 </div>
             )}
@@ -219,20 +219,20 @@ export default function InterviewPrepPage() {
                     className="space-y-6"
                 >
                     {/* Job Header */}
-                    <div className="flex items-center gap-3 p-4 bg-white dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-xl">
+                    <div className="flex items-center gap-3 p-4 bg-white dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-2xl shadow-card">
                         <CompanyLogo company={selectedJob.company} size={40} colorIndex={0} />
                         <div>
-                            <h2 className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">{selectedJob.title}</h2>
+                            <h2 className="text-[15px] font-headline font-semibold text-gray-900 dark:text-gray-100">{selectedJob.title}</h2>
                             <p className="text-xs text-gray-500 dark:text-gray-400">{selectedJob.company} {selectedJob.location ? `\u00B7 ${selectedJob.location}` : ''}</p>
                         </div>
                     </div>
 
                     {/* Elevator Pitch */}
                     {prep.opening_pitch && (
-                        <div className="bg-gradient-to-r from-brand-50 to-violet-50 dark:from-brand-900/10 dark:to-violet-900/10 border border-brand-200 dark:border-brand-800 rounded-xl p-5">
+                        <div className="bg-gradient-to-r from-brand-50 to-violet-50 dark:from-brand-900/10 dark:to-violet-900/10 border border-brand-200 dark:border-brand-800 rounded-2xl p-5">
                             <div className="flex items-center gap-2 mb-3">
                                 <Mic className="w-4 h-4 text-brand-600" />
-                                <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">Your 30-Second Pitch</h3>
+                                <h3 className="text-[13px] font-headline font-semibold text-gray-900 dark:text-gray-100">Your 30-Second Pitch</h3>
                             </div>
                             <p className="text-[14px] text-gray-700 dark:text-gray-300 leading-relaxed italic">"{prep.opening_pitch}"</p>
                         </div>
@@ -242,7 +242,7 @@ export default function InterviewPrepPage() {
                     <div>
                         <div className="flex items-center gap-2 mb-3">
                             <MessageSquare className="w-4 h-4 text-gray-400" />
-                            <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">Interview Questions</h3>
+                            <h3 className="text-[13px] font-headline font-semibold text-gray-900 dark:text-gray-100">Interview Questions</h3>
                             <span className="text-[10px] text-gray-400 ml-1">Click to reveal answer framework</span>
                         </div>
                         <div className="space-y-2">
@@ -255,10 +255,10 @@ export default function InterviewPrepPage() {
                     {/* Company Research */}
                     {prep.company_research && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="bg-white dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-xl p-4">
+                            <div className="bg-white dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-2xl p-4 shadow-card">
                                 <div className="flex items-center gap-2 mb-3">
                                     <Building2 className="w-4 h-4 text-teal-500" />
-                                    <h4 className="text-[12px] font-semibold text-gray-900 dark:text-gray-100">Talking Points</h4>
+                                    <h4 className="text-[12px] font-headline font-semibold text-gray-900 dark:text-gray-100">Talking Points</h4>
                                 </div>
                                 <ul className="space-y-2">
                                     {(prep.company_research.talking_points || []).map((p, i) => (
@@ -269,10 +269,10 @@ export default function InterviewPrepPage() {
                                     ))}
                                 </ul>
                             </div>
-                            <div className="bg-white dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-xl p-4">
+                            <div className="bg-white dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-2xl p-4 shadow-card">
                                 <div className="flex items-center gap-2 mb-3">
                                     <Lightbulb className="w-4 h-4 text-amber-500" />
-                                    <h4 className="text-[12px] font-semibold text-gray-900 dark:text-gray-100">Questions to Ask Them</h4>
+                                    <h4 className="text-[12px] font-headline font-semibold text-gray-900 dark:text-gray-100">Questions to Ask Them</h4>
                                 </div>
                                 <ul className="space-y-2">
                                     {(prep.company_research.questions_to_ask || []).map((q, i) => (
@@ -288,10 +288,10 @@ export default function InterviewPrepPage() {
 
                     {/* Skill Gaps */}
                     {prep.skill_gaps_to_address && prep.skill_gaps_to_address.length > 0 && (
-                        <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+                        <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-2xl p-4">
                             <div className="flex items-center gap-2 mb-3">
                                 <AlertTriangle className="w-4 h-4 text-amber-500" />
-                                <h4 className="text-[12px] font-semibold text-gray-900 dark:text-gray-100">Prepare for These Gaps</h4>
+                                <h4 className="text-[12px] font-headline font-semibold text-gray-900 dark:text-gray-100">Prepare for These Gaps</h4>
                             </div>
                             <ul className="space-y-2">
                                 {prep.skill_gaps_to_address.map((gap, i) => (
