@@ -98,7 +98,7 @@ export function MatchResultsGrid({
             {/* Status Area */}
             <div className="space-y-4">
                 {isMatching && !deepAnalysisProgress && (
-                    <ScanningRadar />
+                    <ScanningRadar jobs={jobs} />
                 )}
 
                 {searchError && !isMatching && (

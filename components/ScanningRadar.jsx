@@ -1,16 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Check } from 'lucide-react';
-
-const SCAN_STAGES = [
-    { label: 'Analyzing your profile', duration: 3000 },
-    { label: 'Planning search queries', duration: 4000 },
-    { label: 'Scanning job databases', duration: 15000 },
-    { label: 'Querying company career pages', duration: 20000 },
-    { label: 'Deduplicating results', duration: 3000 },
-    { label: 'Scoring matches against your skills', duration: 10000 },
-    { label: 'Running AI deep analysis on top matches', duration: 15000 },
-];
 
 const TIPS = [
     "Tip: Save jobs you like — it helps us learn your preferences",
@@ -20,32 +10,34 @@ const TIPS = [
     "Tip: Your resume is processed in memory and never stored",
 ];
 
-export function ScanningRadar() {
-    const [currentStage, setCurrentStage] = useState(0);
+// Convert a job to a radar node — higher scores closer to center
+function jobToNode(job, index, total) {
+    const score = job.analysis?.fit_score || job.match_score || 0;
+    // Score 100 → radius 80, score 30 → radius 380
+    const radius = 380 - ((score - 30) / 70) * 300;
+    // Distribute evenly around the circle with some jitter
+    const baseAngle = (index / Math.max(total, 1)) * 360;
+    const jitter = ((index * 137.5) % 60) - 30; // golden angle jitter
+    const angle = (baseAngle + jitter) % 360;
+
+    return {
+        company: job.company || 'Unknown',
+        score: Math.round(score),
+        angle,
+        radius: Math.max(60, Math.min(400, radius)),
+        source: job.source || '',
+    };
+}
+
+export function ScanningRadar({ jobs = [] }) {
     const [tipIndex, setTipIndex] = useState(0);
     const [elapsed, setElapsed] = useState(0);
 
-    // Progress through stages
     useEffect(() => {
-        let total = 0;
-        const timers = SCAN_STAGES.map((stage, i) => {
-            total += stage.duration;
-            return setTimeout(() => {
-                if (i < SCAN_STAGES.length - 1) setCurrentStage(i + 1);
-            }, total);
-        });
-        return () => timers.forEach(clearTimeout);
-    }, []);
-
-    // Rotate tips every 8 seconds
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setTipIndex(prev => (prev + 1) % TIPS.length);
-        }, 8000);
+        const interval = setInterval(() => setTipIndex(prev => (prev + 1) % TIPS.length), 8000);
         return () => clearInterval(interval);
     }, []);
 
-    // Elapsed timer
     useEffect(() => {
         const interval = setInterval(() => setElapsed(prev => prev + 1), 1000);
         return () => clearInterval(interval);
@@ -53,97 +45,159 @@ export function ScanningRadar() {
 
     const formatTime = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
-    return (
-        <div className="flex flex-col items-center justify-center py-12 overflow-hidden relative">
-            {/* Radar */}
-            <div className="relative w-40 h-40 flex items-center justify-center mb-6">
-                {/* Outer ring */}
-                <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-0 border border-dashed border-brand-200 dark:border-brand-800 rounded-full"
-                />
+    // Deduplicate by company, take best score, limit to 12 nodes
+    const nodes = useMemo(() => {
+        const companyMap = new Map();
+        for (const job of jobs) {
+            const name = (job.company || 'Unknown').trim();
+            const score = job.analysis?.fit_score || job.match_score || 0;
+            const existing = companyMap.get(name);
+            if (!existing || score > existing.match_score) {
+                companyMap.set(name, job);
+            }
+        }
+        return Array.from(companyMap.values())
+            .sort((a, b) => (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0))
+            .slice(0, 12)
+            .map((job, i, arr) => jobToNode(job, i, arr.length));
+    }, [jobs]);
 
-                {/* Middle ring */}
-                <div className="absolute inset-8 border border-brand-100 dark:border-brand-900 rounded-full" />
+    return (
+        <div className="flex flex-col items-center justify-center py-6 overflow-hidden relative">
+            {/* Radar container */}
+            <div className="relative w-[min(100%,500px)] aspect-square flex items-center justify-center mb-6">
+
+                {/* Radar grid rings */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-40">
+                    {[1, 2, 3, 4].map((i) => (
+                        <div
+                            key={i}
+                            className="absolute rounded-full border border-brand-500/20"
+                            style={{
+                                width: `${i * 25}%`,
+                                height: `${i * 25}%`,
+                                borderStyle: i % 2 === 0 ? 'dashed' : 'solid'
+                            }}
+                        />
+                    ))}
+                    {/* Crosshairs */}
+                    <div className="absolute w-full h-[1px] bg-brand-500/15" />
+                    <div className="absolute h-full w-[1px] bg-brand-500/15" />
+                </div>
 
                 {/* Radar sweep */}
                 <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-2 rounded-full overflow-hidden"
+                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                    className="absolute inset-0 flex items-start justify-center origin-center"
                 >
-                    <div className="absolute inset-0" style={{
-                        background: 'conic-gradient(from 0deg, transparent 0deg, transparent 280deg, rgba(79,70,229,0.08) 320deg, rgba(79,70,229,0.25) 360deg)'
+                    {/* Gradient tail */}
+                    <div className="absolute inset-0 rounded-full" style={{
+                        background: 'conic-gradient(from 0deg at 50% 50%, transparent 0%, rgba(79, 70, 229, 0.03) 60%, rgba(139, 92, 246, 0.15) 90%, rgba(251, 191, 36, 0.3) 98%, rgba(251, 191, 36, 0.6) 100%)'
                     }} />
-                    <div className="absolute top-0 right-1/2 w-[2px] h-1/2 bg-gradient-to-t from-transparent via-brand-400 to-brand-500 origin-bottom" />
+                    {/* Golden leading edge */}
+                    <motion.div
+                        animate={{
+                            boxShadow: [
+                                "0 0 15px 2px rgba(251, 191, 36, 0.4)",
+                                "0 0 40px 5px rgba(251, 191, 36, 0.8)",
+                                "0 0 15px 2px rgba(251, 191, 36, 0.4)"
+                            ]
+                        }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                        className="w-[3px] h-[50%] bg-gradient-to-t from-transparent via-amber-400 to-amber-400 rounded-full origin-bottom relative z-10"
+                    />
                 </motion.div>
 
-                {/* Orbiting dots */}
-                {[0, 1, 2].map((i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute inset-0"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 6 + i * 3, repeat: Infinity, ease: "linear", delay: i * 1.2 }}
-                    >
-                        <div className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full ${
-                            i === 0 ? 'bg-brand-400' : i === 1 ? 'bg-accent-400' : 'bg-emerald-400'
-                        }`} />
-                    </motion.div>
-                ))}
+                {/* Floating Job Nodes */}
+                <AnimatePresence>
+                    {nodes.map((node, i) => {
+                        const delay = (node.angle / 360) * 4;
+                        // Scale radius to container (container is 100%, radius is in conceptual px, scale to %)
+                        const scaledRadius = (node.radius / 500) * 100;
+                        const x = scaledRadius * Math.sin(node.angle * Math.PI / 180);
+                        const y = -scaledRadius * Math.cos(node.angle * Math.PI / 180);
 
-                {/* Center */}
+                        return (
+                            <div
+                                key={node.company}
+                                className="absolute z-20"
+                                style={{
+                                    left: `calc(50% + ${x}%)`,
+                                    top: `calc(50% + ${y}%)`,
+                                    transform: 'translate(-50%, -50%)'
+                                }}
+                            >
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.3 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.3 }}
+                                    transition={{ delay: 0.1, duration: 0.5, type: "spring", bounce: 0.3 }}
+                                    className="flex flex-col items-center gap-1.5"
+                                >
+                                    {/* Node dot */}
+                                    <motion.div
+                                        animate={{
+                                            boxShadow: [
+                                                "0px 0px 0px rgba(251, 191, 36, 0)",
+                                                "0px 0px 25px 6px rgba(251, 191, 36, 0.6)",
+                                                "0px 0px 8px 2px rgba(251, 191, 36, 0.15)"
+                                            ],
+                                            backgroundColor: ["#4f46e5", "#fbbf24", "#fbbf24"]
+                                        }}
+                                        transition={{ duration: 4, repeat: Infinity, delay, times: [0, 0.1, 1] }}
+                                        className="w-3 h-3 rounded-full"
+                                    />
+
+                                    {/* Job card */}
+                                    <motion.div
+                                        animate={{
+                                            borderColor: [
+                                                "rgba(255, 255, 255, 0.1)",
+                                                "rgba(251, 191, 36, 0.6)",
+                                                "rgba(255, 255, 255, 0.1)"
+                                            ]
+                                        }}
+                                        transition={{ duration: 4, repeat: Infinity, delay, times: [0, 0.1, 1] }}
+                                        className="glass-card px-3 py-1.5 rounded-xl border text-center shadow-sm whitespace-nowrap max-w-[140px]"
+                                    >
+                                        <div className="text-[11px] font-bold text-gray-900 dark:text-white truncate">{node.company}</div>
+                                        <div className="text-[10px] font-black text-amber-500">{node.score}%</div>
+                                    </motion.div>
+                                </motion.div>
+                            </div>
+                        );
+                    })}
+                </AnimatePresence>
+
+                {/* Center logo */}
                 <motion.div
-                    animate={{ scale: [1, 1.04, 1] }}
+                    animate={{
+                        boxShadow: [
+                            "0 0 30px rgba(79,70,229,0.2)",
+                            "0 0 60px rgba(79,70,229,0.5)",
+                            "0 0 30px rgba(79,70,229,0.2)"
+                        ]
+                    }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="relative z-10 glass-card dark:bg-slate-950/70 p-3.5 rounded-full border border-brand-100 dark:border-brand-800 shadow-card"
+                    className="absolute w-16 h-16 rounded-full bg-surface-50 dark:bg-gray-900 border-2 border-brand-500 flex items-center justify-center z-30"
                 >
-                    <BrainIcon />
+                    <span className="text-brand-600 dark:text-brand-400 font-bold text-2xl font-headline">M</span>
                 </motion.div>
             </div>
 
-            {/* Title + timer */}
+            {/* Status text */}
             <motion.h3
                 animate={{ opacity: [0.7, 1, 0.7] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="text-lg font-bold text-gradient mb-1"
+                className="text-lg font-bold text-gradient mb-1 font-headline"
             >
-                Scanning Job Market...
+                {jobs.length > 0 ? `Found ${jobs.length} matches` : 'Scanning Job Market...'}
             </motion.h3>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mb-6">
-                {formatTime(elapsed)} elapsed • Usually takes about a minute
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">
+                {formatTime(elapsed)} elapsed
+                {nodes.length > 0 && ` · ${nodes.length} companies detected`}
             </p>
-
-            {/* Progress stages */}
-            <div className="w-full max-w-xs space-y-1.5 mb-6">
-                {SCAN_STAGES.map((stage, i) => (
-                    <div key={i} className="flex items-center gap-2.5">
-                        <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
-                            i < currentStage
-                                ? 'bg-emerald-500'
-                                : i === currentStage
-                                ? 'bg-brand-500 animate-pulse'
-                                : 'bg-gray-200 dark:bg-gray-700'
-                        }`}>
-                            {i < currentStage ? (
-                                <Check className="w-2.5 h-2.5 text-white" />
-                            ) : i === currentStage ? (
-                                <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                            ) : null}
-                        </div>
-                        <span className={`text-[12px] transition-colors duration-300 ${
-                            i < currentStage
-                                ? 'text-emerald-600 dark:text-emerald-400 line-through opacity-60'
-                                : i === currentStage
-                                ? 'text-gray-900 dark:text-gray-100 font-medium'
-                                : 'text-gray-300 dark:text-gray-600'
-                        }`}>
-                            {stage.label}
-                        </span>
-                    </div>
-                ))}
-            </div>
 
             {/* Rotating tips */}
             <AnimatePresence mode="wait">
@@ -160,18 +214,5 @@ export function ScanningRadar() {
                 </motion.p>
             </AnimatePresence>
         </div>
-    );
-}
-
-function BrainIcon() {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-600">
-            <path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0-1.32 4.24 3 3 0 0 0 .34 5.58 2.5 2.5 0 0 0 2.58 2.58 2.5 2.5 0 0 0 5.34 0 2.5 2.5 0 0 0 2.58-2.58 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 12 4.5Z" />
-            <path d="M12 4.5v15" />
-            <path d="m15 11.5 5-2" />
-            <path d="m14 16.5 5 2" />
-            <path d="m9 11.5-5-2" />
-            <path d="m10 16.5-5 2" />
-        </svg>
     );
 }
