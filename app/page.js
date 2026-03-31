@@ -60,7 +60,7 @@ export default function Home() {
                 <section className="py-28 text-center relative overflow-hidden bg-gray-900 dark:bg-[#0a0b0f]">
                     <div className="absolute inset-0 -z-0">
                         <div className="absolute inset-0 bg-gradient-to-tr from-brand-600/15 via-transparent to-accent-600/10" />
-                        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-violet-500/10 rounded-full blur-[120px]" />
+                        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-brand-500/10 rounded-full blur-[120px]" />
                         <div className="absolute top-1/3 right-1/4 w-[175px] md:w-[350px] h-[175px] md:h-[350px] bg-brand-500/10 rounded-full blur-[100px]" />
                     </div>
 

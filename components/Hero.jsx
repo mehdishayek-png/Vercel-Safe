@@ -12,7 +12,7 @@ export function Hero({ onStart, onDemo }) {
                 <motion.div
                     animate={{ x: [0, 30, -20, 0], y: [0, -25, 15, 0] }}
                     transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute top-1/4 left-1/4 w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-violet-200/15 rounded-full blur-[100px]"
+                    className="absolute top-1/4 left-1/4 w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-brand-200/15 rounded-full blur-[100px]"
                 />
             </div>
 
@@ -108,7 +108,7 @@ export function Hero({ onStart, onDemo }) {
                         <div className="glass-panel rounded-2xl border border-surface-200/60 p-6 md:p-8 shadow-elevated relative overflow-hidden">
                             {/* Scan line effect */}
                             <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-20">
-                                <div className="w-full h-[2px] bg-brand-500 shadow-[0_0_15px_rgba(79,70,229,0.6)] absolute top-0 animate-[scan_4s_ease-in-out_infinite]" />
+                                <div className="w-full h-[2px] bg-brand-500 shadow-[0_0_15px_rgba(255,126,103,0.6)] absolute top-0 animate-[scan_4s_ease-in-out_infinite]" />
                             </div>
                             <style jsx>{`
                                 @keyframes scan {
