@@ -158,7 +158,7 @@ export function MatchResultsGrid({
             {displayedJobs.length === 0 && !isMatching && !searchError && (
                 <div className="space-y-5 mt-2 relative z-10">
                     {/* Hero card */}
-                    <div className="relative overflow-hidden glass-panel rounded-2xl p-8 text-center">
+                    <div className="relative overflow-hidden glass-panel rounded-[2rem] border border-white/40 p-8 text-center">
                         {/* Flow-gradient background element */}
                         <div className="absolute inset-x-0 top-0 h-1.5 bg-flow-gradient" />
                         <div className="absolute -top-16 -right-16 w-48 h-48 bg-flow-gradient opacity-10 rounded-full blur-3xl pointer-events-none" />
@@ -176,7 +176,7 @@ export function MatchResultsGrid({
 
                     {/* Feature cards grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div className="bg-surface-50/80 rounded-[2rem] p-5 hover:shadow-xl transition-shadow">
+                        <div className="bg-surface-50/80 rounded-[2rem] border border-transparent p-5 hover:shadow-xl transition-shadow">
                             <div className="w-9 h-9 bg-gradient-to-br from-brand-100 to-blue-100 rounded-lg flex items-center justify-center mb-3">
                                 <BrainCircuit className="w-4.5 h-4.5 text-brand-600" />
                             </div>
@@ -185,7 +185,7 @@ export function MatchResultsGrid({
                                 Our scoring engine evaluates keyword overlap, seniority fit, location match, role family alignment, and job depth — not just keywords.
                             </p>
                         </div>
-                        <div className="bg-surface-50/80 rounded-[2rem] p-5 hover:shadow-xl transition-shadow">
+                        <div className="bg-surface-50/80 rounded-[2rem] border border-transparent p-5 hover:shadow-xl transition-shadow">
                             <div className="w-9 h-9 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center mb-3">
                                 <Globe className="w-4.5 h-4.5 text-emerald-600" />
                             </div>
@@ -194,7 +194,7 @@ export function MatchResultsGrid({
                                 We aggregate from LinkedIn, Indeed, Glassdoor, and Fantastic.Jobs — casting a wide net so you don't miss opportunities.
                             </p>
                         </div>
-                        <div className="bg-surface-50/80 rounded-[2rem] p-5 hover:shadow-xl transition-shadow">
+                        <div className="bg-surface-50/80 rounded-[2rem] border border-transparent p-5 hover:shadow-xl transition-shadow">
                             <div className="w-9 h-9 bg-gradient-to-br from-brand-100 to-accent-100 rounded-lg flex items-center justify-center mb-3">
                                 <Target className="w-4.5 h-4.5 text-brand-600" />
                             </div>
@@ -203,7 +203,7 @@ export function MatchResultsGrid({
                                 Expand any job card to get AI-powered fit scores, salary estimates, skill gap analysis, and a personalized verdict.
                             </p>
                         </div>
-                        <div className="bg-surface-50/80 rounded-[2rem] p-5 hover:shadow-xl transition-shadow">
+                        <div className="bg-surface-50/80 rounded-[2rem] border border-transparent p-5 hover:shadow-xl transition-shadow">
                             <div className="w-9 h-9 bg-gradient-to-br from-sky-100 to-blue-100 rounded-lg flex items-center justify-center mb-3">
                                 <FileText className="w-4.5 h-4.5 text-sky-600" />
                             </div>
@@ -215,7 +215,7 @@ export function MatchResultsGrid({
                     </div>
 
                     {/* How scoring works */}
-                    <div className="bg-surface-50/80 rounded-[2rem] p-5">
+                    <div className="bg-surface-50/80 rounded-[2rem] border border-transparent p-5">
                         <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-1.5">
                             <TrendingUp className="w-3.5 h-3.5 text-brand-500" />
                             How scoring works
@@ -296,7 +296,7 @@ function CompanyGroupHeader({ company, jobs, isOpen, onToggle }) {
     return (
         <button
             onClick={onToggle}
-            className="w-full flex items-center gap-3 p-3 px-4 bg-gradient-to-r from-surface-50 to-white dark:from-[#1e2130] dark:to-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-xl hover:border-brand-200 transition-all cursor-pointer"
+            className="w-full flex items-center gap-3 p-3 px-4 glass-panel dark:bg-[#2c1f1b]/80 border border-white/40 dark:border-white/10 rounded-[2rem] hover:border-brand-200 transition-all cursor-pointer"
         >
             <CompanyLogo company={company} size={28} colorIndex={0} />
             <div className="flex-1 min-w-0 text-left">

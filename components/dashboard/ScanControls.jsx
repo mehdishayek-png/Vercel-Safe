@@ -31,7 +31,7 @@ export function ScanControls({
     findJobs, onReset,
 }) {
     return (
-        <div className="glass-panel rounded-2xl p-5 space-y-5">
+        <div className="glass-panel rounded-[2rem] border border-white/40 p-5 space-y-5">
             {/* Experience */}
             <div>
                 <div className="flex justify-between items-baseline mb-2">
@@ -133,7 +133,7 @@ export function ScanControls({
                 <button
                     onClick={findJobs}
                     disabled={isMatching}
-                    className="flex-[2.5] py-2.5 rounded-full border-none text-xs font-semibold text-white cursor-pointer bg-flow-gradient shadow-glow hover:shadow-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    className="flex-[2.5] py-2.5 rounded-full border-none text-xs font-semibold text-white cursor-pointer bg-flow-gradient shadow-xl shadow-brand-500/30 hover:shadow-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
                     {isMatching ? (
                         <span className="flex items-center justify-center gap-2"><Loader2 className="w-3.5 h-3.5 animate-spin" />Scanning...</span>

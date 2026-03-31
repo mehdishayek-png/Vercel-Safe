@@ -20,7 +20,7 @@ function PillToggle({ label, description, active, onClick, disabled }) {
                     ? 'border-surface-100 bg-surface-50 text-gray-300 cursor-not-allowed'
                     : active
                         ? 'border-transparent bg-brand-50/50 text-brand-600'
-                        : 'border-surface-200 bg-white text-gray-600 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600',
+                        : 'border-transparent bg-white/60 text-gray-600 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600',
             ].join(' ')}
         >
             {label}
@@ -49,7 +49,7 @@ export function FilterPanel({
     const masterOn = flags?.ADVANCED_FILTERS;
 
     return (
-        <div className="glass-panel rounded-2xl overflow-hidden border-transparent">
+        <div className="glass-panel rounded-[2rem] overflow-hidden border border-white/40">
             <button
                 type="button"
                 onClick={() => setOpen(o => !o)}
@@ -133,7 +133,7 @@ export function FilterPanel({
                                     <input type="number" min={0} placeholder="Min salary..." value={filters.salaryMin ?? ''} onChange={e => setSalaryMin(e.target.value ? Number(e.target.value) : null)} disabled={!masterOn || !flags?.SALARY_FILTER}
                                         className="flex-1 text-xs px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:border-brand-400 disabled:bg-surface-50 disabled:text-gray-300 placeholder:text-gray-300 text-gray-900" />
                                     <select value={filters.salaryCurrency || 'INR'} onChange={e => setSalaryCurrency(e.target.value)} disabled={!masterOn || !flags?.SALARY_FILTER}
-                                        className="text-xs border border-surface-200 rounded-lg px-2 py-2 focus:outline-none focus:border-brand-400 text-gray-700 bg-white disabled:text-gray-300 disabled:bg-surface-50">
+                                        className="text-xs border border-surface-200 rounded-lg px-2 py-2 focus:outline-none focus:border-brand-400 text-gray-700 bg-white/60 disabled:text-gray-300 disabled:bg-surface-50">
                                         {SALARY_CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                                     </select>
                                 </div>

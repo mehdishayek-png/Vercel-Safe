@@ -21,7 +21,7 @@ export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload }) {
             </div>
 
             {/* Getting Started Guide */}
-            <div className="glass-panel rounded-2xl p-5">
+            <div className="glass-panel rounded-[2rem] p-5 border border-white/40">
                 <div className="font-headline text-[11px] font-bold tracking-widest text-gray-500 uppercase mb-4">How it works</div>
                 <div className="space-y-4">
                     <div className="flex gap-3.5 items-start">
@@ -55,7 +55,7 @@ export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload }) {
             </div>
 
             {/* Tips */}
-            <div className="bg-gradient-to-br from-brand-50 to-accent-50 rounded-xl border border-brand-100 p-5">
+            <div className="glass-panel rounded-[2rem] border border-white/40 p-5">
                 <div className="text-[10px] font-semibold tracking-widest text-brand-600 uppercase mb-3">Tips for best results</div>
                 <ul className="space-y-2 text-[12px] text-gray-600">
                     <li className="flex gap-2 items-start">

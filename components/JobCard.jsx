@@ -142,10 +142,10 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="group bg-white dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] hover:border-surface-300 rounded-xl transition-all duration-200 hover:shadow-card-hover"
+            className="group glass-panel dark:bg-[#2c1f1b]/80 border border-white/40 dark:border-white/10 rounded-[2rem] transition-all duration-200 hover:shadow-xl"
         >
             {/* Top accent line */}
-            <div className={`h-[2px] rounded-t-xl bg-gradient-to-r ${getMatchGradient(job.match_score)} opacity-0 group-hover:opacity-100 transition-opacity`} />
+            <div className={`h-[2px] rounded-t-[2rem] bg-gradient-to-r ${getMatchGradient(job.match_score)} opacity-0 group-hover:opacity-100 transition-opacity`} />
 
             <div className="p-4 sm:p-5">
                 <div className="flex justify-between items-start gap-3 sm:gap-4">
@@ -269,7 +269,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                 className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
                                     isSaved
                                         ? 'bg-brand-50 border-brand-200 text-brand-600'
-                                        : 'bg-white dark:bg-[#22252f] border-surface-200 dark:border-[#2d3140] text-gray-400 hover:text-gray-600 hover:bg-surface-50'
+                                        : 'bg-white/60 dark:bg-white/5 border-transparent text-gray-400 hover:text-gray-600 hover:bg-surface-50'
                                 }`}
                             >
                                 <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-brand-600' : ''}`} />
@@ -281,7 +281,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                     className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
                                         isApplied
                                             ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
-                                            : 'bg-white dark:bg-[#22252f] border-surface-200 dark:border-[#2d3140] text-gray-400 hover:text-emerald-600 hover:bg-emerald-50'
+                                            : 'bg-white/60 dark:bg-white/5 border-transparent text-gray-400 hover:text-emerald-600 hover:bg-emerald-50'
                                     }`}
                                     title={isApplied ? 'Applied' : 'Mark as Applied'}
                                 >
