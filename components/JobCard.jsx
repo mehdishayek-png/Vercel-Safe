@@ -31,7 +31,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
     const handleSaveWrapper = () => {
         onSave(job);
         if (!isSaved && job.match_score >= 80) {
-            confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 }, colors: ['#ff7e67', '#fbbf24', '#10b981'] });
+            confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 }, colors: ['#4f46e5', '#7c3aed', '#10b981'] });
         }
     };
 
