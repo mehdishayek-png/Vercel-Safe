@@ -3,12 +3,12 @@ import { Upload, Loader2, FileText, Target, Zap, TrendingUp } from 'lucide-react
 export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload }) {
     return (
         <>
-            <div className="glass-panel rounded-2xl overflow-hidden">
+            <div className="glass-panel rounded-[2rem] overflow-hidden border border-white/40 shadow-2xl shadow-brand-500/10">
                 <div className="h-1 bg-flow-gradient" />
                 <div className="p-5">
                     <div
                         onClick={() => fileInputRef.current?.click()}
-                        className="relative p-6 md:p-10 text-center cursor-pointer rounded-xl border-2 border-dashed border-brand-200 hover:border-brand-400 bg-brand-50/30 hover:bg-brand-50/60 transition-all duration-200 group"
+                        className="relative p-6 md:p-10 text-center cursor-pointer rounded-[2rem] border-2 border-dashed border-white/40 hover:border-brand-400 bg-brand-50/30 hover:bg-brand-50/60 transition-all duration-200 group"
                     >
                         <div className="w-14 h-14 bg-flow-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow group-hover:scale-105 transition-transform duration-200">
                             {isParsing ? <Loader2 className="animate-spin text-white w-6 h-6" /> : <Upload className="text-white w-6 h-6" />}

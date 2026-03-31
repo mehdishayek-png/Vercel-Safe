@@ -483,8 +483,8 @@ export default function SettingsPage() {
                                     onClick={handleExportData}
                                     className="w-full flex items-center gap-3 p-3.5 bg-surface-50/80 dark:bg-[#22252f]/60 hover:bg-surface-100 dark:hover:bg-[#2a2d37] rounded-xl transition-all cursor-pointer group hover:translate-x-0.5"
                                 >
-                                    <div className="w-9 h-9 rounded-xl bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center group-hover:bg-violet-100 dark:group-hover:bg-violet-900/30 transition-colors shrink-0">
-                                        <Download className="w-4 h-4 text-violet-500" />
+                                    <div className="w-9 h-9 rounded-xl bg-accent-50 dark:bg-accent-900/20 flex items-center justify-center group-hover:bg-accent-100 dark:group-hover:bg-accent-900/30 transition-colors shrink-0">
+                                        <Download className="w-4 h-4 text-accent-500" />
                                     </div>
                                     <div className="text-left flex-1 min-w-0">
                                         <p className="text-[13px] font-semibold text-gray-700 dark:text-gray-300">Export My Data</p>

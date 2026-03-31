@@ -27,7 +27,7 @@ export function DashboardHeader({ onMenuClick }) {
 
     return (
         <>
-            <header className="h-14 px-4 md:px-6 flex items-center justify-between bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl border-b border-surface-200/60 dark:border-[#2d3140] shrink-0 sticky top-0 z-40">
+            <header className="h-16 px-6 md:px-12 flex items-center justify-between bg-white/60 dark:bg-[#1a1d27]/60 backdrop-blur-2xl shadow-sm shrink-0 sticky top-0 z-40">
                 <div className="flex items-center gap-2">
                     <button onClick={onMenuClick} className="p-2 -ml-1 mr-1 text-gray-500 hover:text-gray-700 md:hidden cursor-pointer">
                         <Menu className="w-5 h-5" />

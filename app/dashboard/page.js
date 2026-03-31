@@ -231,10 +231,10 @@ export default function DashboardHome() {
                         value: appliedCount,
                         icon: Briefcase,
                         color: 'violet',
-                        bg: 'bg-gradient-to-br from-violet-50 to-purple-50/50 dark:from-violet-900/20 dark:to-purple-900/20',
-                        iconBg: 'bg-violet-100 dark:bg-violet-900/40',
-                        iconColor: 'text-violet-600 dark:text-violet-400',
-                        borderColor: 'border-violet-100 dark:border-violet-800/30',
+                        bg: 'bg-gradient-to-br from-accent-50 to-accent-50/50 dark:from-accent-900/20 dark:to-accent-900/20',
+                        iconBg: 'bg-accent-100 dark:bg-accent-900/40',
+                        iconColor: 'text-accent-600 dark:text-accent-400',
+                        borderColor: 'border-accent-100 dark:border-accent-700/30',
                         sub: appliedCount > 0 ? 'Applications sent' : 'None yet',
                         trend: appliedCount > 0 ? `${appliedCount} tracked` : null,
                         trendUp: appliedCount > 0,
@@ -284,7 +284,7 @@ export default function DashboardHome() {
                 <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
                     <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140]">
                         <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center">
+                            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-accent-400 to-accent-600 flex items-center justify-center">
                                 <Brain className="w-3 h-3 text-white" />
                             </div>
                             <div>
@@ -309,7 +309,7 @@ export default function DashboardHome() {
                             <button
                                 onClick={handleRefreshInsights}
                                 disabled={isLoadingInsights}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-violet-600 hover:text-violet-700 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-accent-600 hover:text-accent-700 hover:bg-accent-50 dark:hover:bg-accent-900/20 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
                             >
                                 {isLoadingInsights ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
                                 {isLoadingInsights ? 'Analyzing...' : 'Refresh Insights'}
@@ -336,7 +336,7 @@ export default function DashboardHome() {
                                         strength: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400',
                                         opportunity: 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400',
                                         warning: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
-                                        pattern: 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400',
+                                        pattern: 'bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400',
                                     };
                                     return (
                                         <div key={i} className="bg-gray-50 dark:bg-[#22252f] rounded-lg border border-gray-100 dark:border-[#2d3140] p-4">
@@ -733,8 +733,8 @@ export default function DashboardHome() {
                                 <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600" />
                             </Link>
                             <Link href="/dashboard/applications" className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/70 dark:hover:bg-[#22252f] transition-colors group">
-                                <div className="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center">
-                                    <Briefcase className="w-3.5 h-3.5 text-violet-500" />
+                                <div className="w-8 h-8 rounded-lg bg-accent-50 dark:bg-accent-700/30 flex items-center justify-center">
+                                    <Briefcase className="w-3.5 h-3.5 text-accent-500" />
                                 </div>
                                 <div className="flex-1">
                                     <p className="text-[13px] font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100">Applications</p>

@@ -88,7 +88,7 @@ function StatBox({ label, value, sublabel, icon: Icon, accentColor = 'teal' }) {
     const colorMap = {
         teal: 'bg-teal-50 border-teal-100 text-teal-600',
         sky: 'bg-sky-50 border-sky-100 text-sky-600',
-        violet: 'bg-violet-50 border-violet-100 text-violet-600',
+        accent: 'bg-accent-50 border-accent-100 text-accent-600',
         amber: 'bg-amber-50 border-amber-100 text-amber-600',
     };
     const iconColor = colorMap[accentColor] || colorMap.teal;
@@ -219,7 +219,7 @@ function ScoreGauge({ score, heuristicBreakdown, profile }) {
 
 function SimilarJobCard({ job, index, onSave, isSaved }) {
     const score = job.analysis?.fit_score || job.match_score || 0;
-    const accentColors = ['border-l-teal-400', 'border-l-sky-400', 'border-l-violet-400', 'border-l-amber-400', 'border-l-rose-400', 'border-l-indigo-400'];
+    const accentColors = ['border-l-teal-400', 'border-l-sky-400', 'border-l-accent-400', 'border-l-amber-400', 'border-l-rose-400', 'border-l-brand-400'];
     const accent = accentColors[index % accentColors.length];
 
     return (
@@ -614,7 +614,7 @@ export default function JobDetailPage() {
                             value={`${Math.round(score)}%`}
                             sublabel={score >= 75 ? 'Strong match' : score >= 50 ? 'Moderate' : 'Low'}
                             icon={BadgeCheck}
-                            accentColor="violet"
+                            accentColor="accent"
                         />
                         <StatBox
                             label="Education"
@@ -827,14 +827,14 @@ export default function JobDetailPage() {
 
                                 {/* Hidden Opportunity — new optional field */}
                                 {analysis.hidden_opportunity && (
-                                    <div className="bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200 rounded-lg p-4">
+                                    <div className="bg-gradient-to-r from-accent-50 to-accent-50 border border-accent-200 rounded-lg p-4">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <div className="w-6 h-6 rounded-lg bg-violet-100 flex items-center justify-center">
-                                                <Sparkles className="w-3.5 h-3.5 text-violet-600" />
+                                            <div className="w-6 h-6 rounded-lg bg-accent-100 flex items-center justify-center">
+                                                <Sparkles className="w-3.5 h-3.5 text-accent-600" />
                                             </div>
-                                            <h3 className="text-violet-800 font-medium text-[12px] uppercase tracking-wide">Hidden Opportunity</h3>
+                                            <h3 className="text-accent-700 font-medium text-[12px] uppercase tracking-wide">Hidden Opportunity</h3>
                                         </div>
-                                        <p className="text-[13px] text-violet-700/80 leading-relaxed">{analysis.hidden_opportunity}</p>
+                                        <p className="text-[13px] text-accent-700/80 leading-relaxed">{analysis.hidden_opportunity}</p>
                                     </div>
                                 )}
 
@@ -895,7 +895,7 @@ export default function JobDetailPage() {
                     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                         <div className="px-5 py-3.5 border-b border-gray-100 flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <Shield className="w-3.5 h-3.5 text-violet-500" />
+                                <Shield className="w-3.5 h-3.5 text-accent-500" />
                                 <h2 className="text-[13px] font-semibold text-gray-900">Negotiation Playbook</h2>
                             </div>
                             {negotiationData && (
@@ -911,7 +911,7 @@ export default function JobDetailPage() {
                             {!negotiationData && !isLoadingNegotiation ? (
                                 <button
                                     onClick={handleNegotiation}
-                                    className="flex items-center gap-2 text-[13px] font-medium text-violet-600 hover:text-violet-700 transition-colors py-2 px-4 rounded-lg hover:bg-violet-50 cursor-pointer"
+                                    className="flex items-center gap-2 text-[13px] font-medium text-accent-600 hover:text-accent-700 transition-colors py-2 px-4 rounded-lg hover:bg-accent-50 cursor-pointer"
                                 >
                                     <Shield className="w-4 h-4" /> Generate Negotiation Playbook
                                 </button>
@@ -931,9 +931,9 @@ export default function JobDetailPage() {
 
                                     {/* Your Position */}
                                     {negotiationData.your_position && (
-                                        <div className="bg-violet-50/50 p-4 rounded-lg border border-violet-100">
-                                            <h3 className="text-violet-700 font-medium text-[12px] mb-2 uppercase tracking-wide">Your Position</h3>
-                                            <p className="text-[13px] text-violet-700/80 leading-relaxed">{negotiationData.your_position}</p>
+                                        <div className="bg-accent-50/50 p-4 rounded-lg border border-accent-100">
+                                            <h3 className="text-accent-700 font-medium text-[12px] mb-2 uppercase tracking-wide">Your Position</h3>
+                                            <p className="text-[13px] text-accent-700/80 leading-relaxed">{negotiationData.your_position}</p>
                                         </div>
                                     )}
 
@@ -970,7 +970,7 @@ export default function JobDetailPage() {
                                     {negotiationData.scripts?.length > 0 && (
                                         <div>
                                             <h3 className="text-gray-700 font-medium text-[12px] mb-2.5 uppercase tracking-wide flex items-center gap-1.5">
-                                                <MessageSquare className="w-3.5 h-3.5 text-violet-500" /> Scripts
+                                                <MessageSquare className="w-3.5 h-3.5 text-accent-500" /> Scripts
                                             </h3>
                                             <div className="space-y-2">
                                                 {negotiationData.scripts.map((script, i) => (
@@ -1137,7 +1137,7 @@ export default function JobDetailPage() {
                     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                         <div className="px-4 py-3.5 border-b border-gray-100">
                             <h2 className="text-[13px] font-semibold text-gray-900 flex items-center gap-2">
-                                <Sparkles className="w-3.5 h-3.5 text-violet-500" />
+                                <Sparkles className="w-3.5 h-3.5 text-accent-500" />
                                 While you're here
                             </h2>
                             <p className="text-[10px] text-gray-400 mt-0.5">Jobs similar to this one</p>

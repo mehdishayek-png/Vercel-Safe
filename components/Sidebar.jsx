@@ -40,9 +40,9 @@ export function Sidebar({ isOpen, onClose }) {
                 />
             )}
 
-            <aside className={`fixed inset-y-0 left-0 z-50 w-[260px] bg-white/80 dark:bg-[#1a1d27]/90 backdrop-blur-xl border-r border-surface-200/60 dark:border-[#2d3140] text-gray-700 flex flex-col min-h-screen transform transition-transform duration-200 ease-in-out md:static md:translate-x-0 md:w-[220px] md:z-auto md:sticky md:top-0 md:shrink-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <aside className={`fixed inset-y-0 left-0 z-50 w-[260px] bg-surface-50/70 dark:bg-[#1a1d27]/90 backdrop-blur-xl border-r border-transparent text-gray-700 flex flex-col min-h-screen transform transition-transform duration-200 ease-in-out md:static md:translate-x-0 md:w-[220px] md:z-auto md:sticky md:top-0 md:shrink-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 {/* Logo */}
-                <div className="px-5 h-14 flex items-center gap-2.5 border-b border-surface-200/60 dark:border-[#2d3140]">
+                <div className="px-5 h-14 flex items-center gap-2.5 mb-10">
                     <div className="w-8 h-8 rounded-xl bg-flow-gradient flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-brand-600/20">
                         M
                     </div>
@@ -53,7 +53,7 @@ export function Sidebar({ isOpen, onClose }) {
                 </div>
 
             {/* User info */}
-            <div className="px-4 py-3.5 border-b border-surface-200/60 dark:border-[#2d3140]">
+            <div className="px-4 py-3.5">
                 <SignedIn>
                     <div className="flex items-center gap-2.5">
                         <UserButton
@@ -95,15 +95,15 @@ export function Sidebar({ isOpen, onClose }) {
                             onClick={onClose}
                             className={`relative flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 group ${
                                 active
-                                    ? 'bg-brand-600 dark:bg-brand-600 text-white shadow-md shadow-brand-600/20'
+                                    ? 'bg-brand-50/50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-xl'
                                     : 'text-gray-500 hover:text-gray-900 hover:bg-surface-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-[#22252f]'
                             }`}
                         >
-                            <Icon className={`w-4 h-4 ${active ? 'text-white' : 'text-gray-400 group-hover:text-gray-600 dark:text-gray-500 dark:group-hover:text-gray-300'}`} />
+                            <Icon className={`w-4 h-4 ${active ? 'text-brand-600 dark:text-brand-400' : 'text-gray-400 group-hover:text-gray-600 dark:text-gray-500 dark:group-hover:text-gray-300'}`} />
                             <span className="flex-1">{label}</span>
                             {badge && (
                                 <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-lg ${
-                                    active ? 'bg-white/20 text-white' : 'bg-surface-100 text-gray-400 dark:bg-[#2d3140] dark:text-gray-500'
+                                    active ? 'bg-brand-100/50 text-brand-600 dark:bg-brand-800/30 dark:text-brand-400' : 'bg-surface-100 text-gray-400 dark:bg-[#2d3140] dark:text-gray-500'
                                 }`}>
                                     {badge}
                                 </span>
@@ -114,7 +114,7 @@ export function Sidebar({ isOpen, onClose }) {
             </nav>
 
             {/* Bottom section */}
-            <div className="px-3 py-3 border-t border-surface-200/60 dark:border-[#2d3140]">
+            <div className="px-3 py-3">
                 <Link
                     href="/"
                     onClick={onClose}
@@ -136,7 +136,7 @@ export function Sidebar({ isOpen, onClose }) {
             </div>
 
             {/* Footer links */}
-            <div className="px-5 py-2.5 border-t border-surface-200/60 dark:border-[#2d3140] flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-gray-300 dark:text-gray-600">
+            <div className="px-5 py-2.5 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-gray-300 dark:text-gray-600">
                 <a href="/privacy" className="hover:text-gray-500 transition-colors">Privacy</a>
                 <a href="/terms" className="hover:text-gray-500 transition-colors">Terms</a>
                 <a href="/refund" className="hover:text-gray-500 transition-colors">Refund</a>

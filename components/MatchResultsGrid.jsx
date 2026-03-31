@@ -41,21 +41,21 @@ export function MatchResultsGrid({
     return (
         <>
             {/* Tab bar */}
-            <div className="flex items-center gap-1.5 mb-5 overflow-x-auto bg-surface-100 rounded-full p-1">
+            <div className="flex items-center gap-1.5 mb-5 overflow-x-auto p-1">
                 {tabs.map((tab) => (
                     <button
                         key={tab.key}
                         onClick={() => setActiveTab(tab.key)}
                         className={`px-4 py-2 text-sm font-medium flex items-center gap-1.5 rounded-full transition-all duration-200 cursor-pointer ${
                             activeTab === tab.key
-                                ? 'bg-brand-600 text-white shadow-sm'
+                                ? 'bg-surface-300 text-gray-800 shadow-sm'
                                 : 'text-gray-500 hover:text-gray-700 hover:bg-white/60'
                         }`}
                     >
                         {tab.label}
                         <span className={`text-[11px] font-semibold px-1.5 py-px rounded-full ${
                             activeTab === tab.key
-                                ? 'bg-white/20 text-white'
+                                ? 'bg-surface-400/20 text-gray-700'
                                 : 'bg-surface-200 text-gray-400'
                         }`}>
                             {tab.count}
@@ -73,11 +73,11 @@ export function MatchResultsGrid({
                         <Download className="w-3.5 h-3.5" />
                         CSV
                     </button>
-                    <div className="flex items-center gap-0.5 bg-surface-100 rounded-full p-0.5">
+                    <div className="flex items-center gap-0.5 rounded-full p-0.5">
                         <button
                             onClick={() => setSortBy('score')}
                             className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer ${
-                                sortBy === 'score' ? 'bg-brand-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                                sortBy === 'score' ? 'bg-surface-300 text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                             }`}
                         >
                             Score
@@ -85,7 +85,7 @@ export function MatchResultsGrid({
                         <button
                             onClick={() => setSortBy('latest')}
                             className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer ${
-                                sortBy === 'latest' ? 'bg-brand-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                                sortBy === 'latest' ? 'bg-surface-300 text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                             }`}
                         >
                             Latest
@@ -176,16 +176,16 @@ export function MatchResultsGrid({
 
                     {/* Feature cards grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div className="bg-gradient-to-br from-white to-indigo-50/40 rounded-xl border border-indigo-100/50 p-5 shadow-sm hover:shadow-md transition-shadow">
-                            <div className="w-9 h-9 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-lg flex items-center justify-center mb-3">
-                                <BrainCircuit className="w-4.5 h-4.5 text-indigo-600" />
+                        <div className="bg-surface-50/80 rounded-[2rem] p-5 hover:shadow-xl transition-shadow">
+                            <div className="w-9 h-9 bg-gradient-to-br from-brand-100 to-blue-100 rounded-lg flex items-center justify-center mb-3">
+                                <BrainCircuit className="w-4.5 h-4.5 text-brand-600" />
                             </div>
                             <h3 className="text-[13px] font-semibold text-gray-900 mb-1">AI-Powered Matching</h3>
                             <p className="text-[11px] text-gray-400 leading-relaxed">
                                 Our scoring engine evaluates keyword overlap, seniority fit, location match, role family alignment, and job depth — not just keywords.
                             </p>
                         </div>
-                        <div className="bg-gradient-to-br from-white to-emerald-50/40 rounded-xl border border-emerald-100/50 p-5 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="bg-surface-50/80 rounded-[2rem] p-5 hover:shadow-xl transition-shadow">
                             <div className="w-9 h-9 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center mb-3">
                                 <Globe className="w-4.5 h-4.5 text-emerald-600" />
                             </div>
@@ -194,16 +194,16 @@ export function MatchResultsGrid({
                                 We aggregate from LinkedIn, Indeed, Glassdoor, and Fantastic.Jobs — casting a wide net so you don't miss opportunities.
                             </p>
                         </div>
-                        <div className="bg-gradient-to-br from-white to-violet-50/40 rounded-xl border border-violet-100/50 p-5 shadow-sm hover:shadow-md transition-shadow">
-                            <div className="w-9 h-9 bg-gradient-to-br from-violet-100 to-purple-100 rounded-lg flex items-center justify-center mb-3">
-                                <Target className="w-4.5 h-4.5 text-violet-600" />
+                        <div className="bg-surface-50/80 rounded-[2rem] p-5 hover:shadow-xl transition-shadow">
+                            <div className="w-9 h-9 bg-gradient-to-br from-brand-100 to-accent-100 rounded-lg flex items-center justify-center mb-3">
+                                <Target className="w-4.5 h-4.5 text-brand-600" />
                             </div>
                             <h3 className="text-[13px] font-semibold text-gray-900 mb-1">Deep Analysis</h3>
                             <p className="text-[11px] text-gray-400 leading-relaxed">
                                 Expand any job card to get AI-powered fit scores, salary estimates, skill gap analysis, and a personalized verdict.
                             </p>
                         </div>
-                        <div className="bg-gradient-to-br from-white to-sky-50/40 rounded-xl border border-sky-100/50 p-5 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="bg-surface-50/80 rounded-[2rem] p-5 hover:shadow-xl transition-shadow">
                             <div className="w-9 h-9 bg-gradient-to-br from-sky-100 to-blue-100 rounded-lg flex items-center justify-center mb-3">
                                 <FileText className="w-4.5 h-4.5 text-sky-600" />
                             </div>
@@ -215,14 +215,14 @@ export function MatchResultsGrid({
                     </div>
 
                     {/* How scoring works */}
-                    <div className="bg-gradient-to-br from-white to-slate-50/50 rounded-xl border border-slate-200/60 p-5 shadow-sm">
+                    <div className="bg-surface-50/80 rounded-[2rem] p-5">
                         <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-1.5">
                             <TrendingUp className="w-3.5 h-3.5 text-brand-500" />
                             How scoring works
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                            <div className="bg-indigo-50/50 rounded-lg py-3 px-2">
-                                <div className="text-2xl font-bold text-indigo-600 mb-1">7</div>
+                            <div className="bg-brand-50/50 rounded-lg py-3 px-2">
+                                <div className="text-2xl font-bold text-brand-600 mb-1">7</div>
                                 <div className="text-[11px] text-gray-500 font-medium">Scoring Signals</div>
                                 <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Keywords, seniority, location, role family, depth, recency, prestige</div>
                             </div>
@@ -231,8 +231,8 @@ export function MatchResultsGrid({
                                 <div className="text-[11px] text-gray-500 font-medium">Match Score</div>
                                 <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Composite score with multipliers — 80+ is an excellent fit</div>
                             </div>
-                            <div className="bg-violet-50/50 rounded-lg py-3 px-2">
-                                <div className="text-2xl font-bold text-violet-600 mb-1">&lt;60s</div>
+                            <div className="bg-accent-50/50 rounded-lg py-3 px-2">
+                                <div className="text-2xl font-bold text-brand-600 mb-1">&lt;60s</div>
                                 <div className="text-[11px] text-gray-500 font-medium">Scan Time</div>
                                 <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Fetches and scores hundreds of jobs in under a minute</div>
                             </div>
@@ -243,7 +243,7 @@ export function MatchResultsGrid({
                     <div className="flex items-center justify-center gap-4 text-[10px] text-gray-400 py-2">
                         <span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-emerald-400" /> Resumes never stored</span>
                         <span className="w-px h-3 bg-surface-200" />
-                        <span className="flex items-center gap-1"><Zap className="w-3 h-3 text-indigo-400" /> 5 free scans/day</span>
+                        <span className="flex items-center gap-1"><Zap className="w-3 h-3 text-brand-400" /> 5 free scans/day</span>
                         <span className="w-px h-3 bg-surface-200" />
                         <span className="flex items-center gap-1"><Download className="w-3 h-3 text-gray-400" /> Export to CSV</span>
                     </div>

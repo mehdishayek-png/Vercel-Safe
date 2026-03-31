@@ -19,7 +19,7 @@ function PillToggle({ label, description, active, onClick, disabled }) {
                 disabled
                     ? 'border-surface-100 bg-surface-50 text-gray-300 cursor-not-allowed'
                     : active
-                        ? 'border-brand-500 bg-brand-600 text-white shadow-sm'
+                        ? 'border-transparent bg-brand-50/50 text-brand-600'
                         : 'border-surface-200 bg-white text-gray-600 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600',
             ].join(' ')}
         >
@@ -49,7 +49,7 @@ export function FilterPanel({
     const masterOn = flags?.ADVANCED_FILTERS;
 
     return (
-        <div className="glass-panel rounded-2xl overflow-hidden">
+        <div className="glass-panel rounded-2xl overflow-hidden border-transparent">
             <button
                 type="button"
                 onClick={() => setOpen(o => !o)}

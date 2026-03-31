@@ -7,8 +7,8 @@ import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { useState } from 'react';
 
 const AVATAR_COLORS = [
-    'bg-teal-500', 'bg-sky-500', 'bg-violet-500', 'bg-amber-500',
-    'bg-rose-500', 'bg-emerald-500', 'bg-indigo-500', 'bg-pink-500',
+    'bg-teal-500', 'bg-sky-500', 'bg-accent-500', 'bg-amber-500',
+    'bg-rose-500', 'bg-emerald-500', 'bg-brand-500', 'bg-pink-500',
 ];
 
 function DotIndicator({ filled, total = 5 }) {
@@ -147,8 +147,8 @@ export default function SavedJobsPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl rounded-2xl border border-surface-200/60 dark:border-[#2d3140]/60 shadow-sm">
-                    <div className="w-8 h-8 rounded-xl bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center">
-                        <Star className="w-4 h-4 text-violet-500" />
+                    <div className="w-8 h-8 rounded-xl bg-accent-50 dark:bg-accent-700/30 flex items-center justify-center">
+                        <Star className="w-4 h-4 text-accent-500" />
                     </div>
                     <div>
                         <p className="text-lg font-bold text-gray-900 dark:text-gray-100 leading-none">{avgMatch}%</p>

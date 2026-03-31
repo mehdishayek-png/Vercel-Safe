@@ -54,7 +54,7 @@ export default function PricingPage() {
             <div className="max-w-5xl mx-auto">
                 <a
                     href="/"
-                    className="text-sm text-indigo-600 hover:underline mb-8 block"
+                    className="text-sm text-brand-600 hover:underline mb-8 block"
                 >
                     &larr; Back to Midas
                 </a>
@@ -127,9 +127,9 @@ export default function PricingPage() {
                     </div>
 
                     {/* Token Pack */}
-                    <div className="relative border-2 border-indigo-500 rounded-2xl p-8 flex flex-col bg-gradient-to-br from-indigo-50/60 to-white">
+                    <div className="relative border-2 border-brand-500 rounded-2xl p-8 flex flex-col bg-gradient-to-br from-brand-50/60 to-white">
                         <div className="mb-6">
-                            <span className="inline-block text-xs font-semibold tracking-wide uppercase bg-indigo-600 text-white px-3 py-1 rounded-full mb-4">
+                            <span className="inline-block text-xs font-semibold tracking-wide uppercase bg-brand-600 text-white px-3 py-1 rounded-full mb-4">
                                 Best Value
                             </span>
                             <h2 className="text-2xl font-bold text-gray-900">
@@ -158,7 +158,7 @@ export default function PricingPage() {
                                     className="flex items-start gap-2 text-sm text-gray-700"
                                 >
                                     <svg
-                                        className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5"
+                                        className="w-5 h-5 text-brand-500 shrink-0 mt-0.5"
                                         fill="none"
                                         stroke="currentColor"
                                         strokeWidth="2"
@@ -177,7 +177,7 @@ export default function PricingPage() {
 
                         <a
                             href="/dashboard"
-                            className="block w-full text-center py-3 px-6 rounded-xl bg-indigo-600 text-white font-medium text-sm hover:bg-indigo-700 transition-colors"
+                            className="block w-full text-center py-3 px-6 rounded-xl bg-brand-600 text-white font-medium text-sm hover:bg-brand-700 transition-colors"
                         >
                             Buy Tokens
                         </a>
@@ -225,7 +225,7 @@ export default function PricingPage() {
                                         <td className="py-3 px-4 text-center">
                                             {free}
                                         </td>
-                                        <td className="py-3 pl-4 text-center font-medium text-indigo-600">
+                                        <td className="py-3 pl-4 text-center font-medium text-brand-600">
                                             {paid}
                                         </td>
                                     </tr>
@@ -247,7 +247,7 @@ export default function PricingPage() {
                                     onClick={() =>
                                         setOpenFaq(openFaq === i ? null : i)
                                     }
-                                    className="w-full flex items-center justify-between py-4 text-left text-sm font-medium text-gray-900 hover:text-indigo-600 transition-colors"
+                                    className="w-full flex items-center justify-between py-4 text-left text-sm font-medium text-gray-900 hover:text-brand-600 transition-colors"
                                 >
                                     {faq.q}
                                     <svg

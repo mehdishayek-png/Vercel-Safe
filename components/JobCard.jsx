@@ -31,7 +31,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
     const handleSaveWrapper = () => {
         onSave(job);
         if (!isSaved && job.match_score >= 80) {
-            confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 }, colors: ['#4f46e5', '#7c3aed', '#10b981'] });
+            confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 }, colors: ['#ff7e67', '#fbbf24', '#10b981'] });
         }
     };
 
@@ -296,7 +296,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                         localStorage.setItem(key, JSON.stringify(job));
                                     } catch (e) { /* ignore */ }
                                 }}
-                                className="inline-flex items-center gap-1 bg-gray-900 dark:bg-indigo-600 hover:bg-gray-800 dark:hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
+                                className="inline-flex items-center gap-1 bg-gray-900 dark:bg-brand-600 hover:bg-gray-800 dark:hover:bg-brand-500 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
                             >
                                 View <ChevronDown className="w-3 h-3 -rotate-90" />
                             </Link>

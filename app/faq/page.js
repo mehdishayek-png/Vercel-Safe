@@ -93,7 +93,7 @@ export default function FAQPage() {
             <div className="max-w-3xl mx-auto">
                 <a
                     href="/"
-                    className="text-sm text-indigo-600 hover:underline mb-8 block"
+                    className="text-sm text-brand-600 hover:underline mb-8 block"
                 >
                     &larr; Back to Midas
                 </a>
@@ -106,7 +106,7 @@ export default function FAQPage() {
                     find what you&apos;re looking for? Reach out to us at{" "}
                     <a
                         href="mailto:support@midasmatch.com"
-                        className="text-indigo-600 hover:underline"
+                        className="text-brand-600 hover:underline"
                     >
                         support@midasmatch.com
                     </a>
@@ -127,7 +127,7 @@ export default function FAQPage() {
                                         <div key={ii}>
                                             <button
                                                 onClick={() => toggle(ci, ii)}
-                                                className="w-full flex items-center justify-between py-4 text-left text-sm font-medium text-gray-900 hover:text-indigo-600 transition-colors"
+                                                className="w-full flex items-center justify-between py-4 text-left text-sm font-medium text-gray-900 hover:text-brand-600 transition-colors"
                                             >
                                                 {item.q}
                                                 <svg
@@ -168,7 +168,7 @@ export default function FAQPage() {
                     <div className="flex flex-wrap justify-center gap-4 text-sm">
                         <a
                             href="/pricing"
-                            className="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+                            className="px-4 py-2 rounded-lg bg-brand-600 text-white hover:bg-brand-700 transition-colors"
                         >
                             View Pricing
                         </a>

@@ -2,7 +2,7 @@ export default function TermsOfService() {
     return (
         <main className="min-h-screen bg-white py-16 px-4" style={{ fontFamily: "'Inter', sans-serif" }}>
             <div className="max-w-3xl mx-auto">
-                <a href="/" className="text-sm text-indigo-600 hover:underline mb-8 block">&larr; Back to Midas</a>
+                <a href="/" className="text-sm text-brand-600 hover:underline mb-8 block">&larr; Back to Midas</a>
                 <h1 className="text-4xl font-bold text-gray-900 mb-2">Terms of Service</h1>
                 <p className="text-sm text-gray-400 mb-8">Last updated: March 2, 2026</p>
 
@@ -20,7 +20,7 @@ export default function TermsOfService() {
                             <li>Free users receive 3 job scans per day and 3 AI deep analysis credits (lifetime).</li>
                             <li>Midas Search provides 2× result coverage and costs 2 tokens per scan (1 free per week).</li>
                             <li>Additional scans and analyses require tokens, available for purchase at ₹399 for 50 tokens.</li>
-                            <li>See our <a href="/refund" className="text-indigo-600 hover:underline">Refund & Cancellation Policy</a> for details on refunds.</li>
+                            <li>See our <a href="/refund" className="text-brand-600 hover:underline">Refund & Cancellation Policy</a> for details on refunds.</li>
                             <li>Payments are processed by Razorpay.</li>
                         </ul>
                     </section>
@@ -51,7 +51,7 @@ export default function TermsOfService() {
                     <section>
                         <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Contact</h2>
                         <p className="text-gray-600 text-sm leading-relaxed">
-                            For questions regarding these terms, contact us at <a href="mailto:support@midasmatch.com" className="text-indigo-600 hover:underline">support@midasmatch.com</a>.
+                            For questions regarding these terms, contact us at <a href="mailto:support@midasmatch.com" className="text-brand-600 hover:underline">support@midasmatch.com</a>.
                         </p>
                     </section>
                 </div>

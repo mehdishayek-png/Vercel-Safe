@@ -42,7 +42,7 @@ export async function GET() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '6px' }}>
           <div style={{
             width: '44px', height: '44px', borderRadius: '12px',
-            background: 'linear-gradient(135deg, #6366f1, #14b8a6)',
+            background: 'linear-gradient(135deg, #ff7e67, #fbbf24)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '22px', fontWeight: 'bold', color: 'white',
           }}>M</div>

@@ -17,8 +17,13 @@ export default function DashboardLayout({ children }) {
                     <div className="flex-1 flex flex-col min-w-0">
                         <DashboardHeader onMenuClick={() => setSidebarOpen(true)} />
                         <ReturnNotification />
-                        <main className="flex-1 px-4 py-4 md:px-6 md:py-5 dashboard-bg">
-                            {children}
+                        <main className="flex-1 px-4 py-4 md:px-6 md:py-5 dashboard-bg relative overflow-hidden">
+                            {/* Ambient AI glow blobs */}
+                            <div className="absolute -top-[20%] -right-[10%] w-[600px] h-[600px] bg-brand-500/30 blur-[120px] rounded-full pointer-events-none" />
+                            <div className="absolute top-[40%] -left-[10%] w-[400px] h-[400px] bg-brand-500/10 blur-[100px] rounded-full pointer-events-none" />
+                            <div className="relative z-10">
+                                {children}
+                            </div>
                         </main>
                     </div>
                 </div>
