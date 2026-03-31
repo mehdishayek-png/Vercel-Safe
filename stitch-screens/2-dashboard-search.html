@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Editorial AI | Search Jobs</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary": "#ffffff",
+              "secondary-container": "#8a4cfc",
+              "on-surface": "#151c27",
+              "secondary-fixed-dim": "#d2bbff",
+              "on-secondary-fixed": "#25005a",
+              "error-container": "#ffdad6",
+              "surface": "#f9f9ff",
+              "secondary-fixed": "#eaddff",
+              "surface-variant": "#dce2f3",
+              "outline-variant": "#c7c4d8",
+              "primary-container": "#4f46e5",
+              "on-primary-fixed-variant": "#3323cc",
+              "surface-dim": "#d3daea",
+              "on-primary-container": "#dad7ff",
+              "inverse-surface": "#2a313d",
+              "primary-fixed": "#e2dfff",
+              "tertiary": "#3f4959",
+              "inverse-on-surface": "#ebf1ff",
+              "on-secondary-container": "#fffbff",
+              "primary-fixed-dim": "#c3c0ff",
+              "tertiary-fixed-dim": "#bdc7d9",
+              "tertiary-container": "#576171",
+              "surface-container-lowest": "#ffffff",
+              "secondary": "#712ae2",
+              "on-error": "#ffffff",
+              "on-tertiary-fixed-variant": "#3d4756",
+              "on-tertiary-fixed": "#121c2a",
+              "on-secondary-fixed-variant": "#5a00c6",
+              "outline": "#777587",
+              "surface-bright": "#f9f9ff",
+              "on-error-container": "#93000a",
+              "background": "#f9f9ff",
+              "on-primary-fixed": "#0f0069",
+              "surface-container-highest": "#dce2f3",
+              "primary": "#3525cd",
+              "surface-tint": "#4d44e3",
+              "surface-container-high": "#e2e8f8",
+              "inverse-primary": "#c3c0ff",
+              "on-primary": "#ffffff",
+              "surface-container-low": "#f0f3ff",
+              "surface-container": "#e7eefe",
+              "on-background": "#151c27",
+              "error": "#ba1a1a",
+              "on-tertiary-container": "#d2dcef",
+              "on-secondary": "#ffffff",
+              "on-surface-variant": "#464555"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+        }
+        .bg-flow-gradient {
+            background: linear-gradient(135deg, #3525cd 0%, #712ae2 100%);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary/20">
+<!-- SideNavBar Implementation -->
+<aside class="fixed left-0 top-0 h-full flex flex-col p-4 h-screen w-64 border-r border-transparent bg-slate-50/70 dark:bg-slate-950/70 backdrop-blur-xl z-50">
+<div class="mb-10 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-flow-gradient flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div>
+<h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">Editorial AI</h2>
+<p class="text-xs font-medium text-slate-500 uppercase tracking-widest">Premium Matching</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-plus-jakarta text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/20 rounded-xl active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">search</span>
+<span class="font-plus-jakarta text-sm font-medium">Search Jobs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">bookmark</span>
+<span class="font-plus-jakarta text-sm font-medium">Saved Jobs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-plus-jakarta text-sm font-medium">Applications</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-plus-jakarta text-sm font-medium">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 space-y-4">
+<button class="w-full py-4 px-4 bg-flow-gradient text-white rounded-2xl font-semibold text-sm shadow-xl shadow-indigo-500/20 hover:opacity-90 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span>
+                Post a Job
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-plus-jakarta text-sm font-medium">Help Center</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen relative overflow-hidden">
+<!-- Ambient AI Glows -->
+<div class="absolute -top-[20%] -right-[10%] w-[600px] h-[600px] bg-secondary-fixed/30 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="absolute top-[40%] -left-[10%] w-[400px] h-[400px] bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
+<!-- TopNavBar Implementation -->
+<header class="sticky top-0 z-40 flex justify-between items-center px-12 w-full h-16 bg-white/60 dark:bg-slate-950/60 backdrop-blur-2xl">
+<div class="flex items-center flex-1">
+<div class="relative w-full max-w-md group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-2 pl-12 pr-4 focus:ring-2 focus:ring-indigo-500/20 text-sm font-body transition-all" placeholder="Search across the intelligence network..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6 ml-8">
+<div class="flex items-center gap-4 text-slate-500">
+<button class="hover:text-indigo-600 transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-secondary rounded-full border-2 border-white"></span>
+</button>
+<button class="hover:text-indigo-600 transition-colors">
+<span class="material-symbols-outlined">history</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-slate-200"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-bold text-slate-900 leading-none">Alex Rivera</p>
+<p class="text-[10px] font-medium text-slate-500 uppercase tracking-tighter">Verified Talent</p>
+</div>
+<img class="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" data-alt="User avatar professional portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBd7uGsgRuW5TSPHndvQmKrftIxLu0RD3EbSPLXkOXvzBTr_wNgnbAh6OoelRgrQ5pQt1_kSgNvpwLPBrcFiAJ06sIMa_Cz6-pd7kpCGOII6ZpkrFYlnkcmtIbHWoDrbO1Qo03pDE7ez_wzqoa0s4FanpmpuxE_JcbOHv3qTc4ZFvvjfc9BiiyS3m-S7AWG0Uq34pHw8FfmXhzBcn36_5hUjb52mV-zmMZ3nblwpwoDw643Y5hr6_tIlErCAS4O4AjJuVbzTaXlKE_f"/>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="px-12 py-10 relative z-10">
+<!-- Hero Section: The Intelligent Flow -->
+<section class="mb-16">
+<div class="max-w-4xl">
+<h1 class="text-6xl font-headline font-extrabold text-on-surface tracking-tight leading-[1.1] mb-6">
+                        Find your next <span class="text-transparent bg-clip-text bg-flow-gradient">strategic role</span> with AI precision.
+                    </h1>
+<p class="text-xl text-tertiary-container font-body leading-relaxed mb-10 max-w-2xl">
+                        Our 2026 neural engine analyzes 45+ unique data signals from your profile to match you with opportunities that align with your career trajectory.
+                    </p>
+<!-- Central AI Search/Upload Box -->
+<div class="glass-panel rounded-[2rem] p-2 flex items-center gap-2 shadow-2xl shadow-primary/10 border border-white/40">
+<div class="flex-1 px-6 py-4 flex items-center gap-4 group cursor-pointer border-2 border-dashed border-transparent hover:border-indigo-200 rounded-2xl transition-all">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">upload_file</span>
+</div>
+<div>
+<h4 class="font-jakarta font-bold text-on-surface">Upload Resume</h4>
+<p class="text-xs text-slate-500">PDF, DOCX up to 10MB</p>
+</div>
+</div>
+<div class="w-[1px] h-12 bg-slate-200 hidden md:block"></div>
+<div class="flex-1 px-6 py-4 hidden md:flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<div class="w-full">
+<h4 class="font-jakarta font-bold text-on-surface">Target Salary</h4>
+<input class="bg-transparent border-none p-0 focus:ring-0 text-sm w-full placeholder:text-slate-400" placeholder="e.g. $180k - $220k" type="text"/>
+</div>
+</div>
+<button class="bg-flow-gradient text-white px-10 py-5 rounded-full font-bold text-lg shadow-xl shadow-indigo-600/30 hover:scale-105 active:scale-95 transition-all">
+                            Scan Market
+                        </button>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-12 gap-8">
+<!-- Main Results Column -->
+<div class="col-span-12 lg:col-span-8 space-y-12">
+<!-- Section Header -->
+<div class="flex items-end justify-between">
+<div>
+<h2 class="text-3xl font-headline font-bold text-on-surface">Top Neural Matches</h2>
+<p class="text-slate-500 font-body mt-1">Based on your experience in Product Strategy &amp; AI Governance.</p>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 rounded-full bg-surface-container-high text-on-surface-variant text-sm font-semibold hover:bg-slate-200 transition-colors">Relevant</button>
+<button class="px-4 py-2 rounded-full text-slate-400 text-sm font-semibold hover:bg-slate-100 transition-colors">Recent</button>
+</div>
+</div>
+<!-- Job Cards Grid - Asymmetrical Layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- High Match Card (Featured) -->
+<div class="col-span-1 md:col-span-2 group">
+<div class="bg-surface-container-lowest p-8 rounded-[2rem] shadow-sm hover:shadow-xl transition-all relative overflow-hidden flex flex-col md:flex-row gap-8 items-start">
+<!-- AI Match Chip -->
+<div class="absolute top-0 right-0 px-6 py-3 bg-secondary-container text-white font-jakarta font-black text-lg rounded-bl-[2rem] shadow-lg">
+                                    98% MATCH
+                                </div>
+<div class="w-20 h-20 rounded-2xl bg-surface-container-low flex items-center justify-center flex-shrink-0 group-hover:bg-primary-container group-hover:text-white transition-colors duration-500">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">architecture</span>
+</div>
+<div class="flex-1">
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="px-3 py-1 rounded-full bg-surface-container-low text-[10px] font-bold text-slate-500 uppercase tracking-wider">Remote</span>
+<span class="px-3 py-1 rounded-full bg-secondary-fixed text-[10px] font-bold text-secondary-fixed-dim uppercase tracking-wider" style="color: #712ae2;">Strategic High-Priority</span>
+</div>
+<h3 class="text-2xl font-headline font-extrabold text-on-surface group-hover:text-primary transition-colors mb-2">Lead AI Systems Architect</h3>
+<p class="text-lg text-tertiary-container font-body mb-6">Anthropic Research • San Francisco, CA (Hybrid)</p>
+<div class="flex items-center gap-6">
+<div class="flex -space-x-3">
+<img class="w-8 h-8 rounded-full border-2 border-white object-cover" data-alt="Professional person 1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhRJhaagv6IHLpPKTDA6WOfThuC1BYnxxtxcmOR62CAiucglu5c6qbeQx3mEMOmfbO9-4Tn3WwmpthUhRJbRh0-TLdBwbXB9iqQI4GOzXA4WQiX0tDkFn2shdtIe8UvGSSacumuII8720Scz3i96QGhMiAPhwqFZoxJjXtnxxCTmcd_GUBCvoIIKr6bwsfY485M4yWEy08NH2h8940ew2o3xetTZEGj1X0KSsiODFU4k4rvZ78yqp_fArWz2b6m5pTjZ-Sb0jOv7KJ"/>
+<img class="w-8 h-8 rounded-full border-2 border-white object-cover" data-alt="Professional person 2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbTYPXKkO7uDjePbctBpRfaovOSk9PRX5eY8M9LinzB7YkByQCpZHAtF8OC3DdhnpFAxfwwzZsKvbLMct-aBJgsV7C7-b5enKsEX7S1MjYM9VWzJ2oExwfVmbtDn_eN1xVf5j9705I7L7ytDqU2uVDowX9wXS477hIL-efwq_7mj94dgOrxskl1J74r71ccCbNdgvb9jpzZkTj6_ltxURYKLUQaGZfJgr2H703tE12wWJJf9-PeJ65dhMCV2gVxKOZu51WzYT9jVcE"/>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400">+12</div>
+</div>
+<p class="text-xs text-slate-500 font-medium">12 peers from Editorial network work here</p>
+</div>
+</div>
+<div class="w-full md:w-auto self-stretch flex flex-col justify-end pt-4 md:pt-0">
+<button class="w-full md:w-auto px-8 py-4 bg-on-surface text-white rounded-2xl font-bold hover:bg-primary transition-colors">Apply Instantly</button>
+</div>
+</div>
+</div>
+<!-- Secondary Match Card 1 -->
+<div class="bg-surface-container-low p-6 rounded-3xl hover:bg-surface-container-lowest hover:shadow-lg transition-all border border-transparent hover:border-white group">
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 rounded-xl bg-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-primary text-2xl">account_tree</span>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-black text-primary bg-primary/10 px-2 py-1 rounded-md mb-1">94% Confidence</p>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Posted 2h ago</p>
+</div>
+</div>
+<h4 class="text-xl font-headline font-bold text-on-surface mb-1 group-hover:text-primary transition-colors">Senior Product Strategist</h4>
+<p class="text-sm text-slate-500 mb-6">Linear Dynamics • New York, NY</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="text-[11px] font-medium px-3 py-1 bg-white rounded-lg text-slate-600">Product-Led Growth</span>
+<span class="text-[11px] font-medium px-3 py-1 bg-white rounded-lg text-slate-600">SaaS AI</span>
+</div>
+<button class="w-full py-3 bg-white border border-slate-200 text-on-surface font-bold rounded-xl text-sm hover:bg-on-surface hover:text-white transition-all">View Details</button>
+</div>
+<!-- Secondary Match Card 2 -->
+<div class="bg-surface-container-low p-6 rounded-3xl hover:bg-surface-container-lowest hover:shadow-lg transition-all border border-transparent hover:border-white group">
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 rounded-xl bg-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-secondary text-2xl">bubble_chart</span>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-black text-secondary bg-secondary/10 px-2 py-1 rounded-md mb-1">91% Confidence</p>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Posted 1d ago</p>
+</div>
+</div>
+<h4 class="text-xl font-headline font-bold text-on-surface mb-1 group-hover:text-primary transition-colors">Head of Content AI</h4>
+<p class="text-sm text-slate-500 mb-6">Framer AI • Amsterdam (Remote)</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="text-[11px] font-medium px-3 py-1 bg-white rounded-lg text-slate-600">LLM Fine-tuning</span>
+<span class="text-[11px] font-medium px-3 py-1 bg-white rounded-lg text-slate-600">Design Ops</span>
+</div>
+<button class="w-full py-3 bg-white border border-slate-200 text-on-surface font-bold rounded-xl text-sm hover:bg-on-surface hover:text-white transition-all">View Details</button>
+</div>
+</div>
+</div>
+<!-- Intelligence Sidebar -->
+<div class="col-span-12 lg:col-span-4 space-y-8">
+<!-- How it Works Interactive Section -->
+<div class="bg-flow-gradient p-8 rounded-[2.5rem] text-white shadow-2xl shadow-indigo-600/20 relative overflow-hidden">
+<div class="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 blur-3xl rounded-full"></div>
+<h3 class="text-2xl font-headline font-bold mb-6">Neural Insights</h3>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-lg">biotech</span>
+</div>
+<div>
+<p class="text-sm font-bold mb-1">Semantic Layering</p>
+<p class="text-xs text-white/70 leading-relaxed">We don't just match keywords; we analyze the context of your achievements and leadership impact.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-lg">insights</span>
+</div>
+<div>
+<p class="text-sm font-bold mb-1">Velocity Tracking</p>
+<p class="text-xs text-white/70 leading-relaxed">AI measures the 'speed' of your career growth to project your future seniority levels.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-lg">network_node</span>
+</div>
+<div>
+<p class="text-sm font-bold mb-1">Ecosystem Fit</p>
+<p class="text-xs text-white/70 leading-relaxed">Matching you based on company culture, funding stage preference, and team structure.</p>
+</div>
+</div>
+</div>
+<button class="mt-10 w-full py-4 bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-sm rounded-2xl text-xs font-black uppercase tracking-widest transition-all">
+                            View Scoring Methodology
+                        </button>
+</div>
+<!-- Market Pulse Card -->
+<div class="bg-surface-container-high p-8 rounded-[2rem]">
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-lg font-headline font-bold text-on-surface">Market Pulse</h3>
+<div class="flex items-center gap-1 text-emerald-600">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span class="text-xs font-bold">+14%</span>
+</div>
+</div>
+<div class="space-y-6">
+<div class="relative">
+<div class="flex justify-between text-xs font-bold mb-2">
+<span class="text-slate-500 uppercase">AI Governance Roles</span>
+<span class="text-on-surface">High Demand</span>
+</div>
+<div class="h-2 w-full bg-white rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[85%]"></div>
+</div>
+</div>
+<div class="relative">
+<div class="flex justify-between text-xs font-bold mb-2">
+<span class="text-slate-500 uppercase">Product Strategy</span>
+<span class="text-on-surface">Steady</span>
+</div>
+<div class="h-2 w-full bg-white rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full w-[60%]"></div>
+</div>
+</div>
+<div class="relative">
+<div class="flex justify-between text-xs font-bold mb-2">
+<span class="text-slate-500 uppercase">Series B Funding</span>
+<span class="text-on-surface">Cooling</span>
+</div>
+<div class="h-2 w-full bg-white rounded-full overflow-hidden">
+<div class="h-full bg-tertiary rounded-full w-[35%]"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-slate-200">
+<p class="text-[10px] text-slate-400 leading-relaxed">
+                                Our data is refreshed every 15 minutes from 12,000+ sources including Crunchbase, LinkedIn, and private job boards.
+                            </p>
+</div>
+</div>
+<!-- Action: Premium Upgrade -->
+<div class="relative group cursor-pointer overflow-hidden rounded-[2rem]">
+<img class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-700" data-alt="Abstract neural network visual" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUyOQwA0o2_UEuLxwsfmP9lvcdnyKNka0byVapmkW89kxjuHghEObsnuij-oxPeMJndmxPTRwIfc0XYFogrITvPLbwH6bl4TE7Dn5_StuDB1XPizhpVZQoM31LU5F4oN9pWO51ZIQk3EpR8IQRN2b-eeBWir5z3Xof27S3FJkHhMLgRj03eUa1qSwuAx0v-ErtHSJc9Z6cW9j_76Awge7CxfohcHyz4DJx6tWLSoKFGN-TgnoxtpYv3Ms7zCfdtX-s8UIWxJ_fjZx8"/>
+<div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
+<div class="absolute inset-0 p-6 flex flex-col justify-end">
+<h4 class="text-white font-headline font-bold text-xl mb-1">Get Stealth Access</h4>
+<p class="text-white/80 text-xs mb-4">View unlisted roles from top-tier VC portfolios.</p>
+<span class="text-white text-xs font-black flex items-center gap-2">UPGRADE TO ELITE <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Contextual FAB - Only for Home/Dashboard/Search -->
+<button class="fixed bottom-8 right-8 w-16 h-16 bg-on-surface text-white rounded-full shadow-2xl flex items-center justify-center hover:bg-primary hover:-translate-y-2 active:scale-95 transition-all duration-300 z-50">
+<span class="material-symbols-outlined text-3xl">chat_bubble</span>
+</button>
+</body></html>

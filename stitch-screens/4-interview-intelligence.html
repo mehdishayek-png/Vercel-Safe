@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Midas Match | Strategic Interview Prep</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary": "#ffffff",
+              "surface-container-low": "#f0f3ff",
+              "on-error": "#ffffff",
+              "on-primary-fixed-variant": "#3323cc",
+              "primary": "#3525cd",
+              "outline": "#777587",
+              "on-secondary-fixed-variant": "#5a00c6",
+              "primary-container": "#4f46e5",
+              "on-surface": "#151c27",
+              "background": "#f9f9ff",
+              "outline-variant": "#c7c4d8",
+              "on-secondary-fixed": "#25005a",
+              "secondary-container": "#8a4cfc",
+              "on-primary": "#ffffff",
+              "on-tertiary-fixed": "#121c2a",
+              "tertiary-fixed": "#d9e3f6",
+              "on-tertiary-fixed-variant": "#3d4756",
+              "on-tertiary-container": "#d2dcef",
+              "on-primary-container": "#dad7ff",
+              "inverse-on-surface": "#ebf1ff",
+              "inverse-surface": "#2a313d",
+              "tertiary-fixed-dim": "#bdc7d9",
+              "surface-container-lowest": "#ffffff",
+              "tertiary": "#3f4959",
+              "primary-fixed": "#e2dfff",
+              "primary-fixed-dim": "#c3c0ff",
+              "tertiary-container": "#576171",
+              "on-primary-fixed": "#0f0069",
+              "secondary-fixed-dim": "#d2bbff",
+              "secondary-fixed": "#eaddff",
+              "on-background": "#151c27",
+              "surface-dim": "#d3daea",
+              "surface": "#f9f9ff",
+              "on-secondary-container": "#fffbff",
+              "surface-bright": "#f9f9ff",
+              "surface-container-high": "#e2e8f8",
+              "on-error-container": "#93000a",
+              "secondary": "#712ae2",
+              "inverse-primary": "#c3c0ff",
+              "error-container": "#ffdad6",
+              "on-secondary": "#ffffff",
+              "surface-tint": "#4d44e3",
+              "surface-container-highest": "#dce2f3",
+              "on-surface-variant": "#464555",
+              "surface-variant": "#dce2f3",
+              "error": "#ba1a1a",
+              "surface-container": "#e7eefe"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-shift { background-color: rgba(241, 245, 249, 1); }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .neural-gradient {
+            background: conic-gradient(from 180deg at 50% 50%, #4F46E5 0deg, #712AE2 120deg, #3525CD 240deg, #4F46E5 360deg);
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-surface">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col p-6 h-screen w-64 border-r border-transparent bg-slate-50/70 backdrop-blur-xl shadow-[20px_0_40px_rgba(0,0,0,0.02)] font-['Plus_Jakarta_Sans'] antialiased tracking-tight">
+<div class="mb-10 flex items-center gap-3 px-2">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">temp_preferences_custom</span>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tighter text-slate-900">Midas Match</h1>
+<p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">AI Career Orchestration</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-slate-500 font-medium hover:bg-slate-200/50 transition-all duration-300 active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined">insights</span> Strategy
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-slate-500 font-medium hover:bg-slate-200/50 transition-all duration-300 active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined">hub</span> Network
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-slate-500 font-medium hover:bg-slate-200/50 transition-all duration-300 active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined">account_tree</span> Pipeline
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full bg-gradient-to-r from-[#3525CD] to-[#4F46E5] text-white font-medium shadow-lg shadow-indigo-500/20 active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined">record_voice_over</span> Interview Prep
+            </a>
+</nav>
+<div class="mt-auto pt-6 space-y-2 border-t border-slate-200/50">
+<button class="w-full mb-4 py-3 px-4 bg-white border border-slate-200 rounded-full text-sm font-bold text-primary flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-sm">add</span> New Strategy
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 rounded-full text-slate-500 font-medium hover:bg-slate-200/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-full text-slate-500 font-medium hover:bg-slate-200/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">help_outline</span> Support
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- TopAppBar Shell -->
+<header class="sticky top-0 right-0 z-30 flex justify-between items-center px-8 py-4 w-full h-16 bg-white/60 backdrop-blur-md font-['Plus_Jakarta_Sans'] font-semibold">
+<div class="flex items-center gap-4 bg-surface-container-low px-4 py-2 rounded-full w-96">
+<span class="material-symbols-outlined text-slate-400">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-slate-400" placeholder="Search strategies, roles, or insights..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<button class="relative text-slate-500 hover:text-slate-900 transition-colors hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-secondary rounded-full border-2 border-white"></span>
+</button>
+<button class="text-slate-500 hover:text-slate-900 transition-colors hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">auto_awesome</span>
+</button>
+</div>
+<div class="h-8 w-px bg-slate-200"></div>
+<div class="flex items-center gap-3 cursor-pointer group">
+<div class="text-right">
+<p class="text-xs font-bold text-slate-900">Alex Chen</p>
+<p class="text-[10px] text-slate-500">Tier: Executive</p>
+</div>
+<img alt="User Profile Avatar" class="w-9 h-9 rounded-full object-cover ring-2 ring-primary/10 group-hover:ring-primary/30 transition-all" data-alt="Professional male corporate executive portrait headshot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANGk8Ck-sDWDGuQK1SJgvF6OXu1GP-WboOlvX0fwY-_H7ToIprthkJNE0dRKXRrE00LmZg3eA0bbfHHBfjF4WOG-CF_KfOWLdaKGwGZagMTJfoV1OyQpgssKWdbw1FuFPck0ujk4afXDz_8YmuAJkT-X4B5__hPF68ChIk3Hji-mm392ZQfhy3pmMrXgi9vg9Ef4-cLIKfaeeIAzeqi9AKw4MIxgSn6vFtlwFWkwo_J0pfabYCD3fCQMPkKuZYISRJnGgS44MzVa7a"/>
+</div>
+</div>
+</header>
+<!-- War Room Hero Section -->
+<div class="p-8">
+<div class="mb-10">
+<div class="flex items-center gap-3 mb-2">
+<span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest">Active War Room</span>
+<span class="text-slate-400 text-sm font-medium">/</span>
+<span class="text-slate-500 text-sm font-medium">Technical Product Lead, Reasoning</span>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<h2 class="text-4xl font-extrabold tracking-tighter font-headline text-slate-900">OpenAI Strategic Prep</h2>
+<p class="text-slate-500 mt-2 text-lg">Hiring Stage: Technical Deep-Dive (Round 3)</p>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-3 rounded-full bg-surface-container-high text-on-surface font-semibold text-sm hover:bg-surface-container-highest transition-all active:scale-95">
+                            View JD Analysis
+                        </button>
+<button class="px-6 py-3 rounded-full bg-gradient-to-r from-primary to-primary-container text-white font-semibold text-sm shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-95">
+                            Sync New Data
+                        </button>
+</div>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Main Intelligence Column -->
+<div class="col-span-8 space-y-6">
+<!-- Predicted Tough Questions Section -->
+<section class="bg-surface-container-lowest rounded-lg p-8 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="text-xl font-bold font-headline">Predicted Neural Stress-Tests</h3>
+<p class="text-slate-500 text-sm">AI-generated based on recent OpenAI internal pivots and your experience gaps.</p>
+</div>
+<span class="material-symbols-outlined text-secondary animate-pulse" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<div class="space-y-4">
+<!-- Question 1 -->
+<div class="group p-6 rounded-xl bg-surface-container-low border border-transparent hover:border-primary/10 transition-all">
+<div class="flex justify-between items-start mb-3">
+<span class="px-3 py-1 rounded-full bg-secondary-container/20 text-secondary text-[10px] font-bold uppercase tracking-widest">Architectural Trade-offs</span>
+<span class="text-xs font-bold text-slate-400">98% Prob.</span>
+</div>
+<h4 class="text-lg font-bold text-slate-900 group-hover:text-primary transition-colors">"How would you prioritize RAG evaluation vs. latency in a production environment with 10k+ concurrent users?"</h4>
+<div class="mt-4 flex items-center gap-4">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary border border-white">S</div>
+<div class="w-6 h-6 rounded-full bg-secondary/10 flex items-center justify-center text-[10px] font-bold text-secondary border border-white">V</div>
+</div>
+<p class="text-xs text-slate-500 italic">Suggested angle: Focus on "Scalable Verification" frameworks.</p>
+</div>
+</div>
+<!-- Question 2 -->
+<div class="group p-6 rounded-xl bg-surface-container-low border border-transparent hover:border-primary/10 transition-all">
+<div class="flex justify-between items-start mb-3">
+<span class="px-3 py-1 rounded-full bg-primary-fixed text-primary text-[10px] font-bold uppercase tracking-widest">Product Reliability</span>
+<span class="text-xs font-bold text-slate-400">85% Prob.</span>
+</div>
+<h4 class="text-lg font-bold text-slate-900 group-hover:text-primary transition-colors">"Describe a time you had to roll back an AI model update that passed evals but failed user intent. How did you redefine your eval set?"</h4>
+</div>
+<!-- Question 3 -->
+<div class="group p-6 rounded-xl bg-surface-container-low border border-transparent hover:border-primary/10 transition-all">
+<div class="flex justify-between items-start mb-3">
+<span class="px-3 py-1 rounded-full bg-tertiary-fixed text-tertiary text-[10px] font-bold uppercase tracking-widest">Strategic Alignment</span>
+<span class="text-xs font-bold text-slate-400">72% Prob.</span>
+</div>
+<h4 class="text-lg font-bold text-slate-900 group-hover:text-primary transition-colors">"With OpenAI moving toward productized agents, how do you manage the tension between model safety filters and agentic autonomy?"</h4>
+</div>
+</div>
+</section>
+<!-- Strategic Context Editorial -->
+<section class="grid grid-cols-2 gap-6">
+<div class="bg-surface-container-lowest rounded-lg p-8 shadow-sm">
+<h3 class="text-lg font-bold font-headline mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">hub</span>
+                                Strategic Context
+                            </h3>
+<div class="prose prose-slate">
+<p class="text-sm leading-relaxed text-slate-600">
+                                    OpenAI is currently in an <span class="font-bold text-slate-900">aggressive pivot from research-first to product-reliability</span>. The hiring bar for this role has shifted toward "ship-readiness." 
+                                </p>
+<p class="text-sm leading-relaxed text-slate-600 mt-3">
+                                    Mentioning <span class="text-secondary font-medium italic">"Deterministic UX within Non-Deterministic Models"</span> will resonate deeply with the current internal culture.
+                                </p>
+</div>
+</div>
+<div class="bg-primary rounded-lg p-8 shadow-xl text-white relative overflow-hidden">
+<!-- Background pattern -->
+<div class="absolute inset-0 opacity-10">
+<svg class="w-full h-full" viewbox="0 0 100 100">
+<pattern height="10" id="grid" patternunits="userSpaceOnUse" width="10">
+<path d="M 10 0 L 0 0 0 10" fill="none" stroke="currentColor" stroke-width="0.5"></path>
+</pattern>
+<rect fill="url(#grid)" height="100" width="100"></rect>
+</svg>
+</div>
+<div class="relative z-10">
+<h3 class="text-lg font-bold font-headline mb-4">Midas Insight</h3>
+<p class="text-white/80 text-sm leading-relaxed mb-6">
+                                    Your 92% score is anchored by your experience at Stripe. They need your "infrastructure-first" mindset applied to LLM scaling.
+                                </p>
+<button class="w-full py-3 bg-white/20 backdrop-blur-md rounded-full text-sm font-bold border border-white/30 hover:bg-white/30 transition-all">
+                                    Reveal Competitive Gap
+                                </button>
+</div>
+</div>
+</section>
+</div>
+<!-- Action & Score Sidebar -->
+<div class="col-span-4 space-y-6">
+<!-- Neural Readiness Score -->
+<div class="bg-surface-container-lowest rounded-lg p-8 shadow-sm flex flex-col items-center text-center">
+<h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">Neural Readiness</h3>
+<div class="relative w-48 h-48 flex items-center justify-center mb-6">
+<!-- SVG Gauge -->
+<svg class="w-full h-full -rotate-90">
+<circle class="text-surface-container-low" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor" stroke-width="8"></circle>
+<circle cx="96" cy="96" fill="transparent" r="88" stroke="url(#neural-grad)" stroke-dasharray="552.92" stroke-dashoffset="44.23" stroke-linecap="round" stroke-width="12"></circle>
+<defs>
+<lineargradient id="neural-grad" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#3525CD"></stop>
+<stop offset="100%" stop-color="#712AE2"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-5xl font-extrabold font-headline tracking-tighter text-slate-900">92<span class="text-2xl text-primary">%</span></span>
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Ready for War</span>
+</div>
+</div>
+<div class="flex gap-2 mb-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="w-2 h-2 rounded-full bg-slate-200"></span>
+</div>
+<p class="text-xs text-slate-500">Top 3% of all global applicants</p>
+</div>
+<!-- Voice Prep Simulator Card -->
+<div class="glass-panel border border-white/50 rounded-lg p-8 shadow-2xl shadow-indigo-500/10 relative overflow-hidden group">
+<div class="absolute -right-10 -top-10 w-32 h-32 bg-primary/20 blur-[60px] group-hover:bg-primary/40 transition-all duration-700"></div>
+<div class="relative z-10">
+<div class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center mb-6 shadow-lg shadow-primary/30">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mic</span>
+</div>
+<h3 class="text-xl font-bold font-headline mb-2 text-slate-900">Voice Prep Simulator</h3>
+<p class="text-sm text-slate-500 mb-6 leading-relaxed">
+                                Practice the "Neural Stress-Test" questions with our AI Career Concierge. Real-time feedback on sentiment and technical depth.
+                            </p>
+<button class="w-full py-4 bg-slate-900 text-white rounded-full font-bold flex items-center justify-center gap-3 hover:bg-black transition-all active:scale-95">
+                                Start Practice Session
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Recruiter Pulse Timeline -->
+<div class="bg-surface-container-lowest rounded-lg p-8 shadow-sm">
+<h3 class="text-sm font-bold text-slate-900 mb-6">Recruiter Pulse</h3>
+<div class="space-y-6 relative before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-100">
+<!-- Event 1 -->
+<div class="relative flex items-start gap-4 pl-8">
+<div class="absolute left-0 w-[24px] h-[24px] bg-white border-2 border-primary rounded-full flex items-center justify-center z-10">
+<div class="w-2 h-2 bg-primary rounded-full"></div>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-900">Shared with hiring manager</p>
+<p class="text-[10px] text-slate-400">2 hours ago</p>
+</div>
+</div>
+<!-- Event 2 -->
+<div class="relative flex items-start gap-4 pl-8">
+<div class="absolute left-0 w-[24px] h-[24px] bg-white border-2 border-slate-200 rounded-full flex items-center justify-center z-10">
+<div class="w-2 h-2 bg-slate-200 rounded-full"></div>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-900">Profile viewed 4x</p>
+<p class="text-[10px] text-slate-400">Yesterday at 4:30 PM</p>
+</div>
+</div>
+<!-- Event 3 -->
+<div class="relative flex items-start gap-4 pl-8">
+<div class="absolute left-0 w-[24px] h-[24px] bg-white border-2 border-slate-200 rounded-full flex items-center justify-center z-10">
+<div class="w-2 h-2 bg-slate-200 rounded-full"></div>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-900">Screening call scheduled</p>
+<p class="text-[10px] text-slate-400">3 days ago</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Background Elements -->
+<div class="fixed top-1/4 -right-20 w-96 h-96 bg-secondary/5 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+<div class="fixed bottom-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+</body></html>

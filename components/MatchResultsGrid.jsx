@@ -41,22 +41,22 @@ export function MatchResultsGrid({
     return (
         <>
             {/* Tab bar */}
-            <div className="flex items-center gap-1 border-b border-surface-200 mb-5 overflow-x-auto">
+            <div className="flex items-center gap-1.5 mb-5 overflow-x-auto bg-surface-100 rounded-full p-1">
                 {tabs.map((tab) => (
                     <button
                         key={tab.key}
                         onClick={() => setActiveTab(tab.key)}
-                        className={`px-4 py-2.5 text-sm font-medium flex items-center gap-1.5 -mb-px border-b-2 transition-colors cursor-pointer ${
+                        className={`px-4 py-2 text-sm font-medium flex items-center gap-1.5 rounded-full transition-all duration-200 cursor-pointer ${
                             activeTab === tab.key
-                                ? 'text-brand-600 border-brand-600'
-                                : 'text-gray-400 border-transparent hover:text-gray-600'
+                                ? 'bg-brand-600 text-white shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700 hover:bg-white/60'
                         }`}
                     >
                         {tab.label}
-                        <span className={`text-[11px] font-semibold px-1.5 py-px rounded-md ${
+                        <span className={`text-[11px] font-semibold px-1.5 py-px rounded-full ${
                             activeTab === tab.key
-                                ? 'bg-brand-50 text-brand-600'
-                                : 'bg-surface-100 text-gray-400'
+                                ? 'bg-white/20 text-white'
+                                : 'bg-surface-200 text-gray-400'
                         }`}>
                             {tab.count}
                         </span>
@@ -73,19 +73,19 @@ export function MatchResultsGrid({
                         <Download className="w-3.5 h-3.5" />
                         CSV
                     </button>
-                    <div className="flex items-center gap-0.5 bg-surface-100 rounded-lg p-0.5">
+                    <div className="flex items-center gap-0.5 bg-surface-100 rounded-full p-0.5">
                         <button
                             onClick={() => setSortBy('score')}
-                            className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                                sortBy === 'score' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                            className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer ${
+                                sortBy === 'score' ? 'bg-brand-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
                             }`}
                         >
                             Score
                         </button>
                         <button
                             onClick={() => setSortBy('latest')}
-                            className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                                sortBy === 'latest' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                            className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer ${
+                                sortBy === 'latest' ? 'bg-brand-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
                             }`}
                         >
                             Latest
@@ -134,17 +134,20 @@ export function MatchResultsGrid({
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="sticky top-16 z-40 bg-brand-600 text-white rounded-xl px-5 py-3 shadow-lg flex items-center gap-4"
+                        className="sticky top-16 z-40 bg-flow-gradient text-white rounded-2xl px-5 py-3 shadow-glow flex items-center gap-4"
                     >
                         <div className="relative">
                             <div className="w-7 h-7 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                             <Sparkles className="w-3 h-3 text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium">AI Deep Analysis...</div>
-                            <div className="text-xs text-white/60">Batch {deepAnalysisProgress.current}/{deepAnalysisProgress.total}</div>
+                            <div className="text-sm font-semibold">AI Deep Analysis...</div>
+                            <div className="w-full bg-white/20 rounded-full h-1.5 mt-1.5">
+                                <div className="bg-white rounded-full h-1.5 transition-all duration-500" style={{ width: `${Math.round((deepAnalysisProgress.current / deepAnalysisProgress.total) * 100)}%` }} />
+                            </div>
+                            <div className="text-xs text-white/60 mt-1">Batch {deepAnalysisProgress.current}/{deepAnalysisProgress.total}</div>
                         </div>
-                        <div className="text-xs font-mono bg-white/20 rounded-md px-2 py-0.5">
+                        <div className="text-xs font-mono bg-white/20 rounded-full px-2.5 py-0.5">
                             {deepAnalysisProgress.current}/{deepAnalysisProgress.total}
                         </div>
                     </motion.div>
@@ -155,15 +158,16 @@ export function MatchResultsGrid({
             {displayedJobs.length === 0 && !isMatching && !searchError && (
                 <div className="space-y-5 mt-2 relative z-10">
                     {/* Hero card */}
-                    <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-violet-50 rounded-2xl border border-indigo-100/60 p-8 text-center shadow-sm">
-                        {/* Decorative blobs */}
-                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-indigo-200/30 to-violet-200/20 rounded-full blur-2xl pointer-events-none" />
-                        <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-tr from-teal-200/20 to-sky-200/15 rounded-full blur-2xl pointer-events-none" />
+                    <div className="relative overflow-hidden glass-panel rounded-2xl p-8 text-center">
+                        {/* Flow-gradient background element */}
+                        <div className="absolute inset-x-0 top-0 h-1.5 bg-flow-gradient" />
+                        <div className="absolute -top-16 -right-16 w-48 h-48 bg-flow-gradient opacity-10 rounded-full blur-3xl pointer-events-none" />
+                        <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-flow-gradient opacity-[0.07] rounded-full blur-3xl pointer-events-none" />
                         <div className="relative">
-                            <div className="w-14 h-14 bg-gradient-to-br from-indigo-100 to-violet-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
-                                <Search className="w-7 h-7 text-indigo-600" />
+                            <div className="w-14 h-14 bg-flow-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow">
+                                <Search className="w-7 h-7 text-white" />
                             </div>
-                            <h2 className="text-xl font-bold text-gray-900 mb-2">Ready to find your next role</h2>
+                            <h2 className="font-headline text-xl font-bold text-gray-900 mb-2">Ready to find your next role</h2>
                             <p className="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">
                                 Upload your resume on the left, set your preferences, and hit Scan. Midas will score thousands of live jobs against your profile in under a minute.
                             </p>

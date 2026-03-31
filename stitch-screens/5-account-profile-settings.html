@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Midas Match | Settings &amp; Account</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "outline": "#777587",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#576171",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#dce2f3",
+                        "on-primary-fixed": "#0f0069",
+                        "on-surface": "#151c27",
+                        "surface-container-highest": "#dce2f3",
+                        "on-tertiary-fixed-variant": "#3d4756",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2a313d",
+                        "on-secondary-fixed-variant": "#5a00c6",
+                        "primary": "#3525cd",
+                        "primary-container": "#4f46e5",
+                        "surface-bright": "#f9f9ff",
+                        "on-surface-variant": "#464555",
+                        "on-tertiary-fixed": "#121c2a",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "tertiary-fixed-dim": "#bdc7d9",
+                        "surface-container-low": "#f0f3ff",
+                        "on-secondary-fixed": "#25005a",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-tertiary-container": "#d2dcef",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#fffbff",
+                        "inverse-on-surface": "#ebf1ff",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#4d44e3",
+                        "secondary": "#712ae2",
+                        "on-primary-container": "#dad7ff",
+                        "inverse-primary": "#c3c0ff",
+                        "tertiary-fixed": "#d9e3f6",
+                        "outline-variant": "#c7c4d8",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#d2bbff",
+                        "surface": "#f9f9ff",
+                        "on-background": "#151c27",
+                        "background": "#f9f9ff",
+                        "primary-fixed": "#e2dfff",
+                        "secondary-fixed": "#eaddff",
+                        "surface-dim": "#d3daea",
+                        "tertiary": "#3f4959",
+                        "secondary-container": "#8a4cfc",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#e7eefe",
+                        "surface-container-high": "#e2e8f8"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<header class="w-full sticky top-0 z-50 bg-white/70 backdrop-blur-xl shadow-sm font-['Plus_Jakarta_Sans'] antialiased flex justify-between items-center px-6 py-3 border-b border-slate-100">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-slate-900">Midas Match</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-slate-500 hover:text-slate-900 transition-colors" href="#">Dashboard</a>
+<a class="text-slate-500 hover:text-slate-900 transition-colors" href="#">Analytics</a>
+<a class="text-slate-500 hover:text-slate-900 transition-colors" href="#">Matches</a>
+<a class="text-indigo-600 font-semibold border-b-2 border-indigo-600 pb-1" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-slate-100/50 rounded-lg active:scale-95 transition-all">
+<span class="material-symbols-outlined text-slate-600">notifications</span>
+</button>
+<button class="p-2 hover:bg-slate-100/50 rounded-lg active:scale-95 transition-all">
+<span class="material-symbols-outlined text-indigo-600">bolt</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden bg-slate-200">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="Professional user portrait with soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcSI75G0JtNRR69mnfTwStlm48szWKtAmaQUextxZOTxPdLE0VvNVAJfWMQcw2L--XfIP7aJMuwRfcGorNYxaLMeGWxfvSxQmlRU5HamztEFBI9OqnsDwPodaC36TeRn8nMrLEQmP32h7AyUMcsSM51e9qlycRRezWezo_l5D1dBUALQTXntbk5CdOaRtDt5LvBT0L1YQS89FEPWeZhFEZICtG6FGIk0iYdqbTdB0-hUqSsYSw_SYCGfR0jcj811y-HzgQxneY2W6a"/>
+</div>
+</div>
+</header>
+<div class="flex max-w-[1600px] mx-auto relative">
+<!-- SideNavBar (Shared Component) -->
+<aside class="hidden lg:flex flex-col p-4 gap-2 h-[calc(100vh-64px)] w-64 sticky top-16 bg-slate-50 overflow-y-auto font-['Plus_Jakarta_Sans'] text-sm font-medium">
+<div class="mb-6 px-4 py-2">
+<h3 class="text-lg font-bold text-indigo-600">Premium Account</h3>
+<p class="text-xs text-slate-500">Managing your AI Match profile</p>
+</div>
+<a class="flex items-center gap-3 bg-white text-indigo-600 rounded-full px-4 py-2.5 shadow-sm hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">person</span> Account Overview
+            </a>
+<a class="flex items-center gap-3 text-slate-500 px-4 py-2.5 hover:bg-slate-200/50 rounded-full transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">stars</span> Subscription
+            </a>
+<a class="flex items-center gap-3 text-slate-500 px-4 py-2.5 hover:bg-slate-200/50 rounded-full transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">shield</span> Security
+            </a>
+<a class="flex items-center gap-3 text-slate-500 px-4 py-2.5 hover:bg-slate-200/50 rounded-full transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">tune</span> Preferences
+            </a>
+<a class="flex items-center gap-3 text-slate-500 px-4 py-2.5 hover:bg-slate-200/50 rounded-full transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">link</span> Linked Accounts
+            </a>
+<a class="flex items-center gap-3 text-slate-500 px-4 py-2.5 hover:bg-slate-200/50 rounded-full transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">payments</span> Billing
+            </a>
+<div class="mt-auto pt-6 border-t border-slate-200">
+<button class="w-full bg-indigo-600 text-white rounded-full py-2.5 mb-4 hover:bg-indigo-700 transition-colors">Upgrade Plan</button>
+<a class="flex items-center gap-3 text-slate-500 px-4 py-2.5 hover:bg-slate-200/50 rounded-full" href="#">
+<span class="material-symbols-outlined">help_outline</span> Help Center
+                </a>
+<a class="flex items-center gap-3 text-slate-500 px-4 py-2.5 hover:bg-slate-200/50 rounded-full" href="#">
+<span class="material-symbols-outlined">logout</span> Sign Out
+                </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 p-6 md:p-12 lg:p-16 space-y-16">
+<!-- Atmospheric Blurs -->
+<div class="fixed top-1/4 right-0 -z-10 w-[500px] h-[500px] bg-secondary/10 blur-[120px] rounded-full"></div>
+<div class="fixed bottom-1/4 left-1/4 -z-10 w-[400px] h-[400px] bg-primary/5 blur-[100px] rounded-full"></div>
+<!-- Header Section -->
+<section class="max-w-4xl">
+<h1 class="text-5xl md:text-6xl font-extrabold tracking-tight text-on-surface mb-4">Account Settings</h1>
+<p class="text-xl text-on-surface-variant leading-relaxed">Refine your AI-matching parameters and manage your professional identity for the Midas Flux network.</p>
+</section>
+<!-- Grid Layout for Settings -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Profile & Skills (Column 1) -->
+<div class="lg:col-span-8 space-y-12">
+<!-- Profile Section -->
+<div class="glass-panel p-8 rounded-lg shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-2xl font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">badge</span>
+                                Profile Section
+                            </h2>
+<button class="bg-primary-container text-white px-6 py-2.5 rounded-full font-medium active:scale-95 transition-all">Save Profile</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-1">
+<label class="label-md text-[0.75rem] font-bold uppercase tracking-wider text-outline">Full Name</label>
+<input class="w-full bg-surface-container-low border-none rounded-DEFAULT focus:ring-2 focus:ring-primary/20 py-3 px-4" type="text" value="Alexander Sterling"/>
+</div>
+<div class="space-y-1">
+<label class="label-md text-[0.75rem] font-bold uppercase tracking-wider text-outline">Job Title</label>
+<input class="w-full bg-surface-container-low border-none rounded-DEFAULT focus:ring-2 focus:ring-primary/20 py-3 px-4" type="text" value="Principal AI Architect"/>
+</div>
+<div class="space-y-1">
+<label class="label-md text-[0.75rem] font-bold uppercase tracking-wider text-outline">Experience</label>
+<select class="w-full bg-surface-container-low border-none rounded-DEFAULT focus:ring-2 focus:ring-primary/20 py-3 px-4">
+<option>10+ Years</option>
+<option>5-10 Years</option>
+<option>1-5 Years</option>
+</select>
+</div>
+<div class="space-y-1">
+<label class="label-md text-[0.75rem] font-bold uppercase tracking-wider text-outline">Industry</label>
+<input class="w-full bg-surface-container-low border-none rounded-DEFAULT focus:ring-2 focus:ring-primary/20 py-3 px-4" type="text" value="Financial Technology"/>
+</div>
+<div class="md:col-span-2 space-y-1">
+<label class="label-md text-[0.75rem] font-bold uppercase tracking-wider text-outline">What I Do</label>
+<textarea class="w-full bg-surface-container-low border-none rounded-DEFAULT focus:ring-2 focus:ring-primary/20 py-3 px-4 resize-none" rows="4">Architecting next-generation autonomous trading agents and high-frequency data pipelines for global market matching.</textarea>
+</div>
+</div>
+</div>
+<!-- Skill Management -->
+<div class="glass-panel p-8 rounded-lg shadow-sm">
+<h2 class="text-2xl font-bold flex items-center gap-2 mb-8">
+<span class="material-symbols-outlined text-secondary">psychology</span>
+                            Skill Management
+                        </h2>
+<div class="flex flex-wrap gap-3 mb-8">
+<div class="flex items-center gap-2 bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full shadow-sm">
+<span class="text-sm font-semibold">Neural Architectures</span>
+<button class="material-symbols-outlined text-sm leading-none">close</button>
+</div>
+<div class="flex items-center gap-2 bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full shadow-sm">
+<span class="text-sm font-semibold">Rust Optimization</span>
+<button class="material-symbols-outlined text-sm leading-none">close</button>
+</div>
+<div class="flex items-center gap-2 bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full shadow-sm">
+<span class="text-sm font-semibold">Market Analysis AI</span>
+<button class="material-symbols-outlined text-sm leading-none">close</button>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-highest text-on-surface px-4 py-2 rounded-full border border-outline-variant/20">
+<span class="text-sm font-semibold">Strategic Lead</span>
+<button class="material-symbols-outlined text-sm leading-none">close</button>
+</div>
+<button class="flex items-center gap-2 bg-white text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-lg">add</span>
+<span class="text-sm font-semibold">Add Skill</span>
+</button>
+</div>
+<div class="p-6 bg-surface-container-low rounded-lg border border-dashed border-outline-variant/40 text-center">
+<p class="text-on-surface-variant italic">AI Insight: Adding "Distributed Systems" would increase your match score by 14%.</p>
+</div>
+</div>
+<!-- Search Preferences -->
+<div class="glass-panel p-8 rounded-lg shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-2xl font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">travel_explore</span>
+                                Search Preferences
+                            </h2>
+<button class="bg-primary-container text-white px-6 py-2.5 rounded-full font-medium active:scale-95 transition-all">Save Preferences</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="space-y-1">
+<label class="label-md text-[0.75rem] font-bold uppercase tracking-wider text-outline">Country</label>
+<select class="w-full bg-surface-container-low border-none rounded-DEFAULT focus:ring-2 focus:ring-primary/20 py-3 px-4">
+<option>United States</option>
+<option>United Kingdom</option>
+<option>Germany</option>
+</select>
+</div>
+<div class="space-y-1">
+<label class="label-md text-[0.75rem] font-bold uppercase tracking-wider text-outline">State / Region</label>
+<input class="w-full bg-surface-container-low border-none rounded-DEFAULT focus:ring-2 focus:ring-primary/20 py-3 px-4" placeholder="California" type="text"/>
+</div>
+<div class="space-y-1">
+<label class="label-md text-[0.75rem] font-bold uppercase tracking-wider text-outline">City</label>
+<input class="w-full bg-surface-container-low border-none rounded-DEFAULT focus:ring-2 focus:ring-primary/20 py-3 px-4" placeholder="Palo Alto" type="text"/>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">distance</span>
+<div>
+<p class="font-bold">Remote Only</p>
+<p class="text-sm text-on-surface-variant">Prioritize distributed-first organizations</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- Side Info Panels (Column 2) -->
+<div class="lg:col-span-4 space-y-8">
+<!-- Account Section Card -->
+<div class="bg-primary text-white p-8 rounded-lg shadow-xl relative overflow-hidden">
+<!-- Card Glow Decoration -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl rounded-full translate-x-16 -translate-y-16"></div>
+<h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined">account_circle</span>
+                            Account Summary
+                        </h3>
+<div class="space-y-6">
+<div>
+<p class="text-[0.7rem] uppercase tracking-widest text-primary-fixed-dim opacity-70 mb-1">Authenticated Email</p>
+<p class="text-lg font-medium">a.sterling@midasflux.ai</p>
+</div>
+<div>
+<p class="text-[0.7rem] uppercase tracking-widest text-primary-fixed-dim opacity-70 mb-1">Account Name</p>
+<p class="text-lg font-medium">Sterling_Vault_01</p>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-white/10 p-4 rounded-lg backdrop-blur-md">
+<p class="text-[0.65rem] uppercase tracking-widest text-primary-fixed-dim opacity-70">Tokens</p>
+<p class="text-2xl font-bold">1,240</p>
+</div>
+<div class="bg-white/10 p-4 rounded-lg backdrop-blur-md">
+<p class="text-[0.65rem] uppercase tracking-widest text-primary-fixed-dim opacity-70">Scans Left</p>
+<p class="text-2xl font-bold">45</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-8 py-3 bg-white text-primary font-bold rounded-full active:scale-95 transition-all">Purchase More Tokens</button>
+</div>
+<!-- Data & Privacy Bento -->
+<div class="space-y-4">
+<h3 class="text-lg font-bold px-2">Data &amp; Privacy</h3>
+<div class="group cursor-pointer glass-panel p-6 rounded-lg border border-transparent hover:border-primary/20 transition-all">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-low rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">file_download</span>
+</div>
+<div>
+<p class="font-bold">Export My Data</p>
+<p class="text-xs text-on-surface-variant">Download your full match history</p>
+</div>
+</div>
+</div>
+<div class="group cursor-pointer glass-panel p-6 rounded-lg border border-transparent hover:border-error/20 transition-all">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-error-container text-error rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">delete_forever</span>
+</div>
+<div>
+<p class="font-bold">Delete Resume Data</p>
+<p class="text-xs text-on-surface-variant">Permanently wipe indexed records</p>
+</div>
+</div>
+</div>
+<div class="group cursor-pointer glass-panel p-6 rounded-lg border border-transparent hover:border-primary/20 transition-all">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-low rounded-full flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">policy</span>
+</div>
+<div>
+<p class="font-bold">Privacy Policy</p>
+<p class="text-xs text-on-surface-variant">Updated May 2026</p>
+</div>
+<span class="material-symbols-outlined ml-auto text-outline opacity-40 group-hover:opacity-100 transition-opacity">open_in_new</span>
+</div>
+</div>
+</div>
+<!-- Visual Accent Card -->
+<div class="rounded-lg overflow-hidden h-48 relative">
+<img class="w-full h-full object-cover" data-alt="Abstract blue and purple energy flow pattern" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCARE1Qd4J2Q3j8GVxa180V2ARU8P9eCpARuvTyJqaVHsTRupvy7el272AnV8DbvmowTmPFTn072pgP9fsmm4BuZiuf2UpQvYSUdgSVPWexzFNANBo2e05HNqDU3mzXBe5t1kyE7YqAv84B0rSsZPLVWZYOLA6OPsGiwxWRsn0LTDE6YjtrBSHphRsewE2ksJNFL51ywRC1Eoq8A3NsiCVIayKME-m1pA926nre7yyVRChYmr1RAVttcR7KhXflvjUKFDGz-B9tuHG8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent flex flex-col justify-end p-6">
+<p class="text-white font-bold leading-tight">Your data is secured by Midas Shield 2.0 Encryption.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile BottomNavBar (Shared Component) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-slate-100 flex justify-around items-center py-3 z-50">
+<a class="flex flex-col items-center gap-1 text-slate-500 text-[10px] font-medium" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+            Dashboard
+        </a>
+<a class="flex flex-col items-center gap-1 text-slate-500 text-[10px] font-medium" href="#">
+<span class="material-symbols-outlined">analytics</span>
+            Analytics
+        </a>
+<a class="flex flex-col items-center gap-1 text-slate-500 text-[10px] font-medium" href="#">
+<span class="material-symbols-outlined">hub</span>
+            Matches
+        </a>
+<a class="flex flex-col items-center gap-1 text-indigo-600 text-[10px] font-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+            Settings
+        </a>
+</nav>
+</body></html>

@@ -15,12 +15,12 @@ function PillToggle({ label, description, active, onClick, disabled }) {
             disabled={disabled}
             title={description}
             className={[
-                'text-xs px-2.5 py-1.5 rounded-lg border font-medium transition-colors duration-150 select-none cursor-pointer',
+                'text-xs px-3 py-1.5 rounded-full border font-medium transition-all duration-200 select-none cursor-pointer',
                 disabled
                     ? 'border-surface-100 bg-surface-50 text-gray-300 cursor-not-allowed'
                     : active
-                        ? 'border-brand-500 bg-brand-50 text-brand-700'
-                        : 'border-surface-200 bg-white text-gray-600 hover:border-brand-300 hover:text-brand-600',
+                        ? 'border-brand-500 bg-brand-600 text-white shadow-sm'
+                        : 'border-surface-200 bg-white text-gray-600 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600',
             ].join(' ')}
         >
             {label}
@@ -32,7 +32,7 @@ function FilterSection({ title, flagEnabled, children }) {
     return (
         <div className={flagEnabled ? '' : 'opacity-40 pointer-events-none select-none'}>
             <div className="flex items-center gap-1.5 mb-2">
-                <span className="text-[10px] tracking-widest text-gray-400 uppercase font-semibold">{title}</span>
+                <span className="font-headline text-[10px] tracking-widest text-gray-500 uppercase font-bold">{title}</span>
                 {!flagEnabled && <Lock className="w-3 h-3 text-gray-300" />}
             </div>
             {children}
@@ -49,7 +49,7 @@ export function FilterPanel({
     const masterOn = flags?.ADVANCED_FILTERS;
 
     return (
-        <div className="rounded-xl border border-surface-200 bg-white overflow-hidden">
+        <div className="glass-panel rounded-2xl overflow-hidden">
             <button
                 type="button"
                 onClick={() => setOpen(o => !o)}
@@ -59,7 +59,7 @@ export function FilterPanel({
                     <SlidersHorizontal className="w-4 h-4 text-brand-500" />
                     <span className="text-sm font-medium text-gray-900">Filters</span>
                     {isActive && masterOn && (
-                        <span className="text-[10px] font-bold bg-brand-600 text-white px-1.5 py-0.5 rounded-md">{activeCount}</span>
+                        <span className="text-[10px] font-bold bg-brand-50 text-brand-600 px-2 py-0.5 rounded-full">{activeCount}</span>
                     )}
                     {!masterOn && (
                         <span className="text-[10px] font-medium text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-md flex items-center gap-1">

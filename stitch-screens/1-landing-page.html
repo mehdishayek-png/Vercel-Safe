@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Midas Match | The Intelligent Flow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-fixed": "#0f0069",
+                        "tertiary": "#3f4959",
+                        "surface-container-low": "#f0f3ff",
+                        "on-secondary-fixed-variant": "#5a00c6",
+                        "inverse-surface": "#2a313d",
+                        "tertiary-container": "#576171",
+                        "background": "#f9f9ff",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "inverse-primary": "#c3c0ff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e2e8f8",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#e7eefe",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "primary-container": "#4f46e5",
+                        "tertiary-fixed": "#d9e3f6",
+                        "surface-container-highest": "#dce2f3",
+                        "on-tertiary-fixed": "#121c2a",
+                        "secondary": "#712ae2",
+                        "primary": "#3525cd",
+                        "surface": "#f9f9ff",
+                        "on-tertiary-fixed-variant": "#3d4756",
+                        "on-secondary-fixed": "#25005a",
+                        "on-tertiary-container": "#d2dcef",
+                        "tertiary-fixed-dim": "#bdc7d9",
+                        "outline": "#777587",
+                        "outline-variant": "#c7c4d8",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#8a4cfc",
+                        "secondary-fixed": "#eaddff",
+                        "primary-fixed": "#e2dfff",
+                        "inverse-on-surface": "#ebf1ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-background": "#151c27",
+                        "surface-tint": "#4d44e3",
+                        "on-surface": "#151c27",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#f9f9ff",
+                        "secondary-fixed-dim": "#d2bbff",
+                        "on-surface-variant": "#464555",
+                        "surface-variant": "#dce2f3",
+                        "surface-dim": "#d3daea",
+                        "on-primary-container": "#dad7ff"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .ai-pulse {
+            box-shadow: 0 0 0 0 rgba(113, 42, 226, 0.4);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(113, 42, 226, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(113, 42, 226, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(113, 42, 226, 0); }
+        }
+        .tonal-shift-surface-container-low {
+            background-color: #f0f3ff;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl font-['Plus_Jakarta_Sans'] antialiased">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-8 h-20">
+<div class="text-2xl font-bold tracking-tighter text-indigo-700 dark:text-indigo-400">Midas Match</div>
+<div class="hidden md:flex items-center space-x-10">
+<a class="text-indigo-600 dark:text-indigo-400 font-semibold border-b-2 border-indigo-600 dark:border-indigo-400 pb-1 transition-all duration-300" href="#">Solutions</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">Platform</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">Intelligence</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">About</a>
+</div>
+<div class="flex items-center space-x-6">
+<button class="text-slate-600 dark:text-slate-400 hover:text-indigo-500 transition-colors font-medium">Sign In</button>
+<button class="bg-primary-container text-on-primary px-6 py-2.5 rounded-full font-semibold hover:opacity-80 transition-all duration-300 active:scale-95">Get Started</button>
+</div>
+</div>
+</nav>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[921px] flex items-center overflow-hidden px-8">
+<div class="absolute inset-0 z-0">
+<div class="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-primary/10 rounded-full blur-[100px]"></div>
+</div>
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10 w-full">
+<div>
+<div class="inline-flex items-center px-4 py-2 rounded-full bg-surface-container-high mb-8">
+<span class="w-2 h-2 rounded-full bg-secondary ai-pulse mr-3"></span>
+<span class="text-xs font-label font-bold tracking-wider uppercase text-on-surface-variant">2026 Editorial AI Experience</span>
+</div>
+<h1 class="font-headline text-6xl md:text-7xl font-extrabold tracking-tighter leading-[1.05] text-on-background mb-8">
+                        The Midas Touch <br/>
+<span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary-container">in Job Searching.</span>
+</h1>
+<p class="text-body-lg text-on-surface-variant text-xl leading-relaxed mb-10 max-w-lg">
+                        Midas Match AI doesn't just find jobs; it orchestrates your career flow. Transform your professional trajectory with our predictive intelligence engine.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="bg-primary-container text-on-primary px-8 py-4 rounded-full text-lg font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] transition-transform active:scale-95">
+                            Start Your Evolution
+                        </button>
+<button class="flex items-center justify-center gap-2 text-on-background px-8 py-4 rounded-full text-lg font-bold hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="play_circle">play_circle</span>
+                            Watch the Flow
+                        </button>
+</div>
+</div>
+<div class="relative group">
+<div class="glass-panel border border-outline-variant/10 rounded-xl p-8 shadow-2xl relative overflow-hidden">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="bolt">bolt</span>
+</div>
+<div>
+<h4 class="font-headline font-bold">Midas Engine</h4>
+<p class="text-xs text-on-surface-variant">Scanning global opportunities...</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-2xl font-headline font-extrabold text-secondary">98%</span>
+<p class="text-[10px] font-label uppercase font-bold tracking-widest text-outline">Confidence</p>
+</div>
+</div>
+<!-- Scan Line Effect -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+<div class="w-full h-[2px] bg-secondary shadow-[0_0_15px_rgba(113,42,226,0.8)] absolute top-0 animate-[scan_4s_ease-in-out_infinite]"></div>
+</div>
+<style>
+                            @keyframes scan {
+                                0% { top: 0; opacity: 0; }
+                                20% { opacity: 1; }
+                                80% { opacity: 1; }
+                                100% { top: 100%; opacity: 0; }
+                            }
+                        </style>
+<div class="space-y-6">
+<div class="p-5 bg-surface-container-lowest rounded-lg border border-outline-variant/5 shadow-sm transform hover:-translate-y-1 transition-transform">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-xs font-bold text-secondary mb-1">STRATEGIC MATCH</p>
+<h5 class="font-headline font-bold text-lg">Product Visionary</h5>
+<p class="text-sm text-on-surface-variant">Nexus Dynamics • Remote</p>
+</div>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-bold">TOP MATCH</span>
+</div>
+</div>
+<div class="p-5 bg-surface-container-lowest rounded-lg border border-outline-variant/5 opacity-60">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-xs font-bold text-primary mb-1">GROWTH MATCH</p>
+<h5 class="font-headline font-bold text-lg">Lead Architect</h5>
+<p class="text-sm text-on-surface-variant">Stellar Systems • Zurich</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Social Proof/Logos -->
+<section class="py-16 bg-surface-container-low/50">
+<div class="max-w-7xl mx-auto px-8">
+<p class="text-center text-xs font-label font-bold uppercase tracking-widest text-outline mb-10">Empowering Talent At Industry Leaders</p>
+<div class="flex flex-wrap justify-center gap-12 md:gap-24 opacity-50 grayscale transition-all hover:grayscale-0">
+<img alt="Company Logo" class="h-8" data-alt="Modern tech company minimalist logo 1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_ybhYwQQnbfN08Ffnk9YcZ2NDCz-2MfR6hFX6gcoKN-m4FN_EsBTw6s7ZmPkFvY_KJMAvH9KR1V5PcoeZBq-pZgS0IFIcbQyXQlZAkW2-9gxb6ljgQibEUsQ4nXdbG4nmKRwXyof4g8x2URc3t9FseS53QmYqUOB2Onx8uPp1knvqxkR1fbSStpBzv7pn1sdh8MPQh_vm2U2wQcb5okcBERefD1J0GNPeAJVlXtDXhjJbbeO8LLIHfSA7aJ0erPlHZ3vxZrlOaeIP"/>
+<img alt="Company Logo" class="h-8" data-alt="Modern tech company minimalist logo 2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUO8dh69Ziuk39moCeHofQUxZAHSSjMTHQlxS3fBFePVSwLCQYwXLj9jk1sRsEK8PtL97iyXxWrZzfFsZfx-L5hhPOqdgO8tjoQmDD3saU0VFAwrlahyqTBvBYtGRCTLI48CrKT7WtBwTX7rcMwGeCJtRzKMjZuV3TspfVG-7j-IGoDUvXrbQZIovWRbkkktQcbMnZ7KOjHSwZHuxsMdDXD0rz5d_MrkT1XmAzOp9dqsAMz8IlyKS6xr-hquGjYe0A5a879nTBnVBy"/>
+<img alt="Company Logo" class="h-8" data-alt="Modern tech company minimalist logo 3" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdNtSzkCb0cDHki0BjK8gIU542e1Q8iyFf5btCtbnonrTJ2ftQZtI3GhazQDl3HDk_mccQVNIjr1-2huagsYv9D8JfdE2p-rd1tHVl6dD5onB_R5UziIKNT-omg5rwkdnE85FoqaeFjp24WsTY5NDlksSp0HQeNi8Gr54zXNmI4HvPMTYgFZHfSnY5Ce4cth2WcwdH4Rn-OiHX4sLzsJCRKpCmKGtkS27lImjBj6F4JVJVD_MlImEHs6k_70_X-jgQGpRVBS0G8_GL"/>
+<img alt="Company Logo" class="h-8" data-alt="Modern tech company minimalist logo 4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeT4p6PhoHghtHz3VsRDXtoerD1OL7gP8dph72gZlf5U5byTKH7m5L3TZqdXbffJLcFxuWETALMJBLI_wpJXP47RcMbWfHM_XvKlxYVkrg88T14_VPIdV558VlzoW_AX-irTcVMKh2s8j_akLaiMjXrnY0i8eRu8Ulsr0S6g-n7c-1yU5YBpIqxcA9MyzhmloS2x6rE4hpUsuQOKjmXKRYwRz0sSU5VL4MotmJGm8D4RIlkcF4ASUQnb9rO5kNFD0t6B3ncDug88_D"/>
+<img alt="Company Logo" class="h-8" data-alt="Modern tech company minimalist logo 5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVDFDa-jrqo7zAY5MkhDF7hC_KO9-HD95P3grPZ4G-H_DWKrbl5A99A6NdDoAcvTU2kWIpT49JKBUYBDW82TKy48oT2MYzgmh4CXtsZJT1GmjmoUMgskPjf1PwLo4jGAxtHmRlpS5gzlGA05QAcR3W8zx4qloC1smkdkMHgDX0zPkeZ0SuEN-3kZQAuQCnrAHUBX0lUgB54KQPrLdE1SMUHvW-RU0ZL2HDtDmifkhJVRuuVmZM95gI_iOafhSiSg-4BhLt_RshKvJ6"/>
+</div>
+</div>
+</section>
+<!-- How it Works: Horizontal Grid -->
+<section class="py-32 bg-surface overflow-hidden">
+<div class="max-w-7xl mx-auto px-8">
+<div class="mb-20 text-center lg:text-left">
+<h2 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight mb-4">Precision Workflow</h2>
+<p class="text-on-surface-variant text-lg max-w-2xl">Three phases of cognitive alignment between your ambition and the market.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-0 relative">
+<!-- Connector Line (Desktop) -->
+<div class="hidden md:block absolute top-12 left-0 w-full h-px bg-gradient-to-r from-transparent via-outline-variant to-transparent z-0"></div>
+<div class="relative z-10 p-8 pt-0 group">
+<div class="w-16 h-16 bg-primary-container text-on-primary rounded-full flex items-center justify-center mb-10 shadow-lg group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl" data-icon="neurology">neurology</span>
+</div>
+<h3 class="font-headline text-2xl font-bold mb-4">01. Cognitive Sync</h3>
+<p class="text-on-surface-variant leading-relaxed">Our AI analyzes your latent skills, personality traits, and career goals to build a unique professional profile.</p>
+</div>
+<div class="relative z-10 p-8 pt-0 group">
+<div class="w-16 h-16 bg-secondary text-on-secondary rounded-full flex items-center justify-center mb-10 shadow-lg group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl" data-icon="hub">hub</span>
+</div>
+<h3 class="font-headline text-2xl font-bold mb-4">02. Market Pulsing</h3>
+<p class="text-on-surface-variant leading-relaxed">Continuous scanning of thousands of high-tier roles, filtering for those that match your unique trajectory DNA.</p>
+</div>
+<div class="relative z-10 p-8 pt-0 group">
+<div class="w-16 h-16 bg-tertiary-container text-on-tertiary rounded-full flex items-center justify-center mb-10 shadow-lg group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl" data-icon="verified_user">verified_user</span>
+</div>
+<h3 class="font-headline text-2xl font-bold mb-4">03. Smart Intro</h3>
+<p class="text-on-surface-variant leading-relaxed">Facilitated introductions that bypass traditional recruiters, placing your profile directly on the decision-maker's desk.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Feature Grid (Bento Style) -->
+<section class="py-32 bg-surface-container-low">
+<div class="max-w-7xl mx-auto px-8">
+<div class="mb-20">
+<span class="text-xs font-label font-bold tracking-[0.2em] text-primary uppercase block mb-4">Platform Capabilities</span>
+<h2 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight">Engineered for Excellence</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-6 md:grid-rows-2 gap-8 h-auto">
+<!-- Big Card 1 -->
+<div class="md:col-span-3 md:row-span-1 bg-surface-container-lowest p-10 rounded-lg flex flex-col justify-between group hover:shadow-xl transition-shadow">
+<div>
+<span class="material-symbols-outlined text-secondary text-4xl mb-6" data-icon="auto_awesome">auto_awesome</span>
+<h3 class="font-headline text-2xl font-bold mb-3">AI Resume Alchemy</h3>
+<p class="text-on-surface-variant leading-relaxed">Dynamic optimization that reformats your experience for each specific high-tier opportunity.</p>
+</div>
+</div>
+<!-- Small Card 1 -->
+<div class="md:col-span-3 md:row-span-1 bg-surface-container-lowest p-10 rounded-lg group hover:shadow-xl transition-shadow">
+<span class="material-symbols-outlined text-primary text-4xl mb-6" data-icon="insights">insights</span>
+<h3 class="font-headline text-2xl font-bold mb-3">Real-time Salary Intel</h3>
+<p class="text-on-surface-variant leading-relaxed">Proprietary data on compensation benchmarks for elite roles in the tech ecosystem.</p>
+</div>
+<!-- Small Card 2 -->
+<div class="md:col-span-2 md:row-span-1 bg-surface-container-lowest p-10 rounded-lg group hover:shadow-xl transition-shadow">
+<span class="material-symbols-outlined text-tertiary text-4xl mb-6" data-icon="support_agent">support_agent</span>
+<h3 class="font-headline text-xl font-bold mb-3">24/7 Career Concierge</h3>
+<p class="text-on-surface-variant text-sm">Automated scheduling and follow-ups handled by your AI agent.</p>
+</div>
+<!-- Small Card 3 -->
+<div class="md:col-span-2 md:row-span-1 bg-surface-container-lowest p-10 rounded-lg group hover:shadow-xl transition-shadow">
+<span class="material-symbols-outlined text-error text-4xl mb-6" data-icon="lock">lock</span>
+<h3 class="font-headline text-xl font-bold mb-3">Stealth Mode</h3>
+<p class="text-on-surface-variant text-sm">Advanced privacy shields that hide your profile from your current employer's network.</p>
+</div>
+<!-- Small Card 4 -->
+<div class="md:col-span-2 md:row-span-1 bg-surface-container-lowest p-10 rounded-lg group hover:shadow-xl transition-shadow">
+<span class="material-symbols-outlined text-on-secondary-fixed-variant text-4xl mb-6" data-icon="model_training">model_training</span>
+<h3 class="font-headline text-xl font-bold mb-3">Interview Sim</h3>
+<p class="text-on-surface-variant text-sm">VR-ready AI coaching sessions tailored to the specific company's interview style.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Final Conversion Point (High Contrast Dark Mode) -->
+<section class="py-32 bg-on-background text-surface relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-secondary/10 opacity-50"></div>
+<div class="max-w-7xl mx-auto px-8 relative z-10 text-center">
+<h2 class="font-headline text-5xl md:text-6xl font-extrabold tracking-tighter mb-8">Ready for the Midas Touch?</h2>
+<p class="text-surface-container-high text-xl max-w-2xl mx-auto mb-12 opacity-80 leading-relaxed">Join the top 1% of talent using intelligent flow to navigate the complex landscape of 2026's job market.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-6">
+<button class="bg-primary-container text-on-primary px-10 py-5 rounded-full text-xl font-bold hover:scale-[1.05] transition-transform shadow-2xl shadow-primary/40">
+                        Unlock Your Potential
+                    </button>
+<button class="border-2 border-surface-container-highest/30 text-surface-container-lowest px-10 py-5 rounded-full text-xl font-bold hover:bg-surface/10 transition-colors">
+                        Enterprise Solutions
+                    </button>
+</div>
+<p class="mt-12 text-sm text-surface-container-high/60">No credit card required. Free 14-day premium intelligence trial.</p>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-50 dark:bg-slate-900 w-full border-t-0 font-['Inter'] text-sm leading-relaxed">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 py-16 max-w-7xl mx-auto">
+<div class="mb-8 md:mb-0">
+<div class="text-lg font-bold text-slate-900 dark:text-white mb-2">Midas Match AI</div>
+<div class="text-slate-500 dark:text-slate-500 max-w-xs">© 2026 Midas Match AI. Built for the Intelligent Flow.</div>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-slate-500 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors" href="#">Privacy Policy</a>
+<a class="text-slate-500 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors" href="#">Terms of Service</a>
+<a class="text-slate-500 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors" href="#">AI Ethics</a>
+<a class="text-slate-500 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors" href="#">Cookie Settings</a>
+</div>
+<div class="flex gap-4 mt-8 md:mt-0">
+<span class="material-symbols-outlined text-slate-400 hover:text-primary transition-colors cursor-pointer" data-icon="share">share</span>
+<span class="material-symbols-outlined text-slate-400 hover:text-primary transition-colors cursor-pointer" data-icon="forum">forum</span>
+</div>
+</div>
+</footer>
+</body></html>
