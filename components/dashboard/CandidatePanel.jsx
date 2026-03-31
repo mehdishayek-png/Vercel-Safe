@@ -7,7 +7,7 @@ export function CandidatePanel({
     return (
         <>
             {/* Identity */}
-            <div className="glass-panel rounded-[2rem] border border-white/40 p-5">
+            <div className="glass-panel rounded-[2rem] border border-transparent p-5">
                 <div className="text-[10px] font-semibold tracking-widest text-gray-400 uppercase mb-1">Candidate</div>
                 <div className="font-headline text-lg font-bold text-gray-900 mb-2">{profile.name}</div>
                 <div className="text-[11px] font-semibold tracking-widest text-gray-400 uppercase mb-1.5">Target Role</div>
@@ -36,7 +36,7 @@ export function CandidatePanel({
             </div>
 
             {/* Skills */}
-            <div className="glass-panel rounded-[2rem] border border-white/40 p-5">
+            <div className="glass-panel rounded-[2rem] border border-transparent p-5">
                 <div className="font-headline text-[10px] font-bold tracking-widest text-gray-500 uppercase mb-3">Skills</div>
                 <div className="flex flex-wrap gap-1.5 mb-3 max-h-36 overflow-y-auto">
                     {profile.skills.map((skill) => (

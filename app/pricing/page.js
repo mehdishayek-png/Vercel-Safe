@@ -48,8 +48,8 @@ export default function PricingPage() {
 
     return (
         <main
-            className="min-h-screen bg-white py-16 px-4"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            className="min-h-screen bg-surface-50 py-16 px-4"
+            
         >
             <div className="max-w-5xl mx-auto">
                 <a
@@ -101,7 +101,7 @@ export default function PricingPage() {
                                     className="flex items-start gap-2 text-sm text-gray-600"
                                 >
                                     <svg
-                                        className="w-5 h-5 text-green-500 shrink-0 mt-0.5"
+                                        className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5"
                                         fill="none"
                                         stroke="currentColor"
                                         strokeWidth="2"

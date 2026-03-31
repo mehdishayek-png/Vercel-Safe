@@ -87,8 +87,8 @@ export default function FAQPage() {
 
     return (
         <main
-            className="min-h-screen bg-white py-16 px-4"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            className="min-h-screen bg-surface-50 py-16 px-4"
+            
         >
             <div className="max-w-3xl mx-auto">
                 <a

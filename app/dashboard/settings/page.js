@@ -22,7 +22,7 @@ function Toast({ message, onClose }) {
 
 function GlassCard({ children, className = '' }) {
     return (
-        <div className={`glass-panel bg-white/80 backdrop-blur-xl dark:bg-[#1a1d27]/80 rounded-2xl shadow-glass ${className}`}>
+        <div className={`glass-panel backdrop-blur-xl dark:bg-[#1a1d27]/80 rounded-2xl shadow-glass ${className}`}>
             {children}
         </div>
     );

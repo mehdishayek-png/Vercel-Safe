@@ -158,7 +158,7 @@ export function MatchResultsGrid({
             {displayedJobs.length === 0 && !isMatching && !searchError && (
                 <div className="space-y-5 mt-2 relative z-10">
                     {/* Hero card */}
-                    <div className="relative overflow-hidden glass-panel rounded-[2rem] border border-white/40 p-8 text-center">
+                    <div className="relative overflow-hidden glass-panel rounded-[2rem] border border-transparent p-8 text-center">
                         {/* Flow-gradient background element */}
                         <div className="absolute inset-x-0 top-0 h-1.5 bg-flow-gradient" />
                         <div className="absolute -top-16 -right-16 w-48 h-48 bg-flow-gradient opacity-10 rounded-full blur-3xl pointer-events-none" />
@@ -296,7 +296,7 @@ function CompanyGroupHeader({ company, jobs, isOpen, onToggle }) {
     return (
         <button
             onClick={onToggle}
-            className="w-full flex items-center gap-3 p-3 px-4 glass-panel dark:bg-slate-950/70 border border-white/40 dark:border-white/10 rounded-[2rem] hover:border-brand-200 transition-all cursor-pointer"
+            className="w-full flex items-center gap-3 p-3 px-4 glass-panel dark:bg-slate-950/70 border border-transparent dark:border-white/10 rounded-[2rem] hover:border-brand-200 transition-all cursor-pointer"
         >
             <CompanyLogo company={company} size={28} colorIndex={0} />
             <div className="flex-1 min-w-0 text-left">

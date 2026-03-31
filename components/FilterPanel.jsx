@@ -49,7 +49,7 @@ export function FilterPanel({
     const masterOn = flags?.ADVANCED_FILTERS;
 
     return (
-        <div className="glass-panel rounded-[2rem] overflow-hidden border border-white/40">
+        <div className="glass-panel rounded-[2rem] overflow-hidden border border-transparent">
             <button
                 type="button"
                 onClick={() => setOpen(o => !o)}

@@ -31,7 +31,7 @@ export function ScanControls({
     findJobs, onReset,
 }) {
     return (
-        <div className="glass-panel rounded-[2rem] border border-white/40 p-5 space-y-5">
+        <div className="glass-panel rounded-[2rem] border border-transparent p-5 space-y-5">
             {/* Experience */}
             <div>
                 <div className="flex justify-between items-baseline mb-2">

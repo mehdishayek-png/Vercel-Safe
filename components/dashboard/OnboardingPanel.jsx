@@ -3,7 +3,7 @@ import { Upload, Loader2, FileText, Target, Zap, TrendingUp } from 'lucide-react
 export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload }) {
     return (
         <>
-            <div className="glass-panel rounded-[2rem] overflow-hidden border border-white/40 shadow-2xl shadow-brand-500/10">
+            <div className="glass-panel rounded-[2rem] overflow-hidden border border-transparent shadow-2xl shadow-brand-500/10">
                 <div className="h-1 bg-flow-gradient" />
                 <div className="p-5">
                     <div
@@ -21,7 +21,7 @@ export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload }) {
             </div>
 
             {/* Getting Started Guide */}
-            <div className="glass-panel rounded-[2rem] p-5 border border-white/40">
+            <div className="glass-panel rounded-[2rem] p-5 border border-transparent">
                 <div className="font-headline text-[11px] font-bold tracking-widest text-gray-500 uppercase mb-4">How it works</div>
                 <div className="space-y-4">
                     <div className="flex gap-3.5 items-start">
@@ -55,7 +55,7 @@ export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload }) {
             </div>
 
             {/* Tips */}
-            <div className="glass-panel rounded-[2rem] border border-white/40 p-5">
+            <div className="glass-panel rounded-[2rem] border border-transparent p-5">
                 <div className="text-[10px] font-semibold tracking-widest text-brand-600 uppercase mb-3">Tips for best results</div>
                 <ul className="space-y-2 text-[12px] text-gray-600">
                     <li className="flex gap-2 items-start">

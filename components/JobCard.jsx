@@ -142,7 +142,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="group glass-panel dark:bg-slate-950/70 border border-white/40 dark:border-white/10 rounded-[2rem] transition-all duration-200 hover:shadow-xl"
+            className="group glass-panel dark:bg-slate-950/70 border border-transparent dark:border-white/10 rounded-[2rem] transition-all duration-200 hover:shadow-xl"
         >
             {/* Top accent line */}
             <div className={`h-[2px] rounded-t-[2rem] bg-gradient-to-r ${getMatchGradient(job.match_score)} opacity-0 group-hover:opacity-100 transition-opacity`} />

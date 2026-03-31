@@ -44,7 +44,7 @@ export function DashboardHeader({ onMenuClick }) {
                                 key={href}
                                 href={href}
                                 className={`transition-colors ${
-                                    pathname === href || pathname.startsWith(href + '/')
+                                    pathname === href || (href !== '/dashboard' && pathname.startsWith(href + '/'))
                                         ? 'text-brand-600 border-b-2 border-brand-600 pb-1'
                                         : 'text-slate-500 hover:text-brand-500'
                                 }`}

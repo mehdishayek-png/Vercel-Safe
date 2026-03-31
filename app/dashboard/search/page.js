@@ -391,7 +391,7 @@ export default function SearchPage() {
                 {profile && (
                     <button
                         onClick={() => setReadinessOpen(!readinessOpen)}
-                        className="w-full flex items-center justify-between p-2.5 px-3.5 glass-panel dark:bg-slate-950/70 rounded-[2rem] border border-white/40 dark:border-white/10 cursor-pointer hover:bg-surface-50 dark:hover:bg-[#22252f] transition-colors"
+                        className="w-full flex items-center justify-between p-2.5 px-3.5 glass-panel dark:bg-slate-950/70 rounded-[2rem] border border-transparent dark:border-white/10 cursor-pointer hover:bg-surface-50 dark:hover:bg-[#22252f] transition-colors"
                     >
                         <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-full bg-emerald-100 border-2 border-emerald-500 flex items-center justify-center">
@@ -405,7 +405,7 @@ export default function SearchPage() {
                 )}
 
                 {readinessOpen && profile && (
-                    <div className="glass-panel dark:bg-slate-950/70 rounded-[2rem] border border-white/40 dark:border-white/10 p-3 -mt-2 space-y-1">
+                    <div className="glass-panel dark:bg-slate-950/70 rounded-[2rem] border border-transparent dark:border-white/10 p-3 -mt-2 space-y-1">
                         {readinessChecks.map((check, i) => (
                             <div key={i} className="flex items-center justify-between py-1 text-[13px] text-gray-600">
                                 <div className="flex items-center gap-2">
@@ -425,7 +425,7 @@ export default function SearchPage() {
 
                 {/* What I Do — collapsible optional description for better matching */}
                 {profile && (
-                    <div className="glass-panel dark:bg-slate-950/70 rounded-[2rem] border border-white/40 dark:border-white/10 overflow-hidden">
+                    <div className="glass-panel dark:bg-slate-950/70 rounded-[2rem] border border-transparent dark:border-white/10 overflow-hidden">
                         <button
                             onClick={() => setWhatIDoOpen(!whatIDoOpen)}
                             className="w-full flex items-center justify-between p-3 px-4 cursor-pointer hover:bg-surface-50 transition-colors"
@@ -515,7 +515,7 @@ export default function SearchPage() {
                         initial={{ opacity: 0, y: 60 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 60 }}
-                        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 glass-panel dark:bg-slate-950/70 backdrop-blur-xl border border-white/40 dark:border-white/10 rounded-[2rem] px-5 py-3 shadow-elevated max-w-sm w-[85vw]"
+                        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 glass-panel dark:bg-slate-950/70 backdrop-blur-xl border border-transparent dark:border-white/10 rounded-[2rem] px-5 py-3 shadow-elevated max-w-sm w-[85vw]"
                     >
                         <div className="flex items-center gap-3">
                             <div className="relative shrink-0">

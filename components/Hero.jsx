@@ -108,7 +108,7 @@ export function Hero({ onStart, onDemo }) {
                         <div className="glass-panel rounded-2xl border border-outline-variant/10/60 p-6 md:p-8 shadow-elevated relative overflow-hidden">
                             {/* Scan line effect */}
                             <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-20">
-                                <div className="w-full h-[2px] bg-brand-500 shadow-[0_0_15px_rgba(255,126,103,0.6)] absolute top-0 animate-[scan_4s_ease-in-out_infinite]" />
+                                <div className="w-full h-[2px] bg-brand-500 shadow-[0_0_15px_rgba(113,42,226,0.6)] absolute top-0 animate-[scan_4s_ease-in-out_infinite]" />
                             </div>
                             <style jsx>{`
                                 @keyframes scan {

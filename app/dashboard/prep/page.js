@@ -28,7 +28,7 @@ function QuestionCard({ q, index }) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="glass-panel rounded-2xl border border-outline-variant/10 dark:border-slate-800/50 shadow-sm hover:shadow-card-hover transition-shadow"
+            className="glass-panel rounded-2xl border border-transparent shadow-sm hover:shadow-card-hover transition-shadow"
         >
             <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -37,8 +37,8 @@ function QuestionCard({ q, index }) {
                 <span className="text-2xl font-bold text-gray-200 dark:text-gray-700 mt-0.5 shrink-0 w-8 text-right font-headline">{String(index + 1).padStart(2, '0')}</span>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2.5">
-                        <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${colors.bg} ${colors.text} capitalize tracking-wide`}>{q.type}</span>
-                        <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${DIFFICULTY_BADGE[q.difficulty] || DIFFICULTY_BADGE.medium} capitalize tracking-wide`}>{q.difficulty}</span>
+                        <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${colors.bg} ${colors.text} uppercase tracking-wider`}>{q.type}</span>
+                        <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${DIFFICULTY_BADGE[q.difficulty] || DIFFICULTY_BADGE.medium} uppercase tracking-wider`}>{q.difficulty}</span>
                     </div>
                     <p className="text-base font-medium text-gray-900 dark:text-gray-100 leading-relaxed">{q.question}</p>
                 </div>

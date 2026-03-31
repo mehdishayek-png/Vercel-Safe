@@ -31,8 +31,8 @@ module.exports = {
           200: '#ddd6fe',
           300: '#c4b5fd',
           400: '#a78bfa',
-          500: '#8b5cf6',
-          600: '#7c3aed',
+          500: '#8a4cfc',
+          600: '#712ae2',
           700: '#6d28d9',
         },
         surface: {
