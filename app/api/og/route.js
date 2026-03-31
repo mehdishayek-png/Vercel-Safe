@@ -69,7 +69,7 @@ export async function GET() {
           </span>
           <span style={{
             fontSize: '64px', fontWeight: '900', lineHeight: 1.1, letterSpacing: '-1px',
-            background: 'linear-gradient(135deg, #4f46e5, #6366f1, #7c3aed)',
+            background: 'linear-gradient(135deg, #ff7e67, #ff9e8a, #fbbf24)',
             backgroundClip: 'text',
             color: 'transparent',
           }}>
