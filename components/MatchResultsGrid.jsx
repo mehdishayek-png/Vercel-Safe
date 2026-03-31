@@ -265,7 +265,7 @@ export function MatchResultsGrid({
                             <button
                                 key={i}
                                 onClick={() => onSuggestionClick?.(title)}
-                                className="px-3 py-1.5 text-xs font-medium bg-white dark:bg-[#1a1d27] border border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/20 hover:border-amber-300 transition-all cursor-pointer"
+                                className="px-3 py-1.5 text-xs font-medium glass-card dark:bg-slate-950/70 border border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/20 hover:border-amber-300 transition-all cursor-pointer"
                             >
                                 {title}
                             </button>
@@ -296,7 +296,7 @@ function CompanyGroupHeader({ company, jobs, isOpen, onToggle }) {
     return (
         <button
             onClick={onToggle}
-            className="w-full flex items-center gap-3 p-3 px-4 glass-panel dark:bg-[#2c1f1b]/80 border border-white/40 dark:border-white/10 rounded-[2rem] hover:border-brand-200 transition-all cursor-pointer"
+            className="w-full flex items-center gap-3 p-3 px-4 glass-panel dark:bg-slate-950/70 border border-white/40 dark:border-white/10 rounded-[2rem] hover:border-brand-200 transition-all cursor-pointer"
         >
             <CompanyLogo company={company} size={28} colorIndex={0} />
             <div className="flex-1 min-w-0 text-left">

@@ -192,7 +192,7 @@ export default function DashboardHome() {
 
             {/* Upload panel for new users */}
             {!profile && (
-                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] p-6">
+                <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 p-6">
                     <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} />
                 </div>
             )}
@@ -281,8 +281,8 @@ export default function DashboardHome() {
 
             {/* ===== SEARCH INSIGHTS ===== */}
             {profile && (
-                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
-                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140]">
+                <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-outline-variant/10 dark:border-slate-800/50">
                         <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-md bg-gradient-to-br from-accent-400 to-accent-600 flex items-center justify-center">
                                 <Brain className="w-3 h-3 text-white" />
@@ -339,7 +339,7 @@ export default function DashboardHome() {
                                         pattern: 'bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400',
                                     };
                                     return (
-                                        <div key={i} className="bg-gray-50 dark:bg-[#22252f] rounded-lg border border-gray-100 dark:border-[#2d3140] p-4">
+                                        <div key={i} className="bg-gray-50 dark:bg-slate-800/50 rounded-lg border border-outline-variant/10 dark:border-slate-800/50 p-4">
                                             <div className="flex items-start gap-3">
                                                 <div className="flex-1">
                                                     {insight.type && (
@@ -381,8 +381,8 @@ export default function DashboardHome() {
 
             {/* ===== RESUME HEALTH ===== */}
             {profile && (
-                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
-                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140]">
+                <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-outline-variant/10 dark:border-slate-800/50">
                         <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-md bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center">
                                 <ShieldCheck className="w-3 h-3 text-white" />
@@ -488,16 +488,16 @@ export default function DashboardHome() {
                                         </h4>
                                         <div className="space-y-2">
                                             {resumeHealth.wording_improvements.map((item, i) => (
-                                                <div key={i} className="border border-gray-100 dark:border-[#2d3140] rounded-lg overflow-hidden">
+                                                <div key={i} className="border border-outline-variant/10 dark:border-slate-800/50 rounded-lg overflow-hidden">
                                                     <button
                                                         onClick={() => setExpandedWording(prev => ({ ...prev, [i]: !prev[i] }))}
-                                                        className="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 dark:bg-[#22252f] hover:bg-gray-100 dark:hover:bg-[#282b36] transition-colors text-left cursor-pointer"
+                                                        className="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-gray-100 dark:hover:bg-[#282b36] transition-colors text-left cursor-pointer"
                                                     >
                                                         <span className="text-[12px] font-medium text-gray-700 dark:text-gray-300">{item.title || item.section || `Improvement ${i + 1}`}</span>
                                                         {expandedWording[i] ? <ChevronUp className="w-3.5 h-3.5 text-gray-400" /> : <ChevronDown className="w-3.5 h-3.5 text-gray-400" />}
                                                     </button>
                                                     {expandedWording[i] && (
-                                                        <div className="px-4 py-3 text-[12px] text-gray-600 dark:text-gray-400 leading-relaxed bg-white dark:bg-[#1a1d27] space-y-1.5">
+                                                        <div className="px-4 py-3 text-[12px] text-gray-600 dark:text-gray-400 leading-relaxed glass-card dark:bg-slate-950/70 space-y-1.5">
                                                             {item.current && <p><span className="font-medium text-gray-500">Current:</span> {item.current}</p>}
                                                             {item.suggested && <p><span className="font-medium text-teal-600">Suggested:</span> {item.suggested}</p>}
                                                             {item.reason && <p className="text-[11px] text-gray-400">{item.reason}</p>}
@@ -538,8 +538,8 @@ export default function DashboardHome() {
 
             {/* ===== TOP PICKS — Best from latest scan ===== */}
             {profile && (
-                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
-                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140]">
+                <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-outline-variant/10 dark:border-slate-800/50">
                         <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-md bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center">
                                 <Sparkles className="w-3 h-3 text-white" />
@@ -626,8 +626,8 @@ export default function DashboardHome() {
 
             <div className="grid grid-cols-1 lg:grid-cols-[1fr,340px] gap-5">
                 {/* Recent Applications table */}
-                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
-                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-[#2d3140]">
+                <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-outline-variant/10 dark:border-slate-800/50">
                         <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">Recent Applications</h3>
                         <Link href="/dashboard/applications" className="text-[12px] text-teal-600 hover:text-teal-700 font-medium flex items-center gap-1">
                             View all <ArrowRight className="w-3 h-3" />
@@ -680,7 +680,7 @@ export default function DashboardHome() {
                 <div className="space-y-4">
                     {/* Profile summary */}
                     {profile && (
-                        <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] p-5">
+                        <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 p-5">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="w-10 h-10 rounded-full bg-gray-900 dark:bg-gray-100 flex items-center justify-center text-white dark:text-gray-900 text-sm font-semibold">
                                     {profile.name?.charAt(0)?.toUpperCase() || 'U'}
@@ -708,8 +708,8 @@ export default function DashboardHome() {
                     )}
 
                     {/* Quick navigation */}
-                    <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
-                        <div className="px-5 py-3 border-b border-gray-100 dark:border-[#2d3140]">
+                    <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
+                        <div className="px-5 py-3 border-b border-outline-variant/10 dark:border-slate-800/50">
                             <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">Quick Actions</h3>
                         </div>
                         <div className="divide-y divide-gray-50 dark:divide-[#2d3140]">

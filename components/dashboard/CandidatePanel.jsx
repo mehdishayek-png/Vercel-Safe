@@ -52,7 +52,7 @@ export function CandidatePanel({
                         onChange={e => setNewSkill(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && handleAddSkill()}
                         placeholder="Add skill..."
-                        className="flex-1 px-3 py-2 rounded-xl border border-surface-200 text-xs text-gray-700 bg-surface-100 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all"
+                        className="flex-1 px-3 py-2 rounded-xl border border-outline-variant/10 text-xs text-gray-700 bg-surface-100 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all"
                     />
                     <button onClick={handleAddSkill} className="w-8 h-8 rounded-full bg-brand-50 hover:bg-brand-100 text-brand-600 cursor-pointer flex items-center justify-center transition-colors font-semibold">+</button>
                 </div>

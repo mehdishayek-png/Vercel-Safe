@@ -26,7 +26,7 @@ export function HowItWorks() {
     return (
         <section className="py-28 relative overflow-hidden">
             <div className="absolute inset-0 -z-10">
-                <div className="absolute inset-0 bg-white dark:bg-[#0f1117]" />
+                <div className="absolute inset-0 bg-surface-50 dark:bg-[#0f1117]" />
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-100/15 rounded-full blur-[120px]" />
                 <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent-100/10 rounded-full blur-[100px]" />
             </div>

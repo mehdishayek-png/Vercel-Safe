@@ -47,7 +47,7 @@ export function Combobox({
                 disabled={disabled}
                 className={clsx(
                     "w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg border transition-colors duration-150",
-                    "bg-white border-surface-200 text-gray-900 hover:border-brand-400",
+                    "bg-white border-outline-variant/10 text-gray-900 hover:border-brand-400",
                     "focus:outline-none focus:ring-2 focus:ring-brand-500/15 focus:border-brand-500",
                     disabled && "opacity-50 cursor-not-allowed bg-surface-50"
                 )}
@@ -65,7 +65,7 @@ export function Combobox({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 4 }}
                         transition={{ duration: 0.12 }}
-                        className="absolute z-50 w-full mt-1 bg-white border border-surface-200 rounded-lg shadow-elevated overflow-hidden"
+                        className="absolute z-50 w-full mt-1 bg-white border border-outline-variant/10 rounded-lg shadow-elevated overflow-hidden"
                     >
                         <div className="p-2 border-b border-surface-100 sticky top-0 bg-white">
                             <div className="relative">
@@ -75,7 +75,7 @@ export function Combobox({
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     placeholder={searchPlaceholder}
-                                    className="w-full bg-surface-50 border border-surface-200 rounded-lg pl-8 pr-2 py-1.5 text-xs text-gray-900 focus:outline-none focus:bg-white focus:border-brand-400 transition-colors"
+                                    className="w-full bg-surface-50 border border-outline-variant/10 rounded-lg pl-8 pr-2 py-1.5 text-xs text-gray-900 focus:outline-none focus:bg-white focus:border-brand-400 transition-colors"
                                     autoFocus
                                 />
                             </div>

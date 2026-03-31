@@ -93,7 +93,7 @@ function StatBox({ label, value, sublabel, icon: Icon, accentColor = 'teal' }) {
     };
     const iconColor = colorMap[accentColor] || colorMap.teal;
     return (
-        <div className="bg-white rounded-xl p-4 text-center border border-gray-100 hover:border-gray-200 transition-colors">
+        <div className="glass-card dark:bg-slate-950/70 rounded-xl p-4 text-center border border-outline-variant/10 hover:border-outline-variant/10 transition-colors">
             <div className="flex items-center justify-center gap-1.5 mb-1.5">
                 <div className={`w-5 h-5 rounded-md flex items-center justify-center ${iconColor}`}>
                     <Icon className="w-3 h-3" />
@@ -223,7 +223,7 @@ function SimilarJobCard({ job, index, onSave, isSaved }) {
     const accent = accentColors[index % accentColors.length];
 
     return (
-        <div className={`bg-white rounded-lg border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all p-4 border-l-[3px] ${accent}`}>
+        <div className={`glass-card dark:bg-slate-950/70 rounded-lg border border-outline-variant/10 hover:border-outline-variant/10 hover:shadow-sm transition-all p-4 border-l-[3px] ${accent}`}>
             <div className="flex items-start gap-3">
                 <CompanyLogo
                     company={job.company}
@@ -262,7 +262,7 @@ function SimilarJobCard({ job, index, onSave, isSaved }) {
             {job.heuristic_breakdown?.matches?.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2.5 ml-[44px]">
                     {job.heuristic_breakdown.matches.slice(0, 3).map((m, idx) => (
-                        <span key={idx} className="px-1.5 py-0.5 rounded text-[9px] bg-gray-50 border border-gray-100 text-gray-500 font-medium">
+                        <span key={idx} className="px-1.5 py-0.5 rounded text-[9px] bg-gray-50 border border-outline-variant/10 text-gray-500 font-medium">
                             {m.skill}
                         </span>
                     ))}
@@ -542,7 +542,7 @@ export default function JobDetailPage() {
             </button>
 
             {/* ===== HEADER CARD ===== */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
                 {/* Top accent */}
                 <div className="h-1 bg-gradient-to-r from-teal-400 via-teal-500 to-sky-500" />
 
@@ -572,7 +572,7 @@ export default function JobDetailPage() {
                                     {job.source && (
                                         <>
                                             <span className="w-px h-4 bg-gray-200" />
-                                            <span className="px-2 py-0.5 rounded-md bg-gray-50 text-gray-500 border border-gray-200 text-[11px] font-medium">
+                                            <span className="px-2 py-0.5 rounded-md bg-gray-50 text-gray-500 border border-outline-variant/10 text-[11px] font-medium">
                                                 via {job.source}
                                             </span>
                                         </>
@@ -626,7 +626,7 @@ export default function JobDetailPage() {
                     </div>
 
                     {/* Action buttons */}
-                    <div className="flex flex-wrap items-center gap-2 md:gap-3 mt-5 pt-5 border-t border-gray-100">
+                    <div className="flex flex-wrap items-center gap-2 md:gap-3 mt-5 pt-5 border-t border-outline-variant/10">
                         <button
                             onClick={() => {
                                 if (job.apply_url) window.open(job.apply_url, '_blank');
@@ -644,7 +644,7 @@ export default function JobDetailPage() {
                             className={`px-4 py-2.5 rounded-lg border text-[13px] font-medium transition-colors cursor-pointer ${
                                 isSaved
                                     ? 'bg-sky-50 border-sky-200 text-sky-600'
-                                    : 'bg-white border-gray-200 text-gray-500 hover:text-sky-600 hover:border-sky-200'
+                                    : 'glass-card dark:bg-slate-950/70 border-outline-variant/10 text-gray-500 hover:text-sky-600 hover:border-sky-200'
                             }`}
                         >
                             <Bookmark className={`w-4 h-4 inline mr-1.5 ${isSaved ? 'fill-sky-500' : ''}`} />
@@ -655,7 +655,7 @@ export default function JobDetailPage() {
                             className={`px-4 py-2.5 rounded-lg border text-[13px] font-medium transition-colors cursor-pointer ${
                                 isApplied
                                     ? 'bg-teal-50 border-teal-200 text-teal-600'
-                                    : 'bg-white border-gray-200 text-gray-500 hover:text-teal-600 hover:border-teal-200'
+                                    : 'glass-card dark:bg-slate-950/70 border-outline-variant/10 text-gray-500 hover:text-teal-600 hover:border-teal-200'
                             }`}
                         >
                             <Check className={`w-4 h-4 inline mr-1.5 ${isApplied ? 'stroke-[3]' : ''}`} />
@@ -699,8 +699,8 @@ export default function JobDetailPage() {
                     )}
 
                     {/* Job Description — FULL */}
-                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                        <div className="px-5 py-3.5 border-b border-gray-100">
+                    <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
+                        <div className="px-5 py-3.5 border-b border-outline-variant/10">
                             <h2 className="text-[13px] font-semibold text-gray-900">Job Description</h2>
                         </div>
                         <div className="px-5 py-4">
@@ -721,8 +721,8 @@ export default function JobDetailPage() {
 
                     {/* AI Analysis */}
                     {analysis && !analysis.isBlurredTeaser && (
-                        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                            <div className="px-5 py-3.5 border-b border-gray-100 flex items-center gap-2">
+                        <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
+                            <div className="px-5 py-3.5 border-b border-outline-variant/10 flex items-center gap-2">
                                 <Sparkles className="w-3.5 h-3.5 text-teal-500" />
                                 <h2 className="text-[13px] font-semibold text-gray-900">AI Analysis</h2>
                             </div>
@@ -764,20 +764,20 @@ export default function JobDetailPage() {
                                 </div>
 
                                 {/* Verdict */}
-                                <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                <div className="bg-gray-50 p-4 rounded-lg border border-outline-variant/10">
                                     <h3 className="text-gray-700 font-medium text-[12px] mb-2 flex items-center gap-1.5 uppercase tracking-wide">
                                         <Sparkles className="w-3.5 h-3.5 text-teal-500" />
                                         Verdict
                                     </h3>
                                     <p className="text-[13px] text-gray-600 leading-relaxed">{analysis.verdict}</p>
                                     {analysis.salary_estimate && (
-                                        <div className="mt-3 pt-3 border-t border-gray-200/60">
+                                        <div className="mt-3 pt-3 border-t border-outline-variant/10/60">
                                             <span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Estimated Salary </span>
                                             <span className="text-gray-900 font-semibold text-[13px] ml-1">{analysis.salary_estimate}</span>
                                         </div>
                                     )}
                                     {analysis.salary_read?.leverage_notes && (
-                                        <div className="mt-2 pt-2 border-t border-gray-200/40">
+                                        <div className="mt-2 pt-2 border-t border-outline-variant/10/40">
                                             <span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Leverage Notes </span>
                                             <p className="text-[12px] text-gray-600 mt-1 leading-relaxed">{analysis.salary_read.leverage_notes}</p>
                                         </div>
@@ -796,7 +796,7 @@ export default function JobDetailPage() {
                                                 const severityStyles = {
                                                     serious: 'bg-red-50/60 border-red-200 text-red-700',
                                                     notable: 'bg-amber-50/60 border-amber-200 text-amber-700',
-                                                    minor: 'bg-gray-50 border-gray-200 text-gray-600',
+                                                    minor: 'bg-gray-50 border-outline-variant/10 text-gray-600',
                                                 };
                                                 const badgeStyles = {
                                                     serious: 'bg-red-100 text-red-700',
@@ -855,8 +855,8 @@ export default function JobDetailPage() {
                     )}
 
                     {/* Cover Letter */}
-                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                        <div className="px-5 py-3.5 border-b border-gray-100 flex items-center gap-2">
+                    <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
+                        <div className="px-5 py-3.5 border-b border-outline-variant/10 flex items-center gap-2">
                             <FileText className="w-3.5 h-3.5 text-teal-500" />
                             <h2 className="text-[13px] font-semibold text-gray-900">Cover Letter</h2>
                         </div>
@@ -883,7 +883,7 @@ export default function JobDetailPage() {
                                             {copied ? <><CheckCheck className="w-3.5 h-3.5 text-teal-500" /> Copied!</> : <><Copy className="w-3.5 h-3.5" /> Copy</>}
                                         </button>
                                     </div>
-                                    <div className="text-[13px] text-gray-600 leading-relaxed whitespace-pre-wrap break-words bg-gray-50 rounded-lg p-4 border border-gray-100">
+                                    <div className="text-[13px] text-gray-600 leading-relaxed whitespace-pre-wrap break-words bg-gray-50 rounded-lg p-4 border border-outline-variant/10">
                                         {coverLetter}
                                     </div>
                                 </div>
@@ -892,8 +892,8 @@ export default function JobDetailPage() {
                     </div>
 
                     {/* ===== NEGOTIATION PLAYBOOK ===== */}
-                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                        <div className="px-5 py-3.5 border-b border-gray-100 flex items-center justify-between">
+                    <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
+                        <div className="px-5 py-3.5 border-b border-outline-variant/10 flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Shield className="w-3.5 h-3.5 text-accent-500" />
                                 <h2 className="text-[13px] font-semibold text-gray-900">Negotiation Playbook</h2>
@@ -923,7 +923,7 @@ export default function JobDetailPage() {
                                 <div className="space-y-4">
                                     {/* Market Context */}
                                     {negotiationData.market_context && (
-                                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                        <div className="bg-gray-50 p-4 rounded-lg border border-outline-variant/10">
                                             <h3 className="text-gray-700 font-medium text-[12px] mb-2 uppercase tracking-wide">Market Context</h3>
                                             <p className="text-[13px] text-gray-600 leading-relaxed">{negotiationData.market_context}</p>
                                         </div>
@@ -974,7 +974,7 @@ export default function JobDetailPage() {
                                             </h3>
                                             <div className="space-y-2">
                                                 {negotiationData.scripts.map((script, i) => (
-                                                    <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
+                                                    <div key={i} className="border border-outline-variant/10 rounded-lg overflow-hidden">
                                                         <button
                                                             onClick={() => toggleScript(i)}
                                                             className="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 hover:bg-gray-100 transition-colors text-left cursor-pointer"
@@ -1017,8 +1017,8 @@ export default function JobDetailPage() {
                 {/* ===== MIDDLE SIDEBAR — Relevance & Skills ===== */}
                 <div className="space-y-5">
                     {/* Relevance Breakdown */}
-                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                        <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+                    <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
+                        <div className="px-4 py-3 border-b border-outline-variant/10 flex items-center gap-2">
                             <BrainCircuit className="w-3.5 h-3.5 text-teal-500" />
                             <h2 className="text-[12px] font-semibold text-gray-900">Relevance</h2>
                         </div>
@@ -1040,8 +1040,8 @@ export default function JobDetailPage() {
                     </div>
 
                     {/* Matched Skills */}
-                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                        <div className="px-4 py-3 border-b border-gray-100">
+                    <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
+                        <div className="px-4 py-3 border-b border-outline-variant/10">
                             <h2 className="text-[12px] font-semibold text-gray-900">
                                 Matched Skills
                                 {skillCount > 0 && <span className="ml-1.5 text-teal-500 font-normal">({skillCount})</span>}
@@ -1063,14 +1063,14 @@ export default function JobDetailPage() {
 
                             {/* User's unmatched skills */}
                             {profile?.skills && profile.skills.length > 0 && matches.length > 0 && (
-                                <div className="mt-3 pt-3 border-t border-gray-100">
+                                <div className="mt-3 pt-3 border-t border-outline-variant/10">
                                     <h3 className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-2">Your Other Skills</h3>
                                     <div className="flex flex-wrap gap-1">
                                         {profile.skills
                                             .filter(s => !matches.some(m => m.skill.toLowerCase() === s.toLowerCase()))
                                             .slice(0, 10)
                                             .map((skill, i) => (
-                                                <span key={i} className="px-1.5 py-0.5 rounded text-[10px] text-gray-400 bg-gray-50 border border-gray-100">
+                                                <span key={i} className="px-1.5 py-0.5 rounded text-[10px] text-gray-400 bg-gray-50 border border-outline-variant/10">
                                                     {skill}
                                                 </span>
                                             ))}
@@ -1087,8 +1087,8 @@ export default function JobDetailPage() {
 
                     {/* Requirements (extracted) */}
                     {(requiredExp || requiredEdu) && (
-                        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                            <div className="px-4 py-3 border-b border-gray-100">
+                        <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
+                            <div className="px-4 py-3 border-b border-outline-variant/10">
                                 <h2 className="text-[12px] font-semibold text-gray-900">Requirements</h2>
                             </div>
                             <div className="px-4 py-3 space-y-2.5">
@@ -1114,7 +1114,7 @@ export default function JobDetailPage() {
 
                     {/* Apply CTA */}
                     {!isApplied && (
-                        <div className="bg-gray-50 rounded-xl border border-gray-100 p-4 text-center">
+                        <div className="bg-gray-50 rounded-xl border border-outline-variant/10 p-4 text-center">
                             <p className="text-[12px] text-gray-500 mb-3">Ready to apply?</p>
                             <button
                                 onClick={() => {
@@ -1134,8 +1134,8 @@ export default function JobDetailPage() {
 
                 {/* ===== RIGHT SIDEBAR — Similar Jobs ===== */}
                 <div className="space-y-5">
-                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                        <div className="px-4 py-3.5 border-b border-gray-100">
+                    <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
+                        <div className="px-4 py-3.5 border-b border-outline-variant/10">
                             <h2 className="text-[13px] font-semibold text-gray-900 flex items-center gap-2">
                                 <Sparkles className="w-3.5 h-3.5 text-accent-500" />
                                 While you're here
@@ -1175,8 +1175,8 @@ export default function JobDetailPage() {
                     </div>
 
                     {/* Company info card */}
-                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                        <div className="px-4 py-3 border-b border-gray-100">
+                    <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
+                        <div className="px-4 py-3 border-b border-outline-variant/10">
                             <h2 className="text-[12px] font-semibold text-gray-900">About the Company</h2>
                         </div>
                         <div className="p-4">
@@ -1203,7 +1203,7 @@ export default function JobDetailPage() {
                                 if (sameCompany.length === 0) return null;
 
                                 return (
-                                    <div className="mt-3 pt-3 border-t border-gray-100">
+                                    <div className="mt-3 pt-3 border-t border-outline-variant/10">
                                         <h4 className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-2">
                                             More from {stripHtml(job.company)}
                                         </h4>
@@ -1233,7 +1233,7 @@ export default function JobDetailPage() {
                                     href={job.apply_url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1.5 mt-3 pt-3 border-t border-gray-100 text-[12px] font-medium text-teal-600 hover:text-teal-700 transition-colors"
+                                    className="flex items-center gap-1.5 mt-3 pt-3 border-t border-outline-variant/10 text-[12px] font-medium text-teal-600 hover:text-teal-700 transition-colors"
                                 >
                                     View original listing <ExternalLink className="w-3 h-3 opacity-50" />
                                 </a>

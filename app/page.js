@@ -26,7 +26,7 @@ export default function Home() {
                 />
 
                 {/* Stats strip */}
-                <section className="py-16 bg-white dark:bg-[#1a1d27] border-y border-surface-200 dark:border-[#2d3140]">
+                <section className="py-16 bg-white dark:bg-[#1a1d27] border-y border-outline-variant/10 dark:border-slate-800/50">
                     <div className="container mx-auto px-4">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 max-w-5xl mx-auto text-center">
                             <div>

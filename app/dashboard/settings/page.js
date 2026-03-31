@@ -50,7 +50,7 @@ function TextInput({ value, onChange, placeholder, type = 'text', ...props }) {
             value={value}
             onChange={onChange}
             placeholder={placeholder}
-            className="w-full px-3.5 py-2.5 text-[13px] text-gray-900 dark:text-gray-200 bg-surface-100 dark:bg-[#22252f] border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
+            className="w-full px-3.5 py-2.5 text-[13px] text-gray-900 dark:text-gray-200 bg-surface-100 dark:bg-slate-800/50 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
             {...props}
         />
     );
@@ -61,7 +61,7 @@ function SelectInput({ value, onChange, children }) {
         <select
             value={value}
             onChange={onChange}
-            className="w-full px-3.5 py-2.5 text-[13px] text-gray-900 dark:text-gray-200 bg-surface-100 dark:bg-[#22252f] border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all appearance-none cursor-pointer"
+            className="w-full px-3.5 py-2.5 text-[13px] text-gray-900 dark:text-gray-200 bg-surface-100 dark:bg-slate-800/50 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all appearance-none cursor-pointer"
         >
             {children}
         </select>
@@ -245,7 +245,7 @@ export default function SettingsPage() {
                                             value={whatIDo}
                                             onChange={(e) => setWhatIDo(e.target.value)}
                                             placeholder="Describe what you do day-to-day in 2-3 sentences. E.g., 'I help SaaS companies onboard enterprise clients. I run QBRs, build playbooks, and reduce churn.'"
-                                            className="w-full px-3.5 py-2.5 text-[13px] text-gray-900 bg-surface-100 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all placeholder:text-gray-300 resize-none dark:bg-[#22252f] dark:text-gray-200 dark:placeholder:text-gray-600"
+                                            className="w-full px-3.5 py-2.5 text-[13px] text-gray-900 bg-surface-100 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all placeholder:text-gray-300 resize-none dark:bg-slate-800/50 dark:text-gray-200 dark:placeholder:text-gray-600"
                                             rows={3}
                                             maxLength={500}
                                         />
@@ -302,7 +302,7 @@ export default function SettingsPage() {
                                         onChange={(e) => setSkillInput(e.target.value)}
                                         onKeyDown={handleSkillKeyDown}
                                         placeholder={skills.length === 0 ? 'Type a skill and press Enter' : 'Add more skills...'}
-                                        className="w-full px-3.5 py-2.5 text-[13px] bg-surface-100 dark:bg-[#22252f] border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600 dark:text-gray-200"
+                                        className="w-full px-3.5 py-2.5 text-[13px] bg-surface-100 dark:bg-slate-800/50 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600 dark:text-gray-200"
                                     />
                                 </div>
 
@@ -364,7 +364,7 @@ export default function SettingsPage() {
                                 </div>
 
                                 {/* Remote toggle */}
-                                <div className="flex items-center justify-between py-3 px-4 bg-surface-100/60 dark:bg-[#22252f]/60 rounded-xl">
+                                <div className="flex items-center justify-between py-3 px-4 bg-surface-100/60 dark:bg-slate-800/50/60 rounded-xl">
                                     <div>
                                         <p className="text-[13px] font-semibold text-gray-700 dark:text-gray-300">Remote Only</p>
                                         <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">Only show remote positions in search results</p>
@@ -427,13 +427,13 @@ export default function SettingsPage() {
                             <div className="space-y-4">
                                 <div>
                                     <FieldLabel>Email</FieldLabel>
-                                    <div className="px-3.5 py-2.5 text-[13px] text-gray-500 dark:text-gray-400 bg-surface-100 dark:bg-[#22252f] rounded-xl">
+                                    <div className="px-3.5 py-2.5 text-[13px] text-gray-500 dark:text-gray-400 bg-surface-100 dark:bg-slate-800/50 rounded-xl">
                                         {user?.primaryEmailAddress?.emailAddress || 'Not signed in'}
                                     </div>
                                 </div>
                                 <div>
                                     <FieldLabel>Account Name</FieldLabel>
-                                    <div className="px-3.5 py-2.5 text-[13px] text-gray-500 dark:text-gray-400 bg-surface-100 dark:bg-[#22252f] rounded-xl">
+                                    <div className="px-3.5 py-2.5 text-[13px] text-gray-500 dark:text-gray-400 bg-surface-100 dark:bg-slate-800/50 rounded-xl">
                                         {user?.fullName || user?.firstName || 'Not signed in'}
                                     </div>
                                 </div>
@@ -457,7 +457,7 @@ export default function SettingsPage() {
                                             <div className="flex gap-2">
                                                 <button
                                                     onClick={() => setShowClearConfirm(false)}
-                                                    className="flex-1 px-3 py-1.5 text-[12px] font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-[#22252f] rounded-xl hover:bg-surface-50 dark:hover:bg-[#2a2d37] transition-colors cursor-pointer"
+                                                    className="flex-1 px-3 py-1.5 text-[12px] font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-slate-800/50 rounded-xl hover:bg-surface-50 dark:hover:bg-[#2a2d37] transition-colors cursor-pointer"
                                                 >
                                                     Cancel
                                                 </button>
@@ -481,7 +481,7 @@ export default function SettingsPage() {
                                 {/* Export */}
                                 <button
                                     onClick={handleExportData}
-                                    className="w-full flex items-center gap-3 p-3.5 bg-surface-50/80 dark:bg-[#22252f]/60 hover:bg-surface-100 dark:hover:bg-[#2a2d37] rounded-xl transition-all cursor-pointer group hover:translate-x-0.5"
+                                    className="w-full flex items-center gap-3 p-3.5 bg-surface-50/80 dark:bg-slate-800/50/60 hover:bg-surface-100 dark:hover:bg-[#2a2d37] rounded-xl transition-all cursor-pointer group hover:translate-x-0.5"
                                 >
                                     <div className="w-9 h-9 rounded-xl bg-accent-50 dark:bg-accent-900/20 flex items-center justify-center group-hover:bg-accent-100 dark:group-hover:bg-accent-900/30 transition-colors shrink-0">
                                         <Download className="w-4 h-4 text-accent-500" />
@@ -497,7 +497,7 @@ export default function SettingsPage() {
                                 {!showDeleteResumeConfirm ? (
                                     <button
                                         onClick={() => setShowDeleteResumeConfirm(true)}
-                                        className="w-full flex items-center gap-3 p-3.5 bg-surface-50/80 dark:bg-[#22252f]/60 hover:bg-surface-100 dark:hover:bg-[#2a2d37] rounded-xl transition-all cursor-pointer group hover:translate-x-0.5"
+                                        className="w-full flex items-center gap-3 p-3.5 bg-surface-50/80 dark:bg-slate-800/50/60 hover:bg-surface-100 dark:hover:bg-[#2a2d37] rounded-xl transition-all cursor-pointer group hover:translate-x-0.5"
                                     >
                                         <div className="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center group-hover:bg-red-100 dark:group-hover:bg-red-900/30 transition-colors shrink-0">
                                             <FileText className="w-4 h-4 text-red-400" />
@@ -517,7 +517,7 @@ export default function SettingsPage() {
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() => setShowDeleteResumeConfirm(false)}
-                                                className="flex-1 px-3 py-1.5 text-[12px] font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-[#22252f] rounded-xl hover:bg-surface-50 dark:hover:bg-[#2a2d37] transition-colors cursor-pointer"
+                                                className="flex-1 px-3 py-1.5 text-[12px] font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-slate-800/50 rounded-xl hover:bg-surface-50 dark:hover:bg-[#2a2d37] transition-colors cursor-pointer"
                                             >
                                                 Cancel
                                             </button>
@@ -534,7 +534,7 @@ export default function SettingsPage() {
                                 {/* Privacy link */}
                                 <a
                                     href="/privacy"
-                                    className="flex items-center gap-3 p-3.5 bg-surface-50/80 dark:bg-[#22252f]/60 hover:bg-surface-100 dark:hover:bg-[#2a2d37] rounded-xl transition-all group hover:translate-x-0.5"
+                                    className="flex items-center gap-3 p-3.5 bg-surface-50/80 dark:bg-slate-800/50/60 hover:bg-surface-100 dark:hover:bg-[#2a2d37] rounded-xl transition-all group hover:translate-x-0.5"
                                 >
                                     <div className="w-9 h-9 rounded-xl bg-surface-100 dark:bg-gray-800 flex items-center justify-center group-hover:bg-surface-200 dark:group-hover:bg-gray-700 transition-colors shrink-0">
                                         <Shield className="w-4 h-4 text-gray-400 dark:text-gray-500" />

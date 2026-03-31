@@ -28,7 +28,7 @@ function QuestionCard({ q, index }) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="glass-panel rounded-2xl border border-surface-200 dark:border-[#2d3140] shadow-sm hover:shadow-card-hover transition-shadow"
+            className="glass-panel rounded-2xl border border-outline-variant/10 dark:border-slate-800/50 shadow-sm hover:shadow-card-hover transition-shadow"
         >
             <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -58,7 +58,7 @@ function QuestionCard({ q, index }) {
                                 <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5">Why they ask this</p>
                                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{q.why_asked}</p>
                             </div>
-                            <div className="bg-surface-50 dark:bg-[#1a1d27] rounded-xl p-4 border border-surface-100 dark:border-[#2d3140]">
+                            <div className="bg-surface-50 dark:bg-[#1a1d27] rounded-xl p-4 border border-surface-100 dark:border-slate-800/50">
                                 <p className={`text-[11px] font-bold ${colors.text} uppercase tracking-widest mb-1.5`}>How to answer</p>
                                 <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{q.answer_framework}</p>
                             </div>
@@ -134,8 +134,8 @@ export default function InterviewPrepPage() {
 
             {/* Job Selection Grid */}
             {prepJobs.length === 0 ? (
-                <div className="glass-panel border border-surface-200 dark:border-[#2d3140] rounded-2xl p-12 text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-surface-50 dark:bg-[#22252f] flex items-center justify-center mx-auto mb-4">
+                <div className="glass-panel border border-outline-variant/10 dark:border-slate-800/50 rounded-2xl p-12 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-surface-50 dark:bg-slate-800/50 flex items-center justify-center mx-auto mb-4">
                         <BookOpen className="w-8 h-8 text-gray-300 dark:text-gray-600" />
                     </div>
                     <h3 className="text-lg font-headline font-semibold text-gray-900 dark:text-gray-100 mb-2">No jobs to prep for yet</h3>
@@ -229,7 +229,7 @@ export default function InterviewPrepPage() {
                     className="space-y-8"
                 >
                     {/* Selected Job Editorial Header */}
-                    <div className="glass-panel rounded-2xl border border-surface-200 dark:border-[#2d3140] p-6 shadow-card">
+                    <div className="glass-panel rounded-2xl border border-outline-variant/10 dark:border-slate-800/50 p-6 shadow-card">
                         <div className="flex items-start gap-5">
                             <CompanyLogo company={selectedJob.company} size={56} colorIndex={0} />
                             <div className="flex-1 min-w-0">
@@ -280,7 +280,7 @@ export default function InterviewPrepPage() {
                     <div>
                         <div className="flex items-center justify-between mb-5">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-[#22252f] flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-slate-800/50 flex items-center justify-center">
                                     <MessageSquare className="w-4 h-4 text-gray-500" />
                                 </div>
                                 <div>
@@ -288,7 +288,7 @@ export default function InterviewPrepPage() {
                                     <p className="text-xs text-gray-400 dark:text-gray-500">Click any question to reveal the answer framework</p>
                                 </div>
                             </div>
-                            <span className="text-xs font-bold text-gray-400 bg-surface-50 dark:bg-[#22252f] px-3 py-1.5 rounded-full">{(prep.questions || []).length} questions</span>
+                            <span className="text-xs font-bold text-gray-400 bg-surface-50 dark:bg-slate-800/50 px-3 py-1.5 rounded-full">{(prep.questions || []).length} questions</span>
                         </div>
                         <div className="space-y-3">
                             {(prep.questions || []).map((q, i) => (
@@ -301,13 +301,13 @@ export default function InterviewPrepPage() {
                     {prep.company_research && (
                         <div>
                             <div className="flex items-center gap-3 mb-5">
-                                <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-[#22252f] flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-slate-800/50 flex items-center justify-center">
                                     <Building2 className="w-4 h-4 text-gray-500" />
                                 </div>
                                 <h3 className="text-lg font-headline font-bold text-gray-900 dark:text-gray-100">Company Research</h3>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div className="glass-panel border border-surface-200 dark:border-[#2d3140] rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-shadow">
+                                <div className="glass-panel border border-outline-variant/10 dark:border-slate-800/50 rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-shadow">
                                     <div className="flex items-center gap-2.5 mb-4">
                                         <div className="w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-900/20 flex items-center justify-center">
                                             <Target className="w-4 h-4 text-teal-600 dark:text-teal-400" />
@@ -323,7 +323,7 @@ export default function InterviewPrepPage() {
                                         ))}
                                     </ul>
                                 </div>
-                                <div className="glass-panel border border-surface-200 dark:border-[#2d3140] rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-shadow">
+                                <div className="glass-panel border border-outline-variant/10 dark:border-slate-800/50 rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-shadow">
                                     <div className="flex items-center gap-2.5 mb-4">
                                         <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center">
                                             <Lightbulb className="w-4 h-4 text-amber-600 dark:text-amber-400" />

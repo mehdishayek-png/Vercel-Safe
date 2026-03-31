@@ -142,7 +142,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="group glass-panel dark:bg-[#2c1f1b]/80 border border-white/40 dark:border-white/10 rounded-[2rem] transition-all duration-200 hover:shadow-xl"
+            className="group glass-panel dark:bg-slate-950/70 border border-white/40 dark:border-white/10 rounded-[2rem] transition-all duration-200 hover:shadow-xl"
         >
             {/* Top accent line */}
             <div className={`h-[2px] rounded-t-[2rem] bg-gradient-to-r ${getMatchGradient(job.match_score)} opacity-0 group-hover:opacity-100 transition-opacity`} />
@@ -171,7 +171,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                 </h3>
                                 <div className="flex flex-wrap items-center gap-1.5 mt-1">
                                     {job.date_posted && (
-                                        <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-surface-50 text-gray-500 border border-surface-200 whitespace-nowrap shrink-0">
+                                        <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-surface-50 text-gray-500 border border-outline-variant/10 whitespace-nowrap shrink-0">
                                             {postedDate}
                                         </span>
                                     )}
@@ -207,7 +207,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                 {cleanLocation || 'Remote'}
                             </span>
                             <span className="w-px h-3 bg-surface-200" />
-                            <span className="px-1.5 py-0.5 rounded-md bg-surface-50 text-gray-500 border border-surface-200 text-[10px] font-medium">
+                            <span className="px-1.5 py-0.5 rounded-md bg-surface-50 text-gray-500 border border-outline-variant/10 text-[10px] font-medium">
                                 {job.source}
                             </span>
                         </div>
@@ -243,7 +243,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                     </span>
                                 ))}
                                 {job.heuristic_breakdown.matches.length > 5 && (
-                                    <span className="px-1.5 py-0.5 rounded-md text-[10px] text-gray-400 bg-gray-50 border border-gray-100">
+                                    <span className="px-1.5 py-0.5 rounded-md text-[10px] text-gray-400 bg-gray-50 border border-outline-variant/10">
                                         +{job.heuristic_breakdown.matches.length - 5}
                                     </span>
                                 )}
@@ -382,7 +382,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
 
                                         {/* Heuristic breakdown */}
                                         {!analysis.isBlurredTeaser && job.heuristic_breakdown && (
-                                            <div className="mt-3 border-t border-dashed border-surface-200 pt-3">
+                                            <div className="mt-3 border-t border-dashed border-outline-variant/10 pt-3">
                                                 <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                                                     <BrainCircuit className="w-3.5 h-3.5 text-brand-400" />
                                                     Scoring Breakdown
@@ -422,7 +422,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                                                 };
                                                                 const label = labels[key];
                                                                 if (!label) return null; // Hide neutral/irrelevant signals
-                                                                let colorClass = "bg-surface-50 text-gray-600 border-surface-200";
+                                                                let colorClass = "bg-surface-50 text-gray-600 border-outline-variant/10";
                                                                 if (numVal > 1.0) colorClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
                                                                 if (numVal < 1.0) colorClass = "bg-rose-50 text-rose-700 border-rose-200";
                                                                 return (
@@ -439,7 +439,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
 
                                         {/* Cover Letter Generator */}
                                         {!analysis.isBlurredTeaser && (
-                                            <div className="mt-3 border-t border-dashed border-surface-200 pt-3">
+                                            <div className="mt-3 border-t border-dashed border-outline-variant/10 pt-3">
                                                 {!coverLetter ? (
                                                     <button
                                                         onClick={handleCoverLetter}
@@ -453,7 +453,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                                         )}
                                                     </button>
                                                 ) : (
-                                                    <div className="bg-surface-50 rounded-lg border border-surface-200 p-3">
+                                                    <div className="bg-surface-50 rounded-lg border border-outline-variant/10 p-3">
                                                         <div className="flex items-center justify-between mb-2">
                                                             <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
                                                                 <FileText className="w-3.5 h-3.5 text-brand-400" />

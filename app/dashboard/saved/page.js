@@ -128,7 +128,7 @@ export default function SavedJobsPage() {
 
             {/* Glass Stats Bar */}
             <div className="flex flex-wrap gap-3">
-                <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl rounded-2xl border border-surface-200/60 dark:border-[#2d3140]/60 shadow-sm">
+                <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl rounded-2xl border border-outline-variant/10/60 dark:border-slate-800/50/60 shadow-sm">
                     <div className="w-8 h-8 rounded-xl bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center">
                         <Bookmark className="w-4 h-4 text-teal-500" />
                     </div>
@@ -137,7 +137,7 @@ export default function SavedJobsPage() {
                         <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">Saved</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl rounded-2xl border border-surface-200/60 dark:border-[#2d3140]/60 shadow-sm">
+                <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl rounded-2xl border border-outline-variant/10/60 dark:border-slate-800/50/60 shadow-sm">
                     <div className="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-900/30 flex items-center justify-center">
                         <CheckCircle className="w-4 h-4 text-sky-500" />
                     </div>
@@ -146,7 +146,7 @@ export default function SavedJobsPage() {
                         <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">Applied</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl rounded-2xl border border-surface-200/60 dark:border-[#2d3140]/60 shadow-sm">
+                <div className="flex items-center gap-2 px-4 py-2.5 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl rounded-2xl border border-outline-variant/10/60 dark:border-slate-800/50/60 shadow-sm">
                     <div className="w-8 h-8 rounded-xl bg-accent-50 dark:bg-accent-700/30 flex items-center justify-center">
                         <Star className="w-4 h-4 text-accent-500" />
                     </div>
@@ -159,10 +159,10 @@ export default function SavedJobsPage() {
 
             {sortedJobs.length === 0 && savedJobsData.length === 0 ? (
                 /* Empty State */
-                <div className="relative overflow-hidden bg-gradient-to-br from-teal-50 via-white to-sky-50 dark:from-[#1a1d27] dark:via-[#1a1d27] dark:to-[#1a1d27] rounded-2xl border border-surface-200/60 dark:border-[#2d3140] shadow-card p-16 text-center">
+                <div className="relative overflow-hidden bg-gradient-to-br from-teal-50 via-white to-sky-50 dark:from-[#1a1d27] dark:via-[#1a1d27] dark:to-[#1a1d27] rounded-2xl border border-outline-variant/10/60 dark:border-slate-800/50 shadow-card p-16 text-center">
                     <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-sky-500/5 dark:from-teal-500/10 dark:to-sky-500/10" />
                     <div className="relative">
-                        <div className="w-20 h-20 bg-white dark:bg-[#22252f] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg border border-surface-200/40 dark:border-[#2d3140]">
+                        <div className="w-20 h-20 bg-white dark:bg-slate-800/50 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg border border-outline-variant/10/40 dark:border-slate-800/50">
                             <Bookmark className="w-10 h-10 text-teal-400" />
                         </div>
                         <h3 className="text-xl font-headline font-semibold text-gray-900 dark:text-gray-100 mb-2">No Saved Jobs Yet</h3>
@@ -189,7 +189,7 @@ export default function SavedJobsPage() {
                                     placeholder="Search saved jobs..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-9 pr-4 py-2 w-64 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl border border-surface-200/60 dark:border-[#2d3140]/60 rounded-xl text-sm text-gray-700 dark:text-gray-300 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+                                    className="pl-9 pr-4 py-2 w-64 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl border border-outline-variant/10/60 dark:border-slate-800/50/60 rounded-xl text-sm text-gray-700 dark:text-gray-300 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
                                 />
                             </div>
                         </div>
@@ -207,7 +207,7 @@ export default function SavedJobsPage() {
                                     className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-[12px] font-medium transition-all cursor-pointer ${
                                         sortField === opt.key
                                             ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-sm'
-                                            : 'bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl text-gray-500 dark:text-gray-400 border border-surface-200/60 dark:border-[#2d3140]/60 hover:bg-gray-50 dark:hover:bg-[#22252f]'
+                                            : 'bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl text-gray-500 dark:text-gray-400 border border-outline-variant/10/60 dark:border-slate-800/50/60 hover:bg-gray-50 dark:hover:bg-[#22252f]'
                                     }`}
                                 >
                                     {opt.label}
@@ -219,7 +219,7 @@ export default function SavedJobsPage() {
                             <div className="w-px h-5 bg-gray-200 dark:bg-[#2d3140] mx-1" />
                             <button
                                 onClick={() => exportJobsToCSV(sortedJobs)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl border border-surface-200/60 dark:border-[#2d3140]/60 hover:bg-gray-50 dark:hover:bg-[#22252f] rounded-xl transition-colors cursor-pointer"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl border border-outline-variant/10/60 dark:border-slate-800/50/60 hover:bg-gray-50 dark:hover:bg-[#22252f] rounded-xl transition-colors cursor-pointer"
                             >
                                 <Download className="w-3.5 h-3.5" />
                                 Export
@@ -230,7 +230,7 @@ export default function SavedJobsPage() {
                                 className={`flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-xl transition-colors cursor-pointer ${
                                     selectedJobs.size === sortedJobs.length && sortedJobs.length > 0
                                         ? 'bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-800'
-                                        : 'text-gray-400 dark:text-gray-500 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl border border-surface-200/60 dark:border-[#2d3140]/60 hover:bg-gray-50 dark:hover:bg-[#22252f]'
+                                        : 'text-gray-400 dark:text-gray-500 bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl border border-outline-variant/10/60 dark:border-slate-800/50/60 hover:bg-gray-50 dark:hover:bg-[#22252f]'
                                 }`}
                             >
                                 <Check className="w-3.5 h-3.5" />
@@ -241,7 +241,7 @@ export default function SavedJobsPage() {
 
                     {/* No search results */}
                     {sortedJobs.length === 0 && searchQuery.trim() && (
-                        <div className="bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl rounded-2xl border border-surface-200/60 dark:border-[#2d3140]/60 shadow-card p-12 text-center">
+                        <div className="bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl rounded-2xl border border-outline-variant/10/60 dark:border-slate-800/50/60 shadow-card p-12 text-center">
                             <Search className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                             <p className="text-sm text-gray-500 dark:text-gray-400">No jobs match "{searchQuery}"</p>
                         </div>
@@ -262,7 +262,7 @@ export default function SavedJobsPage() {
                                     className={`relative bg-white/80 dark:bg-[#1a1d27]/80 backdrop-blur-xl rounded-2xl border transition-all duration-200 group hover:shadow-lg hover:-translate-y-0.5 ${
                                         isSelected
                                             ? 'border-teal-300 dark:border-teal-700 ring-2 ring-teal-500/20 shadow-md'
-                                            : 'border-surface-200/60 dark:border-[#2d3140]/60 shadow-card hover:border-surface-300 dark:hover:border-[#3d4150]'
+                                            : 'border-outline-variant/10/60 dark:border-slate-800/50/60 shadow-card hover:border-surface-300 dark:hover:border-[#3d4150]'
                                     }`}
                                 >
                                     {/* Selection checkbox */}
@@ -317,12 +317,12 @@ export default function SavedJobsPage() {
                                         {/* Meta labels */}
                                         <div className="flex flex-wrap items-center gap-2 mt-3">
                                             {job.location && (
-                                                <span className="text-[11px] text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-[#22252f] px-2 py-1 rounded-lg">
+                                                <span className="text-[11px] text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-slate-800/50 px-2 py-1 rounded-lg">
                                                     {stripHtml(job.location)}
                                                 </span>
                                             )}
                                             {job.source && (
-                                                <span className="text-[11px] text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-[#22252f] px-2 py-1 rounded-lg">
+                                                <span className="text-[11px] text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-slate-800/50 px-2 py-1 rounded-lg">
                                                     {job.source}
                                                 </span>
                                             )}
@@ -341,7 +341,7 @@ export default function SavedJobsPage() {
                                     </div>
 
                                     {/* Card Footer: Actions */}
-                                    <div className="flex items-center justify-between px-5 py-3 border-t border-surface-100/80 dark:border-[#2d3140]/60 bg-gray-50/40 dark:bg-[#13151d]/40 rounded-b-2xl">
+                                    <div className="flex items-center justify-between px-5 py-3 border-t border-surface-100/80 dark:border-slate-800/50/60 bg-gray-50/40 dark:bg-[#13151d]/40 rounded-b-2xl">
                                         <Link
                                             href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
                                             onClick={() => {
@@ -389,7 +389,7 @@ export default function SavedJobsPage() {
 
             {/* Floating Bulk Actions Bar */}
             {selectedJobs.size > 0 && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 px-6 py-3 bg-gray-900 dark:bg-[#13151d] rounded-2xl shadow-2xl border border-gray-800 dark:border-[#2d3140]">
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 px-6 py-3 bg-gray-900 dark:bg-[#13151d] rounded-2xl shadow-2xl border border-gray-800 dark:border-slate-800/50">
                     <div className="flex items-center gap-2">
                         <span className="text-[13px] text-white font-medium">
                             {selectedJobs.size} selected

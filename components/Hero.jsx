@@ -25,7 +25,7 @@ export function Hero({ onStart, onDemo }) {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5 }}
-                            className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-surface-100 border border-surface-200 mb-8"
+                            className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-surface-100 border border-outline-variant/10 mb-8"
                         >
                             <span className="relative flex h-2 w-2">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75"></span>
@@ -105,7 +105,7 @@ export function Hero({ onStart, onDemo }) {
                         transition={{ duration: 0.8, delay: 0.4 }}
                         className="relative"
                     >
-                        <div className="glass-panel rounded-2xl border border-surface-200/60 p-6 md:p-8 shadow-elevated relative overflow-hidden">
+                        <div className="glass-panel rounded-2xl border border-outline-variant/10/60 p-6 md:p-8 shadow-elevated relative overflow-hidden">
                             {/* Scan line effect */}
                             <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-20">
                                 <div className="w-full h-[2px] bg-brand-500 shadow-[0_0_15px_rgba(255,126,103,0.6)] absolute top-0 animate-[scan_4s_ease-in-out_infinite]" />
@@ -143,7 +143,7 @@ export function Hero({ onStart, onDemo }) {
                                     { title: 'Product Designer', company: 'Figma', location: 'San Francisco', score: 91 },
                                     { title: 'Full Stack Developer', company: 'Notion', location: 'New York', score: 87 },
                                 ].map((job, i) => (
-                                    <div key={i} className={`p-4 rounded-xl border ${i === 0 ? 'bg-white dark:bg-gray-800 border-brand-100 dark:border-brand-800 shadow-sm' : 'bg-surface-50 dark:bg-gray-800/50 border-surface-200/50'} transition-all hover:-translate-y-0.5`}>
+                                    <div key={i} className={`p-4 rounded-xl border ${i === 0 ? 'bg-white dark:bg-gray-800 border-brand-100 dark:border-brand-800 shadow-sm' : 'bg-surface-50 dark:bg-gray-800/50 border-outline-variant/10/50'} transition-all hover:-translate-y-0.5`}>
                                         <div className="flex justify-between items-start">
                                             <div>
                                                 {job.badge && (
@@ -178,7 +178,7 @@ export function Hero({ onStart, onDemo }) {
                                 className={`px-3 py-1.5 rounded-full text-xs font-medium border ${
                                     source === '350+ Sources'
                                         ? 'bg-brand-50 text-brand-600 border-brand-200/60'
-                                        : 'bg-surface-100 text-gray-500 border-surface-200'
+                                        : 'bg-surface-100 text-gray-500 border-outline-variant/10'
                                 }`}
                             >
                                 {source}

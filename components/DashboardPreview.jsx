@@ -17,7 +17,7 @@ const MULTIPLIERS = [
 
 export function DashboardPreview() {
     return (
-        <section className="py-24 relative overflow-hidden bg-white dark:bg-[#0f1117]">
+        <section className="py-24 relative overflow-hidden bg-surface-50 dark:bg-[#0f1117]">
             <div className="container mx-auto px-4 max-w-5xl">
                 <div className="mb-12">
                     <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800/30 text-brand-600 dark:text-brand-400 text-xs font-medium mb-4">
@@ -39,14 +39,14 @@ export function DashboardPreview() {
                     ))}
                 </div>
 
-                <div className="bg-white dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-2xl shadow-card p-6">
+                <div className="glass-card dark:bg-slate-950/70 border border-outline-variant/10 dark:border-slate-800/50 rounded-2xl shadow-card p-6">
                     <div className="flex items-center gap-2 mb-4">
                         <ShieldCheck className="w-4 h-4 text-gray-400" />
                         <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Active Multipliers</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {MULTIPLIERS.map((m, i) => (
-                            <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-50 dark:bg-[#22252f] border border-surface-200 dark:border-[#2d3140] text-sm text-gray-600 dark:text-gray-400">
+                            <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-50 dark:bg-slate-800/50 border border-outline-variant/10 dark:border-slate-800/50 text-sm text-gray-600 dark:text-gray-400">
                                 <m.icon className="w-3.5 h-3.5 text-gray-400" />
                                 {m.name}
                             </div>

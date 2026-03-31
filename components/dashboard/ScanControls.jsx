@@ -77,7 +77,7 @@ export function ScanControls({
             {/* Toggles */}
             <div className="flex flex-col gap-2">
                 <label className={`flex items-center gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all duration-200 text-xs font-medium ${
-                    preferences.remoteOnly ? 'bg-brand-50 border-brand-200 text-brand-700 shadow-sm' : 'bg-surface-50 border-surface-200 text-gray-600 hover:bg-surface-100'
+                    preferences.remoteOnly ? 'bg-brand-50 border-brand-200 text-brand-700 shadow-sm' : 'bg-surface-50 border-outline-variant/10 text-gray-600 hover:bg-surface-100'
                 }`}>
                     <input type="checkbox" checked={preferences.remoteOnly} onChange={e => setPreferences(prev => ({ ...prev, remoteOnly: e.target.checked }))} className="accent-brand-600" />
                     Remote Only
@@ -87,7 +87,7 @@ export function ScanControls({
                 </label>
 
                 <label className={`flex items-center gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all duration-200 text-xs ${
-                    exploreAdjacent ? 'bg-brand-50 border-brand-200 text-brand-700 shadow-sm' : 'bg-surface-50 border-surface-200 text-gray-600 hover:bg-surface-100'
+                    exploreAdjacent ? 'bg-brand-50 border-brand-200 text-brand-700 shadow-sm' : 'bg-surface-50 border-outline-variant/10 text-gray-600 hover:bg-surface-100'
                 }`}>
                     <input type="checkbox" checked={exploreAdjacent} onChange={e => setExploreAdjacent(e.target.checked)} className="accent-brand-600" />
                     <span className="font-medium flex items-center gap-1.5 flex-1">
@@ -100,13 +100,13 @@ export function ScanControls({
                 </label>
 
                 {tokensLoading ? (
-                    <div className="flex items-center gap-2.5 p-2.5 rounded-lg border bg-surface-50 border-surface-200 animate-pulse">
+                    <div className="flex items-center gap-2.5 p-2.5 rounded-lg border bg-surface-50 border-outline-variant/10 animate-pulse">
                         <div className="w-4 h-4 rounded bg-surface-200" />
                         <div className="h-3 bg-surface-200 rounded w-24" />
                     </div>
                 ) : (
                     <label className={`flex items-center gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all duration-200 text-xs ${
-                        midasSearch ? 'bg-brand-50 border-brand-200 text-brand-700 shadow-sm' : 'bg-surface-50 border-surface-200 text-gray-600 hover:bg-surface-100'
+                        midasSearch ? 'bg-brand-50 border-brand-200 text-brand-700 shadow-sm' : 'bg-surface-50 border-outline-variant/10 text-gray-600 hover:bg-surface-100'
                     }`}>{/* Beta: no disabled state. Restore: onClick={(e) => { if (!isAdminUser && tokenBalance < 2 && weeklyMidasScanCount >= 1) e.preventDefault(); }} */}
                         <input type="checkbox" checked={midasSearch}
                             onChange={e => setMidasSearch(e.target.checked)} /* Beta: always enabled. Restore: onChange={e => { if (isAdminUser || tokenBalance >= 2 || weeklyMidasScanCount < 1) setMidasSearch(e.target.checked); }} */

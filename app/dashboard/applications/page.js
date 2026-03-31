@@ -56,9 +56,9 @@ function ScorePopover({ job, onClose }) {
     ];
 
     return (
-        <div ref={ref} className="absolute right-0 top-full mt-2 z-50 w-[min(90vw,320px)] bg-white dark:bg-[#1a1d27] rounded-xl shadow-xl border border-gray-200 dark:border-[#2d3140] p-5 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div ref={ref} className="absolute right-0 top-full mt-2 z-50 w-[min(90vw,320px)] glass-card dark:bg-slate-950/70 rounded-xl shadow-xl border border-outline-variant/10 dark:border-slate-800/50 p-5 animate-in fade-in slide-in-from-top-2 duration-200">
             {/* Top stats */}
-            <div className="flex items-baseline gap-6 mb-5 pb-4 border-b border-gray-100 dark:border-[#2d3140]">
+            <div className="flex items-baseline gap-6 mb-5 pb-4 border-b border-outline-variant/10 dark:border-slate-800/50">
                 <div className="text-center">
                     <div className="text-[22px] font-light text-gray-800 dark:text-gray-200">{experienceYears || '--'}</div>
                     <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">Relevant Experience</div>
@@ -99,7 +99,7 @@ function ScorePopover({ job, onClose }) {
                         localStorage.setItem(key, JSON.stringify(job));
                     } catch (e) { /* ignore */ }
                 }}
-                className="flex items-center justify-center gap-2 mt-5 pt-4 border-t border-gray-100 dark:border-[#2d3140] text-[13px] font-medium text-teal-600 hover:text-teal-700 transition-colors"
+                className="flex items-center justify-center gap-2 mt-5 pt-4 border-t border-outline-variant/10 dark:border-slate-800/50 text-[13px] font-medium text-teal-600 hover:text-teal-700 transition-colors"
             >
                 View Full Analysis
             </Link>
@@ -232,7 +232,7 @@ export default function ApplicationsPage() {
             </div>
 
             {filteredApps.length === 0 && filter === 'all' ? (
-                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] p-16 text-center">
+                <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 p-16 text-center">
                     <div className="w-16 h-16 bg-gray-50 dark:bg-[#13151d] rounded-2xl flex items-center justify-center mx-auto mb-5">
                         <Briefcase className="w-8 h-8 text-gray-300" />
                     </div>
@@ -248,9 +248,9 @@ export default function ApplicationsPage() {
                     </Link>
                 </div>
             ) : (
-                <div className="bg-white dark:bg-[#1a1d27] rounded-xl border border-gray-200 dark:border-[#2d3140] overflow-hidden">
+                <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 dark:border-slate-800/50 overflow-hidden">
                     {/* Tabs */}
-                    <div className="flex items-center justify-between border-b border-gray-200 dark:border-[#2d3140]">
+                    <div className="flex items-center justify-between border-b border-outline-variant/10 dark:border-slate-800/50">
                         <div className="flex">
                             {tabs.map(tab => (
                                 <button
@@ -265,7 +265,7 @@ export default function ApplicationsPage() {
                                     {tab.label}
                                     {tab.count > 0 && (
                                         <span className={`ml-1.5 text-[11px] font-semibold px-1.5 py-0.5 rounded-full ${
-                                            filter === tab.id ? 'bg-teal-50 text-teal-600' : 'bg-gray-100 dark:bg-[#22252f] text-gray-400 dark:text-gray-500'
+                                            filter === tab.id ? 'bg-teal-50 text-teal-600' : 'bg-gray-100 dark:bg-slate-800/50 text-gray-400 dark:text-gray-500'
                                         }`}>
                                             {tab.count}
                                         </span>
@@ -288,7 +288,7 @@ export default function ApplicationsPage() {
                     </div>
 
                     {/* Column headers */}
-                    <div className="hidden md:grid grid-cols-[40px,1fr,180px,120px,100px,80px] items-center gap-0 px-4 py-2.5 bg-gray-50/80 dark:bg-[#13151d]/80 border-b border-gray-100 dark:border-[#2d3140] text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider select-none">
+                    <div className="hidden md:grid grid-cols-[40px,1fr,180px,120px,100px,80px] items-center gap-0 px-4 py-2.5 bg-gray-50/80 dark:bg-[#13151d]/80 border-b border-outline-variant/10 dark:border-slate-800/50 text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider select-none">
                         <div className="flex items-center justify-center">
                             <input
                                 type="checkbox"
@@ -444,7 +444,7 @@ export default function ApplicationsPage() {
                     </div>
 
                     {/* Footer / Bulk Actions Bar */}
-                    <div className={`px-5 py-2.5 border-t border-gray-100 dark:border-[#2d3140] flex items-center justify-between transition-colors ${
+                    <div className={`px-5 py-2.5 border-t border-outline-variant/10 dark:border-slate-800/50 flex items-center justify-between transition-colors ${
                         selectedJobs.size > 0 ? 'bg-gray-900' : 'bg-gray-50/50 dark:bg-[#13151d]/50'
                     }`}>
                         {selectedJobs.size > 0 ? (
@@ -517,7 +517,7 @@ export default function ApplicationsPage() {
 
             {/* Follow-up reminder */}
             {appliedJobsData.length > 0 && (
-                <div className="mt-5 bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2d3140] rounded-xl p-4 flex items-start gap-3">
+                <div className="mt-5 glass-card dark:bg-slate-950/70 border border-outline-variant/10 dark:border-slate-800/50 rounded-xl p-4 flex items-start gap-3">
                     <div className="w-8 h-8 rounded-full bg-teal-50 flex items-center justify-center shrink-0">
                         <RefreshCw className="w-3.5 h-3.5 text-teal-500" />
                     </div>

@@ -13,7 +13,7 @@ export function ActivityLog({ logs }) {
     }, [logs]);
 
     return (
-        <div className="bg-white border border-surface-200 rounded-xl h-44 overflow-hidden flex flex-col">
+        <div className="glass-card dark:bg-slate-950/70 border border-outline-variant/10 rounded-xl h-44 overflow-hidden flex flex-col">
             <div className="px-4 py-2.5 border-b border-surface-100 flex justify-between items-center">
                 <div className="flex items-center gap-1.5">
                     <Sparkles className="w-3 h-3 text-brand-500" />
@@ -37,7 +37,7 @@ export function ActivityLog({ logs }) {
                 {logs.map((log, i) => (
                     <div key={i} className="flex gap-2 text-gray-500">
                         <span className="opacity-40 shrink-0">{log.time}</span>
-                        <span className="border-l border-surface-200 pl-2 break-words">{log.message}</span>
+                        <span className="border-l border-outline-variant/10 pl-2 break-words">{log.message}</span>
                     </div>
                 ))}
                 <div ref={logsEndRef} />

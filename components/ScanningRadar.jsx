@@ -97,7 +97,7 @@ export function ScanningRadar() {
                 <motion.div
                     animate={{ scale: [1, 1.04, 1] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="relative z-10 bg-white dark:bg-[#1a1d27] p-3.5 rounded-full border border-brand-100 dark:border-brand-800 shadow-card"
+                    className="relative z-10 glass-card dark:bg-slate-950/70 p-3.5 rounded-full border border-brand-100 dark:border-brand-800 shadow-card"
                 >
                     <BrainIcon />
                 </motion.div>

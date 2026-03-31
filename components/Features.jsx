@@ -66,7 +66,7 @@ export function Features() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.08 }}
-                            className={`group relative bg-white dark:bg-[#1a1d27] border border-surface-200 dark:border-[#2d3140] rounded-2xl p-7 hover:shadow-card-hover transition-all duration-300 ${f.hoverBg}`}
+                            className={`group relative glass-card dark:bg-slate-950/70 border border-outline-variant/10 dark:border-slate-800/50 rounded-2xl p-7 hover:shadow-card-hover transition-all duration-300 ${f.hoverBg}`}
                         >
                             <div className={`w-12 h-12 rounded-xl ${f.color} flex items-center justify-center mb-5`}>
                                 <f.icon className="w-5 h-5" />

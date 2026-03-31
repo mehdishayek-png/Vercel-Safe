@@ -131,9 +131,9 @@ export function FilterPanel({
                                 {masterOn && !flags?.SALARY_FILTER && <p className="text-[10px] text-gray-400 mb-2">Salary filter coming soon.</p>}
                                 <div className="flex gap-2">
                                     <input type="number" min={0} placeholder="Min salary..." value={filters.salaryMin ?? ''} onChange={e => setSalaryMin(e.target.value ? Number(e.target.value) : null)} disabled={!masterOn || !flags?.SALARY_FILTER}
-                                        className="flex-1 text-xs px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:border-brand-400 disabled:bg-surface-50 disabled:text-gray-300 placeholder:text-gray-300 text-gray-900" />
+                                        className="flex-1 text-xs px-3 py-2 border border-outline-variant/10 rounded-lg focus:outline-none focus:border-brand-400 disabled:bg-surface-50 disabled:text-gray-300 placeholder:text-gray-300 text-gray-900" />
                                     <select value={filters.salaryCurrency || 'INR'} onChange={e => setSalaryCurrency(e.target.value)} disabled={!masterOn || !flags?.SALARY_FILTER}
-                                        className="text-xs border border-surface-200 rounded-lg px-2 py-2 focus:outline-none focus:border-brand-400 text-gray-700 bg-white/60 disabled:text-gray-300 disabled:bg-surface-50">
+                                        className="text-xs border border-outline-variant/10 rounded-lg px-2 py-2 focus:outline-none focus:border-brand-400 text-gray-700 bg-white/60 disabled:text-gray-300 disabled:bg-surface-50">
                                         {SALARY_CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                                     </select>
                                 </div>

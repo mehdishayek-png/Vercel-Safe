@@ -23,7 +23,7 @@ export function Header({ onShowGuide, onClearData, tokenBalance }) {
     return (
         <>
             <header
-                className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-8 h-16 bg-white/70 dark:bg-[#0f1117]/70 backdrop-blur-xl border-b transition-all ${scrolled ? 'border-surface-200 dark:border-[#2d3140] shadow-sm' : 'border-transparent'}`}
+                className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-8 h-16 bg-white/70 dark:bg-[#0f1117]/70 backdrop-blur-xl border-b transition-all ${scrolled ? 'border-outline-variant/10 dark:border-slate-800/50 shadow-sm' : 'border-transparent'}`}
             >
                 <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-xl bg-flow-gradient flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-brand-600/20">

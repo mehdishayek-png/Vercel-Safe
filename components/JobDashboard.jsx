@@ -481,7 +481,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                     {profile && (
                         <button
                             onClick={() => setReadinessOpen(!readinessOpen)}
-                            className="w-full flex items-center justify-between p-2.5 px-3.5 bg-white rounded-xl border border-surface-200 cursor-pointer hover:bg-surface-50 transition-colors"
+                            className="w-full flex items-center justify-between p-2.5 px-3.5 glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 cursor-pointer hover:bg-surface-50 transition-colors"
                         >
                             <div className="flex items-center gap-2">
                                 <div className="w-6 h-6 rounded-full bg-emerald-100 border-2 border-emerald-500 flex items-center justify-center">
@@ -495,7 +495,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                     )}
 
                     {readinessOpen && profile && (
-                        <div className="bg-white rounded-xl border border-surface-200 p-3 -mt-2 space-y-1">
+                        <div className="glass-card dark:bg-slate-950/70 rounded-xl border border-outline-variant/10 p-3 -mt-2 space-y-1">
                             {readinessChecks.map((check, i) => (
                                 <div key={i} className="flex items-center justify-between py-1 text-[13px] text-gray-600">
                                     <div className="flex items-center gap-2">
@@ -569,7 +569,7 @@ export function JobDashboard({ apiKeys, onBack }) {
                         initial={{ opacity: 0, y: 60 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 60 }}
-                        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-white border border-surface-200 rounded-xl px-5 py-3 shadow-elevated max-w-sm w-[85vw]"
+                        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 glass-card dark:bg-slate-950/70 border border-outline-variant/10 rounded-xl px-5 py-3 shadow-elevated max-w-sm w-[85vw]"
                     >
                         <div className="flex items-center gap-3">
                             <div className="relative shrink-0">
