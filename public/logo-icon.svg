@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4f46e5"/>
+      <stop offset="50%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24"/>
+      <stop offset="40%" style="stop-color:#f59e0b"/>
+      <stop offset="100%" style="stop-color:#d97706"/>
+    </linearGradient>
+    <linearGradient id="gold-hi" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fde68a"/>
+      <stop offset="100%" style="stop-color:#fbbf24"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" ry="112" fill="url(#bg)"/>
+
+  <!-- Subtle radar rings -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="white" stroke-width="1.5" opacity="0.1"/>
+  <circle cx="256" cy="256" r="130" fill="none" stroke="white" stroke-width="1" opacity="0.07"/>
+
+  <!-- Golden M -->
+  <g filter="glow">
+    <path d="
+      M 128 370
+      L 128 170
+      C 128 160 136 152 146 152
+      L 168 152
+      C 176 152 182 156 186 164
+      L 256 310
+      L 326 164
+      C 330 156 336 152 344 152
+      L 366 152
+      C 376 152 384 160 384 170
+      L 384 370
+      C 384 380 376 388 366 388
+      L 348 388
+      C 338 388 330 380 330 370
+      L 330 240
+      L 268 358
+      C 264 366 260 370 256 370
+      C 252 370 248 366 244 358
+      L 182 240
+      L 182 370
+      C 182 380 174 388 164 388
+      L 146 388
+      C 136 388 128 380 128 370
+      Z
+    " fill="url(#gold)"/>
+  </g>
+
+  <!-- Diamond accent -->
+  <rect x="247" y="120" width="18" height="18" rx="4" transform="rotate(45 256 129)" fill="url(#gold-hi)" opacity="0.85"/>
+</svg>

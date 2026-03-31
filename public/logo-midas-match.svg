@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4f46e5"/>
+      <stop offset="50%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24"/>
+      <stop offset="40%" style="stop-color:#f59e0b"/>
+      <stop offset="100%" style="stop-color:#d97706"/>
+    </linearGradient>
+    <linearGradient id="gold-light" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fde68a"/>
+      <stop offset="100%" style="stop-color:#fbbf24"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="inner-shadow">
+      <feOffset dx="0" dy="2"/>
+      <feGaussianBlur stdDeviation="2"/>
+      <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.15 0"/>
+      <feBlend in2="SourceGraphic"/>
+    </filter>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect x="16" y="16" width="480" height="480" rx="96" ry="96" fill="url(#bg-grad)"/>
+
+  <!-- Subtle grid pattern overlay -->
+  <g opacity="0.06">
+    <line x1="128" y1="16" x2="128" y2="496" stroke="white" stroke-width="1"/>
+    <line x1="256" y1="16" x2="256" y2="496" stroke="white" stroke-width="1"/>
+    <line x1="384" y1="16" x2="384" y2="496" stroke="white" stroke-width="1"/>
+    <line x1="16" y1="128" x2="496" y2="128" stroke="white" stroke-width="1"/>
+    <line x1="16" y1="256" x2="496" y2="256" stroke="white" stroke-width="1"/>
+    <line x1="16" y1="384" x2="496" y2="384" stroke="white" stroke-width="1"/>
+  </g>
+
+  <!-- Outer ring (radar/scanning motif) -->
+  <circle cx="256" cy="236" r="140" fill="none" stroke="white" stroke-width="1.5" opacity="0.15"/>
+  <circle cx="256" cy="236" r="105" fill="none" stroke="white" stroke-width="1" opacity="0.1"/>
+
+  <!-- Scanning arc (top-right) -->
+  <path d="M 256 236 L 370 140 A 155 155 0 0 0 310 100 Z" fill="white" opacity="0.06"/>
+
+  <!-- Golden "M" lettermark -->
+  <g filter="glow">
+    <path d="
+      M 148 340
+      L 148 165
+      C 148 158 153 153 160 153
+      L 175 153
+      C 180 153 184 156 186 160
+      L 256 290
+      L 326 160
+      C 328 156 332 153 337 153
+      L 352 153
+      C 359 153 364 158 364 165
+      L 364 340
+      C 364 347 359 352 352 352
+      L 336 352
+      C 329 352 324 347 324 340
+      L 324 228
+      L 266 336
+      C 263 342 257 346 256 346
+      C 255 346 249 342 246 336
+      L 188 228
+      L 188 340
+      C 188 347 183 352 176 352
+      L 160 352
+      C 153 352 148 347 148 340
+      Z
+    " fill="url(#gold-grad)" filter="inner-shadow"/>
+  </g>
+
+  <!-- Small golden diamond accent (top of M) -->
+  <rect x="248" y="128" width="16" height="16" rx="3" transform="rotate(45 256 136)" fill="url(#gold-light)" opacity="0.9"/>
+
+  <!-- Match score indicator dots -->
+  <g opacity="0.7">
+    <circle cx="176" cy="400" r="6" fill="#fbbf24"/>
+    <circle cx="200" cy="400" r="6" fill="#fbbf24"/>
+    <circle cx="224" cy="400" r="6" fill="#fbbf24"/>
+    <circle cx="248" cy="400" r="6" fill="#fbbf24"/>
+    <circle cx="272" cy="400" r="6" fill="#fbbf24" opacity="0.7"/>
+    <circle cx="296" cy="400" r="6" fill="#fbbf24" opacity="0.4"/>
+    <circle cx="320" cy="400" r="6" fill="white" opacity="0.15"/>
+    <circle cx="344" cy="400" r="6" fill="white" opacity="0.15"/>
+  </g>
+
+  <!-- "MIDAS MATCH" text below dots -->
+  <text x="256" y="440" text-anchor="middle" font-family="Plus Jakarta Sans, Inter, Helvetica, Arial, sans-serif" font-size="28" font-weight="800" letter-spacing="6" fill="white" opacity="0.95">MIDAS MATCH</text>
+</svg>
