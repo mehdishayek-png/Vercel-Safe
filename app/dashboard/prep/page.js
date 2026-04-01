@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, ChevronDown, Sparkles, Target, MessageSquare, Building2, Lightbulb, AlertTriangle, Mic, Loader2, BookOpen, Search } from 'lucide-react';
 import Link from 'next/link';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
+import { safe } from '@/lib/safe-render';
 
 const TYPE_COLORS = {
     behavioral: { bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-700 dark:text-blue-400', border: 'border-blue-200 dark:border-blue-800' },
@@ -40,7 +41,7 @@ function QuestionCard({ q, index }) {
                         <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${colors.bg} ${colors.text} uppercase tracking-wider`}>{q.type}</span>
                         <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${DIFFICULTY_BADGE[q.difficulty] || DIFFICULTY_BADGE.medium} uppercase tracking-wider`}>{q.difficulty}</span>
                     </div>
-                    <p className="text-base font-medium text-gray-900 dark:text-gray-100 leading-relaxed">{q.question}</p>
+                    <p className="text-base font-medium text-gray-900 dark:text-gray-100 leading-relaxed">{safe(q.question)}</p>
                 </div>
                 <ChevronDown className={`w-5 h-5 text-gray-400 shrink-0 mt-1 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
             </button>
@@ -56,11 +57,11 @@ function QuestionCard({ q, index }) {
                         <div className="px-5 pb-5 pl-[68px] space-y-4">
                             <div>
                                 <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5">Why they ask this</p>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{q.why_asked}</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{safe(q.why_asked)}</p>
                             </div>
                             <div className="bg-surface-50 dark:bg-[#1a1d27] rounded-xl p-4 border border-surface-100 dark:border-slate-800/50">
                                 <p className={`text-[11px] font-bold ${colors.text} uppercase tracking-widest mb-1.5`}>How to answer</p>
-                                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{q.answer_framework}</p>
+                                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{safe(q.answer_framework)}</p>
                             </div>
                         </div>
                     </motion.div>
@@ -271,7 +272,7 @@ export default function InterviewPrepPage() {
                                     </div>
                                     <h3 className="text-base font-headline font-bold text-white">Your 30-Second Pitch</h3>
                                 </div>
-                                <p className="text-[15px] text-white/90 leading-relaxed italic">&ldquo;{prep.opening_pitch}&rdquo;</p>
+                                <p className="text-[15px] text-white/90 leading-relaxed italic">&ldquo;{safe(prep.opening_pitch)}&rdquo;</p>
                             </div>
                         </div>
                     )}
@@ -318,7 +319,7 @@ export default function InterviewPrepPage() {
                                         {(prep.company_research.talking_points || []).map((p, i) => (
                                             <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-teal-500 mt-2 shrink-0" />
-                                                {p}
+                                                {safe(p)}
                                             </li>
                                         ))}
                                     </ul>

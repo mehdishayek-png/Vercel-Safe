@@ -7,6 +7,7 @@ import { useUser } from '@clerk/nextjs';
 import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { safeBtoa } from '@/lib/safe-btoa';
+import { safe } from '@/lib/safe-render';
 
 function DotIndicator({ filled, total = 5 }) {
     return (
@@ -291,7 +292,7 @@ export default function DashboardHome() {
                             <div>
                                 <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">Search Insights</h3>
                                 <p className="text-[10px] text-gray-400">
-                                    {insights?.one_liner || 'AI-powered analysis of your job search patterns'}
+                                    {safe(insights?.one_liner) || 'AI-powered analysis of your job search patterns'}
                                 </p>
                             </div>
                         </div>
@@ -345,14 +346,14 @@ export default function DashboardHome() {
                                                 <div className="flex-1">
                                                     {insight.type && (
                                                         <span className={`inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded-full mb-2 ${typeColors[insight.type] || typeColors.pattern}`}>
-                                                            {insight.type}
+                                                            {safe(insight.type)}
                                                         </span>
                                                     )}
-                                                    <p className="text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed">{insight.observation}</p>
+                                                    <p className="text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed">{safe(insight.observation)}</p>
                                                     {insight.suggestion && (
                                                         <p className="text-[12px] text-gray-400 dark:text-gray-500 mt-1.5 flex items-start gap-1.5">
                                                             <Lightbulb className="w-3 h-3 mt-0.5 shrink-0 text-amber-400" />
-                                                            {insight.suggestion}
+                                                            {safe(insight.suggestion)}
                                                         </p>
                                                     )}
                                                 </div>
@@ -391,7 +392,7 @@ export default function DashboardHome() {
                             <div>
                                 <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">Resume Health</h3>
                                 <p className="text-[10px] text-gray-400">
-                                    {resumeHealth?.overall_readiness || 'Check how your resume stacks up against saved jobs'}
+                                    {safe(resumeHealth?.overall_readiness) || 'Check how your resume stacks up against saved jobs'}
                                 </p>
                             </div>
                         </div>
@@ -448,7 +449,7 @@ export default function DashboardHome() {
                                         <div>
                                             <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-medium">Readiness Score</p>
                                             {resumeHealth.overall_readiness && (
-                                                <p className="text-[13px] text-gray-700 dark:text-gray-300 mt-0.5">{resumeHealth.overall_readiness}</p>
+                                                <p className="text-[13px] text-gray-700 dark:text-gray-300 mt-0.5">{safe(resumeHealth.overall_readiness)}</p>
                                             )}
                                         </div>
                                     </div>
@@ -473,7 +474,7 @@ export default function DashboardHome() {
                                                         <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${priorityStyles[priority] || priorityStyles.recommended}`}>
                                                             {priority.replace('_', ' ')}
                                                         </span>
-                                                        <span className="text-gray-700 dark:text-gray-300">{typeof item === 'string' ? item : item.skill || item.name}</span>
+                                                        <span className="text-gray-700 dark:text-gray-300">{typeof item === 'string' ? item : safe(item.skill || item.name)}</span>
                                                     </div>
                                                 );
                                             })}
@@ -499,9 +500,9 @@ export default function DashboardHome() {
                                                     </button>
                                                     {expandedWording[i] && (
                                                         <div className="px-4 py-3 text-[12px] text-gray-600 dark:text-gray-400 leading-relaxed glass-card dark:bg-slate-950/70 space-y-1.5">
-                                                            {item.current && <p><span className="font-medium text-gray-500">Current:</span> {item.current}</p>}
-                                                            {item.suggested && <p><span className="font-medium text-teal-600">Suggested:</span> {item.suggested}</p>}
-                                                            {item.reason && <p className="text-[11px] text-gray-400">{item.reason}</p>}
+                                                            {item.current && <p><span className="font-medium text-gray-500">Current:</span> {safe(item.current)}</p>}
+                                                            {item.suggested && <p><span className="font-medium text-teal-600">Suggested:</span> {safe(item.suggested)}</p>}
+                                                            {item.reason && <p className="text-[11px] text-gray-400">{safe(item.reason)}</p>}
                                                             {typeof item === 'string' && <p>{item}</p>}
                                                         </div>
                                                     )}
@@ -520,10 +521,10 @@ export default function DashboardHome() {
                                         <div className="space-y-2">
                                             {resumeHealth.red_flags.map((flag, i) => (
                                                 <div key={i} className="bg-red-50/50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30 rounded-lg p-3">
-                                                    <p className="text-[12px] text-red-700 dark:text-red-400 leading-relaxed">{typeof flag === 'string' ? flag : flag.text || flag.issue}</p>
+                                                    <p className="text-[12px] text-red-700 dark:text-red-400 leading-relaxed">{typeof flag === 'string' ? flag : safe(flag.text || flag.issue)}</p>
                                                     {flag.fix && (
                                                         <p className="text-[11px] text-red-600/70 dark:text-red-400/60 mt-1 flex items-start gap-1.5">
-                                                            <Lightbulb className="w-3 h-3 mt-0.5 shrink-0" /> {flag.fix}
+                                                            <Lightbulb className="w-3 h-3 mt-0.5 shrink-0" /> {safe(flag.fix)}
                                                         </p>
                                                     )}
                                                 </div>

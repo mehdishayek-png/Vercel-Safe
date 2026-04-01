@@ -49,7 +49,7 @@ export async function POST(request) {
         const isAuthentic = (() => {
             try {
                 return crypto.timingSafeEqual(Buffer.from(expectedSignature, 'hex'), Buffer.from(razorpay_signature, 'hex'));
-            } catch { return false; }
+            } catch (e) { console.error('[PAYMENT] Signature verification error:', e.message); return false; }
         })();
 
         if (isAuthentic) {
