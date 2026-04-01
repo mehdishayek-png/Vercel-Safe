@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Midas Match — Hero Mockup</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1080px;
+    height: 1080px;
+    overflow: hidden;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background: #060709;
+    position: relative;
+  }
+
+  /* ── Deep layered background ── */
+  .bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 42%, rgba(79, 70, 229, 0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 35% at 52% 40%, rgba(139, 92, 246, 0.05) 0%, transparent 60%),
+      linear-gradient(175deg, #080a10 0%, #0d1019 40%, #121620 100%);
+  }
+
+  /* Dot grid — very faint structure */
+  .dot-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  /* ── Ambient glow behind phone ── */
+  .phone-glow {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.04) 0%, rgba(79, 70, 229, 0.06) 40%, transparent 70%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+
+  /* ── Particle canvas ── */
+  .particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: drift linear infinite;
+  }
+
+  @keyframes drift {
+    0%   { transform: translateY(0) translateX(0); opacity: var(--o); }
+    25%  { transform: translateY(calc(var(--dy) * 0.25)) translateX(calc(var(--dx) * 0.3)); }
+    50%  { transform: translateY(calc(var(--dy) * 0.5)) translateX(calc(var(--dx) * -0.2)); }
+    75%  { transform: translateY(calc(var(--dy) * 0.75)) translateX(calc(var(--dx) * 0.15)); }
+    100% { transform: translateY(var(--dy)) translateX(0); opacity: calc(var(--o) * 0.3); }
+  }
+
+  /* ── Phone container ── */
+  .phone-stage {
+    position: absolute;
+    top: 46px;
+    left: 50%;
+    transform: translateX(-50%);
+    perspective: 1800px;
+    z-index: 2;
+  }
+
+  .phone {
+    width: 320px;
+    height: 660px;
+    background: #0c0e14;
+    border-radius: 40px;
+    border: 2.5px solid #1e2230;
+    overflow: hidden;
+    position: relative;
+    transform: rotateY(-8deg) rotateX(3deg) rotateZ(1deg);
+    box-shadow:
+      0 60px 120px -20px rgba(0,0,0,0.7),
+      0 30px 60px -15px rgba(0,0,0,0.5),
+      0 4px 20px rgba(79, 70, 229, 0.06),
+      inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+
+  /* Notch / dynamic island */
+  .phone::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 28px;
+    background: #060709;
+    border-radius: 20px;
+    z-index: 10;
+  }
+
+  .phone-screen {
+    position: absolute;
+    inset: 0;
+    background: #0a0c12;
+    padding: 52px 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+  }
+
+  /* ── Top bar inside phone ── */
+  .app-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0 10px;
+  }
+
+  .app-logo {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 13px;
+    color: #0a0c12;
+    line-height: 1;
+  }
+
+  .app-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #e8eaf0;
+    letter-spacing: 0.3px;
+  }
+
+  .app-bar-pill {
+    margin-left: auto;
+    font-size: 9px;
+    font-weight: 600;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Scan status bar ── */
+  .scan-bar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 10px;
+    background: rgba(79, 70, 229, 0.06);
+    border: 1px solid rgba(79, 70, 229, 0.1);
+    border-radius: 10px;
+  }
+
+  .scan-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .scan-text {
+    font-size: 9.5px;
+    color: #7a8196;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+  }
+
+  .scan-count {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 700;
+    color: #c5cad6;
+  }
+
+  /* ── Job cards inside phone ── */
+  .job-card {
+    background: rgba(22, 25, 35, 0.85);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    position: relative;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: card-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .job-card:nth-child(3) { animation-delay: 0.3s; }
+  .job-card:nth-child(4) { animation-delay: 0.55s; }
+  .job-card:nth-child(5) { animation-delay: 0.8s; }
+
+  /* Top-match card gets a subtle gold edge */
+  .job-card.top-match {
+    border-color: rgba(251, 191, 36, 0.12);
+    background: rgba(22, 25, 35, 0.9);
+  }
+
+  .job-card.top-match::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.25), transparent);
+  }
+
+  @keyframes card-in {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Match ring */
+  .ring-wrap {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    position: relative;
+  }
+
+  .ring-wrap svg {
+    width: 52px;
+    height: 52px;
+    transform: rotate(-90deg);
+  }
+
+  .ring-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.04);
+    stroke-width: 4;
+  }
+
+  .ring-fill {
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 138.23;
+    stroke-dashoffset: 138.23;
+    transition: stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+    filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.3));
+  }
+
+  .ring-fill.gold { stroke: url(#gold-grad-ring); }
+  .ring-fill.blue { stroke: rgba(129, 140, 248, 0.7); filter: drop-shadow(0 0 4px rgba(129, 140, 248, 0.2)); }
+  .ring-fill.muted { stroke: rgba(148, 163, 184, 0.35); filter: none; }
+
+  .ring-pct {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .ring-pct.gold { color: #fbbf24; }
+  .ring-pct.blue { color: #a5b4fc; }
+  .ring-pct.muted { color: #64748b; }
+
+  .job-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .job-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #e2e5ec;
+    line-height: 1.2;
+    margin-bottom: 2px;
+  }
+
+  .job-company {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #7a8196;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .job-company .co-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #4a5068;
+    display: inline-block;
+  }
+
+  .job-loc {
+    font-size: 9.5px;
+    color: #505669;
+    margin-top: 3px;
+    font-weight: 500;
+  }
+
+  .job-skills {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .skill-tag {
+    font-size: 8.5px;
+    font-weight: 600;
+    padding: 2.5px 7px;
+    border-radius: 5px;
+    letter-spacing: 0.3px;
+  }
+
+  .skill-tag.matched {
+    color: rgba(52, 211, 153, 0.9);
+    background: rgba(52, 211, 153, 0.07);
+    border: 1px solid rgba(52, 211, 153, 0.1);
+  }
+
+  .skill-tag.neutral {
+    color: #5a6179;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  /* ── Bottom section — outside phone ── */
+  .bottom-text {
+    position: absolute;
+    bottom: 68px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 3;
+  }
+
+  .headline {
+    font-size: 34px;
+    font-weight: 800;
+    color: #e8eaf0;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+
+  .subline {
+    margin-top: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #d4a017;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ── Decorative lines ── */
+  .accent-line {
+    position: absolute;
+    z-index: 1;
+  }
+
+  .accent-line.left {
+    top: 180px;
+    left: 60px;
+    width: 1px;
+    height: 300px;
+    background: linear-gradient(180deg, transparent, rgba(251, 191, 36, 0.08), transparent);
+  }
+
+  .accent-line.right {
+    top: 220px;
+    right: 80px;
+    width: 1px;
+    height: 260px;
+    background: linear-gradient(180deg, transparent, rgba(79, 70, 229, 0.1), transparent);
+  }
+
+  .accent-line.bottom {
+    bottom: 160px;
+    left: 200px;
+    right: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+  }
+
+  /* ── Corner marks (subtle framing) ── */
+  .corner {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    z-index: 1;
+  }
+
+  .corner::before, .corner::after {
+    content: '';
+    position: absolute;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .corner.tl { top: 48px; left: 48px; }
+  .corner.tl::before { top: 0; left: 0; width: 1px; height: 30px; }
+  .corner.tl::after { top: 0; left: 0; width: 30px; height: 1px; }
+
+  .corner.tr { top: 48px; right: 48px; }
+  .corner.tr::before { top: 0; right: 0; width: 1px; height: 30px; }
+  .corner.tr::after { top: 0; right: 0; width: 30px; height: 1px; }
+
+  .corner.bl { bottom: 48px; left: 48px; }
+  .corner.bl::before { bottom: 0; left: 0; width: 1px; height: 30px; }
+  .corner.bl::after { bottom: 0; left: 0; width: 30px; height: 1px; }
+
+  .corner.br { bottom: 48px; right: 48px; }
+  .corner.br::before { bottom: 0; right: 0; width: 1px; height: 30px; }
+  .corner.br::after { bottom: 0; right: 0; width: 30px; height: 1px; }
+
+  /* ── Small floating metric ── */
+  .floating-stat {
+    position: absolute;
+    z-index: 3;
+    background: rgba(13, 15, 22, 0.85);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 10px 14px;
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    animation: float-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .floating-stat.left {
+    top: 260px;
+    left: 68px;
+    animation-delay: 1s;
+  }
+
+  .floating-stat.right {
+    top: 320px;
+    right: 68px;
+    animation-delay: 1.2s;
+  }
+
+  @keyframes float-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .stat-number {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .stat-number.gold { color: #fbbf24; }
+  .stat-number.indigo { color: #a5b4fc; }
+
+  .stat-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: #505669;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="bg"></div>
+  <div class="dot-grid"></div>
+  <div class="phone-glow"></div>
+
+  <!-- Corner frames -->
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <!-- Accent lines -->
+  <div class="accent-line left"></div>
+  <div class="accent-line right"></div>
+  <div class="accent-line bottom"></div>
+
+  <!-- Floating stats -->
+  <div class="floating-stat left">
+    <div class="stat-number gold">354</div>
+    <div class="stat-label">Companies</div>
+  </div>
+  <div class="floating-stat right">
+    <div class="stat-number indigo">60s</div>
+    <div class="stat-label">Avg Scan</div>
+  </div>
+
+  <!-- Particles -->
+  <div class="particles" id="particles"></div>
+
+  <!-- Phone -->
+  <div class="phone-stage">
+    <div class="phone">
+      <svg width="0" height="0" style="position:absolute">
+        <defs>
+          <linearGradient id="gold-grad-ring" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#fde68a"/>
+            <stop offset="50%" stop-color="#fbbf24"/>
+            <stop offset="100%" stop-color="#d97706"/>
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <div class="phone-screen">
+        <!-- App bar -->
+        <div class="app-bar">
+          <div class="app-logo">M</div>
+          <span class="app-title">Midas Match</span>
+          <span class="app-bar-pill">28 matches</span>
+        </div>
+
+        <!-- Scan status -->
+        <div class="scan-bar">
+          <div class="scan-dot"></div>
+          <span class="scan-text">Scan complete — sorted by fit</span>
+          <span class="scan-count">354 scanned</span>
+        </div>
+
+        <!-- Card 1: 94% -->
+        <div class="job-card top-match">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 52 52">
+              <circle class="ring-bg" cx="26" cy="26" r="22"/>
+              <circle class="ring-fill gold" cx="26" cy="26" r="22" data-pct="94"/>
+            </svg>
+            <span class="ring-pct gold">94</span>
+          </div>
+          <div class="job-info">
+            <div class="job-title">Senior Product Manager</div>
+            <div class="job-company">Stripe <span class="co-dot"></span> Full-time</div>
+            <div class="job-loc">San Francisco, CA</div>
+            <div class="job-skills">
+              <span class="skill-tag matched">B2B</span>
+              <span class="skill-tag matched">SaaS</span>
+              <span class="skill-tag matched">Strategy</span>
+              <span class="skill-tag neutral">Fintech</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: 87% -->
+        <div class="job-card">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 52 52">
+              <circle class="ring-bg" cx="26" cy="26" r="22"/>
+              <circle class="ring-fill gold" cx="26" cy="26" r="22" data-pct="87"/>
+            </svg>
+            <span class="ring-pct gold">87</span>
+          </div>
+          <div class="job-info">
+            <div class="job-title">Product Lead, Edge Platform</div>
+            <div class="job-company">Cloudflare <span class="co-dot"></span> Full-time</div>
+            <div class="job-loc">Remote — US</div>
+            <div class="job-skills">
+              <span class="skill-tag matched">API</span>
+              <span class="skill-tag matched">Growth</span>
+              <span class="skill-tag neutral">Infra</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: 76% -->
+        <div class="job-card">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 52 52">
+              <circle class="ring-bg" cx="26" cy="26" r="22"/>
+              <circle class="ring-fill blue" cx="26" cy="26" r="22" data-pct="76"/>
+            </svg>
+            <span class="ring-pct blue">76</span>
+          </div>
+          <div class="job-info">
+            <div class="job-title">PM, AI Platform</div>
+            <div class="job-company">OpenAI <span class="co-dot"></span> Full-time</div>
+            <div class="job-loc">San Francisco, CA</div>
+            <div class="job-skills">
+              <span class="skill-tag matched">AI</span>
+              <span class="skill-tag matched">Python</span>
+              <span class="skill-tag neutral">Research</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom text -->
+  <div class="bottom-text">
+    <div class="headline">Your AI Job Matcher</div>
+    <div class="subline">midasmatch.com</div>
+  </div>
+
+<script>
+  // ── Generate particles ──
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 35; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 1.5 + Math.random() * 2.5;
+    const x = Math.random() * 1080;
+    const y = Math.random() * 1080;
+    const opacity = 0.15 + Math.random() * 0.45;
+    const dur = 12 + Math.random() * 20;
+    const dy = -40 - Math.random() * 80;
+    const dx = -20 + Math.random() * 40;
+    const isGold = Math.random() > 0.35;
+
+    p.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      left: ${x}px;
+      top: ${y}px;
+      background: ${isGold ? 'rgba(251, 191, 36,' + opacity + ')' : 'rgba(165, 180, 252,' + (opacity * 0.5) + ')'};
+      --o: ${opacity};
+      --dy: ${dy}px;
+      --dx: ${dx}px;
+      animation-duration: ${dur}s;
+      animation-delay: ${-Math.random() * dur}s;
+      ${isGold && opacity > 0.4 ? 'box-shadow: 0 0 ' + (size * 2) + 'px rgba(251,191,36,' + (opacity * 0.4) + ');' : ''}
+    `;
+    container.appendChild(p);
+  }
+
+  // ── Animate match rings on load ──
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.querySelectorAll('.ring-fill').forEach(ring => {
+        const pct = parseInt(ring.dataset.pct || 0);
+        const circumference = 2 * Math.PI * 22; // r=22
+        const offset = circumference * (1 - pct / 100);
+        ring.style.strokeDashoffset = offset;
+      });
+    }, 400);
+  });
+</script>
+
+</body>
+</html>
