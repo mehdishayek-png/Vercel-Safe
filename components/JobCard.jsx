@@ -9,6 +9,7 @@ import { CompanyLogo } from './ui/CompanyLogo';
 import { getMatchColor as getMatchColorUtil, getMatchGradient as getMatchGradientUtil } from '@/lib/match-colors';
 import { useRazorpay } from '../lib/useRazorpay';
 import { useToast } from './ui/Toast';
+import { safeBtoa } from '@/lib/safe-btoa';
 
 export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApplied, onTokensUpdated }) {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -157,10 +158,10 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                             <div className="flex-1 min-w-0">
                                 <h3 className="text-sm sm:text-[15px] font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 sm:truncate leading-snug">
                                     <Link
-                                        href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                        href={`/dashboard/job/${encodeURIComponent(safeBtoa(job.apply_url || job.title))}`}
                                         onClick={() => {
                                             try {
-                                                const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                                const key = `job_detail_${safeBtoa(job.apply_url || job.title)}`;
                                                 localStorage.setItem(key, JSON.stringify(job));
                                             } catch (e) { /* ignore quota errors */ }
                                         }}
@@ -289,10 +290,10 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                 </button>
                             )}
                             <Link
-                                href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                href={`/dashboard/job/${encodeURIComponent(safeBtoa(job.apply_url || job.title))}`}
                                 onClick={() => {
                                     try {
-                                        const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                        const key = `job_detail_${safeBtoa(job.apply_url || job.title)}`;
                                         localStorage.setItem(key, JSON.stringify(job));
                                     } catch (e) { /* ignore */ }
                                 }}

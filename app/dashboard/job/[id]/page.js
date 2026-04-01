@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useApp } from '@/contexts/AppContext';
 import { useToast } from '@/components/ui/Toast';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
+import { safeBtoa } from '@/lib/safe-btoa';
 
 // ---- Utilities ----
 
@@ -233,10 +234,10 @@ function SimilarJobCard({ job, index, onSave, isSaved }) {
                 />
                 <div className="flex-1 min-w-0">
                     <Link
-                        href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                        href={`/dashboard/job/${encodeURIComponent(safeBtoa(job.apply_url || job.title))}`}
                         onClick={() => {
                             try {
-                                const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                const key = `job_detail_${safeBtoa(job.apply_url || job.title)}`;
                                 localStorage.setItem(key, JSON.stringify(job));
                             } catch (e) { /* ignore */ }
                         }}
@@ -289,10 +290,10 @@ function SimilarJobCard({ job, index, onSave, isSaved }) {
                         <Bookmark className={`w-3 h-3 ${isSaved ? 'fill-sky-500' : ''}`} />
                     </button>
                     <Link
-                        href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                        href={`/dashboard/job/${encodeURIComponent(safeBtoa(job.apply_url || job.title))}`}
                         onClick={() => {
                             try {
-                                const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                const key = `job_detail_${safeBtoa(job.apply_url || job.title)}`;
                                 localStorage.setItem(key, JSON.stringify(job));
                             } catch (e) { /* ignore */ }
                         }}
@@ -1211,10 +1212,10 @@ export default function JobDetailPage() {
                                             {sameCompany.map((sj, i) => (
                                                 <Link
                                                     key={i}
-                                                    href={`/dashboard/job/${encodeURIComponent(btoa(sj.apply_url || sj.title))}`}
+                                                    href={`/dashboard/job/${encodeURIComponent(safeBtoa(sj.apply_url || sj.title))}`}
                                                     onClick={() => {
                                                         try {
-                                                            const key = `job_detail_${btoa(sj.apply_url || sj.title)}`;
+                                                            const key = `job_detail_${safeBtoa(sj.apply_url || sj.title)}`;
                                                             localStorage.setItem(key, JSON.stringify(sj));
                                                         } catch (e) { /* ignore */ }
                                                     }}

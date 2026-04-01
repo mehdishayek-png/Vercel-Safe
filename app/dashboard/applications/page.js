@@ -5,6 +5,7 @@ import { useApp } from '@/contexts/AppContext';
 import { exportJobsToCSV } from '@/lib/export-csv';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { useState, useRef, useEffect } from 'react';
+import { safeBtoa } from '@/lib/safe-btoa';
 
 function DotIndicator({ filled, total = 5 }) {
     return (
@@ -92,10 +93,10 @@ function ScorePopover({ job, onClose }) {
 
             {/* View full details */}
             <Link
-                href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                href={`/dashboard/job/${encodeURIComponent(safeBtoa(job.apply_url || job.title))}`}
                 onClick={() => {
                     try {
-                        const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                        const key = `job_detail_${safeBtoa(job.apply_url || job.title)}`;
                         localStorage.setItem(key, JSON.stringify(job));
                     } catch (e) { /* ignore */ }
                 }}
@@ -343,10 +344,10 @@ export default function ApplicationsPage() {
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-2">
                                                 <Link
-                                                    href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                                    href={`/dashboard/job/${encodeURIComponent(safeBtoa(job.apply_url || job.title))}`}
                                                     onClick={() => {
                                                         try {
-                                                            const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                                            const key = `job_detail_${safeBtoa(job.apply_url || job.title)}`;
                                                             localStorage.setItem(key, JSON.stringify(job));
                                                         } catch (e) { /* ignore */ }
                                                     }}
@@ -407,10 +408,10 @@ export default function ApplicationsPage() {
                                     {/* Actions */}
                                     <div className="flex items-center gap-1 justify-end sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                         <Link
-                                            href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                            href={`/dashboard/job/${encodeURIComponent(safeBtoa(job.apply_url || job.title))}`}
                                             onClick={() => {
                                                 try {
-                                                    const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                                    const key = `job_detail_${safeBtoa(job.apply_url || job.title)}`;
                                                     localStorage.setItem(key, JSON.stringify(job));
                                                 } catch (e) { /* ignore */ }
                                             }}

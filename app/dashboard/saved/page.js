@@ -5,6 +5,7 @@ import { useApp } from '@/contexts/AppContext';
 import { exportJobsToCSV } from '@/lib/export-csv';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { useState } from 'react';
+import { safeBtoa } from '@/lib/safe-btoa';
 
 const AVATAR_COLORS = [
     'bg-teal-500', 'bg-sky-500', 'bg-accent-500', 'bg-amber-500',
@@ -282,10 +283,10 @@ export default function SavedJobsPage() {
                                             <CompanyLogo company={job.company} applyUrl={job.apply_url} size={44} colorIndex={i} />
                                             <div className="flex-1 min-w-0 pr-6">
                                                 <Link
-                                                    href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                                    href={`/dashboard/job/${encodeURIComponent(safeBtoa(job.apply_url || job.title))}`}
                                                     onClick={() => {
                                                         try {
-                                                            const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                                            const key = `job_detail_${safeBtoa(job.apply_url || job.title)}`;
                                                             localStorage.setItem(key, JSON.stringify(job));
                                                         } catch (e) { /* ignore */ }
                                                     }}
@@ -343,10 +344,10 @@ export default function SavedJobsPage() {
                                     {/* Card Footer: Actions */}
                                     <div className="flex items-center justify-between px-5 py-3 border-t border-surface-100/80 dark:border-slate-800/50/60 bg-gray-50/40 dark:bg-[#13151d]/40 rounded-b-2xl">
                                         <Link
-                                            href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                            href={`/dashboard/job/${encodeURIComponent(safeBtoa(job.apply_url || job.title))}`}
                                             onClick={() => {
                                                 try {
-                                                    const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                                    const key = `job_detail_${safeBtoa(job.apply_url || job.title)}`;
                                                     localStorage.setItem(key, JSON.stringify(job));
                                                 } catch (e) { /* ignore */ }
                                             }}

@@ -6,6 +6,7 @@ import { useApp } from '@/contexts/AppContext';
 import { useUser } from '@clerk/nextjs';
 import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
+import { safeBtoa } from '@/lib/safe-btoa';
 
 function DotIndicator({ filled, total = 5 }) {
     return (
@@ -579,10 +580,10 @@ export default function DashboardHome() {
                                         <CompanyLogo company={job.company} applyUrl={job.apply_url} size={36} colorIndex={i} />
                                         <div className="flex-1 min-w-0">
                                             <Link
-                                                href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                                href={`/dashboard/job/${encodeURIComponent(safeBtoa(job.apply_url || job.title))}`}
                                                 onClick={() => {
                                                     try {
-                                                        const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                                        const key = `job_detail_${safeBtoa(job.apply_url || job.title)}`;
                                                         localStorage.setItem(key, JSON.stringify(job));
                                                     } catch (e) { /* ignore */ }
                                                 }}
@@ -647,10 +648,10 @@ export default function DashboardHome() {
                                 return (
                                     <Link
                                         key={job.apply_url || i}
-                                        href={`/dashboard/job/${encodeURIComponent(btoa(job.apply_url || job.title))}`}
+                                        href={`/dashboard/job/${encodeURIComponent(safeBtoa(job.apply_url || job.title))}`}
                                         onClick={() => {
                                             try {
-                                                const key = `job_detail_${btoa(job.apply_url || job.title)}`;
+                                                const key = `job_detail_${safeBtoa(job.apply_url || job.title)}`;
                                                 localStorage.setItem(key, JSON.stringify(job));
                                             } catch (e) { /* ignore */ }
                                         }}
