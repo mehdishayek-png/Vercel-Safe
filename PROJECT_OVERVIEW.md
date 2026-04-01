@@ -36,7 +36,6 @@ To prevent burning through SerpAPI credits and redundant LLM analysis, the platf
 
 ## 📂 Key File Structure
 * **`app/page.js`**: The main Landing Page containing the Hero hook and authentication gateway.
-* **`components/JobDashboard.jsx`**: The core interactive UI where signed-in users configure their search and view matched opportunities. It handles progress loading states and localized API error messages gracefully.
 * **`components/Header.jsx`**: The navigation shell housing the Clerk `<UserButton />` and `<SignInButton />`.
 * **`app/api/match-jobs/route.js`**: The primary POST endpoint that receives the user's profile, fetches jobs, runs the matching algorithms, and returns curated results.
 * **`app/api/analyze-job/route.js`**: A secondary endpoint used for deep-scanning a specific job description against a user's resume/skills to provide detailed application feedback.

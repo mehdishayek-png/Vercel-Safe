@@ -1,12 +1,8 @@
 import { NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
-import { Redis } from '@upstash/redis';
+import { redis } from '@/lib/redis';
 import { sendApplicationConfirmation } from '@/lib/email';
 import { validateOrigin } from '@/lib/csrf';
-
-const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-    ? new Redis({ url: process.env.UPSTASH_REDIS_REST_URL, token: process.env.UPSTASH_REDIS_REST_TOKEN })
-    : null;
 
 function savedJobsKey(userId) {
     return `user:${userId}:saved_jobs`;
