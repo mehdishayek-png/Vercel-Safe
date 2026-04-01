@@ -812,7 +812,7 @@ export default function JobDetailPage() {
                                                                 {severity}
                                                             </span>
                                                         </div>
-                                                        <p className="text-[12px] leading-relaxed">{concern.text || concern}</p>
+                                                        <p className="text-[12px] leading-relaxed">{concern.text || concern.concern || (typeof concern === 'string' ? concern : JSON.stringify(concern))}</p>
                                                         {concern.mitigation && (
                                                             <p className="text-[11px] mt-1.5 opacity-80 flex items-start gap-1.5">
                                                                 <Lightbulb className="w-3 h-3 mt-0.5 shrink-0" />
