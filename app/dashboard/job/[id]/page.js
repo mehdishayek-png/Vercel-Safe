@@ -10,6 +10,41 @@ import { safeBtoa } from '@/lib/safe-btoa';
 
 // ---- Utilities ----
 
+/**
+ * Safely convert any value to a renderable string.
+ * LLM responses are unpredictable — fields can be strings, objects, arrays, or null.
+ * React error #31 crashes the page if an object is rendered as a child.
+ * This is the ONLY way AI data should reach JSX.
+ */
+function safe(value) {
+    if (value === null || value === undefined) return '';
+    if (typeof value === 'string') return value;
+    if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+    if (Array.isArray(value)) return value.map(safe).join(', ');
+    if (typeof value === 'object') {
+        // Common LLM response shapes — extract the most likely text field
+        return value.text || value.concern || value.message || value.description
+            || value.label || value.name || value.value || value.content
+            || JSON.stringify(value);
+    }
+    return String(value);
+}
+
+/**
+ * Safely handle an array of items that might be strings or objects.
+ * Returns an array of {text, ...rest} objects safe for rendering.
+ */
+function safeArray(arr) {
+    if (!Array.isArray(arr)) return [];
+    return arr.map(item => {
+        if (typeof item === 'string') return { text: item };
+        if (typeof item === 'object' && item !== null) {
+            return { ...item, text: safe(item) };
+        }
+        return { text: String(item) };
+    });
+}
+
 function stripHtml(html) {
     if (!html) return '';
     return html
@@ -739,7 +774,7 @@ export default function JobDetailPage() {
                                             {analysis.strong_signals?.map((s, i) => (
                                                 <li key={i} className="text-[12px] text-teal-700/80 flex items-start gap-2">
                                                     <span className="w-1 h-1 rounded-full bg-teal-400 mt-1.5 shrink-0" />
-                                                    {s}
+                                                    {safe(s)}
                                                 </li>
                                             ))}
                                         </ul>
@@ -756,7 +791,7 @@ export default function JobDetailPage() {
                                                 {analysis.gaps?.map((g, i) => (
                                                     <li key={i} className="text-[12px] text-amber-700/80 flex items-start gap-2">
                                                         <span className="w-1 h-1 rounded-full bg-amber-400 mt-1.5 shrink-0" />
-                                                        {g}
+                                                        {safe(g)}
                                                     </li>
                                                 ))}
                                             </ul>
@@ -770,17 +805,17 @@ export default function JobDetailPage() {
                                         <Sparkles className="w-3.5 h-3.5 text-teal-500" />
                                         Verdict
                                     </h3>
-                                    <p className="text-[13px] text-gray-600 leading-relaxed">{analysis.verdict}</p>
+                                    <p className="text-[13px] text-gray-600 leading-relaxed">{safe(analysis.verdict)}</p>
                                     {analysis.salary_estimate && (
                                         <div className="mt-3 pt-3 border-t border-gray-200/60">
                                             <span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Estimated Salary </span>
-                                            <span className="text-gray-900 font-semibold text-[13px] ml-1">{analysis.salary_estimate}</span>
+                                            <span className="text-gray-900 font-semibold text-[13px] ml-1">{safe(analysis.salary_estimate)}</span>
                                         </div>
                                     )}
                                     {analysis.salary_read?.leverage_notes && (
                                         <div className="mt-2 pt-2 border-t border-gray-200/40">
                                             <span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Leverage Notes </span>
-                                            <p className="text-[12px] text-gray-600 mt-1 leading-relaxed">{analysis.salary_read.leverage_notes}</p>
+                                            <p className="text-[12px] text-gray-600 mt-1 leading-relaxed">{safe(analysis.salary_read?.leverage_notes)}</p>
                                         </div>
                                     )}
                                 </div>
@@ -812,11 +847,11 @@ export default function JobDetailPage() {
                                                                 {severity}
                                                             </span>
                                                         </div>
-                                                        <p className="text-[12px] leading-relaxed">{concern.text || concern.concern || (typeof concern === 'string' ? concern : JSON.stringify(concern))}</p>
+                                                        <p className="text-[12px] leading-relaxed">{safe(concern)}</p>
                                                         {concern.mitigation && (
                                                             <p className="text-[11px] mt-1.5 opacity-80 flex items-start gap-1.5">
                                                                 <Lightbulb className="w-3 h-3 mt-0.5 shrink-0" />
-                                                                {concern.mitigation}
+                                                                {safe(concern.mitigation)}
                                                             </p>
                                                         )}
                                                     </div>
@@ -835,7 +870,7 @@ export default function JobDetailPage() {
                                             </div>
                                             <h3 className="text-violet-800 font-medium text-[12px] uppercase tracking-wide">Hidden Opportunity</h3>
                                         </div>
-                                        <p className="text-[13px] text-violet-700/80 leading-relaxed">{analysis.hidden_opportunity}</p>
+                                        <p className="text-[13px] text-violet-700/80 leading-relaxed">{safe(analysis.hidden_opportunity)}</p>
                                     </div>
                                 )}
 
@@ -847,7 +882,7 @@ export default function JobDetailPage() {
                                         </div>
                                         <div>
                                             <h3 className="text-teal-800 font-semibold text-[12px] uppercase tracking-wide mb-1">Application Advice</h3>
-                                            <p className="text-[13px] text-teal-700/80 leading-relaxed">{analysis.application_advice}</p>
+                                            <p className="text-[13px] text-teal-700/80 leading-relaxed">{safe(analysis.application_advice)}</p>
                                         </div>
                                     </div>
                                 )}
@@ -926,7 +961,7 @@ export default function JobDetailPage() {
                                     {negotiationData.market_context && (
                                         <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                                             <h3 className="text-gray-700 font-medium text-[12px] mb-2 uppercase tracking-wide">Market Context</h3>
-                                            <p className="text-[13px] text-gray-600 leading-relaxed">{negotiationData.market_context}</p>
+                                            <p className="text-[13px] text-gray-600 leading-relaxed">{safe(negotiationData.market_context)}</p>
                                         </div>
                                     )}
 
@@ -934,7 +969,7 @@ export default function JobDetailPage() {
                                     {negotiationData.your_position && (
                                         <div className="bg-violet-50/50 p-4 rounded-lg border border-violet-100">
                                             <h3 className="text-violet-700 font-medium text-[12px] mb-2 uppercase tracking-wide">Your Position</h3>
-                                            <p className="text-[13px] text-violet-700/80 leading-relaxed">{negotiationData.your_position}</p>
+                                            <p className="text-[13px] text-violet-700/80 leading-relaxed">{safe(negotiationData.your_position)}</p>
                                         </div>
                                     )}
 
@@ -948,19 +983,19 @@ export default function JobDetailPage() {
                                                 {negotiationData.strategy.timing && (
                                                     <div className="flex items-start gap-2 text-[12px]">
                                                         <span className="text-teal-600 font-semibold shrink-0 w-14">Timing</span>
-                                                        <span className="text-teal-700/80">{negotiationData.strategy.timing}</span>
+                                                        <span className="text-teal-700/80">{safe(negotiationData.strategy.timing)}</span>
                                                     </div>
                                                 )}
                                                 {negotiationData.strategy.anchor && (
                                                     <div className="flex items-start gap-2 text-[12px]">
                                                         <span className="text-teal-600 font-semibold shrink-0 w-14">Anchor</span>
-                                                        <span className="text-teal-700/80">{negotiationData.strategy.anchor}</span>
+                                                        <span className="text-teal-700/80">{safe(negotiationData.strategy.anchor)}</span>
                                                     </div>
                                                 )}
                                                 {negotiationData.strategy.floor && (
                                                     <div className="flex items-start gap-2 text-[12px]">
                                                         <span className="text-teal-600 font-semibold shrink-0 w-14">Floor</span>
-                                                        <span className="text-teal-700/80">{negotiationData.strategy.floor}</span>
+                                                        <span className="text-teal-700/80">{safe(negotiationData.strategy.floor)}</span>
                                                     </div>
                                                 )}
                                             </div>
@@ -980,12 +1015,12 @@ export default function JobDetailPage() {
                                                             onClick={() => toggleScript(i)}
                                                             className="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 hover:bg-gray-100 transition-colors text-left cursor-pointer"
                                                         >
-                                                            <span className="text-[12px] font-medium text-gray-700">{script.title || script.scenario || `Script ${i + 1}`}</span>
+                                                            <span className="text-[12px] font-medium text-gray-700">{safe(script.title || script.scenario) || `Script ${i + 1}`}</span>
                                                             {expandedScripts[i] ? <ChevronUp className="w-3.5 h-3.5 text-gray-400" /> : <ChevronDown className="w-3.5 h-3.5 text-gray-400" />}
                                                         </button>
                                                         {expandedScripts[i] && (
                                                             <div className="px-4 py-3 text-[12px] text-gray-600 leading-relaxed whitespace-pre-wrap bg-white">
-                                                                {script.text || script.script || script.content}
+                                                                {safe(script)}
                                                             </div>
                                                         )}
                                                     </div>
