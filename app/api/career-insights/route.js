@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { rateLimit } from '@/lib/rate-limit';
-import { callSonnet, parseJSON } from '@/lib/sonnet';
+import { callFlash, parseJSON } from '@/lib/sonnet';
 
 export const maxDuration = 30;
 
@@ -65,7 +65,7 @@ Respond with ONLY valid JSON in this exact format:
   "one_liner": "1 sentence summary of the biggest insight"
 }`;
 
-    const raw = await callSonnet(prompt, { maxTokens: 600, temperature: 0.7 });
+    const raw = await callFlash(prompt, { maxTokens: 600, temperature: 0.7 });
     const result = parseJSON(raw);
 
     return NextResponse.json(result);
