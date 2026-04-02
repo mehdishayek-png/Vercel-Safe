@@ -26,22 +26,7 @@
   --radius-xl: 32px;
 }
 
-.dark {
-  --bg-app: #1a1210;
-  --bg-card: #2c1f1b;
-  --bg-card-hover: #3d2e2b;
-  --bg-elevated: #3d2e2b;
-  --primary: #ffb4a2;
-  --primary-deep: #ff9e8a;
-  --primary-light: #ffdad2;
-  --accent: #fde68a;
-  --accent-light: #fef3c7;
-  --text-primary: #fff1ee;
-  --text-secondary: #c4a9a3;
-  --text-muted: #857370;
-  --border: #4a3532;
-  --border-light: #3d2e2b;
-}
+/* Dark mode disabled — was causing unreadable font issues in production */
 
 * {
   box-sizing: border-box;
