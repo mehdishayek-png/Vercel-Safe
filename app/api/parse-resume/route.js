@@ -92,14 +92,15 @@ export async function POST(request) {
 
     const profile = await parseResumePDF(buffer);
 
-    // Enrich with search strategy (non-blocking — failures are graceful)
-    const strategy = await extractSearchStrategy(profile.resume_text || '', profile);
+    // Run enrichment calls in parallel — both are independent and non-blocking
+    const [strategy, whatIDo] = await Promise.all([
+      extractSearchStrategy(profile.resume_text || '', profile).catch(() => null),
+      generateWhatIDo(profile).catch(() => ''),
+    ]);
+
     if (strategy) {
       profile.search_strategy = strategy;
     }
-
-    // Generate "What I Do" summary from resume text (non-blocking)
-    const whatIDo = await generateWhatIDo(profile);
 
     return NextResponse.json({ profile, whatIDo });
   } catch (e) {
