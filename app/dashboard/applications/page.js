@@ -1,7 +1,7 @@
 'use client';
 import { Briefcase, Search, ExternalLink, Clock, X, CheckCircle, RefreshCw, Star, ChevronDown, MapPin, Building2, MoreHorizontal, Download, Filter, Eye, Trash2, Bookmark, FileText } from 'lucide-react';
 import Link from 'next/link';
-import { useApp } from '@/contexts/AppContext';
+import { useJobsStore } from '@/stores/jobs-store';
 import { exportJobsToCSV } from '@/lib/export-csv';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { useState, useRef, useEffect } from 'react';
@@ -120,7 +120,7 @@ const AVATAR_COLORS = [
 ];
 
 export default function ApplicationsPage() {
-    const { appliedJobsData, appliedJobIds, toggleAppliedJob, toggleSaveJob, savedJobIds } = useApp();
+    const { appliedJobsData, appliedJobIds, toggleAppliedJob, toggleSaveJob, savedJobIds } = useJobsStore();
     const [filter, setFilter] = useState('all');
     const [activePopover, setActivePopover] = useState(null);
     const [selectedJobs, setSelectedJobs] = useState(new Set());

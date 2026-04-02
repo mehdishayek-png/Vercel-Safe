@@ -2,10 +2,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, X, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { useApp } from '@/contexts/AppContext';
+import { useSearchStore } from '@/stores/search-store';
+import { useJobsStore } from '@/stores/jobs-store';
 
 export function ReturnNotification() {
-    const { showReturnNotification, setShowReturnNotification, savedJobsData, appliedJobsData } = useApp();
+    const { showReturnNotification, setShowReturnNotification } = useSearchStore();
+    const { savedJobsData, appliedJobsData } = useJobsStore();
 
     if (!showReturnNotification) return null;
 

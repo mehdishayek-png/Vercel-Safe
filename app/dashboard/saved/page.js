@@ -1,7 +1,9 @@
 'use client';
 import { Bookmark, Search, X, ExternalLink, ChevronDown, Star, Eye, Download, CheckCircle, Trash2, Check } from 'lucide-react';
 import Link from 'next/link';
-import { useApp } from '@/contexts/AppContext';
+import { useProfileStore } from '@/stores/profile-store';
+import { useJobsStore } from '@/stores/jobs-store';
+import { useTokenStore } from '@/stores/token-store';
 import { exportJobsToCSV } from '@/lib/export-csv';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { useState } from 'react';
@@ -28,7 +30,9 @@ function DotIndicator({ filled, total = 5 }) {
 }
 
 export default function SavedJobsPage() {
-    const { savedJobsData, savedJobIds, toggleSaveJob, toggleAppliedJob, appliedJobIds, profile, apiKeys, refreshTokens } = useApp();
+    const { profile, apiKeys } = useProfileStore();
+    const { savedJobsData, savedJobIds, toggleSaveJob, toggleAppliedJob, appliedJobIds } = useJobsStore();
+    const refreshTokens = useTokenStore(s => s.refreshTokens);
     const [sortField, setSortField] = useState('score');
     const [sortDir, setSortDir] = useState('desc');
     const [selectedJobs, setSelectedJobs] = useState(new Set());

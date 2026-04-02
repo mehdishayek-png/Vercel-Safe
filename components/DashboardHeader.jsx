@@ -5,8 +5,7 @@ import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { GuideModal } from './GuideModal';
-import { ThemeToggle } from './ThemeToggle';
-import { useApp } from '@/contexts/AppContext';
+import { useTokenStore } from '@/stores/token-store';
 import { UserButton, SignedIn } from '@clerk/nextjs';
 
 const PAGE_TITLES = {
@@ -20,7 +19,7 @@ const PAGE_TITLES = {
 
 export function DashboardHeader({ onMenuClick }) {
     const pathname = usePathname();
-    const { tokenBalance } = useApp();
+    const tokenBalance = useTokenStore(s => s.tokenBalance);
     const [showGuide, setShowGuide] = useState(false);
 
     return (
@@ -66,7 +65,7 @@ export function DashboardHeader({ onMenuClick }) {
                         <Bell className="w-5 h-5" />
                         <span className="absolute top-2 right-2 w-2 h-2 bg-accent-500 rounded-full"></span>
                     </button>
-                    <ThemeToggle />
+
                     <button onClick={() => setShowGuide(true)} className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-[#22252f] rounded-full transition-colors cursor-pointer">
                         <HelpCircle className="w-5 h-5" />
                     </button>

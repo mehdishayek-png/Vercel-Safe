@@ -8,14 +8,18 @@ import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
 import { CandidatePanel } from '@/components/dashboard/CandidatePanel';
 import { ScanControls } from '@/components/dashboard/ScanControls';
 import { ActivityLog } from '@/components/dashboard/ActivityLog';
-import { getCountryName } from '@/lib/location-data';
-import { Country, State, City } from 'country-state-city';
+import { getCountryName, getStatesByCountry, getCitiesByState, getCitiesByCountry } from '@/lib/location-data';
 import { useToast } from '@/components/ui/Toast';
-import { useApp } from '@/contexts/AppContext';
+import { useProfileStore } from '@/stores/profile-store';
+import { useSearchStore } from '@/stores/search-store';
+import { useJobsStore } from '@/stores/jobs-store';
+import { useTokenStore } from '@/stores/token-store';
+import { useFilters } from '@/hooks/use-filters';
+import { useAuth } from '@clerk/nextjs';
 import { useState } from 'react';
 
 export default function SearchPage() {
-    const app = useApp();
+    const { isSignedIn } = useAuth();
     const toast = useToast();
     const resultsRef = useRef(null);
 
@@ -26,39 +30,33 @@ export default function SearchPage() {
     const [whatIDoOpen, setWhatIDoOpen] = useState(false);
 
     const {
-        profile, setProfile,
-        jobs, setJobs,
-        isParsing, setIsParsing,
-        isMatching, setIsMatching,
-        searchError, setSearchError,
-        logs, setLogs, addLog,
-        savedJobIds,
-        savedJobsData,
-        activeTab, setActiveTab,
-        sortBy, setSortBy,
+        profile, setProfile, isParsing, setIsParsing,
+        experienceYears, setExperienceYears, jobTitle, setJobTitle,
+        whatIDo, setWhatIDo, fileInputRef, apiKeys,
+    } = useProfileStore();
+    const {
+        jobs, setJobs, isMatching, setIsMatching,
+        searchError, setSearchError, logs, setLogs, addLog,
+        activeTab, setActiveTab, sortBy, setSortBy,
         deepAnalysisProgress, setDeepAnalysisProgress,
+        midasSearch, setMidasSearch, exploreAdjacent, setExploreAdjacent,
+        preferences, setPreferences, countries, states, cities,
+    } = useSearchStore();
+    const {
+        savedJobIds, savedJobsData, toggleSaveJob,
+        toggleAppliedJob, appliedJobIds,
+    } = useJobsStore();
+    const {
         tokenBalance, dailyScanCount, weeklyMidasScanCount,
-        isAdminUser, tokensLoading,
-        midasSearch, setMidasSearch,
-        exploreAdjacent, setExploreAdjacent,
-        preferences, setPreferences,
-        countries, states, cities,
-        experienceYears, setExperienceYears,
-        jobTitle, setJobTitle,
-        whatIDo, setWhatIDo,
-        fileInputRef, apiKeys,
-        toggleSaveJob, toggleAppliedJob,
-        appliedJobIds,
-        refreshTokens,
-        freeScansRemaining,
-        FREE_DAILY_SCANS, FREE_VISIBLE_JOBS,
-        isSignedIn,
-        // Filters
+        isAdminUser, tokensLoading, refreshTokens,
+        freeScansRemaining, FREE_DAILY_SCANS, FREE_VISIBLE_JOBS,
+    } = useTokenStore();
+    const {
         filters, flags,
         isActive: filtersActive, activeCount: filterCount, summary: filterSummary,
         toggleWorkArrangement, toggleWorkType, toggleRegion, toggleCompanySize,
         setSalaryMin, setSalaryCurrency, setIncludeMissingSalary, reset: resetFilters,
-    } = app;
+    } = useFilters();
 
     const [searchSuggestions, setSearchSuggestions] = useState(null);
 
@@ -101,6 +99,7 @@ export default function SearchPage() {
             if (data.profile.location) {
                 addLog(`Detected location: ${data.profile.location}`);
                 const locLower = data.profile.location.toLowerCase();
+                const { Country, State, City } = await import('country-state-city');
                 const allCountries = Country.getAllCountries();
                 const foundCountry = allCountries.find(c =>
                     locLower.includes(c.name.toLowerCase()) || locLower.includes(c.isoCode.toLowerCase()) ||
@@ -172,7 +171,7 @@ export default function SearchPage() {
 
         let locationQuery = '';
         if (!preferences.remoteOnly) {
-            const countryName = getCountryName(preferences.country);
+            const countryName = await getCountryName(preferences.country);
             const queryParts = [];
             if (preferences.city) queryParts.push(preferences.city);
             else if (preferences.state) queryParts.push(preferences.state);

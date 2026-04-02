@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useApp } from '@/contexts/AppContext';
+import { useProfileStore } from '@/stores/profile-store';
+import { useSearchStore } from '@/stores/search-store';
+import { useJobsStore } from '@/stores/jobs-store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, ChevronDown, Sparkles, Target, MessageSquare, Building2, Lightbulb, AlertTriangle, Mic, Loader2, BookOpen, Search } from 'lucide-react';
 import Link from 'next/link';
@@ -72,7 +74,9 @@ function QuestionCard({ q, index }) {
 }
 
 export default function InterviewPrepPage() {
-    const { profile, jobs, savedJobIds, experienceYears, jobTitle, whatIDo } = useApp();
+    const { profile, experienceYears, jobTitle, whatIDo } = useProfileStore();
+    const jobs = useSearchStore(s => s.jobs);
+    const savedJobIds = useJobsStore(s => s.savedJobIds);
     const [selectedJob, setSelectedJob] = useState(null);
     const [prep, setPrep] = useState(null);
     const [isLoading, setIsLoading] = useState(false);

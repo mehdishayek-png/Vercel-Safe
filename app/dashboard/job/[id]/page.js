@@ -3,7 +3,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
 import { ArrowLeft, ExternalLink, Bookmark, Check, MapPin, Building2, Clock, Sparkles, BrainCircuit, FileText, Copy, CheckCheck, Loader2, AlertCircle, Briefcase, ChevronRight, GraduationCap, Target, BadgeCheck, Eye, ChevronDown, Lightbulb, Shield, MessageSquare, DollarSign, ArrowUpRight, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
-import { useApp } from '@/contexts/AppContext';
+import { useProfileStore } from '@/stores/profile-store';
+import { useSearchStore } from '@/stores/search-store';
+import { useJobsStore } from '@/stores/jobs-store';
 import { useToast } from '@/components/ui/Toast';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { safeBtoa } from '@/lib/safe-btoa';
@@ -312,11 +314,9 @@ export default function JobDetailPage() {
     const params = useParams();
     const router = useRouter();
     const toast = useToast();
-    const {
-        savedJobIds, toggleSaveJob, appliedJobIds, toggleAppliedJob,
-        profile, apiKeys, experienceYears: userExperienceYears,
-        jobs, savedJobsData, recommendations
-    } = useApp();
+    const { profile, apiKeys, experienceYears: userExperienceYears } = useProfileStore();
+    const { jobs, recommendations } = useSearchStore();
+    const { savedJobIds, toggleSaveJob, appliedJobIds, toggleAppliedJob, savedJobsData } = useJobsStore();
     const [job, setJob] = useState(null);
     const [coverLetter, setCoverLetter] = useState(null);
     const [isLoadingCoverLetter, setIsLoadingCoverLetter] = useState(false);

@@ -3,7 +3,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Home, Search, Bookmark, Briefcase, User, Settings, LogOut, ChevronLeft, X, GraduationCap, HelpCircle, Sparkles } from 'lucide-react';
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/nextjs';
-import { useApp } from '@/contexts/AppContext';
+import { useJobsStore } from '@/stores/jobs-store';
 
 const NAV_ITEMS = [
     { href: '/dashboard', icon: Home, label: 'Dashboard' },
@@ -17,7 +17,8 @@ const NAV_ITEMS = [
 export function Sidebar({ isOpen, onClose }) {
     const pathname = usePathname();
     const { user } = useUser();
-    const { savedJobIds, appliedJobIds } = useApp();
+    const savedJobIds = useJobsStore(s => s.savedJobIds);
+    const appliedJobIds = useJobsStore(s => s.appliedJobIds);
 
     const isActive = (href) => {
         if (href === '/dashboard') return pathname === '/dashboard';

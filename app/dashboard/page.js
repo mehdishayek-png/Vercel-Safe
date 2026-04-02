@@ -2,7 +2,9 @@
 import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, Target, ChevronRight, Sparkles, Eye, Brain, FileText, ShieldCheck, Loader2, AlertCircle, Lightbulb, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
-import { useApp } from '@/contexts/AppContext';
+import { useProfileStore } from '@/stores/profile-store';
+import { useSearchStore } from '@/stores/search-store';
+import { useJobsStore } from '@/stores/jobs-store';
 import { useUser } from '@clerk/nextjs';
 import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
@@ -35,12 +37,16 @@ function scoreToDots(score) {
 export default function DashboardHome() {
     const { user } = useUser();
     const {
-        profile, jobs, savedJobsData, appliedJobsData,
-        isParsing, fileInputRef, setIsParsing, setProfile,
-        experienceYears, setExperienceYears, jobTitle, setJobTitle, addLog,
-        preferences, setPreferences,
+        profile, isParsing, fileInputRef, setIsParsing, setProfile,
+        experienceYears, setExperienceYears, jobTitle, setJobTitle,
+    } = useProfileStore();
+    const {
+        jobs, addLog, preferences, setPreferences,
+    } = useSearchStore();
+    const {
+        savedJobsData, appliedJobsData,
         toggleSaveJob, savedJobIds, toggleAppliedJob, appliedJobIds,
-    } = useApp();
+    } = useJobsStore();
 
     // --- Search Insights state ---
     const [insights, setInsights] = useState(null);

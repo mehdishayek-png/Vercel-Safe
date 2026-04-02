@@ -1,6 +1,9 @@
 'use client';
 import { useState, useRef } from 'react';
-import { useApp } from '@/contexts/AppContext';
+import { useProfileStore } from '@/stores/profile-store';
+import { useSearchStore } from '@/stores/search-store';
+import { useJobsStore } from '@/stores/jobs-store';
+import { useTokenStore } from '@/stores/token-store';
 import { useUser } from '@clerk/nextjs';
 import {
     User, Briefcase, MapPin, Tag, Plus, X, Globe, ToggleLeft, ToggleRight,
@@ -70,16 +73,10 @@ function SelectInput({ value, onChange, children }) {
 
 export default function SettingsPage() {
     const { user } = useUser();
-    const {
-        profile, setProfile,
-        experienceYears, setExperienceYears,
-        jobTitle, setJobTitle,
-        whatIDo, setWhatIDo,
-        preferences, setPreferences,
-        countries, states, cities,
-        tokenBalance, freeScansRemaining, FREE_DAILY_SCANS,
-        savedJobsData, appliedJobsData,
-    } = useApp();
+    const { profile, setProfile, experienceYears, setExperienceYears, jobTitle, setJobTitle, whatIDo, setWhatIDo } = useProfileStore();
+    const { preferences, setPreferences, countries, states, cities } = useSearchStore();
+    const { savedJobsData, appliedJobsData } = useJobsStore();
+    const { tokenBalance, freeScansRemaining, FREE_DAILY_SCANS } = useTokenStore();
 
     const [toast, setToast] = useState(null);
     const [skillInput, setSkillInput] = useState('');
