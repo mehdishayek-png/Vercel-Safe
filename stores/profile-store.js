@@ -9,7 +9,13 @@ export const useProfileStore = create((set, get) => ({
     isParsing: false,
     fileInputRef: { current: null },
 
-    setProfile: (profile) => set({ profile }),
+    setProfile: (updater) => {
+        if (typeof updater === 'function') {
+            set((state) => ({ profile: updater(state.profile) }));
+        } else {
+            set({ profile: updater });
+        }
+    },
     setExperienceYears: (experienceYears) => set({ experienceYears }),
     setJobTitle: (jobTitle) => set({ jobTitle }),
     setWhatIDo: (whatIDo) => set({ whatIDo }),

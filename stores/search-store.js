@@ -31,7 +31,13 @@ export const useSearchStore = create((set, get) => ({
     recsLastFetched: null,
 
     // Setters
-    setJobs: (jobs) => set({ jobs }),
+    setJobs: (updater) => {
+        if (typeof updater === 'function') {
+            set((state) => ({ jobs: updater(state.jobs) }));
+        } else {
+            set({ jobs: updater });
+        }
+    },
     setIsMatching: (isMatching) => set({ isMatching }),
     setSearchError: (searchError) => set({ searchError }),
     setLogs: (logs) => set({ logs }),
