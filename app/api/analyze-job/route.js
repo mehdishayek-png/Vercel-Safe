@@ -129,7 +129,7 @@ IMPORTANT for backward compatibility:
 - "tldr" MUST be a flat string.
 `;
 
-        const raw = await callSonnet(prompt, { maxTokens: 800, temperature: 0.6 });
+        const raw = await callSonnet(prompt, { maxTokens: 1500, temperature: 0.6 });
         const analysis = parseJSON(raw);
 
         // Backward compatibility: frontend renders strong_signals as flat strings
