@@ -47,7 +47,7 @@ Write the cover letter:`;
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'qwen/qwen3.6-plus:free',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.7,
         max_tokens: 250,
