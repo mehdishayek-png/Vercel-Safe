@@ -269,59 +269,10 @@ export default function SearchPage() {
                     generateSearchSuggestions(jobTitle, profile).then(s => s && setSearchSuggestions(s));
                 }
 
-                // Mark top 20 as pending analysis — hides heuristic score until AI score arrives
-                const top20 = currentJobs.slice(0, 20);
-                const top20Ids = new Set(top20.map(j => j.id || j.apply_url));
-                const markedJobs = currentJobs.map(j =>
-                    top20Ids.has(j.id || j.apply_url) ? { ...j, _pendingAnalysis: true } : j
-                );
+                // Deep analysis now runs on-demand when user clicks "View" on a job
+                addLog(`${currentJobs.length} jobs matched. Click "View" on any job for AI deep analysis.`);
 
-                const chunkSize = 10;
-                const totalBatches = Math.ceil(top20.length / chunkSize);
-                addLog(`AI Agent: Deep analysis on top ${top20.length} candidates...`);
-                setDeepAnalysisProgress({ current: 0, total: totalBatches });
-
-                // Run deep analysis asynchronously
-                (async () => {
-                    const updateJobWithAnalysis = (jobId, analysis) => {
-                        setJobs(prev => prev.map(j => {
-                            if (j.id === jobId || j.apply_url === jobId) {
-                                return { ...j, analysis, match_score: analysis.fit_score || j.match_score, _pendingAnalysis: false };
-                            }
-                            return j;
-                        }).filter(j => !(j.analysis?.fit_score && j.analysis.fit_score < 35)));
-                    };
-
-                    for (let i = 0; i < top20.length; i += chunkSize) {
-                        const chunk = top20.slice(i, i + chunkSize);
-                        const batchNum = Math.floor(i / chunkSize) + 1;
-                        addLog(`Batch ${batchNum}/${totalBatches}...`);
-                        setDeepAnalysisProgress({ current: batchNum, total: totalBatches });
-
-                        const promises = chunk.map(job =>
-                            fetch('/api/analyze-job', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    job, profile: { ...profile, experience_years: experienceYears, headline: jobTitle, whatIDo }
-                                })
-                            }).then(r => r.json()).then(d => {
-                                if (d.analysis) updateJobWithAnalysis(job.id || job.apply_url, d.analysis);
-                            }).catch(err => console.error(`Failed to analyze ${job.title}`, err))
-                        );
-                        await Promise.all(promises);
-                    }
-
-                    // Clear pending flags (in case some analyses failed) and sort by final score
-                    setJobs(prev => [...prev].map(j => ({ ...j, _pendingAnalysis: false })).sort((a, b) =>
-                        (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0)
-                    ));
-                    setDeepAnalysisProgress(null);
-                    addLog("Analysis complete. Sorted by fit score.");
-                    refreshTokens();
-                })();
-
-                return markedJobs;
+                return currentJobs;
             });
 
             refreshTokens();
