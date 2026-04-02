@@ -37,7 +37,7 @@ Return ONLY a JSON array of 5 strings, nothing else. Example: ["Product Manager"
         'X-Title': 'Midas',
       },
       body: JSON.stringify({
-        model: 'qwen/qwen3.6-plus:free',
+        model: 'google/gemini-2.5-flash',
         temperature: 0.3,
         max_tokens: 100,
         messages: [{ role: 'user', content: prompt }],

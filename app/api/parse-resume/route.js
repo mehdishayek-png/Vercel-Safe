@@ -43,7 +43,7 @@ Write ONLY the description, nothing else. No quotes, no labels.`;
         'X-Title': 'Midas',
       },
       body: JSON.stringify({
-        model: 'qwen/qwen3.6-plus:free',
+        model: 'google/gemini-2.5-flash',
         temperature: 0.3,
         max_tokens: 150,
         messages: [{ role: 'user', content: prompt }],
