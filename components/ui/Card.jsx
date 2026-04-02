@@ -7,7 +7,7 @@ export function Card({ children, className, hover = false, ...props }) {
             initial={hover ? { y: 0 } : undefined}
             whileHover={hover ? { y: -3 } : undefined}
             className={cn(
-                "relative rounded-xl border border-outline-variant/10 glass-card dark:bg-slate-950/70 shadow-card transition-all duration-200",
+                "relative rounded-xl border border-outline-variant/10 glass-card shadow-card transition-all duration-200",
                 hover && "hover:shadow-card-hover hover:border-surface-300",
                 className
             )}

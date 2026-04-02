@@ -25,7 +25,7 @@ function Toast({ message, onClose }) {
 
 function GlassCard({ children, className = '' }) {
     return (
-        <div className={`glass-panel backdrop-blur-xl dark:bg-[#1a1d27]/80 rounded-2xl shadow-glass ${className}`}>
+        <div className={`glass-panel backdrop-blur-xl  rounded-2xl shadow-glass ${className}`}>
             {children}
         </div>
     );
@@ -34,16 +34,16 @@ function GlassCard({ children, className = '' }) {
 function SectionHeader({ title, icon: Icon }) {
     return (
         <div className="flex items-center gap-2.5 mb-5">
-            <div className="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-900/20 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-brand-50 flex items-center justify-center">
                 <Icon className="w-4 h-4 text-brand-500" />
             </div>
-            <h2 className="text-[15px] font-headline font-bold text-gray-900 dark:text-gray-100">{title}</h2>
+            <h2 className="text-[15px] font-headline font-bold text-gray-900">{title}</h2>
         </div>
     );
 }
 
 function FieldLabel({ children }) {
-    return <label className="block text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">{children}</label>;
+    return <label className="block text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">{children}</label>;
 }
 
 function TextInput({ value, onChange, placeholder, type = 'text', ...props }) {
@@ -53,7 +53,7 @@ function TextInput({ value, onChange, placeholder, type = 'text', ...props }) {
             value={value}
             onChange={onChange}
             placeholder={placeholder}
-            className="w-full px-3.5 py-2.5 text-[13px] text-gray-900 dark:text-gray-200 bg-surface-100 dark:bg-slate-800/50 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
+            className="w-full px-3.5 py-2.5 text-[13px] text-gray-900 bg-surface-100 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all placeholder:text-gray-300"
             {...props}
         />
     );
@@ -64,7 +64,7 @@ function SelectInput({ value, onChange, children }) {
         <select
             value={value}
             onChange={onChange}
-            className="w-full px-3.5 py-2.5 text-[13px] text-gray-900 dark:text-gray-200 bg-surface-100 dark:bg-slate-800/50 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all appearance-none cursor-pointer"
+            className="w-full px-3.5 py-2.5 text-[13px] text-gray-900 bg-surface-100 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all appearance-none cursor-pointer"
         >
             {children}
         </select>
@@ -159,14 +159,14 @@ export default function SettingsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-surface-50/50 dark:bg-[#13151d]">
+        <div className="min-h-screen bg-surface-50/50">
             {toast && <Toast message={toast} onClose={() => setToast(null)} />}
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
                 {/* Page header */}
                 <div className="mb-10">
-                    <h1 className="text-[32px] font-headline font-bold text-gray-900 dark:text-gray-50 tracking-tight">Settings</h1>
-                    <p className="text-[14px] text-gray-400 dark:text-gray-500 mt-1 font-light">Fine-tune your profile, preferences, and account details</p>
+                    <h1 className="text-[32px] font-headline font-bold text-gray-900 tracking-tight">Settings</h1>
+                    <p className="text-[14px] text-gray-400 mt-1 font-light">Fine-tune your profile, preferences, and account details</p>
                 </div>
 
                 {/* Two-column layout */}
@@ -236,18 +236,18 @@ export default function SettingsPage() {
 
                                 {/* What I Do */}
                                 <div>
-                                    <FieldLabel>What I Do <span className="text-gray-300 dark:text-gray-600 font-normal normal-case tracking-normal">(optional)</span></FieldLabel>
+                                    <FieldLabel>What I Do <span className="text-gray-300 font-normal normal-case tracking-normal">(optional)</span></FieldLabel>
                                     <div className="relative">
                                         <textarea
                                             value={whatIDo}
                                             onChange={(e) => setWhatIDo(e.target.value)}
                                             placeholder="Describe what you do day-to-day in 2-3 sentences. E.g., 'I help SaaS companies onboard enterprise clients. I run QBRs, build playbooks, and reduce churn.'"
-                                            className="w-full px-3.5 py-2.5 text-[13px] text-gray-900 bg-surface-100 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all placeholder:text-gray-300 resize-none dark:bg-slate-800/50 dark:text-gray-200 dark:placeholder:text-gray-600"
+                                            className="w-full px-3.5 py-2.5 text-[13px] text-gray-900 bg-surface-100 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all placeholder:text-gray-300 resize-none"
                                             rows={3}
                                             maxLength={500}
                                         />
-                                        <div className="absolute bottom-2.5 right-3 text-[10px] font-medium text-gray-300 dark:text-gray-600 tabular-nums">
-                                            {whatIDo.length}<span className="text-gray-200 dark:text-gray-700">/500</span>
+                                        <div className="absolute bottom-2.5 right-3 text-[10px] font-medium text-gray-300 tabular-nums">
+                                            {whatIDo.length}<span className="text-gray-200">/500</span>
                                         </div>
                                     </div>
                                 </div>
@@ -255,7 +255,7 @@ export default function SettingsPage() {
                                 <div className="flex justify-end pt-2">
                                     <button
                                         onClick={handleSaveProfile}
-                                        className="px-5 py-2.5 text-[13px] font-semibold text-white bg-gray-900 dark:bg-gray-100 dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 rounded-xl transition-all shadow-button hover:shadow-card cursor-pointer"
+                                        className="px-5 py-2.5 text-[13px] font-semibold text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-all shadow-button hover:shadow-card cursor-pointer"
                                     >
                                         Save Profile
                                     </button>
@@ -271,12 +271,12 @@ export default function SettingsPage() {
                                     {skills.map((skill) => (
                                         <span
                                             key={skill}
-                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-50 dark:bg-brand-900/20 rounded-full text-[12px] font-semibold text-brand-600 dark:text-brand-300 group transition-all hover:bg-brand-100 dark:hover:bg-brand-900/30"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-50 rounded-full text-[12px] font-semibold text-brand-600 group transition-all hover:bg-brand-100"
                                         >
                                             {skill}
                                             <button
                                                 onClick={() => removeSkill(skill)}
-                                                className="text-brand-300 dark:text-brand-500 hover:text-red-400 transition-colors cursor-pointer"
+                                                className="text-brand-300 hover:text-red-400 transition-colors cursor-pointer"
                                             >
                                                 <X className="w-3 h-3" />
                                             </button>
@@ -284,7 +284,7 @@ export default function SettingsPage() {
                                     ))}
                                     <button
                                         onClick={() => skillInputRef.current?.focus()}
-                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-brand-300 dark:border-brand-700 rounded-full text-[12px] font-medium text-brand-500 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all cursor-pointer"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-brand-300 rounded-full text-[12px] font-medium text-brand-500 hover:bg-brand-50 transition-all cursor-pointer"
                                     >
                                         <Plus className="w-3 h-3" />
                                         Add Skill
@@ -299,17 +299,17 @@ export default function SettingsPage() {
                                         onChange={(e) => setSkillInput(e.target.value)}
                                         onKeyDown={handleSkillKeyDown}
                                         placeholder={skills.length === 0 ? 'Type a skill and press Enter' : 'Add more skills...'}
-                                        className="w-full px-3.5 py-2.5 text-[13px] bg-surface-100 dark:bg-slate-800/50 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600 dark:text-gray-200"
+                                        className="w-full px-3.5 py-2.5 text-[13px] bg-surface-100 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all placeholder:text-gray-300"
                                     />
                                 </div>
 
-                                <p className="text-[11px] text-gray-300 dark:text-gray-600">Press Enter to add, Backspace to remove last</p>
+                                <p className="text-[11px] text-gray-300">Press Enter to add, Backspace to remove last</p>
 
                                 {/* AI Suggestion hint */}
                                 {skills.length > 0 && skills.length < 8 && (
-                                    <div className="flex items-start gap-3 p-3.5 bg-accent-50/60 dark:bg-accent-900/10 rounded-xl">
+                                    <div className="flex items-start gap-3 p-3.5 bg-accent-50/60 rounded-xl">
                                         <Sparkles className="w-4 h-4 text-accent-500 shrink-0 mt-0.5" />
-                                        <p className="text-[12px] text-accent-600 dark:text-accent-400 leading-relaxed">
+                                        <p className="text-[12px] text-accent-600 leading-relaxed">
                                             Adding <span className="font-semibold">2-3 more skills</span> could improve your match accuracy by up to <span className="font-semibold">18%</span>
                                         </p>
                                     </div>
@@ -361,10 +361,10 @@ export default function SettingsPage() {
                                 </div>
 
                                 {/* Remote toggle */}
-                                <div className="flex items-center justify-between py-3 px-4 bg-surface-100/60 dark:bg-slate-800/50/60 rounded-xl">
+                                <div className="flex items-center justify-between py-3 px-4 bg-surface-100/60/60 rounded-xl">
                                     <div>
-                                        <p className="text-[13px] font-semibold text-gray-700 dark:text-gray-300">Remote Only</p>
-                                        <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">Only show remote positions in search results</p>
+                                        <p className="text-[13px] font-semibold text-gray-700">Remote Only</p>
+                                        <p className="text-[11px] text-gray-400 mt-0.5">Only show remote positions in search results</p>
                                     </div>
                                     <button
                                         onClick={() => setPreferences(prev => ({ ...prev, remoteOnly: !prev.remoteOnly }))}
@@ -381,7 +381,7 @@ export default function SettingsPage() {
                                 <div className="flex justify-end pt-2">
                                     <button
                                         onClick={handleSavePreferences}
-                                        className="px-5 py-2.5 text-[13px] font-semibold text-white bg-gray-900 dark:bg-gray-100 dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 rounded-xl transition-all shadow-button hover:shadow-card cursor-pointer"
+                                        className="px-5 py-2.5 text-[13px] font-semibold text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-all shadow-button hover:shadow-card cursor-pointer"
                                     >
                                         Save Preferences
                                     </button>
@@ -424,13 +424,13 @@ export default function SettingsPage() {
                             <div className="space-y-4">
                                 <div>
                                     <FieldLabel>Email</FieldLabel>
-                                    <div className="px-3.5 py-2.5 text-[13px] text-gray-500 dark:text-gray-400 bg-surface-100 dark:bg-slate-800/50 rounded-xl">
+                                    <div className="px-3.5 py-2.5 text-[13px] text-gray-500 bg-surface-100 rounded-xl">
                                         {user?.primaryEmailAddress?.emailAddress || 'Not signed in'}
                                     </div>
                                 </div>
                                 <div>
                                     <FieldLabel>Account Name</FieldLabel>
-                                    <div className="px-3.5 py-2.5 text-[13px] text-gray-500 dark:text-gray-400 bg-surface-100 dark:bg-slate-800/50 rounded-xl">
+                                    <div className="px-3.5 py-2.5 text-[13px] text-gray-500 bg-surface-100 rounded-xl">
                                         {user?.fullName || user?.firstName || 'Not signed in'}
                                     </div>
                                 </div>
@@ -440,21 +440,21 @@ export default function SettingsPage() {
                                     {!showClearConfirm ? (
                                         <button
                                             onClick={() => setShowClearConfirm(true)}
-                                            className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors cursor-pointer w-full"
+                                            className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer w-full"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                             Clear All Data
                                         </button>
                                     ) : (
-                                        <div className="p-3.5 bg-red-50 dark:bg-red-900/20 rounded-xl space-y-3">
+                                        <div className="p-3.5 bg-red-50 rounded-xl space-y-3">
                                             <div className="flex items-start gap-2">
                                                 <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                                                <p className="text-[12px] text-red-600 dark:text-red-400 leading-relaxed">This will clear all local data including your profile, saved jobs, and preferences. This cannot be undone.</p>
+                                                <p className="text-[12px] text-red-600 leading-relaxed">This will clear all local data including your profile, saved jobs, and preferences. This cannot be undone.</p>
                                             </div>
                                             <div className="flex gap-2">
                                                 <button
                                                     onClick={() => setShowClearConfirm(false)}
-                                                    className="flex-1 px-3 py-1.5 text-[12px] font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-slate-800/50 rounded-xl hover:bg-surface-50 dark:hover:bg-[#2a2d37] transition-colors cursor-pointer"
+                                                    className="flex-1 px-3 py-1.5 text-[12px] font-medium text-gray-600 bg-white rounded-xl hover:bg-surface-50 transition-colors cursor-pointer"
                                                 >
                                                     Cancel
                                                 </button>
@@ -478,43 +478,43 @@ export default function SettingsPage() {
                                 {/* Export */}
                                 <button
                                     onClick={handleExportData}
-                                    className="w-full flex items-center gap-3 p-3.5 bg-surface-50/80 dark:bg-slate-800/50/60 hover:bg-surface-100 dark:hover:bg-[#2a2d37] rounded-xl transition-all cursor-pointer group hover:translate-x-0.5"
+                                    className="w-full flex items-center gap-3 p-3.5 bg-surface-50/80/60 hover:bg-surface-100 rounded-xl transition-all cursor-pointer group hover:translate-x-0.5"
                                 >
-                                    <div className="w-9 h-9 rounded-xl bg-accent-50 dark:bg-accent-900/20 flex items-center justify-center group-hover:bg-accent-100 dark:group-hover:bg-accent-900/30 transition-colors shrink-0">
+                                    <div className="w-9 h-9 rounded-xl bg-accent-50 flex items-center justify-center group-hover:bg-accent-100 transition-colors shrink-0">
                                         <Download className="w-4 h-4 text-accent-500" />
                                     </div>
                                     <div className="text-left flex-1 min-w-0">
-                                        <p className="text-[13px] font-semibold text-gray-700 dark:text-gray-300">Export My Data</p>
-                                        <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">Download as JSON</p>
+                                        <p className="text-[13px] font-semibold text-gray-700">Export My Data</p>
+                                        <p className="text-[11px] text-gray-400 truncate">Download as JSON</p>
                                     </div>
-                                    <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-colors shrink-0" />
+                                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-400 transition-colors shrink-0" />
                                 </button>
 
                                 {/* Delete resume data */}
                                 {!showDeleteResumeConfirm ? (
                                     <button
                                         onClick={() => setShowDeleteResumeConfirm(true)}
-                                        className="w-full flex items-center gap-3 p-3.5 bg-surface-50/80 dark:bg-slate-800/50/60 hover:bg-surface-100 dark:hover:bg-[#2a2d37] rounded-xl transition-all cursor-pointer group hover:translate-x-0.5"
+                                        className="w-full flex items-center gap-3 p-3.5 bg-surface-50/80/60 hover:bg-surface-100 rounded-xl transition-all cursor-pointer group hover:translate-x-0.5"
                                     >
-                                        <div className="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center group-hover:bg-red-100 dark:group-hover:bg-red-900/30 transition-colors shrink-0">
+                                        <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition-colors shrink-0">
                                             <FileText className="w-4 h-4 text-red-400" />
                                         </div>
                                         <div className="text-left flex-1 min-w-0">
-                                            <p className="text-[13px] font-semibold text-gray-700 dark:text-gray-300">Delete Resume Data</p>
-                                            <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">Remove raw resume text</p>
+                                            <p className="text-[13px] font-semibold text-gray-700">Delete Resume Data</p>
+                                            <p className="text-[11px] text-gray-400 truncate">Remove raw resume text</p>
                                         </div>
-                                        <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-colors shrink-0" />
+                                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-400 transition-colors shrink-0" />
                                     </button>
                                 ) : (
-                                    <div className="p-3.5 bg-red-50 dark:bg-red-900/20 rounded-xl space-y-3">
+                                    <div className="p-3.5 bg-red-50 rounded-xl space-y-3">
                                         <div className="flex items-start gap-2">
                                             <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                                            <p className="text-[12px] text-red-600 dark:text-red-400 leading-relaxed">This will remove the raw resume text. Your extracted skills and profile info will remain.</p>
+                                            <p className="text-[12px] text-red-600 leading-relaxed">This will remove the raw resume text. Your extracted skills and profile info will remain.</p>
                                         </div>
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() => setShowDeleteResumeConfirm(false)}
-                                                className="flex-1 px-3 py-1.5 text-[12px] font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-slate-800/50 rounded-xl hover:bg-surface-50 dark:hover:bg-[#2a2d37] transition-colors cursor-pointer"
+                                                className="flex-1 px-3 py-1.5 text-[12px] font-medium text-gray-600 bg-white rounded-xl hover:bg-surface-50 transition-colors cursor-pointer"
                                             >
                                                 Cancel
                                             </button>
@@ -531,16 +531,16 @@ export default function SettingsPage() {
                                 {/* Privacy link */}
                                 <a
                                     href="/privacy"
-                                    className="flex items-center gap-3 p-3.5 bg-surface-50/80 dark:bg-slate-800/50/60 hover:bg-surface-100 dark:hover:bg-[#2a2d37] rounded-xl transition-all group hover:translate-x-0.5"
+                                    className="flex items-center gap-3 p-3.5 bg-surface-50/80/60 hover:bg-surface-100 rounded-xl transition-all group hover:translate-x-0.5"
                                 >
-                                    <div className="w-9 h-9 rounded-xl bg-surface-100 dark:bg-gray-800 flex items-center justify-center group-hover:bg-surface-200 dark:group-hover:bg-gray-700 transition-colors shrink-0">
-                                        <Shield className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                                    <div className="w-9 h-9 rounded-xl bg-surface-100 flex items-center justify-center group-hover:bg-surface-200 transition-colors shrink-0">
+                                        <Shield className="w-4 h-4 text-gray-400" />
                                     </div>
                                     <div className="text-left flex-1 min-w-0">
-                                        <p className="text-[13px] font-semibold text-gray-700 dark:text-gray-300">Privacy Policy</p>
-                                        <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">Learn how we handle your data</p>
+                                        <p className="text-[13px] font-semibold text-gray-700">Privacy Policy</p>
+                                        <p className="text-[11px] text-gray-400 truncate">Learn how we handle your data</p>
                                     </div>
-                                    <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-colors shrink-0" />
+                                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-400 transition-colors shrink-0" />
                                 </a>
                             </div>
                         </GlassCard>

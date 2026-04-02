@@ -143,7 +143,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="group glass-panel dark:bg-slate-950/70 border border-transparent dark:border-white/10 rounded-[2rem] transition-all duration-200 hover:shadow-xl"
+            className="group glass-panel border border-transparent rounded-[2rem] transition-all duration-200 hover:shadow-xl"
         >
             {/* Top accent line */}
             <div className={`h-[2px] rounded-t-[2rem] bg-gradient-to-r ${getMatchGradient(job.match_score)} opacity-0 group-hover:opacity-100 transition-opacity`} />
@@ -156,7 +156,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                         <div className="flex items-start gap-2 sm:gap-2.5 mb-1.5">
                             <CompanyLogo company={job.company} applyUrl={job.apply_url} size={32} colorIndex={0} />
                             <div className="flex-1 min-w-0">
-                                <h3 className="text-sm sm:text-[15px] font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 sm:truncate leading-snug">
+                                <h3 className="text-sm sm:text-[15px] font-semibold text-gray-900 line-clamp-2 sm:truncate leading-snug">
                                     <Link
                                         href={`/dashboard/job/${encodeURIComponent(safeBtoa(job.apply_url || job.title))}`}
                                         onClick={() => {
@@ -177,19 +177,19 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                         </span>
                                     )}
                                     {job._pendingAnalysis ? (
-                                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-brand-50 dark:bg-brand-900/20 text-brand-500 border border-brand-100 dark:border-brand-800 animate-pulse">
+                                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-brand-50 text-brand-500 border border-brand-100 animate-pulse">
                                             Analyzing...
                                         </span>
                                     ) : job.match_score >= 80 ? (
-                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200">
                                             Strong Match
                                         </span>
                                     ) : job.match_score >= 60 ? (
-                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-400 border border-teal-100 dark:border-teal-800">
+                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-teal-50 text-teal-700 border border-teal-100">
                                             Good Match
                                         </span>
                                     ) : job.match_score >= 40 ? (
-                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800">
+                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-amber-50 text-amber-600 border border-amber-100">
                                             Fair Match
                                         </span>
                                     ) : null}
@@ -197,8 +197,8 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-2.5 text-xs text-gray-500 dark:text-gray-400 mb-3">
-                            <span className="flex items-center gap-1 text-gray-700 dark:text-gray-300 font-medium">
+                        <div className="flex flex-wrap items-center gap-2.5 text-xs text-gray-500 mb-3">
+                            <span className="flex items-center gap-1 text-gray-700 font-medium">
                                 <Building2 className="w-3.5 h-3.5 text-gray-400" />
                                 {cleanCompany}
                             </span>
@@ -215,14 +215,14 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
 
                         {/* TL;DR from AI analysis (shown instead of raw JD when available) */}
                         {(job.analysis?.tldr) && (
-                            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-1.5 italic">
+                            <p className="text-sm text-gray-700 leading-relaxed mb-1.5 italic">
                                 {job.analysis.tldr}
                             </p>
                         )}
 
                         {/* Raw Summary */}
                         <div className="relative">
-                            <p className={`text-sm text-gray-500 dark:text-gray-400 leading-relaxed ${(job.analysis?.tldr) ? 'line-clamp-1' : showFullDescription ? '' : 'line-clamp-2'}`}>
+                            <p className={`text-sm text-gray-500 leading-relaxed ${(job.analysis?.tldr) ? 'line-clamp-1' : showFullDescription ? '' : 'line-clamp-2'}`}>
                                 {cleanSummary}
                             </p>
                             {cleanSummary.length > 150 && (
@@ -270,7 +270,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                 className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
                                     isSaved
                                         ? 'bg-brand-50 border-brand-200 text-brand-600'
-                                        : 'bg-white/60 dark:bg-white/5 border-transparent text-gray-400 hover:text-gray-600 hover:bg-surface-50'
+                                        : 'bg-white/60 border-transparent text-gray-400 hover:text-gray-600 hover:bg-surface-50'
                                 }`}
                             >
                                 <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-brand-600' : ''}`} />
@@ -282,7 +282,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                     className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
                                         isApplied
                                             ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
-                                            : 'bg-white/60 dark:bg-white/5 border-transparent text-gray-400 hover:text-emerald-600 hover:bg-emerald-50'
+                                            : 'bg-white/60 border-transparent text-gray-400 hover:text-emerald-600 hover:bg-emerald-50'
                                     }`}
                                     title={isApplied ? 'Applied' : 'Mark as Applied'}
                                 >
@@ -297,7 +297,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                         localStorage.setItem(key, JSON.stringify(job));
                                     } catch (e) { /* ignore */ }
                                 }}
-                                className="inline-flex items-center gap-1 bg-gray-900 dark:bg-brand-600 hover:bg-gray-800 dark:hover:bg-brand-500 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
+                                className="inline-flex items-center gap-1 bg-gray-900 hover:bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
                             >
                                 View <ChevronDown className="w-3 h-3 -rotate-90" />
                             </Link>

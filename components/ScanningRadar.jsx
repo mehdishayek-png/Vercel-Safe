@@ -161,7 +161,7 @@ export function ScanningRadar({ jobs = [] }) {
                                         transition={{ duration: 4, repeat: Infinity, delay, times: [0, 0.1, 1] }}
                                         className="glass-card px-3 py-1.5 rounded-xl border text-center shadow-sm whitespace-nowrap max-w-[140px]"
                                     >
-                                        <div className="text-[11px] font-bold text-gray-900 dark:text-white truncate">{node.company}</div>
+                                        <div className="text-[11px] font-bold text-gray-900 truncate">{node.company}</div>
                                         <div className="text-[10px] font-black text-amber-500">{node.score}%</div>
                                     </motion.div>
                                 </motion.div>
@@ -180,9 +180,9 @@ export function ScanningRadar({ jobs = [] }) {
                         ]
                     }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute w-16 h-16 rounded-full bg-surface-50 dark:bg-gray-900 border-2 border-brand-500 flex items-center justify-center z-30"
+                    className="absolute w-16 h-16 rounded-full bg-surface-50 border-2 border-brand-500 flex items-center justify-center z-30"
                 >
-                    <span className="text-brand-600 dark:text-brand-400 font-bold text-2xl font-headline">M</span>
+                    <span className="text-brand-600 font-bold text-2xl font-headline">M</span>
                 </motion.div>
             </div>
 
@@ -194,7 +194,7 @@ export function ScanningRadar({ jobs = [] }) {
             >
                 {jobs.length > 0 ? `Found ${jobs.length} matches` : 'Scanning Job Market...'}
             </motion.h3>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">
+            <p className="text-xs text-gray-400 mb-4">
                 {formatTime(elapsed)} elapsed
                 {nodes.length > 0 && ` · ${nodes.length} companies detected`}
             </p>
@@ -207,7 +207,7 @@ export function ScanningRadar({ jobs = [] }) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.3 }}
-                    className="text-[11px] text-gray-400 dark:text-gray-500 text-center max-w-xs flex items-center gap-1.5"
+                    className="text-[11px] text-gray-400 text-center max-w-xs flex items-center gap-1.5"
                 >
                     <Sparkles className="w-3 h-3 text-amber-400 shrink-0" />
                     {TIPS[tipIndex]}

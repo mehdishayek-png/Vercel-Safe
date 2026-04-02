@@ -35,7 +35,7 @@ export function GuideModal({ onClose }) {
                 initial={{ opacity: 0, scale: 0.96, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, y: 10 }}
-                className="relative glass-card dark:bg-slate-950/70 rounded-2xl shadow-elevated max-w-lg w-full overflow-hidden border border-outline-variant/10"
+                className="relative glass-card rounded-2xl shadow-elevated max-w-lg w-full overflow-hidden border border-outline-variant/10"
             >
                 <div className="h-1 bg-gradient-to-r from-brand-500 via-accent-500 to-brand-500" />
 

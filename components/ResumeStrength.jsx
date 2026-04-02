@@ -26,7 +26,7 @@ export function ResumeStrength({ profile, onTokensUpdated }) {
     const getStrokeColor = (s) => s >= 80 ? "stroke-brand-600" : s >= 50 ? "stroke-accent-500" : "stroke-red-400";
 
     return (
-        <div className="glass-card dark:bg-slate-950/70 border border-outline-variant/10 rounded-xl p-5 shadow-card">
+        <div className="glass-card border border-outline-variant/10 rounded-xl p-5 shadow-card">
             <div className="flex items-start justify-between mb-4">
                 <div className="flex gap-3 items-center">
                     <div className="relative w-12 h-12 flex items-center justify-center">

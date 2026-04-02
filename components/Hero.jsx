@@ -40,7 +40,7 @@ export function Hero({ onStart, onDemo }) {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.1 }}
-                            className="font-headline text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight mb-8 text-gray-900 dark:text-white leading-[1.05]"
+                            className="font-headline text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight mb-8 text-gray-900 leading-[1.05]"
                         >
                             Stop Searching.{' '}
                             <br className="hidden sm:block" />
@@ -52,7 +52,7 @@ export function Hero({ onStart, onDemo }) {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.2 }}
-                            className="text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-lg mb-10 leading-relaxed"
+                            className="text-lg md:text-xl text-gray-500 max-w-lg mb-10 leading-relaxed"
                         >
                             Upload your resume. Our AI scans 8+ sources, scores every job
                             against your profile, and delivers only the matches worth your time.
@@ -126,7 +126,7 @@ export function Hero({ onStart, onDemo }) {
                                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" /></svg>
                                     </div>
                                     <div>
-                                        <h4 className="font-headline font-bold text-gray-900 dark:text-white">Midas Engine</h4>
+                                        <h4 className="font-headline font-bold text-gray-900">Midas Engine</h4>
                                         <p className="text-xs text-gray-400">Scanning job boards...</p>
                                     </div>
                                 </div>
@@ -143,13 +143,13 @@ export function Hero({ onStart, onDemo }) {
                                     { title: 'Product Designer', company: 'Figma', location: 'San Francisco', score: 91 },
                                     { title: 'Full Stack Developer', company: 'Notion', location: 'New York', score: 87 },
                                 ].map((job, i) => (
-                                    <div key={i} className={`p-4 rounded-xl border ${i === 0 ? 'bg-white dark:bg-gray-800 border-brand-100 dark:border-brand-800 shadow-sm' : 'bg-surface-50 dark:bg-gray-800/50 border-outline-variant/10/50'} transition-all hover:-translate-y-0.5`}>
+                                    <div key={i} className={`p-4 rounded-xl border ${i === 0 ? 'bg-white border-brand-100 shadow-sm' : 'bg-surface-50 border-outline-variant/10/50'} transition-all hover:-translate-y-0.5`}>
                                         <div className="flex justify-between items-start">
                                             <div>
                                                 {job.badge && (
                                                     <span className="text-[10px] font-bold text-brand-600 uppercase tracking-wider mb-1 block">{job.badge}</span>
                                                 )}
-                                                <h5 className="font-headline font-bold text-gray-900 dark:text-white">{job.title}</h5>
+                                                <h5 className="font-headline font-bold text-gray-900">{job.title}</h5>
                                                 <p className="text-sm text-gray-500">{job.company} &middot; {job.location}</p>
                                             </div>
                                             <span className={`text-sm font-bold ${job.score >= 95 ? 'text-brand-600' : job.score >= 90 ? 'text-emerald-600' : 'text-teal-600'}`}>

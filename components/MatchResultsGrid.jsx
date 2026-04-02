@@ -255,9 +255,9 @@ export function MatchResultsGrid({
                 <motion.div
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mt-2"
+                    className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 mt-2"
                 >
-                    <p className="text-xs font-medium text-amber-800 dark:text-amber-300 mb-2">
+                    <p className="text-xs font-medium text-amber-800 mb-2">
                         Few results? Try searching for related roles:
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -265,7 +265,7 @@ export function MatchResultsGrid({
                             <button
                                 key={i}
                                 onClick={() => onSuggestionClick?.(title)}
-                                className="px-3 py-1.5 text-xs font-medium glass-card dark:bg-slate-950/70 border border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/20 hover:border-amber-300 transition-all cursor-pointer"
+                                className="px-3 py-1.5 text-xs font-medium glass-card border border-amber-200 text-amber-700 rounded-lg hover:bg-amber-100 hover:border-amber-300 transition-all cursor-pointer"
                             >
                                 {title}
                             </button>
@@ -296,14 +296,14 @@ function CompanyGroupHeader({ company, jobs, isOpen, onToggle }) {
     return (
         <button
             onClick={onToggle}
-            className="w-full flex items-center gap-3 p-3 px-4 glass-panel dark:bg-slate-950/70 border border-transparent dark:border-white/10 rounded-[2rem] hover:border-brand-200 transition-all cursor-pointer"
+            className="w-full flex items-center gap-3 p-3 px-4 glass-panel border border-transparent rounded-[2rem] hover:border-brand-200 transition-all cursor-pointer"
         >
             <CompanyLogo company={company} size={28} colorIndex={0} />
             <div className="flex-1 min-w-0 text-left">
-                <span className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">{company}</span>
+                <span className="text-[13px] font-semibold text-gray-900">{company}</span>
                 <span className="text-[11px] text-gray-400 ml-2">{jobs.length} open roles</span>
             </div>
-            <span className="text-[11px] font-semibold text-brand-600 bg-brand-50 dark:bg-brand-900/20 px-2 py-0.5 rounded-md">
+            <span className="text-[11px] font-semibold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-md">
                 Top: {Math.round(bestScore)}
             </span>
             <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -371,7 +371,7 @@ function GroupedJobList({ displayedJobs, profile, apiKeys, savedJobIds, appliedJ
                                             initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: 'auto' }}
                                             exit={{ opacity: 0, height: 0 }}
-                                            className="space-y-2 pl-3 border-l-2 border-brand-100 dark:border-brand-800 ml-4"
+                                            className="space-y-2 pl-3 border-l-2 border-brand-100 ml-4"
                                         >
                                             {item.jobs.map((job, j) => (
                                                 <JobCard

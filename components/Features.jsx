@@ -48,12 +48,12 @@ const features = [
 
 export function Features() {
     return (
-        <section className="py-28 relative bg-surface-50 dark:bg-[#12141c]">
+        <section className="py-28 relative bg-surface-50">
             <div className="container mx-auto px-4 max-w-6xl">
                 <div className="mb-16">
                     <span className="text-xs font-bold tracking-[0.15em] text-brand-600 uppercase block mb-4">What you get</span>
-                    <h2 className="font-headline text-3xl md:text-5xl font-extrabold tracking-tight mb-4 text-gray-900 dark:text-white">Built for precision, not noise</h2>
-                    <p className="text-gray-500 dark:text-gray-400 text-lg max-w-xl">
+                    <h2 className="font-headline text-3xl md:text-5xl font-extrabold tracking-tight mb-4 text-gray-900">Built for precision, not noise</h2>
+                    <p className="text-gray-500 text-lg max-w-xl">
                         Everything you need to land your next role, powered by AI that actually understands your profile.
                     </p>
                 </div>
@@ -66,13 +66,13 @@ export function Features() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.08 }}
-                            className={`group relative glass-card dark:bg-slate-950/70 border border-outline-variant/10 dark:border-slate-800/50 rounded-2xl p-7 hover:shadow-card-hover transition-all duration-300 ${f.hoverBg}`}
+                            className={`group relative glass-card border border-outline-variant/10 rounded-2xl p-7 hover:shadow-card-hover transition-all duration-300 ${f.hoverBg}`}
                         >
                             <div className={`w-12 h-12 rounded-xl ${f.color} flex items-center justify-center mb-5`}>
                                 <f.icon className="w-5 h-5" />
                             </div>
-                            <h3 className="font-headline text-lg font-bold mb-2 text-gray-900 dark:text-white">{f.title}</h3>
-                            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{f.desc}</p>
+                            <h3 className="font-headline text-lg font-bold mb-2 text-gray-900">{f.title}</h3>
+                            <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
                         </motion.div>
                     ))}
                 </div>

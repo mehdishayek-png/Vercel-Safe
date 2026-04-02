@@ -13,7 +13,7 @@ export function ActivityLog({ logs }) {
     }, [logs]);
 
     return (
-        <div className="glass-card dark:bg-slate-950/70 border border-outline-variant/10 rounded-xl h-44 overflow-hidden flex flex-col">
+        <div className="glass-card border border-outline-variant/10 rounded-xl h-44 overflow-hidden flex flex-col">
             <div className="px-4 py-2.5 border-b border-surface-100 flex justify-between items-center">
                 <div className="flex items-center gap-1.5">
                     <Sparkles className="w-3 h-3 text-brand-500" />

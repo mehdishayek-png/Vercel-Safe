@@ -18,7 +18,7 @@ const DashboardPreview = dynamic(() => import('@/components/DashboardPreview').t
 export default function Home() {
     return (
         <ErrorBoundary>
-            <main className="min-h-screen bg-surface-50 dark:bg-[#0f1117] text-gray-900 dark:text-gray-100 overflow-x-hidden selection:bg-brand-100">
+            <main className="min-h-screen bg-surface-50 text-gray-900 overflow-x-hidden selection:bg-brand-100">
                 <Header />
                 <Hero
                     onStart={() => window.location.href = '/dashboard/search'}
@@ -26,24 +26,24 @@ export default function Home() {
                 />
 
                 {/* Stats strip */}
-                <section className="py-16 bg-white dark:bg-[#1a1d27] border-y border-outline-variant/10 dark:border-slate-800/50">
+                <section className="py-16 bg-white border-y border-outline-variant/10">
                     <div className="container mx-auto px-4">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 max-w-5xl mx-auto text-center">
                             <div>
-                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">1,000+</div>
-                                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Jobs Per Search</div>
+                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-gray-900">1,000+</div>
+                                <div className="text-sm text-gray-500 mt-2 font-medium">Jobs Per Search</div>
                             </div>
                             <div>
-                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">350+</div>
-                                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Company Career Pages</div>
+                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-gray-900">350+</div>
+                                <div className="text-sm text-gray-500 mt-2 font-medium">Company Career Pages</div>
                             </div>
                             <div>
-                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">8+</div>
-                                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Sources Aggregated</div>
+                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-gray-900">8+</div>
+                                <div className="text-sm text-gray-500 mt-2 font-medium">Sources Aggregated</div>
                             </div>
                             <div>
-                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-brand-600 dark:text-brand-400">&lt;60s</div>
-                                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Average Scan Time</div>
+                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-brand-600">&lt;60s</div>
+                                <div className="text-sm text-gray-500 mt-2 font-medium">Average Scan Time</div>
                             </div>
                         </div>
                     </div>
@@ -57,7 +57,7 @@ export default function Home() {
                 <HowItWorks />
 
                 {/* Final CTA */}
-                <section className="py-28 text-center relative overflow-hidden bg-gray-900 dark:bg-[#0a0b0f]">
+                <section className="py-28 text-center relative overflow-hidden bg-gray-900">
                     <div className="absolute inset-0 -z-0">
                         <div className="absolute inset-0 bg-gradient-to-tr from-brand-600/15 via-transparent to-accent-600/10" />
                         <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-brand-500/10 rounded-full blur-[120px]" />
