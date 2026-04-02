@@ -234,23 +234,7 @@ export default function SettingsPage() {
                                     </div>
                                 </div>
 
-                                {/* What I Do */}
-                                <div>
-                                    <FieldLabel>What I Do <span className="text-gray-300 font-normal normal-case tracking-normal">(optional)</span></FieldLabel>
-                                    <div className="relative">
-                                        <textarea
-                                            value={whatIDo}
-                                            onChange={(e) => setWhatIDo(e.target.value)}
-                                            placeholder="Describe what you do day-to-day in 2-3 sentences. E.g., 'I help SaaS companies onboard enterprise clients. I run QBRs, build playbooks, and reduce churn.'"
-                                            className="w-full px-3.5 py-2.5 text-[13px] text-gray-900 bg-surface-100 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all placeholder:text-gray-300 resize-none"
-                                            rows={3}
-                                            maxLength={500}
-                                        />
-                                        <div className="absolute bottom-2.5 right-3 text-[10px] font-medium text-gray-300 tabular-nums">
-                                            {whatIDo.length}<span className="text-gray-200">/500</span>
-                                        </div>
-                                    </div>
-                                </div>
+
 
                                 <div className="flex justify-end pt-2">
                                     <button
