@@ -232,7 +232,7 @@ export default function SearchPage() {
                                 ...j,
                                 match_score: j.pandaScore?.score ?? j.match_score ?? 0,
                                 heuristic_breakdown: j.pandaScore || j.heuristic_breakdown,
-                            })).filter(j => j.match_score >= 30); // Quality threshold — hide heavily-penalized results
+                            })).filter(j => j.match_score >= 40); // Quality threshold — hide irrelevant cross-family results
 
                             if (newJobs.length > 0) {
                                 totalSourceJobs += newJobs.length;
