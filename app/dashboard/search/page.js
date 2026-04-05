@@ -152,7 +152,7 @@ export default function SearchPage() {
         setProfile(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skillToRemove) }));
     };
 
-    const findJobs = async () => {
+    const findJobs = async (forceRefresh = false) => {
         if (!profile) return;
         setIsMatching(true);
         // Don't clear previous jobs — new results will merge in via streaming
@@ -186,7 +186,7 @@ export default function SearchPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     profile: { ...profile, experience_years: experienceYears, headline: jobTitle, whatIDo },
-                    preferences: { ...preferences, location: locationQuery, midasSearch, filters, exploreAdjacent }
+                    preferences: { ...preferences, location: locationQuery, midasSearch, filters, exploreAdjacent, forceRefresh }
                 })
             });
 

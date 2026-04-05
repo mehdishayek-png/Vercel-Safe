@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Lock, Search, Download, BrainCircuit, Target, Zap, ShieldCheck, TrendingUp, Globe, FileText, ChevronDown, Building2 } from 'lucide-react';
+import { Sparkles, Lock, Search, Download, BrainCircuit, Target, Zap, ShieldCheck, TrendingUp, Globe, FileText, ChevronDown, Building2, RefreshCw } from 'lucide-react';
 import { JobCard } from './JobCard';
 import { ScanningRadar } from './ScanningRadar';
 import { exportJobsToCSV } from '@/lib/export-csv';
@@ -65,6 +65,15 @@ export function MatchResultsGrid({
 
                 {jobs.length > 0 && (
                     <div className="ml-auto flex items-center gap-2">
+                    <button
+                        onClick={() => findJobs(true)}
+                        disabled={isMatching}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-gray-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                        title="Fetch fresh results (bypasses cache)"
+                    >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        Refresh
+                    </button>
                     <button
                         onClick={() => exportJobsToCSV(displayedJobs)}
                         className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-gray-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"

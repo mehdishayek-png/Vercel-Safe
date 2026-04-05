@@ -131,7 +131,7 @@ export function ScanControls({
                     Reset
                 </button>
                 <button
-                    onClick={findJobs}
+                    onClick={() => findJobs()}
                     disabled={isMatching}
                     className="flex-[2.5] py-2.5 rounded-full border-none text-xs font-semibold text-white cursor-pointer bg-flow-gradient shadow-xl shadow-brand-500/30 hover:shadow-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
