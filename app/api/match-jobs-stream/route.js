@@ -4,6 +4,10 @@ import { calculatePandaScore } from '@/lib/panda-matcher';
 import { canScan, incrementDailyScan, deductToken } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 import { saveAlertProfile } from '@/lib/job-alerts';
+import { detectGhostSignals } from '@/lib/ghost-detector';
+import { analyzeJobQuality } from '@/lib/jd-quality';
+import { predictSalary } from '@/lib/salary-predictor';
+import { predictSuccessProbability } from '@/lib/success-predictor';
 import { z } from 'zod';
 
 export const maxDuration = 90;
@@ -122,14 +126,25 @@ export async function POST(request) {
           const onSourceComplete = async (sourceName, jobs) => {
             send({ type: 'progress', message: `Fetching ${sourceName}...` });
 
-            // Score each job with Panda immediately
+            // Score each job with Panda + enrich with intelligence engines
             const scoredJobs = await Promise.all(
               jobs.map(async (job) => {
                 try {
-                  const score = await calculatePandaScore(job, profile, preferences, {});
-                  return { ...job, pandaScore: score };
+                  const pandaScore = await calculatePandaScore(job, profile, preferences, {});
+
+                  // Run intelligence engines (all sync, no API calls)
+                  const ghost = detectGhostSignals(job, jobs);
+                  const quality = analyzeJobQuality(job);
+                  const salary = predictSalary(job);
+                  const success = predictSuccessProbability(job, profile, pandaScore);
+
+                  return {
+                    ...job,
+                    pandaScore,
+                    intelligence: { ghost, quality, salary, success },
+                  };
                 } catch {
-                  return { ...job, pandaScore: null };
+                  return { ...job, pandaScore: null, intelligence: null };
                 }
               })
             );
