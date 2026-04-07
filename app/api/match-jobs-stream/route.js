@@ -120,11 +120,22 @@ export async function POST(request) {
 
         try {
           const sourceCounts = {};
+          // Diagnostic capture: per-source score distribution + sample discarded jobs
+          const diag = {
+            scanId: `${Date.now()}-${(userId || 'anon').slice(-6)}`,
+            startMs: Date.now(),
+            sources: {},
+            topDisplayed: [],   // top 10 jobs >= 30
+            topDiscarded: [],   // top 10 jobs in 15-29 range (almost-good)
+            killers: {},        // counts of which multipliers killed jobs
+          };
 
           send({ type: 'progress', message: 'Starting job search...' });
 
           const onSourceComplete = async (sourceName, jobs) => {
             send({ type: 'progress', message: `Fetching ${sourceName}...` });
+
+            const sourceDiag = { fetched: jobs.length, scored: 0, displayed: 0, discarded: 0, zero: 0 };
 
             // Score each job with Panda + enrich with intelligence engines
             const scoredJobs = await Promise.all(
@@ -138,6 +149,34 @@ export async function POST(request) {
                   const salary = predictSalary(job);
                   const success = predictSuccessProbability(job, profile, pandaScore);
 
+                  // Diagnostic accounting
+                  sourceDiag.scored++;
+                  const s = pandaScore?.score ?? 0;
+                  if (s >= 30) {
+                    sourceDiag.displayed++;
+                    if (diag.topDisplayed.length < 10) {
+                      diag.topDisplayed.push({ s, t: job.title?.slice(0, 60), c: job.company, src: sourceName });
+                    }
+                  } else if (s > 0) {
+                    sourceDiag.discarded++;
+                    if (s >= 15 && diag.topDiscarded.length < 10) {
+                      // Identify which multiplier killed it
+                      const m = pandaScore.multipliers || {};
+                      const killers = [];
+                      if (parseFloat(m.location) < 0.1) killers.push(`loc=${m.location}`);
+                      if (parseFloat(m.roleFamily) < 0.5) killers.push(`role=${m.roleFamily}`);
+                      if (parseFloat(m.domain) < 0.5) killers.push(`domain=${m.domain}`);
+                      if (parseFloat(m.seniority) < 0.3) killers.push(`sen=${m.seniority}`);
+                      if (parseFloat(m.recency) < 0.5) killers.push(`rec=${m.recency}`);
+                      if (parseFloat(m.coherence) < 0.5) killers.push(`coh=${m.coherence}`);
+                      const killer = killers.join(',') || 'low_raw';
+                      diag.topDiscarded.push({ s, t: job.title?.slice(0, 60), c: job.company, src: sourceName, killer });
+                      diag.killers[killer] = (diag.killers[killer] || 0) + 1;
+                    }
+                  } else {
+                    sourceDiag.zero++;
+                  }
+
                   return {
                     ...job,
                     pandaScore,
@@ -150,6 +189,7 @@ export async function POST(request) {
             );
 
             sourceCounts[sourceName] = scoredJobs.length;
+            diag.sources[sourceName] = sourceDiag;
 
             send({
               type: 'jobs',
@@ -181,6 +221,19 @@ export async function POST(request) {
             roleAnchor: result.roleAnchor,
             dominantPlatform: result.dominantPlatform,
           });
+
+          // Emit comprehensive diagnostic log — single line, structured JSON, reliably captured by Vercel
+          diag.durationMs = Date.now() - diag.startMs;
+          diag.totalRaw = result.totalRaw;
+          diag.totalUnique = result.jobs.length;
+          diag.queries = result.queries;
+          diag.roleAnchor = result.roleAnchor;
+          // Aggregate totals
+          diag.totals = Object.values(diag.sources).reduce((acc, s) => {
+            acc.fetched += s.fetched; acc.displayed += s.displayed; acc.discarded += s.discarded; acc.zero += s.zero;
+            return acc;
+          }, { fetched: 0, displayed: 0, discarded: 0, zero: 0 });
+          console.log(JSON.stringify({ event: 'scan_diagnostic', userId: userId || 'anon', headline: profile.headline, ...diag }));
 
           // Save alert profile for daily job alerts (fire-and-forget)
           if (userId) {
