@@ -40,6 +40,7 @@ const preferences = {
     city: 'bengaluru',
     state: 'karnataka',
     country: 'in',
+    location: 'Bengaluru, India',
     midasSearch: false,
 };
 
