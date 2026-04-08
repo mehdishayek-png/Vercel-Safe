@@ -25,6 +25,7 @@ try {
 
 import { calculatePandaScore } from '../lib/panda-matcher.js';
 import { fetchAllJobsStreaming } from '../lib/job-fetcher.js';
+import { logMatch } from '../lib/debug/match-logger.js';
 
 const QUALITY_THRESHOLD = 30;
 
@@ -68,14 +69,27 @@ async function main() {
     console.log(`Threshold: score >= ${QUALITY_THRESHOLD}\n`);
 
     const sourceStats = {};
+    const pendingScoring = [];
 
-    const onSourceComplete = async (sourceName, jobs) => {
+    const onSourceComplete = (sourceName, jobs) => {
         totalRaw += jobs.length;
         sourceStats[sourceName] = { total: jobs.length, displayed: 0, discarded: 0 };
+        const promise = (async () => {
 
         for (const job of jobs) {
             try {
                 const result = await calculatePandaScore(job, profile, preferences, {});
+                await logMatch({
+                    stage: 'list_score',
+                    profile,
+                    job,
+                    pandaScore: result.score,
+                    pandaBreakdown: result,
+                    llmScore: null,
+                    aiVerdict: null,
+                    combinedScore: result.score,
+                    notes: 'scan-diagnostic',
+                });
                 allJobs.push({
                     title: job.title,
                     company: job.company,
@@ -102,6 +116,8 @@ async function main() {
                 sourceStats[sourceName].discarded++;
             }
         }
+        })();
+        pendingScoring.push(promise);
     };
 
     const onProgress = (msg) => {
@@ -115,6 +131,9 @@ async function main() {
     } catch (err) {
         console.error('\nFetch error:', err.message);
     }
+
+    // Wait for all async scoring loops to complete (slow sources like Workday finish last)
+    await Promise.all(pendingScoring);
 
     console.log('\n');
 
