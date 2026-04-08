@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { getDeepScanCount, incrementDeepScan, deductToken, FREE_DEEP_SCANS, isAdmin as checkIsAdmin } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 import { callSonnet, parseJSON } from '@/lib/sonnet';
+import { logMatch } from '@/lib/debug/match-logger';
 
 export const maxDuration = 30;
 
@@ -138,6 +139,21 @@ IMPORTANT for backward compatibility:
             analysis.strong_signals_detail = analysis.strong_signals;
             analysis.strong_signals = analysis.strong_signals.map(s => s.signal || String(s));
         }
+
+        // Debug logging — capture the detail-view AI verdict so we can compare
+        // it against the list-score Panda result for the same job. The job arg
+        // here came from the frontend and may carry match_score / heuristic_breakdown.
+        logMatch({
+            stage: 'detail_view',
+            profile,
+            job,
+            pandaScore: job?.match_score ?? null,
+            pandaBreakdown: job?.heuristic_breakdown ?? null,
+            llmScore: null,
+            aiVerdict: analysis,
+            combinedScore: job?.match_score ?? null,
+            notes: 'click_through_analysis',
+        });
 
         return NextResponse.json({ analysis });
 
