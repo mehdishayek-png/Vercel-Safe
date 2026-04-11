@@ -74,7 +74,7 @@ function SelectInput({ value, onChange, children }) {
 export default function SettingsPage() {
     const { user } = useUser();
     const { profile, setProfile, experienceYears, setExperienceYears, jobTitle, setJobTitle, whatIDo, setWhatIDo } = useProfileStore();
-    const { preferences, setPreferences, countries, states, cities } = useSearchStore();
+    const { preferences, setPreferences } = useSearchStore();
     const { savedJobsData, appliedJobsData } = useJobsStore();
     const { tokenBalance, freeScansRemaining, FREE_DAILY_SCANS } = useTokenStore();
 
@@ -305,42 +305,14 @@ export default function SettingsPage() {
                         <GlassCard className="p-6 sm:p-8">
                             <SectionHeader title="Search Preferences" icon={Globe} />
                             <div className="space-y-5">
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                                <div className="grid grid-cols-1 gap-5">
                                     <div>
-                                        <FieldLabel>Country</FieldLabel>
-                                        <SelectInput
-                                            value={preferences.country}
-                                            onChange={(e) => setPreferences(prev => ({ ...prev, country: e.target.value }))}
-                                        >
-                                            <option value="">All Countries</option>
-                                            {countries.map(c => (
-                                                <option key={c.isoCode} value={c.isoCode}>{c.name}</option>
-                                            ))}
-                                        </SelectInput>
-                                    </div>
-                                    <div>
-                                        <FieldLabel>State / Region</FieldLabel>
-                                        <SelectInput
-                                            value={preferences.state}
-                                            onChange={(e) => setPreferences(prev => ({ ...prev, state: e.target.value }))}
-                                        >
-                                            <option value="">All States</option>
-                                            {states.map(s => (
-                                                <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
-                                            ))}
-                                        </SelectInput>
-                                    </div>
-                                    <div>
-                                        <FieldLabel>City</FieldLabel>
-                                        <SelectInput
-                                            value={preferences.city}
-                                            onChange={(e) => setPreferences(prev => ({ ...prev, city: e.target.value }))}
-                                        >
-                                            <option value="">All Cities</option>
-                                            {cities.map(c => (
-                                                <option key={c.name} value={c.name}>{c.name}</option>
-                                            ))}
-                                        </SelectInput>
+                                        <FieldLabel>Target Location</FieldLabel>
+                                        <TextInput
+                                            value={preferences.location || ''}
+                                            onChange={(e) => setPreferences(prev => ({ ...prev, location: e.target.value }))}
+                                            placeholder="e.g. Austin, TX or Worldwide"
+                                        />
                                     </div>
                                 </div>
 
