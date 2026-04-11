@@ -236,9 +236,9 @@ export function MatchResultsGrid({
                                 <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Keywords, seniority, location, role family, depth, recency, prestige</div>
                             </div>
                             <div className="bg-emerald-50/50 rounded-lg py-3 px-2">
-                                <div className="text-2xl font-bold text-emerald-600 mb-1">0–100</div>
-                                <div className="text-[11px] text-gray-500 font-medium">Match Score</div>
-                                <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Composite score with multipliers — 80+ is an excellent fit</div>
+                                <div className="text-2xl font-bold text-emerald-600 mb-1">Tiers</div>
+                                <div className="text-[11px] text-gray-500 font-medium">Match Level</div>
+                                <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Categorizes roles into High, Good, or Worth a Look</div>
                             </div>
                             <div className="bg-accent-50/50 rounded-lg py-3 px-2">
                                 <div className="text-2xl font-bold text-brand-600 mb-1">&lt;60s</div>
@@ -313,7 +313,7 @@ function CompanyGroupHeader({ company, jobs, isOpen, onToggle }) {
                 <span className="text-[11px] text-gray-400 ml-2">{jobs.length} open roles</span>
             </div>
             <span className="text-[11px] font-semibold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-md">
-                Top: {Math.round(bestScore)}
+                Top: {bestScore >= 75 ? 'High Match' : bestScore >= 50 ? 'Good Match' : 'Reach'}
             </span>
             <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>

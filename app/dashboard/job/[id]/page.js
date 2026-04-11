@@ -108,43 +108,9 @@ function StatBox({ label, value, sublabel, icon: Icon, accentColor = 'teal' }) {
     );
 }
 
-function ScoreRing({ score, size = 64 }) {
-    const strokeWidth = 4;
-    const radius = (size - strokeWidth) / 2;
-    const circumference = radius * 2 * Math.PI;
-    const offset = circumference - (score / 100) * circumference;
 
-    const color = score >= 75 ? '#14b8a6' : score >= 55 ? '#f59e0b' : '#9ca3af';
-
-    return (
-        <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-            <svg width={size} height={size} className="transform -rotate-90">
-                <circle cx={size / 2} cy={size / 2} r={radius} stroke="#f3f4f6" strokeWidth={strokeWidth} fill="transparent" />
-                <circle
-                    cx={size / 2} cy={size / 2} r={radius}
-                    stroke={color} strokeWidth={strokeWidth} fill="transparent"
-                    strokeDasharray={circumference} strokeDashoffset={offset}
-                    strokeLinecap="round"
-                    className="transition-all duration-1000 ease-out"
-                />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-[15px] font-bold" style={{ color }}>{Math.round(score)}</span>
-            </div>
-        </div>
-    );
-}
 
 function ScoreGauge({ score, heuristicBreakdown, profile }) {
-    const size = 90;
-    const strokeWidth = 6;
-    const radius = (size - strokeWidth) / 2;
-    const circumference = radius * 2 * Math.PI;
-    const offset = circumference - (score / 100) * circumference;
-
-    const color = score >= 75 ? '#14b8a6' : score >= 55 ? '#f59e0b' : '#9ca3af';
-    const gradientId = `gauge-grad-${score}`;
-
     // Sub-scores
     const matches = heuristicBreakdown?.matches || [];
     const multipliers = heuristicBreakdown?.multipliers || {};
@@ -162,42 +128,17 @@ function ScoreGauge({ score, heuristicBreakdown, profile }) {
     const barColor = (v) => v >= 75 ? 'bg-teal-400' : v >= 55 ? 'bg-amber-400' : 'bg-gray-300';
 
     return (
-        <div className="flex flex-col items-center gap-2">
-            {/* Radial gauge */}
-            <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-                <svg width={size} height={size} className="transform -rotate-90">
-                    <defs>
-                        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-                            {score >= 75 ? (
-                                <>
-                                    <stop offset="0%" stopColor="#14b8a6" />
-                                    <stop offset="100%" stopColor="#0d9488" />
-                                </>
-                            ) : score >= 55 ? (
-                                <>
-                                    <stop offset="0%" stopColor="#f59e0b" />
-                                    <stop offset="100%" stopColor="#d97706" />
-                                </>
-                            ) : (
-                                <>
-                                    <stop offset="0%" stopColor="#9ca3af" />
-                                    <stop offset="100%" stopColor="#6b7280" />
-                                </>
-                            )}
-                        </linearGradient>
-                    </defs>
-                    <circle cx={size / 2} cy={size / 2} r={radius} stroke="#f3f4f6" strokeWidth={strokeWidth} fill="transparent" />
-                    <circle
-                        cx={size / 2} cy={size / 2} r={radius}
-                        stroke={`url(#${gradientId})`} strokeWidth={strokeWidth} fill="transparent"
-                        strokeDasharray={circumference} strokeDashoffset={offset}
-                        strokeLinecap="round"
-                        className="transition-all duration-1000 ease-out"
-                    />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[22px] font-bold" style={{ color }}>{Math.round(score)}</span>
-                </div>
+        <div className="flex flex-col items-center gap-3">
+            {/* Match Tier Badge */}
+            <div className={`px-4 py-2 rounded-xl border flex flex-col items-center justify-center min-w-[90px] ${
+                score >= 75 ? 'bg-emerald-50 border-emerald-200' : score >= 50 ? 'bg-teal-50 border-teal-200' : 'bg-gray-50 border-gray-200'
+            }`}>
+                <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-0.5">Tier</span>
+                <span className={`text-lg font-bold ${
+                    score >= 75 ? 'text-emerald-700' : score >= 50 ? 'text-teal-700' : 'text-gray-600'
+                }`}>
+                    {score >= 75 ? 'High' : score >= 50 ? 'Good' : 'Reach'}
+                </span>
             </div>
 
             {/* Sub-scores row */}
@@ -253,9 +194,9 @@ function SimilarJobCard({ job, index, onSave, isSaved }) {
                 </div>
                 {score > 0 && (
                     <span className={`text-[11px] font-semibold shrink-0 px-1.5 py-0.5 rounded-md ${
-                        score >= 75 ? 'bg-teal-50 text-teal-600' : score >= 55 ? 'bg-amber-50 text-amber-600' : 'bg-gray-50 text-gray-500'
+                        score >= 75 ? 'bg-teal-50 text-teal-600' : score >= 50 ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-50 text-gray-500'
                     }`}>
-                        {Math.round(score)}%
+                        {score >= 75 ? 'High Match' : score >= 50 ? 'Good Match' : 'Worth a Look'}
                     </span>
                 )}
             </div>
@@ -610,9 +551,9 @@ export default function JobDetailPage() {
                             accentColor="sky"
                         />
                         <StatBox
-                            label="Match Score"
-                            value={`${Math.round(score)}%`}
-                            sublabel={score >= 75 ? 'Strong match' : score >= 50 ? 'Moderate' : 'Low'}
+                            label="Match Level"
+                            value={score >= 75 ? 'High' : score >= 50 ? 'Good' : 'Reach'}
+                            sublabel={score >= 75 ? 'Strong fit' : score >= 50 ? 'Moderate fit' : 'May be a stretch'}
                             icon={BadgeCheck}
                             accentColor="violet"
                         />

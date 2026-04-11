@@ -4,7 +4,7 @@ import { MapPin, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles
 import confetti from 'canvas-confetti';
 import Link from 'next/link';
 import { Button } from './ui/Button';
-import { MatchRing } from './ui/MatchRing';
+
 import { CompanyLogo } from './ui/CompanyLogo';
 import { getMatchColor as getMatchColorUtil, getMatchGradient as getMatchGradientUtil } from '@/lib/match-colors';
 import { useRazorpay } from '../lib/useRazorpay';
@@ -180,19 +180,19 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                         <span className="text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-brand-50 text-brand-500 border border-brand-100 animate-pulse">
                                             Analyzing...
                                         </span>
-                                    ) : job.match_score >= 80 ? (
+                                    ) : job.match_score >= 75 ? (
                                         <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                            Strong Match
+                                            High Match
                                         </span>
-                                    ) : job.match_score >= 60 ? (
+                                    ) : job.match_score >= 50 ? (
                                         <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-teal-50 text-teal-700 border border-teal-100">
                                             Good Match
                                         </span>
-                                    ) : job.match_score >= 40 ? (
-                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-amber-50 text-amber-600 border border-amber-100">
-                                            Fair Match
+                                    ) : (
+                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 bg-gray-50 text-gray-600 border border-gray-200">
+                                            Worth a Look
                                         </span>
-                                    ) : null}
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -259,8 +259,11 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                 <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-brand-100 border-t-brand-500 animate-spin" />
                             </div>
                         ) : (
-                            <div className="scale-90 sm:scale-100">
-                                <MatchRing score={analysis?.fit_score || job.match_score} />
+                            <div className="flex flex-col items-center justify-center min-w-[52px] h-[52px] px-2 rounded-xl border bg-white border-gray-200 shadow-sm">
+                                <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest mb-0.5">Tier</span>
+                                <span className={`text-[13px] font-bold ${(analysis?.fit_score || job.match_score) >= 75 ? 'text-emerald-600' : (analysis?.fit_score || job.match_score) >= 50 ? 'text-teal-600' : 'text-gray-500'}`}>
+                                    {(analysis?.fit_score || job.match_score) >= 75 ? 'High' : (analysis?.fit_score || job.match_score) >= 50 ? 'Good' : 'Reach'}
+                                </span>
                             </div>
                         )}
                         <div className="flex gap-1.5">
@@ -310,29 +313,31 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                     {analysis?.fit_score ? (
                         <div className="text-xs font-semibold px-2 py-0.5 rounded-md bg-brand-50 text-brand-600 flex items-center gap-1">
                             <Sparkles className="w-3 h-3" />
-                            AI: {Math.round(analysis.fit_score)}
+                            AI: {analysis.fit_score >= 75 ? 'High Match' : analysis.fit_score >= 50 ? 'Good Match' : 'Worth a Look'}
                         </div>
                     ) : (
                         <div className="text-[11px] text-gray-400">Heuristic Match</div>
                     )}
 
-                    <button
-                        onClick={handleExpandWrapper}
-                        className="group/btn flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-brand-600 transition-colors py-1 px-2 rounded-lg hover:bg-brand-50 cursor-pointer"
-                    >
-                        {analysis?.isBlurredTeaser ? (
-                            <>
-                                <Lock className="w-3.5 h-3.5 text-amber-500" />
-                                <span className="text-amber-600">Unlock</span>
-                            </>
-                        ) : (
-                            <>
-                                <BrainCircuit className="w-3.5 h-3.5" />
-                                {isExpanded ? 'Hide' : (job.analysis ? 'View AI Verdict' : 'Deep Analysis')}
-                            </>
-                        )}
-                        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-                    </button>
+                    {((analysis?.fit_score || job.match_score) >= 50 || analysis) && (
+                        <button
+                            onClick={handleExpandWrapper}
+                            className="group/btn flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-brand-600 transition-colors py-1 px-2 rounded-lg hover:bg-brand-50 cursor-pointer"
+                        >
+                            {analysis?.isBlurredTeaser ? (
+                                <>
+                                    <Lock className="w-3.5 h-3.5 text-amber-500" />
+                                    <span className="text-amber-600">Unlock</span>
+                                </>
+                            ) : (
+                                <>
+                                    <BrainCircuit className="w-3.5 h-3.5" />
+                                    {isExpanded ? 'Hide' : (job.analysis ? 'View AI Verdict' : 'Deep Analysis')}
+                                </>
+                            )}
+                            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                        </button>
+                    )}
                 </div>
 
                 {/* Expanded Analysis */}
