@@ -1,6 +1,4 @@
 import { create } from 'zustand';
-import { getAllCountries, getStatesByCountry, getCitiesByState } from '../lib/location-data';
-
 export const useSearchStore = create((set, get) => ({
     // Job results
     jobs: [],
@@ -14,12 +12,7 @@ export const useSearchStore = create((set, get) => ({
     // Search settings
     midasSearch: false,
     exploreAdjacent: false,
-    preferences: { country: 'US', state: '', city: '', remoteOnly: false },
-
-    // Location data
-    countries: [],
-    states: [],
-    cities: [],
+    preferences: { location: '', remoteOnly: false },
 
     // UI
     showReturnNotification: false,
@@ -65,22 +58,7 @@ export const useSearchStore = create((set, get) => ({
         }));
     },
 
-    // Location cascading
-    updateLocationCascade: async (countryChanged, stateChanged) => {
-        const { preferences } = get();
-        if (countryChanged && preferences.country) {
-            const countryStates = await getStatesByCountry(preferences.country);
-            set({ states: countryStates });
-            if (countryStates.length === 0) {
-                set({ cities: await getCitiesByState(preferences.country, null) });
-            } else {
-                set({ cities: [] });
-            }
-        }
-        if (stateChanged && preferences.state) {
-            set({ cities: await getCitiesByState(preferences.country, preferences.state) });
-        }
-    },
+
 
     // Fetch recommendations
     fetchRecommendations: async (force = false, { profile, savedJobsData, appliedJobsData } = {}) => {
@@ -155,12 +133,6 @@ export const useSearchStore = create((set, get) => ({
             if (stored) set({ preferences: JSON.parse(stored) });
         } catch {}
 
-        // Load countries (async — lazy-loaded)
-        try {
-            const data = await getAllCountries();
-            if (data && Array.isArray(data)) set({ countries: data });
-        } catch (err) { console.error("Failed to load countries:", err); }
-
         // Load cached results
         try {
             const storedResults = localStorage.getItem('midas_results');
@@ -185,24 +157,12 @@ export const useSearchStore = create((set, get) => ({
             }
             localStorage.setItem('midas_last_visit', now.toString());
         } catch {}
-
-        // Init location cascade after preferences loaded
-        const { preferences } = get();
-        if (preferences.country) {
-            const countryStates = await getStatesByCountry(preferences.country);
-            set({ states: countryStates });
-            if (preferences.state) {
-                set({ cities: await getCitiesByState(preferences.country, preferences.state) });
-            } else if (countryStates.length === 0) {
-                set({ cities: await getCitiesByState(preferences.country, null) });
-            }
-        }
     },
 
     // Persist preferences
     persistPreferences: () => {
         const { preferences } = get();
-        if (preferences.country) {
+        if (preferences.location || preferences.remoteOnly) {
             try { localStorage.setItem('midas_preferences', JSON.stringify(preferences)); } catch {}
         }
     },

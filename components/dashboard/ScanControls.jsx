@@ -1,7 +1,6 @@
 import { Loader2, Compass, Info } from 'lucide-react';
 import { useState } from 'react';
-import { Combobox } from '../ui/Combobox';
-
+import { MapPin } from 'lucide-react';
 function Tooltip({ text, children }) {
     const [show, setShow] = useState(false);
     return (
@@ -23,7 +22,6 @@ function Tooltip({ text, children }) {
 export function ScanControls({
     experienceYears, setExperienceYears,
     preferences, setPreferences,
-    countries, states, cities,
     exploreAdjacent, setExploreAdjacent,
     midasSearch, setMidasSearch,
     tokensLoading, tokenBalance, weeklyMidasScanCount, isAdminUser,
@@ -52,26 +50,16 @@ export function ScanControls({
             {/* Location */}
             <div>
                 <div className="font-headline text-[10px] font-bold tracking-widest text-gray-500 uppercase mb-2">Location</div>
-                <Combobox
-                    options={countries}
-                    value={preferences.country}
-                    onChange={(val) => setPreferences(prev => ({ ...prev, country: val }))}
-                    placeholder="Country..."
-                />
-                {!preferences.remoteOnly && (states.length > 0 || cities.length > 0) && (
-                    <div className="flex gap-2 mt-2">
-                        {states.length > 0 && (
-                            <div className="flex-1">
-                                <Combobox options={states} value={preferences.state} onChange={(val) => setPreferences(prev => ({ ...prev, state: val }))} placeholder="State..." />
-                            </div>
-                        )}
-                        {cities.length > 0 && (
-                            <div className="flex-1">
-                                <Combobox options={cities} value={preferences.city} onChange={(val) => setPreferences(prev => ({ ...prev, city: val }))} placeholder="City..." />
-                            </div>
-                        )}
-                    </div>
-                )}
+                <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                        type="text"
+                        value={preferences.location || ''}
+                        onChange={(e) => setPreferences(prev => ({ ...prev, location: e.target.value }))}
+                        placeholder="e.g. San Francisco, London, US"
+                        className="w-full text-sm py-2.5 pl-9 pr-3 rounded-lg border border-gray-200 bg-surface-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-gray-400 text-gray-900"
+                    />
+                </div>
             </div>
 
             {/* Toggles */}

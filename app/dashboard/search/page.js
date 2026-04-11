@@ -8,7 +8,7 @@ import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
 import { CandidatePanel } from '@/components/dashboard/CandidatePanel';
 import { ScanControls } from '@/components/dashboard/ScanControls';
 import { ActivityLog } from '@/components/dashboard/ActivityLog';
-import { getCountryName, getStatesByCountry, getCitiesByState, getCitiesByCountry } from '@/lib/location-data';
+
 import { useToast } from '@/components/ui/Toast';
 import { useProfileStore } from '@/stores/profile-store';
 import { useSearchStore } from '@/stores/search-store';
@@ -40,7 +40,7 @@ export default function SearchPage() {
         activeTab, setActiveTab, sortBy, setSortBy,
         deepAnalysisProgress, setDeepAnalysisProgress,
         midasSearch, setMidasSearch, exploreAdjacent, setExploreAdjacent,
-        preferences, setPreferences, countries, states, cities,
+        preferences, setPreferences,
     } = useSearchStore();
     const {
         savedJobIds, savedJobsData, toggleSaveJob,
@@ -97,33 +97,9 @@ export default function SearchPage() {
             if (data.whatIDo) setWhatIDo(data.whatIDo);
 
             if (data.profile.location) {
-                addLog(`Detected location: ${data.profile.location}`);
-                const locLower = data.profile.location.toLowerCase();
-                const { Country, State, City } = await import('country-state-city');
-                const allCountries = Country.getAllCountries();
-                const foundCountry = allCountries.find(c =>
-                    locLower.includes(c.name.toLowerCase()) || locLower.includes(c.isoCode.toLowerCase()) ||
-                    (c.isoCode === 'US' && locLower.includes('usa')) || (c.isoCode === 'GB' && locLower.includes('uk'))
-                );
-                if (foundCountry) {
-                    let matchedState = '';
-                    let matchedCity = '';
-                    const countryStates = State.getStatesOfCountry(foundCountry.isoCode);
-                    const foundState = countryStates.find(s =>
-                        locLower.includes(s.name.toLowerCase()) || new RegExp(`\\b${s.isoCode.toLowerCase()}\\b`).test(locLower)
-                    );
-                    if (foundState) {
-                        matchedState = foundState.isoCode;
-                        const stateCities = City.getCitiesOfState(foundCountry.isoCode, matchedState);
-                        const foundCity = stateCities.find(c => locLower.includes(c.name.toLowerCase()));
-                        if (foundCity) matchedCity = foundCity.name;
-                    } else {
-                        const countryCities = City.getCitiesOfCountry(foundCountry.isoCode);
-                        const foundCity = countryCities.find(c => locLower.includes(c.name.toLowerCase()));
-                        if (foundCity) matchedCity = foundCity.name;
-                    }
-                    setPreferences(prev => ({ ...prev, country: foundCountry.isoCode, state: matchedState, city: matchedCity }));
-                    addLog(`Mapped to ${foundCountry.name}`);
+                if (data.profile.location) {
+                    setPreferences(prev => ({ ...prev, location: data.profile.location }));
+                    addLog(`Detected location: ${data.profile.location}`);
                 }
             }
             addLog(`Profile extracted for ${data.profile.name}`);
@@ -426,7 +402,6 @@ export default function SearchPage() {
                         <ScanControls
                             experienceYears={experienceYears} setExperienceYears={setExperienceYears}
                             preferences={preferences} setPreferences={setPreferences}
-                            countries={countries} states={states} cities={cities}
                             exploreAdjacent={exploreAdjacent} setExploreAdjacent={setExploreAdjacent}
                             midasSearch={midasSearch} setMidasSearch={setMidasSearch}
                             tokensLoading={tokensLoading} tokenBalance={tokenBalance}
