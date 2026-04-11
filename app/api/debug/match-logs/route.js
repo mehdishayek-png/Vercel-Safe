@@ -11,7 +11,7 @@
 
 import { NextResponse } from 'next/server';
 
-const MAX_BUFFER = 2000;
+const MAX_BUFFER = 5000;
 const buffer = [];
 
 function authorized(request) {
