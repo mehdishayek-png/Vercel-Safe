@@ -10,6 +10,8 @@ temp_ref
 # recordings and logs
 *.mp4
 *.webp
+*.jsonl
+/logs/
 git_log_utf8.txt
 
 # test artifacts
