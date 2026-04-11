@@ -1,4 +1,4 @@
-import { Loader2, Compass, Info } from 'lucide-react';
+import { Loader2, Compass, Info, Lightbulb, TrendingUp, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { MapPin } from 'lucide-react';
 function Tooltip({ text, children }) {
@@ -28,6 +28,8 @@ export function ScanControls({
     isMatching, isSignedIn, freeScansRemaining,
     findJobs, onReset,
 }) {
+    const [showTips, setShowTips] = useState(false);
+
     return (
         <div className="glass-panel rounded-[2rem] border border-transparent p-5 space-y-5">
             {/* Experience */}
@@ -110,6 +112,38 @@ export function ScanControls({
                             <Info className="w-3.5 h-3.5 text-gray-400 shrink-0" />
                         </Tooltip>
                     </label>
+                )}
+            </div>
+
+            {/* Pro Tips accordion */}
+            <div className={`border rounded-xl transition-colors duration-200 ${showTips ? 'border-amber-200 bg-amber-50/30' : 'border-outline-variant/10 bg-transparent hover:bg-surface-50'}`}>
+                <button 
+                    onClick={() => setShowTips(!showTips)}
+                    className="w-full flex items-center justify-between p-2.5 text-xs font-semibold text-gray-700 hover:text-amber-700 transition-colors cursor-pointer"
+                >
+                    <span className="flex items-center gap-1.5">
+                        <Lightbulb className={`w-3.5 h-3.5 ${showTips ? 'text-amber-500' : 'text-gray-400'}`} /> 
+                        Tips to improve matches
+                    </span>
+                    <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${showTips ? 'rotate-180' : ''}`} />
+                </button>
+                {showTips && (
+                    <div className="p-3 pt-0 border-t border-amber-100/50">
+                        <ul className="space-y-2 text-[11px] text-gray-600 mt-2">
+                            <li className="flex gap-2 items-start">
+                                <TrendingUp className="w-3 h-3 text-amber-500 shrink-0 mt-0.5" />
+                                <span>Use a <strong>specific target title</strong> &mdash; &ldquo;Backend Engineer&rdquo; beats &ldquo;Software Developer&rdquo;</span>
+                            </li>
+                            <li className="flex gap-2 items-start">
+                                <TrendingUp className="w-3 h-3 text-amber-500 shrink-0 mt-0.5" />
+                                <span>Add <strong>tools you use</strong> as skills (Jira, Figma, Node.js) &mdash; not just soft skills</span>
+                            </li>
+                            <li className="flex gap-2 items-start">
+                                <TrendingUp className="w-3 h-3 text-amber-500 shrink-0 mt-0.5" />
+                                <span>Be specific with <strong>Location</strong> (e.g., &ldquo;Austin, TX&rdquo;) or toggle <strong>Remote Only</strong></span>
+                            </li>
+                        </ul>
+                    </div>
                 )}
             </div>
 
