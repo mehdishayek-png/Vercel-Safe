@@ -10,6 +10,7 @@ import { predictSalary } from '@/lib/salary-predictor';
 import { predictSuccessProbability } from '@/lib/success-predictor';
 import { logMatch } from '@/lib/debug/match-logger';
 import { enrichThinJDs } from '@/lib/jd-enricher';
+import { getUserActions } from '@/lib/feedback-tracker';
 import { z } from 'zod';
 
 export const maxDuration = 90;
@@ -107,6 +108,17 @@ export async function POST(request) {
         }
       }
     }
+
+    // Fetch historical feedback actions to close the RLHF loop
+    let feedbackHistory = [];
+    if (userId) {
+      try {
+        feedbackHistory = await getUserActions(userId, 100);
+      } catch (err) {
+        console.error('[RLHF] Failed to fetch feedback history:', err);
+      }
+    }
+    preferences.feedbackHistory = feedbackHistory;
 
     // ---- SSE Stream ----
     const stream = new ReadableStream({

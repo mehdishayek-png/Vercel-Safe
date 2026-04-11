@@ -1,6 +1,17 @@
-import { Upload, Loader2, FileText, Target, Zap, TrendingUp } from 'lucide-react';
+import { useState } from 'react';
+import { Upload, Loader2, FileText, Target, Zap, TrendingUp, Search } from 'lucide-react';
 
-export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload }) {
+export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload, handleQuickStart }) {
+    const [quickTitle, setQuickTitle] = useState('');
+    const [quickSkills, setQuickSkills] = useState('');
+
+    const onQuickSubmit = (e) => {
+        e.preventDefault();
+        if (!quickTitle.trim()) return;
+        const skillsArray = quickSkills.split(',').map(s => s.trim()).filter(Boolean);
+        handleQuickStart(quickTitle, skillsArray);
+    };
+
     return (
         <>
             <div className="glass-panel rounded-[2rem] overflow-hidden border border-transparent shadow-2xl shadow-brand-500/10">
@@ -17,6 +28,41 @@ export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload }) {
                         <p className="text-xs text-gray-400 mt-1">PDF &middot; Max 10MB</p>
                     </div>
                     <input ref={fileInputRef} type="file" accept=".pdf" className="hidden" onChange={handleFileUpload} />
+                    
+                    <div className="mt-6 border-t border-gray-100 pt-6">
+                        <div className="text-center mb-4">
+                            <span className="text-xs font-semibold tracking-widest text-gray-400 uppercase">Or quick start manually</span>
+                        </div>
+                        <form onSubmit={onQuickSubmit} className="space-y-3">
+                            <div>
+                                <input
+                                    type="text"
+                                    placeholder="Target Job Title (e.g. Frontend Engineer)"
+                                    className="w-full text-sm py-2.5 px-3 rounded-lg border border-gray-200 bg-surface-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-gray-400 text-gray-900"
+                                    value={quickTitle}
+                                    onChange={(e) => setQuickTitle(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <input
+                                    type="text"
+                                    placeholder="Top 3 Skills (comma separated)"
+                                    className="w-full text-sm py-2.5 px-3 rounded-lg border border-gray-200 bg-surface-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-gray-400 text-gray-900"
+                                    value={quickSkills}
+                                    onChange={(e) => setQuickSkills(e.target.value)}
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={!quickTitle.trim()}
+                                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gray-900 text-white font-medium text-sm hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                            >
+                                <Search className="w-4 h-4" />
+                                Start Scanning
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 

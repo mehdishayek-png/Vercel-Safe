@@ -1,8 +1,14 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Play } from 'lucide-react';
+import { ArrowRight, Play, Search } from 'lucide-react';
 import { Button } from './ui/Button';
 
 export function Hero({ onStart, onDemo }) {
+    const handleQuickSearch = (e) => {
+        e.preventDefault();
+        const q = e.target.elements.q.value;
+        if (q.trim()) window.location.href = `/dashboard/search?q=${encodeURIComponent(q.trim())}`;
+    };
+
     return (
         <section className="relative min-h-screen flex items-center justify-center pt-20 pb-10 overflow-hidden">
             {/* Atmospheric gradient blobs */}
@@ -58,29 +64,28 @@ export function Hero({ onStart, onDemo }) {
                             against your profile, and delivers only the matches worth your time.
                         </motion.p>
 
-                        {/* CTAs */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.3 }}
-                            className="flex flex-col sm:flex-row items-start gap-3"
                         >
-                            <Button size="xl" onClick={onStart} icon={ArrowRight}>
-                                Get Started Free
-                            </Button>
-                            <Button variant="secondary" size="xl" onClick={onDemo} icon={Play}>
-                                See How It Works
-                            </Button>
+                            <form onSubmit={handleQuickSearch} className="flex items-center max-w-md bg-white p-1.5 pl-4 rounded-2xl shadow-elevated border border-brand-100">
+                                <Search className="w-5 h-5 text-gray-400 shrink-0" />
+                                <input 
+                                    type="text" 
+                                    name="q"
+                                    placeholder="Enter job title (e.g. Product Manager)" 
+                                    className="flex-1 bg-transparent border-none focus:ring-0 outline-none px-3 text-gray-800 placeholder:text-gray-400"
+                                    required
+                                />
+                                <Button type="submit" size="lg" icon={ArrowRight}>
+                                    Start Matching
+                                </Button>
+                            </form>
+                            <p className="text-[13px] text-gray-400 mt-4 ml-2">
+                                5 free searches per day. No credit card needed.
+                            </p>
                         </motion.div>
-
-                        <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.5, delay: 0.5 }}
-                            className="text-[13px] text-gray-400 mt-4"
-                        >
-                            5 free searches per day. No credit card needed.
-                        </motion.p>
 
                         {/* Trust strip */}
                         <motion.div
@@ -95,6 +100,22 @@ export function Hero({ onStart, onDemo }) {
                                     {text}
                                 </span>
                             ))}
+                        </motion.div>
+
+                        {/* Recent Hires trust section */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.8, delay: 0.7 }}
+                            className="mt-10"
+                        >
+                            <p className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-4">Users recently hired at</p>
+                            <div className="flex items-center gap-6 opacity-60 grayscale hover:grayscale-0 transition-all duration-300">
+                                <div className="text-xl font-bold font-headline tracking-tighter text-gray-800">Google</div>
+                                <div className="text-xl font-bold font-headline tracking-tighter text-blue-600">Stripe</div>
+                                <div className="text-xl font-bold font-headline tracking-tighter text-sky-500">Salesforce</div>
+                                <div className="text-xl font-bold font-headline tracking-tighter text-emerald-600">Shopify</div>
+                            </div>
                         </motion.div>
                     </div>
 

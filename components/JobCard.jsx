@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles, BrainCircuit, AlertCircle, Loader2, Lock, FileText, Copy, CheckCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -11,7 +11,7 @@ import { useRazorpay } from '../lib/useRazorpay';
 import { useToast } from './ui/Toast';
 import { safeBtoa } from '@/lib/safe-btoa';
 
-export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApplied, onTokensUpdated }) {
+export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApplied, onTokensUpdated, autoAnalyze }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [showFullDescription, setShowFullDescription] = useState(false);
     const [analysis, setAnalysis] = useState(null);
@@ -29,8 +29,24 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
         onError: (err) => toast(err.message, 'error'),
     });
 
+    const sendFeedback = (action) => {
+        try {
+            fetch('/api/feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    job: { title: job.title || '', company: job.company || '' },
+                    action,
+                    pandaScore: job.match_score || job._localScore || 0,
+                    profile: { headline: profile?.headline || '' }
+                })
+            }).catch(() => {});
+        } catch (e) { /* ignore */ }
+    };
+
     const handleSaveWrapper = () => {
         onSave(job);
+        if (!isSaved) sendFeedback('save');
         if (!isSaved && job.match_score >= 80) {
             confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 }, colors: ['#4f46e5', '#7c3aed', '#10b981'] });
         }
@@ -99,9 +115,10 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
     const getMatchGradient = (score) => getMatchGradientUtil(score);
 
     const handleExpandWrapper = async (e) => {
-        e.stopPropagation();
+        e?.stopPropagation?.();
 
         if (!isExpanded) {
+            sendFeedback('click');
             setIsExpanded(true);
             if (!analysis && !isLoadingAnalysis) {
                 setIsLoadingAnalysis(true);
@@ -137,6 +154,12 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
             setIsExpanded(false);
         }
     };
+
+    useEffect(() => {
+        if (autoAnalyze && !isExpanded && !analysis && !isLoadingAnalysis) {
+            handleExpandWrapper();
+        }
+    }, [autoAnalyze]);
 
     return (
         <motion.div
@@ -280,7 +303,11 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                             </button>
                             {onApply && (
                                 <button
-                                    onClick={(e) => { e.stopPropagation(); onApply(job); }}
+                                    onClick={(e) => { 
+                                        e.stopPropagation(); 
+                                        onApply(job); 
+                                        if (!isApplied) sendFeedback('apply');
+                                    }}
                                     aria-label={isApplied ? 'Remove from applied' : 'Mark as applied'}
                                     className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
                                         isApplied

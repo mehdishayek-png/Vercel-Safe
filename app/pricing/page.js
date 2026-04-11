@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRazorpay } from "@/lib/useRazorpay";
+import { useTokenStore } from "@/stores/token-store";
 
 const faqs = [
     {
@@ -45,6 +47,12 @@ const paidPlan = [
 
 export default function PricingPage() {
     const [openFaq, setOpenFaq] = useState(null);
+    const { refreshTokens } = useTokenStore();
+    const { initiatePayment, isProcessing } = useRazorpay({
+        onSuccess: () => {
+            refreshTokens();
+        }
+    });
 
     return (
         <main
@@ -175,12 +183,13 @@ export default function PricingPage() {
                             ))}
                         </ul>
 
-                        <a
-                            href="/dashboard"
-                            className="block w-full text-center py-3 px-6 rounded-xl bg-brand-600 text-white font-medium text-sm hover:bg-brand-700 transition-colors"
+                        <button
+                            onClick={initiatePayment}
+                            disabled={isProcessing}
+                            className="block w-full text-center py-3 px-6 rounded-xl bg-brand-600 text-white font-medium text-sm hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
-                            Buy Tokens
-                        </a>
+                            {isProcessing ? "Processing..." : "Buy Tokens"}
+                        </button>
                     </div>
                 </div>
 

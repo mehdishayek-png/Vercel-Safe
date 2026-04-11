@@ -324,6 +324,9 @@ function GroupedJobList({ displayedJobs, profile, apiKeys, savedJobIds, appliedJ
     const [expandedGroups, setExpandedGroups] = useState({});
     const GROUP_THRESHOLD = 3; // Group companies with 3+ jobs
 
+    const topJob = displayedJobs.length > 0 ? displayedJobs[0] : null;
+    const topJobId = topJob && (topJob.match_score >= 85 || topJob.analysis?.fit_score >= 85) ? (topJob.id || topJob.apply_url) : null;
+
     // Count jobs per company
     const companyCounts = {};
     for (const job of displayedJobs) {
@@ -393,6 +396,7 @@ function GroupedJobList({ displayedJobs, profile, apiKeys, savedJobIds, appliedJ
                                                     onApply={toggleAppliedJob}
                                                     isApplied={appliedJobIds?.has(job.apply_url)}
                                                     onTokensUpdated={refreshTokens}
+                                                    autoAnalyze={topJobId && (job.id === topJobId || job.apply_url === topJobId)}
                                                 />
                                             ))}
                                         </motion.div>
@@ -414,6 +418,7 @@ function GroupedJobList({ displayedJobs, profile, apiKeys, savedJobIds, appliedJ
                             onApply={toggleAppliedJob}
                             isApplied={appliedJobIds?.has(item.job.apply_url)}
                             onTokensUpdated={refreshTokens}
+                            autoAnalyze={topJobId && (item.job.id === topJobId || item.job.apply_url === topJobId)}
                         />
                     );
                 })}

@@ -16,7 +16,7 @@ import { useJobsStore } from '@/stores/jobs-store';
 import { useTokenStore } from '@/stores/token-store';
 import { useFilters } from '@/hooks/use-filters';
 import { useAuth } from '@clerk/nextjs';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function SearchPage() {
     const { isSignedIn } = useAuth();
@@ -151,6 +151,46 @@ export default function SearchPage() {
         if (!profile) return;
         setProfile(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skillToRemove) }));
     };
+
+    const handleQuickStart = (title, skillsArray) => {
+        setJobs([]);
+        try { localStorage.removeItem('midas_results'); } catch {}
+        
+        const mockProfile = {
+            name: 'Guest',
+            headline: title,
+            skills: skillsArray,
+            experience_years: 0,
+            location: ''
+        };
+        
+        setProfile(mockProfile);
+        setJobTitle(title);
+        
+        // Let the store settle, then trigger search
+        setTimeout(() => {
+            const scanBtn = document.getElementById('scan-btn');
+            if (scanBtn) scanBtn.click();
+        }, 500);
+    };
+
+    useEffect(() => {
+        // Auto-scroll on mobile when matching starts
+        if (isMatching && window.innerWidth < 1024 && resultsRef.current) {
+            resultsRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [isMatching]);
+
+    useEffect(() => {
+        // Intercept ?q= from hero input
+        const params = new URLSearchParams(window.location.search);
+        const q = params.get('q');
+        if (q && !profile) {
+            // clear the URL param without full reload
+            window.history.replaceState({}, '', '/dashboard/search');
+            handleQuickStart(q, ['Communication', 'Problem Solving']);
+        }
+    }, []);
 
     const findJobs = async (forceRefresh = false) => {
         if (!profile) return;
@@ -370,7 +410,7 @@ export default function SearchPage() {
 
                 {/* Resume Upload & Onboarding */}
                 {!profile && (
-                    <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} />
+                    <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} handleQuickStart={handleQuickStart} />
                 )}
 
 
