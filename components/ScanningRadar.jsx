@@ -10,24 +10,8 @@ const TIPS = [
     "Tip: Your resume is processed in memory and never stored",
 ];
 
-// Convert a job to a radar node — higher scores closer to center
-function jobToNode(job, index, total) {
-    const score = job.analysis?.fit_score || job.match_score || 0;
-    // Score 100 → radius 80, score 30 → radius 380
-    const radius = 380 - ((score - 30) / 70) * 300;
-    // Distribute evenly around the circle with some jitter
-    const baseAngle = (index / Math.max(total, 1)) * 360;
-    const jitter = ((index * 137.5) % 60) - 30; // golden angle jitter
-    const angle = (baseAngle + jitter) % 360;
-
-    return {
-        company: job.company || 'Unknown',
-        score: Math.round(score),
-        angle,
-        radius: Math.max(60, Math.min(400, radius)),
-        source: job.source || '',
-    };
-}
+// We compute nodes differently now to avoid collisions
+// (removed standalone jobToNode function)
 
 export function ScanningRadar({ jobs = [] }) {
     const [tipIndex, setTipIndex] = useState(0);
@@ -45,21 +29,42 @@ export function ScanningRadar({ jobs = [] }) {
 
     const formatTime = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
-    // Deduplicate by company, take best score, limit to 12 nodes
-    const nodes = useMemo(() => {
+    const { nodes, totalDetected } = useMemo(() => {
         const companyMap = new Map();
         for (const job of jobs) {
-            const name = (job.company || 'Unknown').trim();
+            // Aggressive normalization to prevent duplicate entities (e.g. "Salesforce" vs "Salesforce, Inc.")
+            const rawName = (job.company || 'Unknown')
+                .replace(/\\b(inc|llc|ltd|corp|corporation|company)\\b\\.?/gi, '')
+                .replace(/[^a-zA-Z0-9]/g, '')
+                .toLowerCase();
+                
             const score = job.analysis?.fit_score || job.match_score || 0;
-            const existing = companyMap.get(name);
-            if (!existing || score > existing.match_score) {
-                companyMap.set(name, job);
+            const existing = companyMap.get(rawName);
+            if (!existing || score > (existing.analysis?.fit_score || existing.match_score || 0)) {
+                companyMap.set(rawName, job);
             }
         }
-        return Array.from(companyMap.values())
-            .sort((a, b) => (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0))
-            .slice(0, 12)
-            .map((job, i, arr) => jobToNode(job, i, arr.length));
+        
+        const sortedJobs = Array.from(companyMap.values())
+            .sort((a, b) => (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0));
+
+        // Use a perfectly distributed star pattern to guarantee no overlapping bubbles
+        const STAGGERED_ANGLES = [0, 135, 270, 45, 180, 315, 90, 225, 18, 198];
+        
+        const topNodes = sortedJobs.slice(0, 8).map((job, i) => {
+            const score = job.analysis?.fit_score || job.match_score || 0;
+            // Radius calculation: closer to 0 (center) the higher the score
+            const radius = 380 - ((score - 30) / 70) * 300;
+            return {
+                company: job.company || 'Unknown',
+                score: Math.round(score),
+                angle: STAGGERED_ANGLES[i % STAGGERED_ANGLES.length],
+                radius: Math.max(70, Math.min(380, radius)),
+                source: job.source || '',
+            };
+        });
+
+        return { nodes: topNodes, totalDetected: companyMap.size };
     }, [jobs]);
 
     return (
@@ -196,7 +201,7 @@ export function ScanningRadar({ jobs = [] }) {
             </motion.h3>
             <p className="text-xs text-gray-400 mb-4">
                 {formatTime(elapsed)} elapsed
-                {nodes.length > 0 && ` · ${nodes.length} companies detected`}
+                {totalDetected > 0 && ` · ${totalDetected} companies detected`}
             </p>
 
             {/* Rotating tips */}
