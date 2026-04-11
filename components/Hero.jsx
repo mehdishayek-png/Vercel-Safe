@@ -6,13 +6,7 @@ export function Hero({ onStart, onDemo }) {
     const handleQuickSearch = (e) => {
         e.preventDefault();
         const q = e.target.elements.q.value;
-        const loc = e.target.elements.loc.value;
-        if (q.trim()) {
-            const url = new URL('/dashboard/search', window.location.origin);
-            url.searchParams.set('q', q.trim());
-            if (loc.trim()) url.searchParams.set('loc', loc.trim());
-            window.location.href = url.toString();
-        }
+        if (q.trim()) window.location.href = `/dashboard/search?q=${encodeURIComponent(q.trim())}`;
     };
 
     return (
@@ -75,37 +69,20 @@ export function Hero({ onStart, onDemo }) {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.3 }}
                         >
-                            <form onSubmit={handleQuickSearch} className="flex flex-col gap-3 max-w-lg">
-                                {/* Title & Location Row */}
-                                <div className="flex flex-col sm:flex-row items-center bg-white p-1.5 pl-4 rounded-2xl shadow-elevated border border-brand-100 gap-2 w-full">
-                                    <Search className="w-5 h-5 text-gray-400 shrink-0 hidden sm:block" />
-                                    <input 
-                                        type="text" 
-                                        name="q"
-                                        placeholder="Job title (e.g. Product Manager)" 
-                                        className="flex-[1.5] w-full bg-transparent border-none focus:ring-0 outline-none px-2 py-1 text-gray-800 placeholder:text-gray-400"
-                                        required
-                                    />
-                                    <div className="hidden sm:block w-px h-6 bg-gray-200"></div>
-                                    <input 
-                                        type="text" 
-                                        name="loc"
-                                        placeholder="Location or 'Remote'" 
-                                        className="flex-1 w-full bg-transparent border-none focus:ring-0 outline-none px-2 py-1 text-gray-800 placeholder:text-gray-400 text-sm"
-                                    />
-                                </div>
-                                {/* CTAs Row */}
-                                <div className="flex flex-col sm:flex-row items-center gap-3 mt-1">
-                                    <Button type="button" onClick={() => window.location.href = '/dashboard/search'} size="lg" className="w-full sm:w-auto bg-gray-900 border-gray-900 hover:bg-black text-white hover:-translate-y-0.5 shadow-none" icon={null}>
-                                        Upload Resume First
-                                    </Button>
-                                    <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider hidden sm:block">OR</span>
-                                    <Button type="submit" size="lg" className="w-full sm:w-auto shadow-none bg-brand-50 text-brand-600 border-brand-100 hover:bg-brand-100 hover:border-brand-200" icon={ArrowRight}>
-                                        Scan Manually
-                                    </Button>
-                                </div>
+                            <form onSubmit={handleQuickSearch} className="flex items-center max-w-md bg-white p-1.5 pl-4 rounded-2xl shadow-elevated border border-brand-100">
+                                <Search className="w-5 h-5 text-gray-400 shrink-0" />
+                                <input 
+                                    type="text" 
+                                    name="q"
+                                    placeholder="Enter job title (e.g. Product Manager)" 
+                                    className="flex-1 bg-transparent border-none focus:ring-0 outline-none px-3 text-gray-800 placeholder:text-gray-400"
+                                    required
+                                />
+                                <Button type="submit" size="lg" icon={ArrowRight}>
+                                    Start Matching
+                                </Button>
                             </form>
-                            <p className="text-[13px] text-gray-400 mt-5 ml-2">
+                            <p className="text-[13px] text-gray-400 mt-4 ml-2">
                                 5 free searches per day. No credit card needed.
                             </p>
                         </motion.div>
