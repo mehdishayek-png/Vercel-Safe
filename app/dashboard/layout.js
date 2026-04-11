@@ -5,6 +5,7 @@ import { DashboardHeader } from '@/components/DashboardHeader';
 import { ReturnNotification } from '@/components/ReturnNotification';
 import { AppProvider } from '@/contexts/AppContext';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { TokenPurchaseModal } from '@/components/TokenPurchaseModal';
 
 export default function DashboardLayout({ children }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -27,6 +28,7 @@ export default function DashboardLayout({ children }) {
                         </main>
                     </div>
                 </div>
+                <TokenPurchaseModal />
             </AppProvider>
         </ErrorBoundary>
     );

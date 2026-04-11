@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import crypto from 'crypto';
+import Razorpay from 'razorpay';
 import { redis } from '@/lib/redis';
-import { creditTokens, TOKEN_PACK_SIZE } from '@/lib/tokens';
+import { creditTokens } from '@/lib/tokens';
 import { validateOrigin } from '@/lib/csrf';
 import { rateLimit } from '@/lib/rate-limit';
 
@@ -49,14 +50,29 @@ export async function POST(request) {
         })();
 
         if (isAuthentic) {
-            // 3. Idempotency check — prevent double-crediting the same payment
+            // 3. Fetch the order from Razorpay to get the secure token amount
+            const razorpay = new Razorpay({
+                key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                key_secret: process.env.RAZORPAY_KEY_SECRET,
+            });
+            let purchaseTokens = 60; // fallback to pro
+            try {
+                const orderData = await razorpay.orders.fetch(razorpay_order_id);
+                if (orderData && orderData.notes && orderData.notes.tokens) {
+                    purchaseTokens = parseInt(orderData.notes.tokens, 10);
+                }
+            } catch (err) {
+                console.error('[Payment] Failed to fetch order notes. Defaulting tokens.', err.message);
+            }
+
+            // 4. Idempotency check — prevent double-crediting the same payment
             const idempotencyKey = `payment:${razorpay_payment_id}`;
             if (redis) {
                 const alreadyProcessed = await redis.get(idempotencyKey);
                 if (alreadyProcessed) {
                     return NextResponse.json({
                         success: true,
-                        tokens: TOKEN_PACK_SIZE,
+                        tokens: purchaseTokens,
                         balance: alreadyProcessed,
                         serverCredited: true,
                         message: "Payment already processed"
@@ -64,11 +80,11 @@ export async function POST(request) {
                 }
             }
 
-            // 4. Credit tokens server-side if user is authenticated
+            // 5. Credit tokens server-side if user is authenticated
             let serverCredit = { success: false };
             if (userId) {
-                serverCredit = await creditTokens(userId, TOKEN_PACK_SIZE);
-                console.log(`[Payment] Credited ${TOKEN_PACK_SIZE} tokens to user ${userId}. New balance: ${serverCredit.balance}`);
+                serverCredit = await creditTokens(userId, purchaseTokens);
+                console.log(`[Payment] Credited ${purchaseTokens} tokens to user ${userId}. New balance: ${serverCredit.balance}`);
 
                 // Mark payment as processed (TTL 7 days)
                 if (redis && serverCredit.success) {
@@ -80,7 +96,7 @@ export async function POST(request) {
 
             return NextResponse.json({
                 success: true,
-                tokens: TOKEN_PACK_SIZE,
+                tokens: purchaseTokens,
                 balance: serverCredit.balance || null,
                 serverCredited: serverCredit.success,
                 message: "Payment verified successfully"

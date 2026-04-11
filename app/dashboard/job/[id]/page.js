@@ -1,11 +1,12 @@
 'use client';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
-import { ArrowLeft, ExternalLink, Bookmark, Check, MapPin, Building2, Clock, Sparkles, BrainCircuit, FileText, Copy, CheckCheck, Loader2, AlertCircle, Briefcase, ChevronRight, GraduationCap, Target, BadgeCheck, Eye, ChevronDown, Lightbulb, Shield, MessageSquare, DollarSign, ArrowUpRight, ChevronUp } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Bookmark, Check, MapPin, Building2, Clock, Sparkles, BrainCircuit, FileText, Copy, CheckCheck, Loader2, AlertCircle, Briefcase, ChevronRight, GraduationCap, Target, BadgeCheck, Eye, ChevronDown, Lightbulb, Shield, MessageSquare, DollarSign, ArrowUpRight, ChevronUp, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { useProfileStore } from '@/stores/profile-store';
 import { useSearchStore } from '@/stores/search-store';
 import { useJobsStore } from '@/stores/jobs-store';
+import { useTokenStore } from '@/stores/token-store';
 import { useToast } from '@/components/ui/Toast';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { safeBtoa } from '@/lib/safe-btoa';
@@ -131,13 +132,13 @@ function ScoreGauge({ score, heuristicBreakdown, profile }) {
         <div className="flex flex-col items-center gap-3">
             {/* Match Tier Badge */}
             <div className={`px-4 py-2 rounded-xl border flex flex-col items-center justify-center min-w-[90px] ${
-                score >= 75 ? 'bg-emerald-50 border-emerald-200' : score >= 50 ? 'bg-teal-50 border-teal-200' : 'bg-gray-50 border-gray-200'
+                score >= 75 ? 'bg-teal-50 border-teal-200' : score >= 50 ? 'bg-emerald-50 border-emerald-200' : 'bg-gray-50 border-gray-200'
             }`}>
-                <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-0.5">Tier</span>
-                <span className={`text-lg font-bold ${
-                    score >= 75 ? 'text-emerald-700' : score >= 50 ? 'text-teal-700' : 'text-gray-600'
+                <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-0.5">Score</span>
+                <span className={`text-2xl font-bold ${
+                    score >= 75 ? 'text-teal-700' : score >= 50 ? 'text-emerald-700' : 'text-gray-600'
                 }`}>
-                    {score >= 75 ? 'High' : score >= 50 ? 'Good' : 'Reach'}
+                    {score}
                 </span>
             </div>
 
@@ -259,6 +260,9 @@ export default function JobDetailPage() {
     const { jobs, recommendations } = useSearchStore();
     const { savedJobIds, toggleSaveJob, appliedJobIds, toggleAppliedJob, savedJobsData } = useJobsStore();
     const [job, setJob] = useState(null);
+    const [localAnalysis, setLocalAnalysis] = useState(null);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [analysisError, setAnalysisError] = useState(null);
     const [coverLetter, setCoverLetter] = useState(null);
     const [isLoadingCoverLetter, setIsLoadingCoverLetter] = useState(false);
     const [copied, setCopied] = useState(false);
@@ -267,6 +271,8 @@ export default function JobDetailPage() {
     const [isLoadingNegotiation, setIsLoadingNegotiation] = useState(false);
     const [showNegotiation, setShowNegotiation] = useState(false);
     const [expandedScripts, setExpandedScripts] = useState({});
+    
+    const { openPurchaseModal } = useTokenStore();
 
     useEffect(() => {
         try {
@@ -283,7 +289,7 @@ export default function JobDetailPage() {
         if (!job) return null;
         const multipliers = job.heuristic_breakdown?.multipliers || {};
         const matches = job.heuristic_breakdown?.matches || [];
-        const analysis = job.analysis;
+        const analysis = localAnalysis || job.analysis;
         const score = analysis?.fit_score || job.match_score || 0;
         const skillCount = matches.length;
         const rawDescription = job.description || job.summary || '';
@@ -413,6 +419,43 @@ export default function JobDetailPage() {
             })(),
         },
     ];
+
+    const handleAnalyzeJob = async () => {
+        setIsAnalyzing(true);
+        setAnalysisError(null);
+        try {
+            const res = await fetch('/api/analyze-job', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ job, profile, apiKeys }),
+            });
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                if (res.status === 401 && errorData.requiresAuth) {
+                    setAnalysisError('Sign in to use Deep Scan.');
+                } else if (res.status === 403 && errorData.paywalled) {
+                    openPurchaseModal();
+                    setAnalysisError('Please top up your tokens to proceed.');
+                } else {
+                    throw new Error(errorData.error || 'Failed to analyze job');
+                }
+                return;
+            }
+            const data = await res.json();
+            setLocalAnalysis(data.analysis);
+            
+            // Save to localStorage so it persists
+            const updatedJob = { ...job, analysis: data.analysis };
+            setJob(updatedJob);
+            localStorage.setItem(`job_detail_${decodeURIComponent(params.id)}`, JSON.stringify(updatedJob));
+            // Trigger a re-render/update to other components listening to local storage?  (next reload will get it).
+        } catch (err) {
+            console.error("Analysis Error:", err);
+            setAnalysisError(err.message || 'Error communicating with AI service.');
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
 
     const handleCoverLetter = async () => {
         if (coverLetter) return;
@@ -639,34 +682,62 @@ export default function JobDetailPage() {
                         </div>
                     )}
 
-                    {/* Job Description — FULL */}
-                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                        <div className="px-5 py-3.5 border-b border-gray-100">
-                            <h2 className="text-[13px] font-semibold text-gray-900">Job Description</h2>
-                        </div>
-                        <div className="px-5 py-4">
-                            <div className="text-[13px] text-gray-600 leading-relaxed whitespace-pre-wrap break-words">
-                                {displayDescription}
-                                {isDescriptionLong && !showFullDescription && '...'}
+                    {/* AI Analysis — Lock State or Full Content */}
+                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden relative">
+                        <div className="px-5 py-3.5 border-b border-gray-100 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="w-3.5 h-3.5 text-teal-500" />
+                                <h2 className="text-[13px] font-semibold text-gray-900">AI Deep Scan</h2>
                             </div>
-                            {isDescriptionLong && (
-                                <button
-                                    onClick={() => setShowFullDescription(!showFullDescription)}
-                                    className="mt-3 text-[12px] font-medium text-teal-600 hover:text-teal-700 cursor-pointer"
-                                >
-                                    {showFullDescription ? 'Show less' : 'Read full description'}
-                                </button>
+                            {(!analysis || analysis.isBlurredTeaser) && (
+                                <span className="bg-amber-100 text-amber-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                                    <Lock className="w-2.5 h-2.5" /> Locked
+                                </span>
                             )}
                         </div>
-                    </div>
 
-                    {/* AI Analysis */}
-                    {analysis && !analysis.isBlurredTeaser && (
-                        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                            <div className="px-5 py-3.5 border-b border-gray-100 flex items-center gap-2">
-                                <Sparkles className="w-3.5 h-3.5 text-teal-500" />
-                                <h2 className="text-[13px] font-semibold text-gray-900">AI Analysis</h2>
+                        {!analysis || analysis.isBlurredTeaser ? (
+                            <div className="relative p-8 flex flex-col items-center justify-center text-center bg-gray-50/50">
+                                {/* Blurred Fake Content Behind */}
+                                <div className="absolute inset-0 p-5 blur-[6px] select-none pointer-events-none opacity-40">
+                                     <div className="h-4 bg-gray-300 rounded w-1/3 mb-4"></div>
+                                     <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+                                     <div className="h-3 bg-gray-200 rounded w-5/6 mb-4"></div>
+                                     <div className="grid grid-cols-2 gap-4">
+                                         <div className="h-20 bg-gray-200 rounded"></div>
+                                         <div className="h-20 bg-gray-200 rounded"></div>
+                                     </div>
+                                </div>
+
+                                <div className="relative z-10 max-w-sm">
+                                    <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center mx-auto mb-4">
+                                        <BrainCircuit className="w-6 h-6 text-teal-500" />
+                                    </div>
+                                    <h3 className="text-base font-semibold text-gray-900 mb-2">Unlock AI Deep Scan</h3>
+                                    <p className="text-[13px] text-gray-500 mb-5 leading-relaxed">
+                                        Uncover hidden signals, red flags, and exact salary leverage for this role using your profile context.
+                                    </p>
+
+                                    {analysisError ? (
+                                        <div className="mb-4 text-[12px] text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-100">
+                                            {analysisError}
+                                        </div>
+                                    ) : null}
+
+                                    <button
+                                        onClick={handleAnalyzeJob}
+                                        disabled={isAnalyzing}
+                                        className="w-full inline-flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 text-white font-medium py-2.5 px-4 rounded-xl text-[13px] transition-all shadow border border-transparent disabled:opacity-70 disabled:cursor-not-allowed"
+                                    >
+                                        {isAnalyzing ? (
+                                            <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing Requirements...</>
+                                        ) : (
+                                            <><Sparkles className="w-3.5 h-3.5 text-amber-400" /> Deep Scan (1 Token)</>
+                                        )}
+                                    </button>
+                                </div>
                             </div>
+                        ) : (
                             <div className="p-5 space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     {/* Strong Signals */}
@@ -792,8 +863,29 @@ export default function JobDetailPage() {
                                     </div>
                                 )}
                             </div>
+                        )}
+                    </div>
+
+                    {/* Job Description — FULL */}
+                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                        <div className="px-5 py-3.5 border-b border-gray-100">
+                            <h2 className="text-[13px] font-semibold text-gray-900">Job Description</h2>
                         </div>
-                    )}
+                        <div className="px-5 py-4">
+                            <div className="text-[13px] text-gray-600 leading-relaxed whitespace-pre-wrap break-words">
+                                {displayDescription}
+                                {isDescriptionLong && !showFullDescription && '...'}
+                            </div>
+                            {isDescriptionLong && (
+                                <button
+                                    onClick={() => setShowFullDescription(!showFullDescription)}
+                                    className="mt-3 text-[12px] font-medium text-teal-600 hover:text-teal-700 cursor-pointer"
+                                >
+                                    {showFullDescription ? 'Show less' : 'Read full description'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
 
                     {/* Cover Letter */}
                     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">

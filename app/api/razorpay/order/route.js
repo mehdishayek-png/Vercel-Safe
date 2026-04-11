@@ -10,6 +10,10 @@ export async function POST(request) {
         if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         if (!validateOrigin(request)) return NextResponse.json({ error: 'Invalid request origin' }, { status: 403 });
 
+        let body = {};
+        try { body = await request.json(); } catch (e) { }
+        const { packageId = 'jobhunt' } = body;
+
         // Rate limit: 5 order creations per minute per user
         const rl = await rateLimit(`razorpay:${userId}`, 5, 60);
         if (!rl.allowed) {
@@ -25,15 +29,22 @@ export async function POST(request) {
             key_secret: process.env.RAZORPAY_KEY_SECRET,
         });
 
-        // Define the transaction amount (₹399 INR ~ $4.99 USD) 
-        // Razorpay accepts amounts in paise (1 INR = 100 paise)
-        const amountInPaise = 399 * 100;
+        // Define the packages
+        const packages = {
+            starter: { amount: 19900, tokens: 25, description: "25x Midas Tokens (Starter)" },
+            jobhunt: { amount: 39900, tokens: 60, description: "60x Midas Tokens (Job Hunt)" },
+            advantage: { amount: 79900, tokens: 150, description: "150x Midas Tokens (Unfair Advantage)" }
+        };
+        const pkg = packages[packageId] || packages.jobhunt;
 
         const options = {
-            amount: amountInPaise,
+            amount: pkg.amount,
             currency: "INR",
             receipt: `receipt_order_${Date.now()}`,
-            payment_capture: 1 // Auto capture the payment
+            payment_capture: 1, // Auto capture the payment
+            notes: {
+                tokens: pkg.tokens.toString()
+            }
         };
 
         const order = await razorpay.orders.create(options);
@@ -43,6 +54,7 @@ export async function POST(request) {
             id: order.id,
             currency: order.currency,
             amount: order.amount,
+            description: pkg.description // send description for the modal display
         });
 
     } catch (err) {

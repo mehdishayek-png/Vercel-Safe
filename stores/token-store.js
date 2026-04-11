@@ -14,7 +14,11 @@ export const useTokenStore = create((set, get) => ({
     FREE_DAILY_SCANS,
     FREE_VISIBLE_JOBS,
 
+    isPurchaseModalOpen: false,
     freeScansRemaining: FREE_DAILY_SCANS,
+
+    openPurchaseModal: () => set({ isPurchaseModalOpen: true }),
+    closePurchaseModal: () => set({ isPurchaseModalOpen: false }),
 
     setSessionBurn: (sessionBurn) => set({ sessionBurn }),
     setTokenBalance: (tokenBalance) => set({ tokenBalance }),

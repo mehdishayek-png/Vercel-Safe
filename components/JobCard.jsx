@@ -12,26 +12,7 @@ import { useToast } from './ui/Toast';
 import { safeBtoa } from '@/lib/safe-btoa';
 
 export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApplied, onTokensUpdated, autoAnalyze }) {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [showFullDescription, setShowFullDescription] = useState(false);
-    const [analysis, setAnalysis] = useState(null);
-    const [analysisError, setAnalysisError] = useState(null);
-    const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
-    const [coverLetter, setCoverLetter] = useState(null);
-    const [isLoadingCoverLetter, setIsLoadingCoverLetter] = useState(false);
-    const [outreach, setOutreach] = useState(null);
-    const [isLoadingOutreach, setIsLoadingOutreach] = useState(false);
-    const [isTailoringCV, setIsTailoringCV] = useState(false);
-    const [copied, setCopied] = useState(false);
     const toast = useToast();
-    const { initiatePayment, isProcessing: isPaymentProcessing } = useRazorpay({
-        onSuccess: () => {
-            toast('50 tokens credited!', 'success');
-            onTokensUpdated?.();
-        },
-        onError: (err) => toast(err.message, 'error'),
-    });
-
     const sendFeedback = (action) => {
         try {
             fetch('/api/feedback', {
@@ -55,91 +36,6 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
         }
     };
 
-    const handleCoverLetter = async () => {
-        if (coverLetter) return; // Already generated
-        setIsLoadingCoverLetter(true);
-        try {
-            const res = await fetch('/api/cover-letter', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ job, profile }),
-            });
-            if (!res.ok) {
-                const err = await res.json().catch(() => ({}));
-                throw new Error(err.error || 'Failed to generate');
-            }
-            const data = await res.json();
-            setCoverLetter(data.letter);
-        } catch (err) {
-            toast(err.message || 'Cover letter failed', 'error');
-        } finally {
-            setIsLoadingCoverLetter(false);
-        }
-    };
-
-    const handleOutreach = async () => {
-        if (outreach) return;
-        setIsLoadingOutreach(true);
-        try {
-            const res = await fetch('/api/outreach', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ job, profile }),
-            });
-            if (!res.ok) {
-                const err = await res.json().catch(() => ({}));
-                if (res.status === 403 && err.paywalled) {
-                    throw new Error('Not enough tokens (costs 1). Purchase more to proceed.');
-                }
-                throw new Error(err.error || 'Failed to generate outreach');
-            }
-            const data = await res.json();
-            setOutreach(data.messages);
-            onTokensUpdated?.();
-        } catch (err) {
-            toast(err.message || 'Outreach generation failed', 'error');
-        } finally {
-            setIsLoadingOutreach(false);
-        }
-    };
-
-    const handleTailorCV = async () => {
-        setIsTailoringCV(true);
-        try {
-            const res = await fetch('/api/tailor-cv', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ job, profile }),
-            });
-            if (!res.ok) {
-                const err = await res.json().catch(() => ({}));
-                if (res.status === 403 && err.paywalled) {
-                    throw new Error('Not enough tokens (costs 3). Purchase more to proceed.');
-                }
-                throw new Error(err.error || 'Failed to tailor CV');
-            }
-            const data = await res.json();
-            onTokensUpdated?.();
-            
-            // Set the CV data in localStorage and open printable page
-            localStorage.setItem('print_cv_data', data.cvMarkdown);
-            window.open('/cv-print', '_blank');
-            if (data.tips) {
-                toast(data.tips, 'success');
-            }
-        } catch (err) {
-            toast(err.message || 'CV tailoring failed', 'error');
-        } finally {
-            setIsTailoringCV(false);
-        }
-    };
-
-    const handleCopy = async (textToCopy) => {
-        if (!textToCopy) return;
-        await navigator.clipboard.writeText(textToCopy);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
 
     const getFormattedDate = (dateString) => {
         if (!dateString) return 'Recently';
@@ -171,55 +67,6 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
     const cleanLocation = stripHtml(job.location);
     const cleanSummary = stripHtml(job.summary || job.description);
 
-    const getMatchColor = (score) => getMatchColorUtil(score).text;
-    const getMatchGradient = (score) => getMatchGradientUtil(score);
-
-    const handleExpandWrapper = async (e) => {
-        e?.stopPropagation?.();
-
-        if (!isExpanded) {
-            sendFeedback('click');
-            setIsExpanded(true);
-            if (!analysis && !isLoadingAnalysis) {
-                setIsLoadingAnalysis(true);
-                setAnalysisError(null);
-                try {
-                    const res = await fetch('/api/analyze-job', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ job, profile, apiKeys }),
-                    });
-                    if (!res.ok) {
-                        const errorData = await res.json().catch(() => ({}));
-                        if (res.status === 401 && errorData.requiresAuth) {
-                            setAnalysisError('Sign in to use Deep Scan.');
-                        } else if (res.status === 403 && errorData.paywalled) {
-                            setAnalysis({ isBlurredTeaser: true, fit_score: '??', strong_signals: ['Hidden'], gaps: ['Hidden'], salary_estimate: 'Hidden', verdict: 'Purchase tokens to unlock this analysis.' });
-                        } else {
-                            throw new Error(errorData.error || 'Failed to analyze job');
-                        }
-                        return;
-                    }
-                    const data = await res.json();
-                    setAnalysis(data.analysis);
-                    onTokensUpdated?.();
-                } catch (err) {
-                    console.error("Analysis Error:", err);
-                    setAnalysisError(err.message || 'Error communicating with AI service.');
-                } finally {
-                    setIsLoadingAnalysis(false);
-                }
-            }
-        } else {
-            setIsExpanded(false);
-        }
-    };
-
-    useEffect(() => {
-        if (autoAnalyze && !isExpanded && !analysis && !isLoadingAnalysis) {
-            handleExpandWrapper();
-        }
-    }, [autoAnalyze]);
 
     return (
         <motion.div
@@ -290,10 +137,6 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                 <MapPin className="w-3.5 h-3.5 text-gray-400" />
                                 {cleanLocation || 'Remote'}
                             </span>
-                            <span className="w-px h-3 bg-surface-200" />
-                            <span className="px-1.5 py-0.5 rounded-md bg-surface-50 text-gray-500 border border-outline-variant/10 text-[10px] font-medium">
-                                {job.source}
-                            </span>
                         </div>
 
                         {/* TL;DR from AI analysis (shown instead of raw JD when available) */}
@@ -343,9 +186,9 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center min-w-[52px] h-[52px] px-2 rounded-xl border bg-white border-gray-200 shadow-sm">
-                                <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest mb-0.5">Tier</span>
-                                <span className={`text-[13px] font-bold ${(analysis?.fit_score || job.match_score) >= 75 ? 'text-emerald-600' : (analysis?.fit_score || job.match_score) >= 50 ? 'text-teal-600' : 'text-gray-500'}`}>
-                                    {(analysis?.fit_score || job.match_score) >= 75 ? 'High' : (analysis?.fit_score || job.match_score) >= 50 ? 'Good' : 'Reach'}
+                                <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest mb-0.5">Score</span>
+                                <span className={`text-[15px] font-bold ${(analysis?.fit_score || job.match_score) >= 75 ? 'text-emerald-600' : (analysis?.fit_score || job.match_score) >= 50 ? 'text-teal-600' : 'text-gray-500'}`}>
+                                    {Math.round(analysis?.fit_score || job.match_score)}
                                 </span>
                             </div>
                         )}
@@ -387,264 +230,16 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                         localStorage.setItem(key, JSON.stringify(job));
                                     } catch (e) { /* ignore */ }
                                 }}
-                                className="inline-flex items-center gap-1 bg-gray-900 hover:bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
+                                className="inline-flex items-center gap-1.5 bg-gray-900 hover:bg-gray-800 text-white text-[13px] px-4 py-2 rounded-xl font-medium transition-all shadow-sm hover:shadow"
                             >
-                                View <ChevronDown className="w-3 h-3 -rotate-90" />
+                                <BrainCircuit className="w-3.5 h-3.5 text-teal-400" />
+                                Analyze Role
                             </Link>
                         </div>
                     </div>
                 </div>
 
-                {/* Analysis trigger */}
-                <div className="mt-3 pt-3 border-t border-surface-100 flex justify-between items-center">
-                    {analysis?.fit_score ? (
-                        <div className="text-xs font-semibold px-2 py-0.5 rounded-md bg-brand-50 text-brand-600 flex items-center gap-1">
-                            <Sparkles className="w-3 h-3" />
-                            AI: {analysis.fit_score >= 75 ? 'High Match' : analysis.fit_score >= 50 ? 'Good Match' : 'Worth a Look'}
-                        </div>
-                    ) : (
-                        <div className="text-[11px] text-gray-400">Heuristic Match</div>
-                    )}
 
-                    {((analysis?.fit_score || job.match_score) >= 50 || analysis) && (
-                        <button
-                            onClick={handleExpandWrapper}
-                            className="group/btn flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-brand-600 transition-colors py-1 px-2 rounded-lg hover:bg-brand-50 cursor-pointer"
-                        >
-                            {analysis?.isBlurredTeaser ? (
-                                <>
-                                    <Lock className="w-3.5 h-3.5 text-amber-500" />
-                                    <span className="text-amber-600">Unlock</span>
-                                </>
-                            ) : (
-                                <>
-                                    <BrainCircuit className="w-3.5 h-3.5" />
-                                    {isExpanded ? 'Hide' : (job.analysis ? 'View AI Verdict' : 'Deep Analysis')}
-                                </>
-                            )}
-                            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-                        </button>
-                    )}
-                </div>
-
-                {/* Expanded Analysis */}
-                <AnimatePresence>
-                    {isExpanded && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden"
-                        >
-                            <div className="pt-3 mt-3 border-t border-surface-100 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                                {isLoadingAnalysis ? (
-                                    <div className="col-span-2 space-y-2 p-4">
-                                        <div className="flex items-center gap-2 text-gray-400 animate-pulse">
-                                            <BrainCircuit className="w-4 h-4" />
-                                            <span>Analyzing against your profile...</span>
-                                        </div>
-                                        <div className="h-2 bg-surface-100 rounded-full w-3/4 animate-pulse" />
-                                        <div className="h-2 bg-surface-100 rounded-full w-1/2 animate-pulse" />
-                                    </div>
-                                ) : analysis ? (
-                                    <div className="relative col-span-2">
-                                        <div className={`grid grid-cols-1 md:grid-cols-2 gap-3 ${analysis.isBlurredTeaser ? 'blur-md pointer-events-none select-none opacity-40' : ''}`}>
-                                            <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
-                                                <h4 className="text-emerald-800 font-medium mb-2 flex items-center gap-1.5">
-                                                    <Check className="w-3.5 h-3.5" />
-                                                    Strong Signals
-                                                </h4>
-                                                <ul className="list-disc list-inside space-y-1 text-emerald-700/80">
-                                                    {analysis.strong_signals?.map((s, i) => <li key={i}>{s}</li>)}
-                                                </ul>
-                                            </div>
-                                            <div className="bg-brand-50 p-3 rounded-lg border border-brand-100 flex flex-col justify-between">
-                                                <div>
-                                                    <h4 className="text-brand-800 font-medium mb-2 flex items-center gap-1.5">
-                                                        <Sparkles className="w-3.5 h-3.5" />
-                                                        AI Verdict
-                                                    </h4>
-                                                    <p className="text-brand-700/80 mb-2">{analysis.verdict}</p>
-                                                </div>
-                                                <div className="pt-2 border-t border-brand-100/50 mt-2">
-                                                    <span className="text-[10px] uppercase tracking-wider text-brand-400 font-semibold">Est. Salary: </span>
-                                                    <span className="text-brand-900 font-medium">{analysis.salary_estimate}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Heuristic breakdown */}
-                                        {!analysis.isBlurredTeaser && job.heuristic_breakdown && (
-                                            <div className="mt-3 border-t border-dashed border-outline-variant/10 pt-3">
-                                                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                                                    <BrainCircuit className="w-3.5 h-3.5 text-brand-400" />
-                                                    Scoring Breakdown
-                                                </h4>
-                                                <div className="flex flex-col sm:flex-row gap-4">
-                                                    <div className="flex-1">
-                                                        <div className="text-[10px] text-gray-400 uppercase font-semibold mb-1.5">Keywords ({job.heuristic_breakdown.raw} pts)</div>
-                                                        <div className="flex flex-wrap gap-1.5">
-                                                            {job.heuristic_breakdown.matches?.map((match, idx) => (
-                                                                <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded-md bg-brand-50 border border-brand-100 text-[10px] text-brand-700 font-medium">
-                                                                    {match.skill}
-                                                                    <span className="ml-1 text-brand-400 font-mono">+{match.value}</span>
-                                                                </span>
-                                                            ))}
-                                                            {(!job.heuristic_breakdown.matches || job.heuristic_breakdown.matches.length === 0) && (
-                                                                <span className="text-xs text-gray-400 italic">No direct skill overlaps.</span>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <div className="text-[10px] text-gray-400 uppercase font-semibold mb-1.5">Match Signals</div>
-                                                        <div className="grid grid-cols-2 gap-1.5">
-                                                            {Object.entries(job.heuristic_breakdown.multipliers || {}).map(([key, val]) => {
-                                                                const numVal = parseFloat(val);
-                                                                // Convert raw multipliers to user-friendly labels
-                                                                const labels = {
-                                                                    seniority: numVal >= 1.1 ? 'Seniority: Great fit' : numVal >= 0.8 ? 'Seniority: Slight stretch' : numVal >= 0.4 ? 'Seniority: Reach' : 'Seniority: Mismatch',
-                                                                    recency: numVal >= 1.0 ? 'Posted: Fresh' : numVal >= 0.7 ? 'Posted: Recent' : numVal >= 0.4 ? 'Posted: Aging' : 'Posted: Old',
-                                                                    prestige: numVal > 1.0 ? 'Company: Well-known' : 'Company: Neutral',
-                                                                    location: numVal >= 1.3 ? 'Location: Exact match' : numVal >= 1.0 ? 'Location: Good' : numVal >= 0.5 ? 'Location: Remote' : numVal >= 0.1 ? 'Location: Partial' : 'Location: Mismatch',
-                                                                    quality: numVal >= 1.0 ? 'Quality: Good' : 'Quality: Low',
-                                                                    depth: numVal >= 1.1 ? 'Depth: Strong' : numVal >= 0.9 ? 'Depth: Neutral' : 'Depth: Basic role',
-                                                                    roleFamily: numVal >= 1.0 ? 'Career track: Match' : numVal >= 0.6 ? 'Career track: Adjacent' : 'Career track: Different',
-                                                                    negative: numVal >= 1.0 ? null : 'Flagged: Irrelevant',
-                                                                    coherence: numVal >= 1.0 ? null : 'Title: Misleading',
-                                                                    semantic: numVal >= 1.1 ? 'Semantic: Strong' : numVal >= 0.9 ? null : 'Semantic: Weak',
-                                                                };
-                                                                const label = labels[key];
-                                                                if (!label) return null; // Hide neutral/irrelevant signals
-                                                                let colorClass = "bg-surface-50 text-gray-600 border-outline-variant/10";
-                                                                if (numVal > 1.0) colorClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
-                                                                if (numVal < 1.0) colorClass = "bg-rose-50 text-rose-700 border-rose-200";
-                                                                return (
-                                                                    <div key={key} className={`flex items-center px-2 py-1 rounded-md border text-[10px] font-medium ${colorClass}`}>
-                                                                        <span>{label}</span>
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {/* Cover Letter & Drafts Container */}
-                                        {!analysis.isBlurredTeaser && (
-                                            <div className="mt-3 border-t border-dashed border-outline-variant/10 pt-3 flex flex-col gap-3">
-                                                {/* Button Row */}
-                                                <div className="flex flex-wrap items-center gap-2">
-                                                    {!coverLetter && (
-                                                        <button
-                                                            onClick={handleCoverLetter}
-                                                            disabled={isLoadingCoverLetter}
-                                                            className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-brand-600 border border-outline-variant/20 transition-colors py-1.5 px-3 rounded-lg hover:bg-brand-50 cursor-pointer disabled:opacity-50"
-                                                        >
-                                                            {isLoadingCoverLetter ? (
-                                                                <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating Cover Letter...</>
-                                                            ) : (
-                                                                <><FileText className="w-3.5 h-3.5" /> Generate Cover Letter</>
-                                                            )}
-                                                        </button>
-                                                    )}
-                                                    
-                                                    {!outreach && (
-                                                        <button
-                                                            onClick={handleOutreach}
-                                                            disabled={isLoadingOutreach}
-                                                            className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-brand-600 border border-outline-variant/20 transition-colors py-1.5 px-3 rounded-lg hover:bg-brand-50 cursor-pointer disabled:opacity-50"
-                                                        >
-                                                            {isLoadingOutreach ? (
-                                                                <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Drafting Outreach...</>
-                                                            ) : (
-                                                                <><Send className="w-3.5 h-3.5" /> Draft Cold Outreach <span className="text-[10px] bg-brand-100 text-brand-600 px-1 py-0.5 rounded-sm ml-1.5">1 Token</span></>
-                                                            )}
-                                                        </button>
-                                                    )}
-
-                                                    <button
-                                                        onClick={handleTailorCV}
-                                                        disabled={isTailoringCV}
-                                                        className="flex items-center gap-1.5 text-xs font-medium bg-brand-50 text-brand-600 hover:bg-brand-100 border border-brand-200 transition-colors py-1.5 px-3 rounded-lg cursor-pointer disabled:opacity-50"
-                                                    >
-                                                        {isTailoringCV ? (
-                                                            <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating ATS PDF...</>
-                                                        ) : (
-                                                            <><FileEdit className="w-3.5 h-3.5" /> Tailor CV <span className="text-[10px] bg-white border border-brand-100 text-brand-600 px-1 py-0.5 rounded-sm ml-1.5">3 Tokens</span></>
-                                                        )}
-                                                    </button>
-                                                </div>
-                                                {coverLetter && (
-                                                    <div className="bg-surface-50 rounded-lg border border-outline-variant/10 p-3">
-                                                        <div className="flex items-center justify-between mb-2">
-                                                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-                                                                <FileText className="w-3.5 h-3.5 text-brand-400" />
-                                                                Cover Letter
-                                                            </h4>
-                                                            <button
-                                                                onClick={() => handleCopy(coverLetter)}
-                                                                className="flex items-center gap-1 text-[10px] font-medium text-gray-400 hover:text-brand-600 transition-colors px-2 py-1 rounded-md hover:bg-brand-50 cursor-pointer"
-                                                            >
-                                                                {copied ? <><CheckCheck className="w-3 h-3 text-emerald-500" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
-                                                            </button>
-                                                        </div>
-                                                        <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-wrap">{coverLetter}</p>
-                                                    </div>
-                                                )}
-
-                                                {outreach && (
-                                                    <div className="space-y-3">
-                                                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-1 mt-2">
-                                                            <Send className="w-3.5 h-3.5 text-brand-400" />
-                                                            Cold Outreach Drafts
-                                                        </h4>
-                                                        {outreach.map((msg, i) => (
-                                                            <div key={i} className="bg-surface-50 rounded-lg border border-outline-variant/10 p-3">
-                                                                <div className="flex items-center justify-between mb-2">
-                                                                    <h5 className="text-[11px] font-semibold text-gray-700">{msg.title}</h5>
-                                                                    <button
-                                                                        onClick={() => handleCopy(msg.content)}
-                                                                        className="flex items-center gap-1 text-[10px] font-medium text-gray-400 hover:text-brand-600 transition-colors px-2 py-1 rounded-md hover:bg-brand-50 cursor-pointer"
-                                                                    >
-                                                                        <Copy className="w-3 h-3" /> Copy
-                                                                    </button>
-                                                                </div>
-                                                                <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-
-                                        {/* Paywall overlay — disabled during beta */}
-                                        {false && analysis.isBlurredTeaser && (
-                                            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center p-6 bg-white/60 rounded-xl">
-                                                <Lock className="w-8 h-8 text-amber-500 mb-2" />
-                                                <h4 className="text-base font-bold text-gray-900 mb-1">Free scans used</h4>
-                                                <p className="text-sm text-gray-600 mb-3 max-w-xs">Unlock AI analysis, salary estimates, and skill gaps for 50 jobs.</p>
-                                                <Button
-                                                    onClick={initiatePayment}
-                                                    disabled={isPaymentProcessing}
-                                                    className="bg-amber-500 hover:bg-amber-600 text-white border-0"
-                                                >
-                                                    <Sparkles className="w-4 h-4 mr-1.5" />
-                                                    {isPaymentProcessing ? 'Processing...' : 'Get 50 Tokens — ₹399'}
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <div className="col-span-2 text-center text-red-500 py-4 bg-red-50 rounded-lg border border-red-100">
-                                        <AlertCircle className="w-4 h-4 inline mr-1.5" />
-                                        {analysisError || "Unable to generate analysis."}
-                                    </div>
-                                )}
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
             </div>
         </motion.div>
     );
