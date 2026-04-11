@@ -1,13 +1,8 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Play, Search } from 'lucide-react';
+import { ArrowRight, Play } from 'lucide-react';
 import { Button } from './ui/Button';
 
 export function Hero({ onStart, onDemo }) {
-    const handleQuickSearch = (e) => {
-        e.preventDefault();
-        const q = e.target.elements.q.value;
-        if (q.trim()) window.location.href = `/dashboard/search?q=${encodeURIComponent(q.trim())}`;
-    };
 
     return (
         <section className="relative min-h-screen flex items-center justify-center pt-20 pb-10 overflow-hidden">
@@ -69,19 +64,9 @@ export function Hero({ onStart, onDemo }) {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.3 }}
                         >
-                            <form onSubmit={handleQuickSearch} className="flex items-center max-w-md bg-white p-1.5 pl-4 rounded-2xl shadow-elevated border border-brand-100">
-                                <Search className="w-5 h-5 text-gray-400 shrink-0" />
-                                <input 
-                                    type="text" 
-                                    name="q"
-                                    placeholder="Enter job title (e.g. Product Manager)" 
-                                    className="flex-1 bg-transparent border-none focus:ring-0 outline-none px-3 text-gray-800 placeholder:text-gray-400"
-                                    required
-                                />
-                                <Button type="submit" size="lg" icon={ArrowRight}>
-                                    Start Matching
-                                </Button>
-                            </form>
+                            <Button type="button" onClick={() => window.location.href = '/dashboard/search'} size="lg" icon={ArrowRight}>
+                                Start Matching
+                            </Button>
                             <p className="text-[13px] text-gray-400 mt-4 ml-2">
                                 5 free searches per day. No credit card needed.
                             </p>
