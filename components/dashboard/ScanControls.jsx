@@ -1,6 +1,6 @@
 import { Loader2, Compass, Info, Lightbulb, TrendingUp, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
-import { MapPin } from 'lucide-react';
+import { MapPin, Sparkles } from 'lucide-react';
 import { LocationAutocomplete } from '@/components/ui/LocationAutocomplete';
 function Tooltip({ text, children }) {
     const [show, setShow] = useState(false);
@@ -30,6 +30,11 @@ export function ScanControls({
     findJobs, onReset,
 }) {
     const [showTips, setShowTips] = useState(false);
+    
+    // Add logic to toggle premiumStartups
+    const handlePremiumToggle = (e) => {
+        setPreferences(prev => ({ ...prev, premiumStartups: e.target.checked }));
+    };
 
     return (
         <div className="glass-panel rounded-[2rem] border border-transparent p-5 space-y-5">
@@ -68,6 +73,19 @@ export function ScanControls({
                     Remote Only
                     <Tooltip text="Only show jobs that are listed as remote or work-from-home. Filters out office-based roles.">
                         <Info className="w-3.5 h-3.5 text-gray-400 ml-auto shrink-0" />
+                    </Tooltip>
+                </label>
+
+                <label className={`flex items-center gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all duration-200 text-xs ${
+                    preferences.premiumStartups ? 'bg-amber-50 border-amber-200 text-amber-900 shadow-sm' : 'bg-surface-50 border-outline-variant/10 text-gray-600 hover:bg-surface-100'
+                }`}>
+                    <input type="checkbox" checked={preferences.premiumStartups || false} onChange={handlePremiumToggle} className="accent-amber-600" />
+                    <span className="font-medium flex items-center gap-1.5 flex-1">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                        Elite AI Startups
+                    </span>
+                    <Tooltip text="Target top-tier AI labs and startups like OpenAI, Anthropic, and Mistral directly.">
+                        <Info className="w-3.5 h-3.5 text-gray-400 shrink-0" />
                     </Tooltip>
                 </label>
 

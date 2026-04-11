@@ -1,12 +1,14 @@
 'use client';
 import { usePathname } from 'next/navigation';
-import { HelpCircle, Coins, ChevronRight, Menu, Bell, Settings } from 'lucide-react';
-import { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { HelpCircle, Coins, ChevronRight, Menu, Bell, Settings, ArrowRight, X } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import { GuideModal } from './GuideModal';
 import { useTokenStore } from '@/stores/token-store';
-import { UserButton, SignedIn } from '@clerk/nextjs';
+import { useSearchStore } from '@/stores/search-store';
+import { useJobsStore } from '@/stores/jobs-store';
+import { UserButton, SignedIn, SignedOut } from '@clerk/nextjs';
 
 const PAGE_TITLES = {
     '/dashboard': 'Dashboard',
@@ -20,7 +22,25 @@ const PAGE_TITLES = {
 export function DashboardHeader({ onMenuClick }) {
     const pathname = usePathname();
     const tokenBalance = useTokenStore(s => s.tokenBalance);
+    const { showReturnNotification, setShowReturnNotification } = useSearchStore();
+    const { savedJobsData, appliedJobsData } = useJobsStore();
     const [showGuide, setShowGuide] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const notifRef = useRef(null);
+
+    const savedCount = savedJobsData?.length ?? 0;
+    const appliedCount = appliedJobsData?.length ?? 0;
+    const hasActivity = savedCount > 0 || appliedCount > 0;
+
+    useEffect(() => {
+        function handleClickOutside(e) {
+            if (notifRef.current && !notifRef.current.contains(e.target)) {
+                setShowNotifications(false);
+            }
+        }
+        if (showNotifications) document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showNotifications]);
 
     return (
         <>
@@ -61,10 +81,75 @@ export function DashboardHeader({ onMenuClick }) {
                             {tokenBalance}
                         </div>
                     )}
-                    <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors relative">
-                        <Bell className="w-5 h-5" />
-                        <span className="absolute top-2 right-2 w-2 h-2 bg-accent-500 rounded-full"></span>
-                    </button>
+                    <SignedIn><div className="relative" ref={notifRef}>
+                        <button
+                            onClick={() => setShowNotifications(v => !v)}
+                            className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors relative cursor-pointer"
+                        >
+                            <Bell className="w-5 h-5" />
+                            {(showReturnNotification || hasActivity) && (
+                                <span className="absolute top-2 right-2 w-2 h-2 bg-accent-500 rounded-full"></span>
+                            )}
+                        </button>
+                        <AnimatePresence>
+                            {showNotifications && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                                    transition={{ duration: 0.15 }}
+                                    className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50"
+                                >
+                                    <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+                                        <span className="text-sm font-semibold text-slate-700">Notifications</span>
+                                        <button
+                                            onClick={() => setShowNotifications(false)}
+                                            className="p-1 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                                        >
+                                            <X className="w-4 h-4 text-slate-400" />
+                                        </button>
+                                    </div>
+                                    {hasActivity ? (
+                                        <div className="px-4 py-4 space-y-3">
+                                            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Activity</p>
+                                            {savedCount > 0 && (
+                                                <Link
+                                                    href="/dashboard/saved"
+                                                    onClick={() => setShowNotifications(false)}
+                                                    className="flex items-center justify-between p-3 bg-surface-50 hover:bg-surface-100 rounded-xl transition-colors group"
+                                                >
+                                                    <div>
+                                                        <p className="text-sm font-medium text-slate-700">{savedCount} saved job{savedCount !== 1 ? 's' : ''}</p>
+                                                        <p className="text-xs text-slate-400 mt-0.5">Review your saved listings</p>
+                                                    </div>
+                                                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-brand-500 transition-colors" />
+                                                </Link>
+                                            )}
+                                            {appliedCount > 0 && (
+                                                <Link
+                                                    href="/dashboard/applications"
+                                                    onClick={() => setShowNotifications(false)}
+                                                    className="flex items-center justify-between p-3 bg-surface-50 hover:bg-surface-100 rounded-xl transition-colors group"
+                                                >
+                                                    <div>
+                                                        <p className="text-sm font-medium text-slate-700">{appliedCount} application{appliedCount !== 1 ? 's' : ''}</p>
+                                                        <p className="text-xs text-slate-400 mt-0.5">Track your progress</p>
+                                                    </div>
+                                                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-brand-500 transition-colors" />
+                                                </Link>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="px-4 py-8 text-center">
+                                            <Bell className="w-8 h-8 text-slate-200 mx-auto mb-2" />
+                                            <p className="text-sm text-slate-400">No notifications yet</p>
+                                            <p className="text-xs text-slate-300 mt-0.5">Activity will appear here</p>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div></SignedIn>
 
                     <button onClick={() => setShowGuide(true)} className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
                         <HelpCircle className="w-5 h-5" />

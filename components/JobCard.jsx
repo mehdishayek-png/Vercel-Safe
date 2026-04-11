@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles, BrainCircuit, AlertCircle, Loader2, Lock, FileText, Copy, CheckCheck } from 'lucide-react';
+import { MapPin, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles, BrainCircuit, AlertCircle, Loader2, Lock, FileText, Copy, CheckCheck, Send, FileEdit } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import Link from 'next/link';
 import { Button } from './ui/Button';
@@ -19,6 +19,9 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
     const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
     const [coverLetter, setCoverLetter] = useState(null);
     const [isLoadingCoverLetter, setIsLoadingCoverLetter] = useState(false);
+    const [outreach, setOutreach] = useState(null);
+    const [isLoadingOutreach, setIsLoadingOutreach] = useState(false);
+    const [isTailoringCV, setIsTailoringCV] = useState(false);
     const [copied, setCopied] = useState(false);
     const toast = useToast();
     const { initiatePayment, isProcessing: isPaymentProcessing } = useRazorpay({
@@ -74,9 +77,66 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
         }
     };
 
-    const handleCopy = async () => {
-        if (!coverLetter) return;
-        await navigator.clipboard.writeText(coverLetter);
+    const handleOutreach = async () => {
+        if (outreach) return;
+        setIsLoadingOutreach(true);
+        try {
+            const res = await fetch('/api/outreach', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ job, profile }),
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                if (res.status === 403 && err.paywalled) {
+                    throw new Error('Not enough tokens (costs 1). Purchase more to proceed.');
+                }
+                throw new Error(err.error || 'Failed to generate outreach');
+            }
+            const data = await res.json();
+            setOutreach(data.messages);
+            onTokensUpdated?.();
+        } catch (err) {
+            toast(err.message || 'Outreach generation failed', 'error');
+        } finally {
+            setIsLoadingOutreach(false);
+        }
+    };
+
+    const handleTailorCV = async () => {
+        setIsTailoringCV(true);
+        try {
+            const res = await fetch('/api/tailor-cv', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ job, profile }),
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                if (res.status === 403 && err.paywalled) {
+                    throw new Error('Not enough tokens (costs 3). Purchase more to proceed.');
+                }
+                throw new Error(err.error || 'Failed to tailor CV');
+            }
+            const data = await res.json();
+            onTokensUpdated?.();
+            
+            // Set the CV data in localStorage and open printable page
+            localStorage.setItem('print_cv_data', data.cvMarkdown);
+            window.open('/cv-print', '_blank');
+            if (data.tips) {
+                toast(data.tips, 'success');
+            }
+        } catch (err) {
+            toast(err.message || 'CV tailoring failed', 'error');
+        } finally {
+            setIsTailoringCV(false);
+        }
+    };
+
+    const handleCopy = async (textToCopy) => {
+        if (!textToCopy) return;
+        await navigator.clipboard.writeText(textToCopy);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -470,22 +530,52 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                             </div>
                                         )}
 
-                                        {/* Cover Letter Generator */}
+                                        {/* Cover Letter & Drafts Container */}
                                         {!analysis.isBlurredTeaser && (
-                                            <div className="mt-3 border-t border-dashed border-outline-variant/10 pt-3">
-                                                {!coverLetter ? (
+                                            <div className="mt-3 border-t border-dashed border-outline-variant/10 pt-3 flex flex-col gap-3">
+                                                {/* Button Row */}
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    {!coverLetter && (
+                                                        <button
+                                                            onClick={handleCoverLetter}
+                                                            disabled={isLoadingCoverLetter}
+                                                            className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-brand-600 border border-outline-variant/20 transition-colors py-1.5 px-3 rounded-lg hover:bg-brand-50 cursor-pointer disabled:opacity-50"
+                                                        >
+                                                            {isLoadingCoverLetter ? (
+                                                                <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating Cover Letter...</>
+                                                            ) : (
+                                                                <><FileText className="w-3.5 h-3.5" /> Generate Cover Letter</>
+                                                            )}
+                                                        </button>
+                                                    )}
+                                                    
+                                                    {!outreach && (
+                                                        <button
+                                                            onClick={handleOutreach}
+                                                            disabled={isLoadingOutreach}
+                                                            className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-brand-600 border border-outline-variant/20 transition-colors py-1.5 px-3 rounded-lg hover:bg-brand-50 cursor-pointer disabled:opacity-50"
+                                                        >
+                                                            {isLoadingOutreach ? (
+                                                                <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Drafting Outreach...</>
+                                                            ) : (
+                                                                <><Send className="w-3.5 h-3.5" /> Draft Cold Outreach <span className="text-[10px] bg-brand-100 text-brand-600 px-1 py-0.5 rounded-sm ml-1.5">1 Token</span></>
+                                                            )}
+                                                        </button>
+                                                    )}
+
                                                     <button
-                                                        onClick={handleCoverLetter}
-                                                        disabled={isLoadingCoverLetter}
-                                                        className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-brand-600 transition-colors py-1.5 px-3 rounded-lg hover:bg-brand-50 cursor-pointer disabled:opacity-50"
+                                                        onClick={handleTailorCV}
+                                                        disabled={isTailoringCV}
+                                                        className="flex items-center gap-1.5 text-xs font-medium bg-brand-50 text-brand-600 hover:bg-brand-100 border border-brand-200 transition-colors py-1.5 px-3 rounded-lg cursor-pointer disabled:opacity-50"
                                                     >
-                                                        {isLoadingCoverLetter ? (
-                                                            <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating...</>
+                                                        {isTailoringCV ? (
+                                                            <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating ATS PDF...</>
                                                         ) : (
-                                                            <><FileText className="w-3.5 h-3.5" /> Generate Cover Letter</>
+                                                            <><FileEdit className="w-3.5 h-3.5" /> Tailor CV <span className="text-[10px] bg-white border border-brand-100 text-brand-600 px-1 py-0.5 rounded-sm ml-1.5">3 Tokens</span></>
                                                         )}
                                                     </button>
-                                                ) : (
+                                                </div>
+                                                {coverLetter && (
                                                     <div className="bg-surface-50 rounded-lg border border-outline-variant/10 p-3">
                                                         <div className="flex items-center justify-between mb-2">
                                                             <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
@@ -493,13 +583,36 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                                                 Cover Letter
                                                             </h4>
                                                             <button
-                                                                onClick={handleCopy}
+                                                                onClick={() => handleCopy(coverLetter)}
                                                                 className="flex items-center gap-1 text-[10px] font-medium text-gray-400 hover:text-brand-600 transition-colors px-2 py-1 rounded-md hover:bg-brand-50 cursor-pointer"
                                                             >
                                                                 {copied ? <><CheckCheck className="w-3 h-3 text-emerald-500" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
                                                             </button>
                                                         </div>
                                                         <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-wrap">{coverLetter}</p>
+                                                    </div>
+                                                )}
+
+                                                {outreach && (
+                                                    <div className="space-y-3">
+                                                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-1 mt-2">
+                                                            <Send className="w-3.5 h-3.5 text-brand-400" />
+                                                            Cold Outreach Drafts
+                                                        </h4>
+                                                        {outreach.map((msg, i) => (
+                                                            <div key={i} className="bg-surface-50 rounded-lg border border-outline-variant/10 p-3">
+                                                                <div className="flex items-center justify-between mb-2">
+                                                                    <h5 className="text-[11px] font-semibold text-gray-700">{msg.title}</h5>
+                                                                    <button
+                                                                        onClick={() => handleCopy(msg.content)}
+                                                                        className="flex items-center gap-1 text-[10px] font-medium text-gray-400 hover:text-brand-600 transition-colors px-2 py-1 rounded-md hover:bg-brand-50 cursor-pointer"
+                                                                    >
+                                                                        <Copy className="w-3 h-3" /> Copy
+                                                                    </button>
+                                                                </div>
+                                                                <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                                                            </div>
+                                                        ))}
                                                     </div>
                                                 )}
                                             </div>

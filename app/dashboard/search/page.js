@@ -48,7 +48,7 @@ export default function SearchPage() {
     } = useJobsStore();
     const {
         tokenBalance, dailyScanCount, weeklyMidasScanCount,
-        isAdminUser, tokensLoading, refreshTokens,
+        isAdminUser, tokensLoading, refreshTokens, sessionBurn, setSessionBurn,
         freeScansRemaining, FREE_DAILY_SCANS, FREE_VISIBLE_JOBS,
     } = useTokenStore();
     const {
@@ -96,12 +96,7 @@ export default function SearchPage() {
             if (data.profile.headline) setJobTitle(data.profile.headline);
             if (data.whatIDo) setWhatIDo(data.whatIDo);
 
-            if (data.profile.location) {
-                if (data.profile.location) {
-                    setPreferences(prev => ({ ...prev, location: data.profile.location }));
-                    addLog(`Detected location: ${data.profile.location}`);
-                }
-            }
+
             addLog(`Profile extracted for ${data.profile.name}`);
         } catch (err) {
             const msg = err.message.toLowerCase();
@@ -184,6 +179,7 @@ export default function SearchPage() {
         setHasSearched(true);
         // Don't clear previous jobs — new results will merge in via streaming
         setLogs([]);
+        setSessionBurn(0);
         setSearchError(null);
         addLog("Starting job search agent...");
         addLog("Streaming results as sources respond...");
@@ -244,6 +240,8 @@ export default function SearchPage() {
 
                         if (event.type === 'progress') {
                             addLog(event.message);
+                        } else if (event.type === 'burn_update') {
+                            setSessionBurn(event.tokensConsumed);
                         } else if (event.type === 'jobs') {
                             // Deduplicate against already-displayed jobs
                             const newJobs = (event.jobs || []).filter(j => {
@@ -269,8 +267,16 @@ export default function SearchPage() {
                             }
                         } else if (event.type === 'complete') {
                             addLog(`Search complete: ${event.totalUnique} unique jobs from ${Object.keys(event.sources || {}).length} sources`);
+                        } else if (event.type === 'burn_update') {
+                            setSessionBurn(event.tokensConsumed);
                         } else if (event.type === 'error') {
-                            addLog(`Warning: ${event.message}`);
+                            if (event.message?.includes('TOKEN_DEPLETED')) {
+                                addLog('⚠️ Search halted: Token balance depleted mid-stream.');
+                                setSearchError({ type: 'search', message: 'You ran out of tokens. Purchase more to view additional matches.', canRetry: true });
+                            } else {
+                                addLog(`Warning: ${event.message}`);
+                                setSearchError({ type: 'search', message: `Search error: ${event.message}`, canRetry: true });
+                            }
                         }
                     } catch { /* skip malformed SSE lines */ }
                 }
@@ -466,6 +472,11 @@ export default function SearchPage() {
                                         : logs.length > 0 ? logs[logs.length - 1].message : 'Initializing...'}
                                 </div>
                             </div>
+                            {!deepAnalysisProgress && sessionBurn > 0 && (
+                                <div className="shrink-0 bg-brand-50 border border-brand-200 text-brand-700 px-2 py-1 rounded text-[11px] font-mono font-semibold animate-pulse origin-right">
+                                    🔥 {sessionBurn.toFixed(2)}
+                                </div>
+                            )}
                         </div>
                     </motion.div>
                 )}

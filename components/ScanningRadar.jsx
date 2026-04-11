@@ -53,13 +53,15 @@ export function ScanningRadar({ jobs = [] }) {
         
         const topNodes = sortedJobs.slice(0, 8).map((job, i) => {
             const score = job.analysis?.fit_score || job.match_score || 0;
-            // Radius calculation: closer to 0 (center) the higher the score
-            const radius = 380 - ((score - 30) / 70) * 300;
+            // Radius: high scores near center, low scores near edge
+            // Scale to 15–42% of container so nodes + labels stay inside the outermost ring
+            const normalizedScore = Math.max(0, Math.min(1, (score - 20) / 80));
+            const radiusPct = 42 - normalizedScore * 27; // 42% (edge) → 15% (center)
             return {
                 company: job.company || 'Unknown',
                 score: Math.round(score),
                 angle: STAGGERED_ANGLES[i % STAGGERED_ANGLES.length],
-                radius: Math.max(70, Math.min(380, radius)),
+                radius: radiusPct,
                 source: job.source || '',
             };
         });
@@ -70,7 +72,7 @@ export function ScanningRadar({ jobs = [] }) {
     return (
         <div className="flex flex-col items-center justify-center py-6 overflow-hidden relative">
             {/* Radar container */}
-            <div className="relative w-[min(100%,500px)] aspect-square flex items-center justify-center mb-6">
+            <div className="relative w-[min(100%,500px)] aspect-square flex items-center justify-center mb-6 overflow-hidden">
 
                 {/* Radar grid rings */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-40">
@@ -118,10 +120,9 @@ export function ScanningRadar({ jobs = [] }) {
                 <AnimatePresence>
                     {nodes.map((node, i) => {
                         const delay = (node.angle / 360) * 4;
-                        // Scale radius to container (container is 100%, radius is in conceptual px, scale to %)
-                        const scaledRadius = (node.radius / 500) * 100;
-                        const x = scaledRadius * Math.sin(node.angle * Math.PI / 180);
-                        const y = -scaledRadius * Math.cos(node.angle * Math.PI / 180);
+                        // node.radius is already a % value (15–42%)
+                        const x = node.radius * Math.sin(node.angle * Math.PI / 180);
+                        const y = -node.radius * Math.cos(node.angle * Math.PI / 180);
 
                         return (
                             <div

@@ -147,8 +147,41 @@ export async function POST(request) {
           send({ type: 'progress', message: 'Starting job search...' });
 
           const _logPromises = [];
+          
+          let totalJobsScored = 0;
+          let burnedBonusTokens = 0;
+          let baseCost = scanCheck.tokenCost || (scanCheck.isFree ? 0 : 1);
+          let isDepleted = false;
 
           const onSourceComplete = async (sourceName, jobs) => {
+            if (isDepleted) return;
+
+            // Burn rate deduction check
+            if (!scanCheck.isFree && !scanCheck.adminPass && !scanCheck.anonymousPass) {
+                const previousHundreds = Math.floor(totalJobsScored / 100);
+                const newTotal = totalJobsScored + jobs.length;
+                const newHundreds = Math.floor(newTotal / 100);
+                
+                const tokensToBurn = newHundreds - previousHundreds;
+                if (tokensToBurn > 0) {
+                    const deducted = await deductToken(userId, tokensToBurn);
+                    if (!deducted.success) {
+                        isDepleted = true;
+                        send({ type: 'error', message: 'TOKEN_DEPLETED: You have run out of tokens. Search halted.' });
+                        controller.close();
+                        return; // Halt this batch
+                    }
+                    burnedBonusTokens += tokensToBurn;
+                }
+            }
+            totalJobsScored += jobs.length;
+
+            // Send burn rate visualization update
+            send({ 
+                type: 'burn_update', 
+                tokensConsumed: scanCheck.isFree ? 0 : (baseCost + burnedBonusTokens + ((totalJobsScored % 100) / 100))
+            });
+
             send({ type: 'progress', message: `Scoring ${sourceName}...` });
 
             const sourceDiag = { fetched: jobs.length, scored: 0, displayed: 0, discarded: 0, zero: 0, enriched: 0 };

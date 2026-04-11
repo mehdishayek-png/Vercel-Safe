@@ -9,12 +9,14 @@ export const useTokenStore = create((set, get) => ({
     weeklyMidasScanCount: 0,
     isAdminUser: false,
     tokensLoading: true,
+    sessionBurn: 0,
 
     FREE_DAILY_SCANS,
     FREE_VISIBLE_JOBS,
 
     freeScansRemaining: FREE_DAILY_SCANS,
 
+    setSessionBurn: (sessionBurn) => set({ sessionBurn }),
     setTokenBalance: (tokenBalance) => set({ tokenBalance }),
     setDailyScanCount: (dailyScanCount) => set({
         dailyScanCount,
