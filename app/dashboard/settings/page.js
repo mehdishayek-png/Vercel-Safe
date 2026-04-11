@@ -5,6 +5,7 @@ import { useSearchStore } from '@/stores/search-store';
 import { useJobsStore } from '@/stores/jobs-store';
 import { useTokenStore } from '@/stores/token-store';
 import { useUser } from '@clerk/nextjs';
+import { LocationAutocomplete } from '@/components/ui/LocationAutocomplete';
 import {
     User, Briefcase, MapPin, Tag, Plus, X, Globe, ToggleLeft, ToggleRight,
     Download, Trash2, Shield, CheckCircle, AlertTriangle, Coins, Zap, FileText,
@@ -308,10 +309,9 @@ export default function SettingsPage() {
                                 <div className="grid grid-cols-1 gap-5">
                                     <div>
                                         <FieldLabel>Target Location</FieldLabel>
-                                        <TextInput
+                                        <LocationAutocomplete
                                             value={preferences.location || ''}
-                                            onChange={(e) => setPreferences(prev => ({ ...prev, location: e.target.value }))}
-                                            placeholder="e.g. Austin, TX or Worldwide"
+                                            onChange={(val) => setPreferences(prev => ({ ...prev, location: val }))}
                                         />
                                     </div>
                                 </div>

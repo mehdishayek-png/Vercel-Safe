@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Upload, Loader2, FileText, Target, Zap, TrendingUp, Search } from 'lucide-react';
+import { LocationAutocomplete } from '@/components/ui/LocationAutocomplete';
 
 export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload, handleQuickStart }) {
     const [quickTitle, setQuickTitle] = useState('');
@@ -55,12 +56,10 @@ export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload, han
                                 />
                             </div>
                             <div>
-                                <input
-                                    type="text"
-                                    placeholder="Location (e.g. Austin, TX or Remote)"
-                                    className="w-full text-sm py-2.5 px-3 rounded-lg border border-gray-200 bg-surface-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-gray-400 text-gray-900"
+                                <LocationAutocomplete
                                     value={quickLocation}
-                                    onChange={(e) => setQuickLocation(e.target.value)}
+                                    onChange={(val) => setQuickLocation(val)}
+                                    placeholder="Location (e.g. Austin, TX or Remote)"
                                 />
                             </div>
                             <button

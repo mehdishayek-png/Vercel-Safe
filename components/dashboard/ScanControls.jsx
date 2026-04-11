@@ -1,6 +1,7 @@
 import { Loader2, Compass, Info, Lightbulb, TrendingUp, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { MapPin } from 'lucide-react';
+import { LocationAutocomplete } from '@/components/ui/LocationAutocomplete';
 function Tooltip({ text, children }) {
     const [show, setShow] = useState(false);
     return (
@@ -52,16 +53,10 @@ export function ScanControls({
             {/* Location */}
             <div>
                 <div className="font-headline text-[10px] font-bold tracking-widest text-gray-500 uppercase mb-2">Location</div>
-                <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                        type="text"
-                        value={preferences.location || ''}
-                        onChange={(e) => setPreferences(prev => ({ ...prev, location: e.target.value }))}
-                        placeholder="e.g. San Francisco, London, US"
-                        className="w-full text-sm py-2.5 pl-9 pr-3 rounded-lg border border-gray-200 bg-surface-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-gray-400 text-gray-900"
-                    />
-                </div>
+                <LocationAutocomplete
+                    value={preferences.location || ''}
+                    onChange={(val) => setPreferences(prev => ({ ...prev, location: val }))}
+                />
             </div>
 
             {/* Toggles */}
