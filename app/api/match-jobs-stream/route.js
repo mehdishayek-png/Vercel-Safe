@@ -8,6 +8,7 @@ import { detectGhostSignals } from '@/lib/ghost-detector';
 import { analyzeJobQuality } from '@/lib/jd-quality';
 import { predictSalary } from '@/lib/salary-predictor';
 import { predictSuccessProbability } from '@/lib/success-predictor';
+import { logMatch } from '@/lib/debug/match-logger';
 import { z } from 'zod';
 
 export const maxDuration = 90;
@@ -125,12 +126,14 @@ export async function POST(request) {
             scanId: `${Date.now()}-${(userId || 'anon').slice(-6)}`,
             startMs: Date.now(),
             sources: {},
-            topDisplayed: [],   // top 10 jobs >= 30
-            topDiscarded: [],   // top 10 jobs in 15-29 range (almost-good)
+            topDisplayed: [],   // top 10 jobs >= 25
+            topDiscarded: [],   // top 10 jobs in 15-24 range (almost-good)
             killers: {},        // counts of which multipliers killed jobs
           };
 
           send({ type: 'progress', message: 'Starting job search...' });
+
+          const _logPromises = [];
 
           const onSourceComplete = async (sourceName, jobs) => {
             send({ type: 'progress', message: `Fetching ${sourceName}...` });
@@ -152,11 +155,21 @@ export async function POST(request) {
                   // Diagnostic accounting
                   sourceDiag.scored++;
                   const s = pandaScore?.score ?? 0;
-                  if (s >= 30) {
+                  if (s >= 25) {
                     sourceDiag.displayed++;
                     if (diag.topDisplayed.length < 10) {
                       diag.topDisplayed.push({ s, t: job.title?.slice(0, 60), c: job.company, src: sourceName });
                     }
+                    _logPromises.push(logMatch({
+                      stage: 'list_score',
+                      profile,
+                      job,
+                      pandaScore: s,
+                      pandaBreakdown: pandaScore,
+                      llmScore: null,
+                      aiVerdict: null,
+                      combinedScore: s,
+                    }));
                   } else if (s > 0) {
                     sourceDiag.discarded++;
                     if (s >= 15 && diag.topDiscarded.length < 10) {
@@ -173,6 +186,17 @@ export async function POST(request) {
                       diag.topDiscarded.push({ s, t: job.title?.slice(0, 60), c: job.company, src: sourceName, killer });
                       diag.killers[killer] = (diag.killers[killer] || 0) + 1;
                     }
+                    _logPromises.push(logMatch({
+                      stage: 'list_score',
+                      profile,
+                      job,
+                      pandaScore: s,
+                      pandaBreakdown: pandaScore,
+                      llmScore: null,
+                      aiVerdict: null,
+                      combinedScore: s,
+                      notes: `discarded:below_threshold(25)`,
+                    }));
                   } else {
                     sourceDiag.zero++;
                   }
@@ -221,6 +245,9 @@ export async function POST(request) {
             roleAnchor: result.roleAnchor,
             dominantPlatform: result.dominantPlatform,
           });
+
+          // Flush all match-log writes before closing stream
+          await Promise.all(_logPromises);
 
           // Emit comprehensive diagnostic log — single line, structured JSON, reliably captured by Vercel
           diag.durationMs = Date.now() - diag.startMs;
