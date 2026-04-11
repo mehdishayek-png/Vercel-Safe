@@ -55,7 +55,7 @@ export function AppProvider({ children }) {
     // Persist preferences
     const preferences = useSearchStore(s => s.preferences);
     useEffect(() => {
-        if (preferences.country) useSearchStore.getState().persistPreferences();
+        if (preferences.location || preferences.remoteOnly) useSearchStore.getState().persistPreferences();
     }, [preferences]);
 
     // Persist job results
@@ -64,23 +64,6 @@ export function AppProvider({ children }) {
     useEffect(() => {
         if (jobs.length > 0 && !isMatching) useSearchStore.getState().persistJobs();
     }, [jobs, isMatching]);
-
-    // Location cascading on preference changes
-    const isInitialMount = useRef(true);
-    useEffect(() => {
-        if (!isInitialMount.current && preferences.country) {
-            useSearchStore.getState().updateLocationCascade(true, false);
-            useSearchStore.getState().setPreferences(prev => ({ ...prev, state: '', city: '' }));
-        }
-    }, [preferences.country]);
-
-    useEffect(() => {
-        if (!isInitialMount.current && preferences.state) {
-            useSearchStore.getState().updateLocationCascade(false, true);
-            useSearchStore.getState().setPreferences(prev => ({ ...prev, city: '' }));
-        }
-        if (isInitialMount.current) isInitialMount.current = false;
-    }, [preferences.state]);
 
     return children;
 }
