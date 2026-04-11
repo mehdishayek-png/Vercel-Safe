@@ -16,6 +16,7 @@ export function MatchResultsGrid({
     isMatching,
     searchError,
     setSearchError,
+    hasSearched,
     deepAnalysisProgress,
     savedJobIds,
     profile,
@@ -164,7 +165,7 @@ export function MatchResultsGrid({
             </div>
 
             {/* Empty State — rich pre-scan info */}
-            {displayedJobs.length === 0 && !isMatching && !searchError && (
+            {displayedJobs.length === 0 && !isMatching && !searchError && !hasSearched && (
                 <div className="space-y-5 mt-2 relative z-10">
                     {/* Hero card */}
                     <div className="relative overflow-hidden glass-panel rounded-[2rem] border border-transparent p-8 text-center">
@@ -256,6 +257,25 @@ export function MatchResultsGrid({
                         <span className="w-px h-3 bg-surface-200" />
                         <span className="flex items-center gap-1"><Download className="w-3 h-3 text-gray-400" /> Export to CSV</span>
                     </div>
+                </div>
+            )}
+
+            {/* Empty State — 0 Results Found */}
+            {displayedJobs.length === 0 && !isMatching && !searchError && hasSearched && (
+                <div className="flex flex-col items-center justify-center p-12 mt-4 text-center glass-panel rounded-[2rem] border border-transparent">
+                    <div className="w-16 h-16 bg-surface-100 rounded-full flex items-center justify-center mb-4">
+                        <Search className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">No matching jobs found</h3>
+                    <p className="text-sm text-gray-500 max-w-sm mb-6 leading-relaxed">
+                        We couldn't find any highly-scored roles matching these parameters right now. Expand your location or adjust your target title to cast a wider net.
+                    </p>
+                    <button 
+                        onClick={() => findJobs()}
+                        className="px-5 py-2.5 bg-brand-50 text-brand-700 font-semibold rounded-full hover:bg-brand-100 transition-colors text-sm"
+                    >
+                        Try scanning again
+                    </button>
                 </div>
             )}
 

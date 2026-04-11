@@ -40,7 +40,7 @@ export default function SearchPage() {
         activeTab, setActiveTab, sortBy, setSortBy,
         deepAnalysisProgress, setDeepAnalysisProgress,
         midasSearch, setMidasSearch, exploreAdjacent, setExploreAdjacent,
-        preferences, setPreferences,
+        preferences, setPreferences, hasSearched, setHasSearched
     } = useSearchStore();
     const {
         savedJobIds, savedJobsData, toggleSaveJob,
@@ -171,6 +171,7 @@ export default function SearchPage() {
     const findJobs = async (forceRefresh = false) => {
         if (!profile) return;
         setIsMatching(true);
+        setHasSearched(true);
         // Don't clear previous jobs — new results will merge in via streaming
         setLogs([]);
         setSearchError(null);
@@ -427,6 +428,7 @@ export default function SearchPage() {
                 <MatchResultsGrid
                     jobs={jobs} activeTab={activeTab} setActiveTab={setActiveTab} sortBy={sortBy} setSortBy={setSortBy}
                     displayedJobs={displayedJobs} isMatching={isMatching} searchError={searchError} setSearchError={setSearchError}
+                    hasSearched={hasSearched}
                     deepAnalysisProgress={deepAnalysisProgress} savedJobIds={savedJobIds} profile={profile} apiKeys={apiKeys}
                     toggleSaveJob={toggleSaveJob} toggleAppliedJob={toggleAppliedJob} appliedJobIds={appliedJobIds}
                     refreshTokens={refreshTokens} isPaywalled={isPaywalled}

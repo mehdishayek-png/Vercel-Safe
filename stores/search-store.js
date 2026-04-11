@@ -3,6 +3,7 @@ export const useSearchStore = create((set, get) => ({
     // Job results
     jobs: [],
     isMatching: false,
+    hasSearched: false,
     searchError: null,
     logs: [],
     deepAnalysisProgress: null,
@@ -32,6 +33,7 @@ export const useSearchStore = create((set, get) => ({
         }
     },
     setIsMatching: (isMatching) => set({ isMatching }),
+    setHasSearched: (hasSearched) => set({ hasSearched }),
     setSearchError: (searchError) => set({ searchError }),
     setLogs: (logs) => set({ logs }),
     setDeepAnalysisProgress: (deepAnalysisProgress) => set({ deepAnalysisProgress }),
