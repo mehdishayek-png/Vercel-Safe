@@ -8,17 +8,24 @@ function savedJobsKey(userId) {
     return `user:${userId}:saved_jobs`;
 }
 
-// GET — fetch saved jobs
-export async function GET() {
+function appliedJobsKey(userId) {
+    return `user:${userId}:applied_jobs`;
+}
+
+// GET — fetch saved jobs, or applied jobs when ?type=applied
+export async function GET(request) {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     if (!redis) return NextResponse.json({ jobs: [], source: 'local' });
 
+    const type = new URL(request.url).searchParams.get('type');
+    const key = type === 'applied' ? appliedJobsKey(userId) : savedJobsKey(userId);
+
     try {
-        const data = await redis.get(savedJobsKey(userId));
+        const data = await redis.get(key);
         return NextResponse.json({ jobs: data || [], source: 'server' });
     } catch (err) {
-        console.error('Failed to fetch saved jobs:', err);
+        console.error('Failed to fetch jobs:', err);
         return NextResponse.json({ jobs: [], source: 'local' });
     }
 }
@@ -32,25 +39,25 @@ export async function POST(request) {
 
     try {
         const { job, action } = await request.json();
-        const key = savedJobsKey(userId);
+        const isAppliedAction = action === 'apply' || action === 'unapply';
+        const key = isAppliedAction ? appliedJobsKey(userId) : savedJobsKey(userId);
         let current = (await redis.get(key)) || [];
 
-        if (action === 'save') {
-            // Prevent duplicates
+        if (action === 'save' || action === 'apply') {
             if (!current.some(j => j.apply_url === job.apply_url)) {
-                current.push(job);
+                current.push(action === 'apply' ? { ...job, applied_at: new Date().toISOString() } : job);
             }
-        } else if (action === 'unsave') {
+        } else if (action === 'unsave' || action === 'unapply') {
             current = current.filter(j => j.apply_url !== job.apply_url);
         }
 
-        // Cap at 200 saved jobs to prevent unbounded growth
+        // Cap at 200 entries to prevent unbounded growth
         if (current.length > 200) current = current.slice(-200);
 
         await redis.set(key, current);
 
         // Fire-and-forget application confirmation email
-        if (action === 'apply' || (action === 'save' && job?.type === 'applied')) {
+        if (action === 'apply') {
             currentUser().then(user => {
                 const email = user?.emailAddresses?.[0]?.emailAddress;
                 if (email) {
@@ -61,7 +68,7 @@ export async function POST(request) {
 
         return NextResponse.json({ success: true, count: current.length });
     } catch (err) {
-        console.error('Failed to save job:', err);
-        return NextResponse.json({ error: 'Failed to save job. Please try again.' }, { status: 500 });
+        console.error('Failed to update job:', err);
+        return NextResponse.json({ error: 'Failed to update job. Please try again.' }, { status: 500 });
     }
 }

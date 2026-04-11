@@ -16,3 +16,4 @@ git_log_utf8.txt
 /cypress/videos/
 /cypress/screenshots/
 .context/
+.aider*
