@@ -84,7 +84,7 @@ export default function SavedJobsPage() {
         if (score >= 85) return 5;
         if (score >= 70) return 4;
         if (score >= 55) return 3;
-        if (score >= 35) return 2;
+        if (score >= 25) return 2;
         return 1;
     };
 
