@@ -128,7 +128,7 @@ export default function SearchPage() {
         setProfile(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skillToRemove) }));
     };
 
-    const handleQuickStart = (title, skillsArray) => {
+    const handleQuickStart = (title, skillsArray, locationQuery = '') => {
         setJobs([]);
         try { localStorage.removeItem('midas_results'); } catch {}
         
@@ -137,11 +137,19 @@ export default function SearchPage() {
             headline: title,
             skills: skillsArray,
             experience_years: 0,
-            location: ''
+            location: locationQuery
         };
         
         setProfile(mockProfile);
         setJobTitle(title);
+        
+        if (locationQuery) {
+            setPreferences(prev => ({ 
+                ...prev, 
+                location: locationQuery, 
+                remoteOnly: locationQuery.toLowerCase().includes('remote') 
+            }));
+        }
         
         // Let the store settle, then trigger search
         setTimeout(() => {
@@ -158,13 +166,15 @@ export default function SearchPage() {
     }, [isMatching]);
 
     useEffect(() => {
-        // Intercept ?q= from hero input
+        // Intercept ?q= and ?loc= from hero input
         const params = new URLSearchParams(window.location.search);
         const q = params.get('q');
+        const loc = params.get('loc');
+        
         if (q && !profile) {
             // clear the URL param without full reload
             window.history.replaceState({}, '', '/dashboard/search');
-            handleQuickStart(q, ['Communication', 'Problem Solving']);
+            handleQuickStart(q, ['Communication', 'Problem Solving'], loc || '');
         }
     }, []);
 
