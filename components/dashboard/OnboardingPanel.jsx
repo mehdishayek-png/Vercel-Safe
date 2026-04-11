@@ -4,12 +4,13 @@ import { Upload, Loader2, FileText, Target, Zap, TrendingUp, Search } from 'luci
 export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload, handleQuickStart }) {
     const [quickTitle, setQuickTitle] = useState('');
     const [quickSkills, setQuickSkills] = useState('');
+    const [quickLocation, setQuickLocation] = useState('');
 
     const onQuickSubmit = (e) => {
         e.preventDefault();
         if (!quickTitle.trim()) return;
         const skillsArray = quickSkills.split(',').map(s => s.trim()).filter(Boolean);
-        handleQuickStart(quickTitle, skillsArray);
+        handleQuickStart(quickTitle, skillsArray, quickLocation.trim());
     };
 
     return (
@@ -51,6 +52,15 @@ export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload, han
                                     className="w-full text-sm py-2.5 px-3 rounded-lg border border-gray-200 bg-surface-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-gray-400 text-gray-900"
                                     value={quickSkills}
                                     onChange={(e) => setQuickSkills(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <input
+                                    type="text"
+                                    placeholder="Location (e.g. Austin, TX or Remote)"
+                                    className="w-full text-sm py-2.5 px-3 rounded-lg border border-gray-200 bg-surface-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-gray-400 text-gray-900"
+                                    value={quickLocation}
+                                    onChange={(e) => setQuickLocation(e.target.value)}
                                 />
                             </div>
                             <button

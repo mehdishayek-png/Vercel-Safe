@@ -197,13 +197,8 @@ export default function SearchPage() {
         }
 
         let locationQuery = '';
-        if (!preferences.remoteOnly) {
-            const countryName = await getCountryName(preferences.country);
-            const queryParts = [];
-            if (preferences.city) queryParts.push(preferences.city);
-            else if (preferences.state) queryParts.push(preferences.state);
-            queryParts.push(countryName);
-            locationQuery = queryParts.join(', ');
+        if (!preferences.remoteOnly && preferences.location) {
+            locationQuery = preferences.location.trim();
         }
 
         try {

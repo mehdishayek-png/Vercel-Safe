@@ -709,7 +709,7 @@ export default function DashboardHome() {
                                 </div>
                                 <div className="flex justify-between text-[12px]">
                                     <span className="text-gray-400">Location</span>
-                                    <span className="font-medium text-gray-700">{preferences.city || preferences.state || preferences.country || 'Not set'}</span>
+                                    <span className="font-medium text-gray-700">{preferences.location || 'Not set'}</span>
                                 </div>
                             </div>
                         </div>
