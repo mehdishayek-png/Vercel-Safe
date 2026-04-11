@@ -9,6 +9,7 @@ import { analyzeJobQuality } from '@/lib/jd-quality';
 import { predictSalary } from '@/lib/salary-predictor';
 import { predictSuccessProbability } from '@/lib/success-predictor';
 import { logMatch } from '@/lib/debug/match-logger';
+import { enrichThinJDs } from '@/lib/jd-enricher';
 import { z } from 'zod';
 
 export const maxDuration = 90;
@@ -136,9 +137,21 @@ export async function POST(request) {
           const _logPromises = [];
 
           const onSourceComplete = async (sourceName, jobs) => {
-            send({ type: 'progress', message: `Fetching ${sourceName}...` });
+            send({ type: 'progress', message: `Scoring ${sourceName}...` });
 
-            const sourceDiag = { fetched: jobs.length, scored: 0, displayed: 0, discarded: 0, zero: 0 };
+            const sourceDiag = { fetched: jobs.length, scored: 0, displayed: 0, discarded: 0, zero: 0, enriched: 0 };
+
+            // JD Enrichment: fetch full descriptions for thin-snippet jobs
+            // BEFORE scoring so Panda has real text to match skills against.
+            try {
+              const enriched = await enrichThinJDs(jobs);
+              sourceDiag.enriched = enriched;
+              if (enriched > 0) {
+                send({ type: 'progress', message: `Enriched ${enriched} job descriptions from ${sourceName}` });
+              }
+            } catch (e) {
+              console.warn(`[JD_ENRICH] Failed for ${sourceName}:`, e.message);
+            }
 
             // Score each job with Panda + enrich with intelligence engines
             const scoredJobs = await Promise.all(
