@@ -12,11 +12,11 @@ export function TokenPurchaseModal() {
     const { initiatePayment, isProcessing } = useRazorpay({
         onSuccess: async () => {
             await refreshTokens();
-            toast.success('Tokens securely credited!');
+            toast('Tokens securely credited!', 'success');
             closePurchaseModal();
         },
         onError: (err) => {
-            toast.error(err.message || 'Payment failed. Please try again.');
+            toast(err.message || 'Payment failed. Please try again.', 'error');
         }
     });
 
