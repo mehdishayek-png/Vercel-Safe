@@ -76,7 +76,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
             className="group glass-panel border border-transparent rounded-[2rem] transition-all duration-200 hover:shadow-xl"
         >
             {/* Top accent line */}
-            <div className={`h-[2px] rounded-t-[2rem] bg-gradient-to-r ${getMatchGradient(job.match_score)} opacity-0 group-hover:opacity-100 transition-opacity`} />
+            <div className={`h-[2px] rounded-t-[2rem] bg-gradient-to-r ${getMatchGradientUtil(job.match_score)} opacity-0 group-hover:opacity-100 transition-opacity`} />
 
             <div className="p-4 sm:p-5">
                 <div className="flex justify-between items-start gap-3 sm:gap-4">
