@@ -301,7 +301,6 @@ export default function SearchPage() {
                 return currentJobs;
             });
 
-            refreshTokens();
         } catch (err) {
             const hasPartial = jobs.length > 0;
             const userMessage = hasPartial
@@ -311,6 +310,7 @@ export default function SearchPage() {
             setSearchError({ type: 'search', message: userMessage, canRetry: true });
         } finally {
             setIsMatching(false);
+            refreshTokens();
         }
     };
 

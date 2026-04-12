@@ -272,7 +272,7 @@ export default function JobDetailPage() {
     const [showNegotiation, setShowNegotiation] = useState(false);
     const [expandedScripts, setExpandedScripts] = useState({});
     
-    const { openPurchaseModal } = useTokenStore();
+    const { openPurchaseModal, refreshTokens } = useTokenStore();
 
     useEffect(() => {
         try {
@@ -454,6 +454,7 @@ export default function JobDetailPage() {
             setAnalysisError(err.message || 'Error communicating with AI service.');
         } finally {
             setIsAnalyzing(false);
+            refreshTokens();
         }
     };
 
@@ -484,6 +485,7 @@ export default function JobDetailPage() {
             toast(err.message || 'Cover letter failed', 'error');
         } finally {
             setIsLoadingCoverLetter(false);
+            refreshTokens();
         }
     };
 
@@ -522,6 +524,7 @@ export default function JobDetailPage() {
             toast(err.message || 'Negotiation playbook failed', 'error');
         } finally {
             setIsLoadingNegotiation(false);
+            refreshTokens();
         }
     };
 
