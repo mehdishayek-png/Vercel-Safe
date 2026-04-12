@@ -17,9 +17,9 @@ export const useTokenStore = create((set, get) => ({
 
     refreshTokens: async () => {
         try {
-            const res = await fetch('/api/tokens');
+            const res = await fetch('/api/tokens', { cache: 'no-store' });
             const data = await res.json();
-            if (data.source !== 'anonymous' && data.source !== 'local') {
+            if (res.ok && typeof data.tokens === 'number') {
                 set({
                     tokenBalance: data.tokens,
                     tokensLoading: false,
