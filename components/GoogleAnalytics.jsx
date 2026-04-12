@@ -3,9 +3,7 @@
 import Script from 'next/script';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, Suspense } from 'react';
-import { pageview } from '@/lib/analytics';
-
-const GA_ID = 'G-7BM4L3GYBB';
+import { GA_ID, pageview } from '@/lib/analytics';
 
 function PageViewTracker() {
     const pathname = usePathname();
