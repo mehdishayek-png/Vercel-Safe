@@ -361,9 +361,9 @@ export default function SettingsPage() {
                                 <p className="text-[12px] text-white/50 mb-6">tokens remaining</p>
 
 
-                                <button className="w-full py-2.5 text-[13px] font-semibold text-brand-700 bg-white hover:bg-white/90 rounded-xl transition-all shadow-button cursor-pointer">
+                                <a href="/pricing" className="block w-full py-2.5 text-center text-[13px] font-semibold text-brand-700 bg-white hover:bg-white/90 rounded-xl transition-all shadow-button cursor-pointer">
                                     Buy More Tokens
-                                </button>
+                                </a>
                             </div>
                         </div>
 
