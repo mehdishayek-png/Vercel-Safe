@@ -13,6 +13,7 @@ import { safeBtoa } from '@/lib/safe-btoa';
 
 export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApplied, onTokensUpdated, autoAnalyze }) {
     const toast = useToast();
+    const [showFullDescription, setShowFullDescription] = useState(false);
     const sendFeedback = (action) => {
         try {
             fetch('/api/feedback', {
