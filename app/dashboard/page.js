@@ -1,7 +1,7 @@
 'use client';
 import { Search, Bookmark, Briefcase, TrendingUp, ArrowRight, Target, ChevronRight, Sparkles, Eye, Brain, FileText, ShieldCheck, Loader2, AlertCircle, Lightbulb, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useProfileStore } from '@/stores/profile-store';
 import { useSearchStore } from '@/stores/search-store';
 import { useJobsStore } from '@/stores/jobs-store';
@@ -10,6 +10,7 @@ import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { safeBtoa } from '@/lib/safe-btoa';
 import { safe } from '@/lib/safe-render';
+import { trackSignup } from '@/lib/analytics';
 
 function DotIndicator({ filled, total = 5 }) {
     return (
@@ -47,6 +48,12 @@ export default function DashboardHome() {
         savedJobsData, appliedJobsData,
         toggleSaveJob, savedJobIds, toggleAppliedJob, appliedJobIds,
     } = useJobsStore();
+
+    useEffect(() => {
+        if (!user?.createdAt) return;
+        const ageMs = Date.now() - new Date(user.createdAt).getTime();
+        if (ageMs < 120_000) trackSignup();
+    }, [user?.createdAt]);
 
     // --- Search Insights state ---
     const [insights, setInsights] = useState(null);
