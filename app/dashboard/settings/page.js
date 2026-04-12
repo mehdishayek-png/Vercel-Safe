@@ -77,7 +77,7 @@ export default function SettingsPage() {
     const { profile, setProfile, experienceYears, setExperienceYears, jobTitle, setJobTitle, whatIDo, setWhatIDo } = useProfileStore();
     const { preferences, setPreferences } = useSearchStore();
     const { savedJobsData, appliedJobsData } = useJobsStore();
-    const { tokenBalance, freeScansRemaining, FREE_DAILY_SCANS } = useTokenStore();
+    const { tokenBalance } = useTokenStore();
 
     const [toast, setToast] = useState(null);
     const [skillInput, setSkillInput] = useState('');
@@ -360,13 +360,6 @@ export default function SettingsPage() {
                                 <p className="text-[42px] font-headline font-bold text-white leading-none mb-1">{tokenBalance}</p>
                                 <p className="text-[12px] text-white/50 mb-6">tokens remaining</p>
 
-                                <div className="flex items-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-xl mb-5">
-                                    <Zap className="w-4 h-4 text-amber-300 shrink-0" />
-                                    <div>
-                                        <p className="text-[11px] text-white/60">Free Scans Today</p>
-                                        <p className="text-[15px] font-bold text-white">{freeScansRemaining} <span className="text-white/40 font-normal text-[12px]">/ {FREE_DAILY_SCANS}</span></p>
-                                    </div>
-                                </div>
 
                                 <button className="w-full py-2.5 text-[13px] font-semibold text-brand-700 bg-white hover:bg-white/90 rounded-xl transition-all shadow-button cursor-pointer">
                                     Buy More Tokens

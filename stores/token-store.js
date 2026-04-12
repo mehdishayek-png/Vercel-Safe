@@ -1,31 +1,19 @@
 import { create } from 'zustand';
 
-const FREE_DAILY_SCANS = 5;
-const FREE_VISIBLE_JOBS = 100;
-
 export const useTokenStore = create((set, get) => ({
     tokenBalance: 0,
-    dailyScanCount: 0,
-    weeklyMidasScanCount: 0,
     isAdminUser: false,
     tokensLoading: true,
     sessionBurn: 0,
 
-    FREE_DAILY_SCANS,
-    FREE_VISIBLE_JOBS,
-
     isPurchaseModalOpen: false,
-    freeScansRemaining: FREE_DAILY_SCANS,
 
     openPurchaseModal: () => set({ isPurchaseModalOpen: true }),
     closePurchaseModal: () => set({ isPurchaseModalOpen: false }),
 
     setSessionBurn: (sessionBurn) => set({ sessionBurn }),
     setTokenBalance: (tokenBalance) => set({ tokenBalance }),
-    setDailyScanCount: (dailyScanCount) => set({
-        dailyScanCount,
-        freeScansRemaining: Math.max(0, FREE_DAILY_SCANS - dailyScanCount),
-    }),
+
 
     refreshTokens: async () => {
         try {
@@ -34,10 +22,7 @@ export const useTokenStore = create((set, get) => ({
             if (data.source !== 'anonymous' && data.source !== 'local') {
                 set({
                     tokenBalance: data.tokens,
-                    dailyScanCount: data.dailyScansUsed,
-                    weeklyMidasScanCount: data.weeklyMidasScansUsed || 0,
                     tokensLoading: false,
-                    freeScansRemaining: Math.max(0, FREE_DAILY_SCANS - data.dailyScansUsed),
                 });
                 if (data.isAdmin) set({ isAdminUser: true });
                 localStorage.setItem('midas_tokens', data.tokens.toString());

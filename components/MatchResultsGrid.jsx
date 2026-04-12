@@ -29,7 +29,6 @@ export function MatchResultsGrid({
     initiatePayment,
     isPaymentProcessing,
     findJobs,
-    freeVisibleJobs,
     searchSuggestions,
     onSuggestionClick,
 }) {

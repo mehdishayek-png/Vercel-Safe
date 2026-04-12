@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { getTokenBalance, getDailyScanCount, getDeepScanCount, getWeeklyMidasScanCount, FREE_DAILY_SCANS, FREE_DEEP_SCANS, isAdmin } from '@/lib/tokens';
+import { getTokenBalance, isAdmin } from '@/lib/tokens';
 
 export const dynamic = 'force-dynamic';
 /**
@@ -15,10 +15,6 @@ export async function GET() {
             // Anonymous users get local-only defaults
             return NextResponse.json({
                 tokens: 0,
-                dailyScansUsed: 0,
-                deepScansUsed: 0,
-                freeDailyScans: FREE_DAILY_SCANS,
-                freeDeepScans: FREE_DEEP_SCANS,
                 source: 'anonymous',
             });
         }
@@ -26,28 +22,15 @@ export async function GET() {
         if (await isAdmin(userId)) {
             return NextResponse.json({
                 tokens: 9999,
-                dailyScansUsed: 0,
-                deepScansUsed: 0,
-                weeklyMidasScansUsed: 0,
-                freeDailyScans: 9999,
-                freeDeepScans: 9999,
                 source: 'server',
                 isAdmin: true
             });
         }
 
         const { tokens, source } = await getTokenBalance(userId);
-        const dailyScansUsed = await getDailyScanCount(userId);
-        const deepScansUsed = await getDeepScanCount(userId);
-        const weeklyMidasScansUsed = await getWeeklyMidasScanCount(userId);
 
         return NextResponse.json({
             tokens,
-            dailyScansUsed,
-            deepScansUsed,
-            weeklyMidasScansUsed,
-            freeDailyScans: FREE_DAILY_SCANS,
-            freeDeepScans: FREE_DEEP_SCANS,
             source,
         });
     } catch (error) {

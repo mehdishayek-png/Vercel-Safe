@@ -26,7 +26,7 @@ export function ScanControls({
     exploreAdjacent, setExploreAdjacent,
     midasSearch, setMidasSearch,
     tokensLoading, tokenBalance, weeklyMidasScanCount, isAdminUser,
-    isMatching, isSignedIn, freeScansRemaining,
+    isMatching, isSignedIn,
     findJobs, onReset,
 }) {
     const [showTips, setShowTips] = useState(false);

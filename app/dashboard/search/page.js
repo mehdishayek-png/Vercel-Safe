@@ -49,7 +49,6 @@ export default function SearchPage() {
     const {
         tokenBalance, dailyScanCount, weeklyMidasScanCount,
         isAdminUser, tokensLoading, refreshTokens, sessionBurn, setSessionBurn,
-        freeScansRemaining, FREE_DAILY_SCANS, FREE_VISIBLE_JOBS,
     } = useTokenStore();
     const {
         filters, flags,
@@ -185,9 +184,8 @@ export default function SearchPage() {
         addLog("Streaming results as sources respond...");
         setActiveTab('matches');
 
-        const isFreeScan = !midasSearch && dailyScanCount < FREE_DAILY_SCANS;
-        if (!isFreeScan && !midasSearch && tokenBalance <= 0 && !isAdminUser) {
-            setSearchError('Free daily scans used. Purchase tokens to continue.');
+        if (!midasSearch && tokenBalance <= 0 && !isAdminUser) {
+            setSearchError('Not enough tokens. Purchase tokens to continue.');
             setIsMatching(false);
             return;
         }
@@ -419,7 +417,6 @@ export default function SearchPage() {
                             tokensLoading={tokensLoading} tokenBalance={tokenBalance}
                             weeklyMidasScanCount={weeklyMidasScanCount} isAdminUser={isAdminUser}
                             isMatching={isMatching} isSignedIn={isSignedIn}
-                            freeScansRemaining={freeScansRemaining}
                             findJobs={findJobs} onReset={() => { /* Reset profile for re-upload but preserve existing job results */ setProfile(null); }}
                         />
 
@@ -443,7 +440,7 @@ export default function SearchPage() {
                     deepAnalysisProgress={deepAnalysisProgress} savedJobIds={savedJobIds} profile={profile} apiKeys={apiKeys}
                     toggleSaveJob={toggleSaveJob} toggleAppliedJob={toggleAppliedJob} appliedJobIds={appliedJobIds}
                     refreshTokens={refreshTokens} isPaywalled={isPaywalled}
-                    findJobs={findJobs} freeVisibleJobs={FREE_VISIBLE_JOBS}
+                    findJobs={findJobs}
                     searchSuggestions={searchSuggestions} onSuggestionClick={(title) => { setJobTitle(title); setSearchSuggestions(null); }}
                 />
             </div>
