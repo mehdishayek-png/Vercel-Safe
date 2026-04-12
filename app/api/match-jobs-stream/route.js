@@ -147,30 +147,12 @@ export async function POST(request) {
           const onSourceComplete = async (sourceName, jobs) => {
             if (isDepleted) return;
 
-            // Burn rate deduction check
-            if (scanCheck.source !== 'admin') {
-                const previousHundreds = Math.floor(totalJobsScored / 100);
-                const newTotal = totalJobsScored + jobs.length;
-                const newHundreds = Math.floor(newTotal / 100);
-                
-                const tokensToBurn = newHundreds - previousHundreds;
-                if (tokensToBurn > 0) {
-                    const deducted = await deductToken(userId, tokensToBurn);
-                    if (!deducted.success) {
-                        isDepleted = true;
-                        send({ type: 'error', message: 'TOKEN_DEPLETED: You have run out of tokens. Search halted.' });
-                        controller.close();
-                        return; // Halt this batch
-                    }
-                    burnedBonusTokens += tokensToBurn;
-                }
-            }
             totalJobsScored += jobs.length;
 
             // Send burn rate visualization update
             send({
                 type: 'burn_update',
-                tokensConsumed: scanCheck.source === 'admin' ? 0 : (baseCost + burnedBonusTokens + ((totalJobsScored % 100) / 100))
+                tokensConsumed: scanCheck.source === 'admin' ? 0 : baseCost
             });
 
             send({ type: 'progress', message: `Scoring ${sourceName}...` });
@@ -304,7 +286,7 @@ export async function POST(request) {
           diag.totalUnique = result.jobs.length;
           diag.queries = result.queries;
           diag.roleAnchor = result.roleAnchor;
-          diag.tokensConsumed = scanCheck.source === 'admin' ? 0 : (baseCost + burnedBonusTokens);
+          diag.tokensConsumed = scanCheck.source === 'admin' ? 0 : baseCost;
           // Aggregate totals
           diag.totals = Object.values(diag.sources).reduce((acc, s) => {
             acc.fetched += s.fetched; acc.displayed += s.displayed; acc.discarded += s.discarded; acc.zero += s.zero;
