@@ -188,8 +188,8 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                         ) : (
                             <div className="flex flex-col items-center justify-center min-w-[52px] h-[52px] px-2 rounded-xl border bg-white border-gray-200 shadow-sm">
                                 <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest mb-0.5">Score</span>
-                                <span className={`text-[15px] font-bold ${(analysis?.fit_score || job.match_score) >= 75 ? 'text-emerald-600' : (analysis?.fit_score || job.match_score) >= 50 ? 'text-teal-600' : 'text-gray-500'}`}>
-                                    {Math.round(analysis?.fit_score || job.match_score)}
+                                <span className={`text-[15px] font-bold ${(job.analysis?.fit_score || job.match_score) >= 75 ? 'text-emerald-600' : (job.analysis?.fit_score || job.match_score) >= 50 ? 'text-teal-600' : 'text-gray-500'}`}>
+                                    {Math.round(job.analysis?.fit_score || job.match_score)}
                                 </span>
                             </div>
                         )}
