@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X, Sparkles, CheckCircle2, ShieldAlert, Loader2 } from 'lucide-react';
 import { useTokenStore } from '@/stores/token-store';
-import { useRazorpay } from '@/hooks/useRazorpay';
+import { useRazorpay } from '@/lib/useRazorpay';
 import { useToast } from '@/components/ui/Toast';
 
 export function TokenPurchaseModal() {
