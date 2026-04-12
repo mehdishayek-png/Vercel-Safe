@@ -96,8 +96,8 @@ export async function GET() {
               <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#4b5563', letterSpacing: '1px', marginTop: '2px' }}>TOKEN / SEARCH</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '32px', fontWeight: '900', color: '#ffffff' }}>5/day</span>
-              <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#4b5563', letterSpacing: '1px', marginTop: '2px' }}>AI SCANS</span>
+              <span style={{ fontSize: '32px', fontWeight: '900', color: '#ffffff' }}><60s</span>
+              <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#4b5563', letterSpacing: '1px', marginTop: '2px' }}>SCAN TIME</span>
             </div>
           </div>
 

@@ -65,7 +65,7 @@ export default function RootLayout({ children }) {
                   "@type": "Offer",
                   "price": "0",
                   "priceCurrency": "USD",
-                  "description": "Free tier with 5 daily scans"
+                  "description": "Free starter tokens for new users, token packs from $4.99"
                 },
                 "author": {
                   "@type": "Organization",

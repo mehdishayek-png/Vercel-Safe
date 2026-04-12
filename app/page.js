@@ -85,7 +85,7 @@ export default function Home() {
                                 View Pricing
                             </Link>
                         </div>
-                        <p className="text-sm text-gray-500 mt-6">5 free searches per day. No credit card needed.</p>
+                        <p className="text-sm text-gray-500 mt-6">Try free with starter tokens. No credit card needed.</p>
                     </div>
                 </section>
 

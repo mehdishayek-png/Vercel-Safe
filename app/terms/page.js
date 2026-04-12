@@ -17,8 +17,8 @@ export default function TermsOfService() {
                     <section>
                         <h2 className="text-xl font-semibold text-gray-900 mb-3">2. Token System &amp; Payments</h2>
                         <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
-                            <li>Free users receive 3 job scans per day and 3 AI deep analysis credits (lifetime).</li>
-                            <li>Midas Search provides 2× result coverage and costs 2 tokens per scan (1 free per week).</li>
+                            <li>New visitors receive 1 free starter token. Creating an account grants 3 free starter tokens.</li>
+                            <li>Each AI action (job scan, deep analysis, cover letter, etc.) costs 1 token. ATS-tailored CVs cost 3 tokens.</li>
                             <li>Additional scans and analyses require tokens, available for purchase at ₹399 for 50 tokens.</li>
                             <li>See our <a href="/refund" className="text-brand-600 hover:underline">Refund & Cancellation Policy</a> for details on refunds.</li>
                             <li>Payments are processed by Razorpay.</li>

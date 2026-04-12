@@ -7,7 +7,7 @@ import { useTokenStore } from "@/stores/token-store";
 const faqs = [
     {
         q: "What\u2019s a token?",
-        a: "Tokens are credits used for premium features. Midas Search costs 2 tokens per scan (giving you 2\u00d7 the job coverage), and additional deep analyses cost 1 token each. You get a generous free tier before you ever need tokens.",
+        a: "Tokens are credits that power every AI action on Midas \u2014 job scans, deep analyses, cover letters, salary negotiations, and more. Each action costs 1 token. New users get free starter tokens to try the platform.",
     },
     {
         q: "Do tokens expire?",
@@ -23,24 +23,25 @@ const faqs = [
     },
     {
         q: "Do I need to pay to use Midas?",
-        a: "No. The free plan gives you 5 job scans per day, 5 AI deep analyses per day, and access to all job sources. Tokens are entirely optional for power users.",
+        a: "You can try Midas for free! New visitors get 1 free token to test the platform, and creating an account gives you 3 free tokens. After that, affordable token packs are available to keep you going.",
     },
 ];
 
 const freePlan = [
-    "5 job scans per day",
-    "5 AI deep analyses per day",
+    "1 free token for new visitors",
+    "3 free tokens when you create an account",
     "All job sources (Google Jobs, LinkedIn, Indeed, 350+ ATS boards)",
     "Save & track applications",
-    "Cover letter generation",
+    "AI deep analysis, cover letters & more",
     "Email & community support",
 ];
 
 const paidPlan = [
     "Everything in Free",
     "50 tokens per pack",
-    "Midas Search \u2014 2\u00d7 coverage (2 tokens/scan)",
-    "Additional deep analyses (1 token each)",
+    "Job scans (1 token each)",
+    "AI deep analyses (1 token each)",
+    "Cover letters, salary playbooks & outreach",
     "Tokens never expire",
     "Priority support",
 ];
@@ -84,20 +85,20 @@ export default function PricingPage() {
                     <div className="border border-gray-200 rounded-2xl p-8 flex flex-col">
                         <div className="mb-6">
                             <span className="inline-block text-xs font-semibold tracking-wide uppercase bg-gray-100 text-gray-600 px-3 py-1 rounded-full mb-4">
-                                Current Plan
+                                Starter
                             </span>
                             <h2 className="text-2xl font-bold text-gray-900">
                                 Free
                             </h2>
                             <p className="text-gray-500 text-sm mt-1">
-                                Everything you need to start your job search
+                                Try Midas risk-free with starter tokens
                             </p>
                             <div className="mt-4">
                                 <span className="text-4xl font-bold text-gray-900">
                                     ₹0
                                 </span>
                                 <span className="text-gray-400 text-sm ml-1">
-                                    / forever
+                                    / up to 3 tokens
                                 </span>
                             </div>
                         </div>
@@ -215,12 +216,12 @@ export default function PricingPage() {
                             </thead>
                             <tbody className="text-gray-600">
                                 {[
-                                    ["Daily job scans", "5/day", "5/day + Midas Search"],
-                                    ["AI deep analyses", "5/day", "5/day + token top-ups"],
+                                    ["Starter tokens", "1 (visitor) / 3 (account)", "50 per pack"],
+                                    ["Job scans", "1 token each", "1 token each"],
+                                    ["AI deep analyses", "1 token each", "1 token each"],
                                     ["Job sources", "All sources", "All sources"],
-                                    ["Midas Search (2\u00d7 coverage)", "\u2014", "2 tokens/scan"],
+                                    ["Cover letters & outreach", "1 token each", "1 token each"],
                                     ["Save & track applications", "\u2713", "\u2713"],
-                                    ["Cover letter generation", "\u2713", "\u2713"],
                                     ["Tokens expire?", "\u2014", "Never"],
                                     ["Support", "Community", "Priority"],
                                 ].map(([feature, free, paid], i) => (

@@ -12,7 +12,7 @@ const categories = [
             },
             {
                 q: "Is it free to use?",
-                a: "Yes. The free plan gives you 5 job scans per day, 5 AI deep analyses per day, and access to every job source we support. Tokens are available for power users who want extras like Midas Search (2\u00d7 coverage), but the core experience is completely free.",
+                a: "Yes! New visitors get 1 free token to try the platform, and creating an account gives you 3 free tokens. Each AI action (job scan, deep analysis, cover letter, etc.) costs 1 token. After your starter tokens, affordable token packs are available.",
             },
             {
                 q: "What job sources do you scan?",
@@ -46,7 +46,7 @@ const categories = [
             },
             {
                 q: "What is Deep Analysis?",
-                a: "Deep Analysis is an AI-powered detailed fit assessment for a specific job. It provides a comprehensive verdict, estimated salary range, skill gap analysis, and personalized recommendations to improve your candidacy. Free users get 5 per day.",
+                a: "Deep Analysis is an AI-powered detailed fit assessment for a specific job. It provides a comprehensive verdict, estimated salary range, skill gap analysis, and personalized recommendations to improve your candidacy. Each deep analysis costs 1 token.",
             },
             {
                 q: "Why did I get a low score for a job I think I\u2019m qualified for?",
@@ -67,7 +67,7 @@ const categories = [
             },
             {
                 q: "What can I spend tokens on?",
-                a: "Midas Search scans cost 2 tokens each (giving you 2\u00d7 the job coverage of a standard scan). Additional deep analyses beyond the free daily limit cost 1 token each.",
+                a: "Every AI-powered action costs 1 token: job scans, deep analyses, cover letter generation, salary negotiation playbooks, cold outreach messages, and ATS-tailored CVs (3 tokens).",
             },
             {
                 q: "Can I get a refund?",
