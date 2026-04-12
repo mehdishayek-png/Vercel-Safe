@@ -2,7 +2,6 @@
 import { useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, ChevronDown, Sparkles } from 'lucide-react';
-import { FilterPanel } from '@/components/FilterPanel';
 import { MatchResultsGrid } from '@/components/MatchResultsGrid';
 import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
 import { CandidatePanel } from '@/components/dashboard/CandidatePanel';
@@ -14,7 +13,6 @@ import { useProfileStore } from '@/stores/profile-store';
 import { useSearchStore } from '@/stores/search-store';
 import { useJobsStore } from '@/stores/jobs-store';
 import { useTokenStore } from '@/stores/token-store';
-import { useFilters } from '@/hooks/use-filters';
 import { useAuth } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
 
@@ -50,12 +48,6 @@ export default function SearchPage() {
         tokenBalance, dailyScanCount, weeklyMidasScanCount,
         isAdminUser, tokensLoading, refreshTokens, sessionBurn, setSessionBurn,
     } = useTokenStore();
-    const {
-        filters, flags,
-        isActive: filtersActive, activeCount: filterCount, summary: filterSummary,
-        toggleWorkArrangement, toggleWorkType, toggleRegion, toggleCompanySize,
-        setSalaryMin, setSalaryCurrency, setIncludeMissingSalary, reset: resetFilters,
-    } = useFilters();
 
     const [searchSuggestions, setSearchSuggestions] = useState(null);
 
@@ -174,6 +166,10 @@ export default function SearchPage() {
 
     const findJobs = async (forceRefresh = false) => {
         if (!profile) return;
+        if (!preferences.location?.trim()) {
+            setSearchError({ type: 'location', message: 'Please enter a location to search. Try a city like "London" or "Mumbai".' });
+            return;
+        }
         setIsMatching(true);
         setHasSearched(true);
         // Don't clear previous jobs — new results will merge in via streaming
@@ -209,7 +205,7 @@ export default function SearchPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     profile: { ...profile, experience_years: experienceYears, headline: jobTitle, whatIDo },
-                    preferences: { ...preferences, location: locationQuery, midasSearch, filters, exploreAdjacent, forceRefresh }
+                    preferences: { ...preferences, location: locationQuery, forceRefresh }
                 })
             });
 
@@ -433,19 +429,10 @@ export default function SearchPage() {
                         <ScanControls
                             experienceYears={experienceYears} setExperienceYears={setExperienceYears}
                             preferences={preferences} setPreferences={setPreferences}
-                            exploreAdjacent={exploreAdjacent} setExploreAdjacent={setExploreAdjacent}
-                            midasSearch={midasSearch} setMidasSearch={setMidasSearch}
-                            tokensLoading={tokensLoading} tokenBalance={tokenBalance}
-                            weeklyMidasScanCount={weeklyMidasScanCount} isAdminUser={isAdminUser}
-                            isMatching={isMatching} isSignedIn={isSignedIn}
-                            findJobs={findJobs} onReset={() => { /* Reset profile for re-upload but preserve existing job results */ setProfile(null); }}
+                            isAdminUser={isAdminUser} isMatching={isMatching}
+                            findJobs={findJobs} onReset={() => setProfile(null)}
                         />
 
-                        <FilterPanel
-                            filters={filters} flags={flags} isActive={filtersActive} activeCount={filterCount} summary={filterSummary}
-                            toggleWorkArrangement={toggleWorkArrangement} toggleWorkType={toggleWorkType} toggleRegion={toggleRegion} toggleCompanySize={toggleCompanySize}
-                            setSalaryMin={setSalaryMin} setSalaryCurrency={setSalaryCurrency} setIncludeMissingSalary={setIncludeMissingSalary} reset={resetFilters}
-                        />
                     </>
                 )}
 
