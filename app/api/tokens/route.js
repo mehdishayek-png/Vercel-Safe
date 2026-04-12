@@ -7,15 +7,17 @@ export const dynamic = 'force-dynamic';
  * GET /api/tokens — Returns user's token balance and usage info
  * Used by the frontend to display accurate, server-verified balances
  */
-export async function GET() {
+export async function GET(request) {
     try {
         const { userId } = await auth();
+        const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'anonymous';
+        const effectiveUserId = userId || ip;
 
         if (!userId) {
-            // Anonymous users get local-only defaults
+            const { tokens } = await getTokenBalance(effectiveUserId);
             return NextResponse.json({
-                tokens: 0,
-                source: 'anonymous',
+                tokens,
+                source: 'server',
             });
         }
 

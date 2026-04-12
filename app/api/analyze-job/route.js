@@ -13,13 +13,12 @@ export async function POST(request) {
 
         const adminUser = await checkIsAdmin(userId);
 
-        if (!userId) {
-            return NextResponse.json({ error: 'Sign in to use Deep Scan.', requiresAuth: true }, { status: 401 });
-        }
+        const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'anonymous';
+        const effectiveUserId = userId || ip;
 
-        // Rate limiting — 30 requests per minute per user
+        // Rate limiting — 30 requests per minute per user/ip
         if (!adminUser) {
-            const rl = await rateLimit(userId, 30, 60);
+            const rl = await rateLimit(effectiveUserId, 30, 60);
             if (!rl.allowed) {
                 return NextResponse.json({
                     error: `Too many requests. Try again in ${rl.retryAfter} seconds.`
@@ -27,12 +26,13 @@ export async function POST(request) {
             }
 
             // Strictly require 1 token for a deep scan
-            const deducted = await deductToken(userId, 1);
+            const deducted = await deductToken(effectiveUserId, 1);
             if (!deducted.success) {
                 return NextResponse.json({
-                    error: 'Deep scan requires 1 token. Please purchase a package to continue.',
-                    paywalled: true
-                }, { status: 403 });
+                    error: userId ? 'Deep scan requires 1 token. Please purchase a package to continue.' : 'You have used your free token. Sign in to get more!',
+                    paywalled: !!userId,
+                    requiresAuth: !userId
+                }, { status: userId ? 403 : 401 });
             }
         }
 

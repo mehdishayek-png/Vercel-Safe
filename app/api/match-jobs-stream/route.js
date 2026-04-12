@@ -67,10 +67,12 @@ export async function POST(request) {
     }
 
     const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    const effectiveUserId = userId || ip.split(',')[0].trim();
+    
     console.log(JSON.stringify({
       event: 'scan_started',
       userId: userId || 'anonymous',
-      ip: ip.split(',')[0].trim(),
+      ip: effectiveUserId,
       headline: profile.headline?.slice(0, 60),
       skills: profile.skills?.slice(0, 5),
       location: profile.location,
@@ -78,24 +80,28 @@ export async function POST(request) {
       timestamp: new Date().toISOString(),
     }));
 
-    const scanCheck = await canScan(userId, preferences?.midasSearch);
+    const scanCheck = await canScan(effectiveUserId, preferences?.midasSearch);
     if (!scanCheck.allowed) {
       return new Response(JSON.stringify({
         error: scanCheck.error,
-        requiresAuth: scanCheck.requiresAuth || false,
-        paywalled: !scanCheck.requiresAuth,
+        requiresAuth: scanCheck.requiresAuth || (!userId && scanCheck.paywalled),
+        paywalled: !!userId && scanCheck.paywalled,
       }), {
-        status: scanCheck.requiresAuth ? 401 : 403,
+        status: (scanCheck.requiresAuth || !userId) ? 401 : 403,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
     // Deduct tokens (skip for admin)
     if (scanCheck.source !== 'admin') {
-      const deducted = await deductToken(userId, scanCheck.tokenCost || 1);
+      const deducted = await deductToken(effectiveUserId, scanCheck.tokenCost || 1);
       if (!deducted.success) {
-        return new Response(JSON.stringify({ error: 'Failed to deduct token' }), {
-          status: 403, headers: { 'Content-Type': 'application/json' }
+        return new Response(JSON.stringify({ 
+            error: userId ? 'Failed to deduct token' : 'You have used your free token. Sign in to get more!',
+            requiresAuth: !userId,
+            paywalled: !!userId 
+        }), {
+          status: userId ? 403 : 401, headers: { 'Content-Type': 'application/json' }
         });
       }
     }

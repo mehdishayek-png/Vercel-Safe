@@ -11,24 +11,23 @@ export async function POST(request) {
         const { userId } = await auth();
         const adminUser = await checkIsAdmin(userId);
 
+        const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'anonymous';
+        const effectiveUserId = userId || ip;
+
         if (!adminUser) {
-            const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
-            const rl = await rateLimit(`outreach:${rateLimitId}`, 20, 60);
+            const rl = await rateLimit(`outreach:${effectiveUserId}`, 20, 60);
             if (!rl.allowed) {
                 return NextResponse.json({ error: `Too many requests. Try again in ${rl.retryAfter} seconds.` }, { status: 429 });
             }
-        }
 
-        if (userId && !adminUser) {
-            const deducted = await deductToken(userId, 1);
+            const deducted = await deductToken(effectiveUserId, 1);
             if (!deducted.success) {
                 return NextResponse.json({
-                    error: 'Not enough tokens. Purchase more to use Cold Outreach.',
-                    paywalled: true
-                }, { status: 403 });
+                    error: userId ? 'Not enough tokens. Purchase more to use Cold Outreach.' : 'You have used your free token. Sign in to get more!',
+                    paywalled: !!userId,
+                    requiresAuth: !userId
+                }, { status: userId ? 403 : 401 });
             }
-        } else if (!userId) {
-            return NextResponse.json({ error: 'Please sign in to use Outreach Generation.', requiresAuth: true }, { status: 401 });
         }
 
         const { job, profile } = await request.json();

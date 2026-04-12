@@ -9,20 +9,22 @@ export const maxDuration = 20;
 export async function POST(request) {
   try {
     const { userId } = await auth();
-    if (!userId) {
-        return NextResponse.json({ error: 'Sign in to generate negotiation playbooks', requiresAuth: true }, { status: 401 });
-    }
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'anonymous';
+    const effectiveUserId = userId || ip;
 
-    const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
-    const rl = await rateLimit(`salary-negotiation:${rateLimitId}`, 10, 3600);
+    const rl = await rateLimit(`salary-negotiation:${effectiveUserId}`, 10, 3600);
     if (!rl.allowed) return NextResponse.json({ error: 'Rate limit reached, try again later' }, { status: 429, headers: { 'Retry-After': rl.retryAfter } });
 
     // Deduct 1 Token for AI generation
     const adminUser = await isAdmin(userId);
     if (!adminUser) {
-        const tokenCheck = await deductToken(userId, 1);
+        const tokenCheck = await deductToken(effectiveUserId, 1);
         if (!tokenCheck.success) {
-            return NextResponse.json({ error: tokenCheck.error || 'Please top up your tokens to generate negotiation playbooks', paywalled: true }, { status: 403 });
+            return NextResponse.json({ 
+                error: userId ? tokenCheck.error || 'Please top up your tokens to generate negotiation playbooks' : 'You have used your free token. Sign in to get more!', 
+                paywalled: !!userId,
+                requiresAuth: !userId 
+            }, { status: userId ? 403 : 401 });
         }
     }
 

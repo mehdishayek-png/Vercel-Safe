@@ -60,21 +60,28 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Profile with skills required' }, { status: 400 });
     }
 
+    const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    const effectiveUserId = userId || ip.split(',')[0].trim();
+
     // Server-side scan limit enforcement — applies to ALL users
-    const scanCheck = await canScan(userId, preferences?.midasSearch);
+    const scanCheck = await canScan(effectiveUserId, preferences?.midasSearch);
     if (!scanCheck.allowed) {
       return NextResponse.json({
         error: scanCheck.error,
-        requiresAuth: scanCheck.requiresAuth || false,
-        paywalled: !scanCheck.requiresAuth,
-      }, { status: scanCheck.requiresAuth ? 401 : 403 });
+        requiresAuth: scanCheck.requiresAuth || (!userId && scanCheck.paywalled),
+        paywalled: !!userId && scanCheck.paywalled,
+      }, { status: (scanCheck.requiresAuth || !userId) ? 401 : 403 });
     }
 
     // Deduct tokens (skip for admin)
     if (scanCheck.source !== 'admin') {
-      const deducted = await deductToken(userId, scanCheck.tokenCost || 1);
+      const deducted = await deductToken(effectiveUserId, scanCheck.tokenCost || 1);
       if (!deducted.success) {
-        return NextResponse.json({ error: 'Failed to deduct token' }, { status: 403 });
+        return NextResponse.json({ 
+            error: userId ? 'Failed to deduct token' : 'You have used your free token. Sign in to get more!',
+            requiresAuth: !userId,
+            paywalled: !!userId  
+        }, { status: userId ? 403 : 401 });
       }
     }
 
