@@ -64,69 +64,6 @@ export function ScanControls({
                 />
             </div>
 
-            {/* Toggles */}
-            <div className="flex flex-col gap-2">
-                <label className={`flex items-center gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all duration-200 text-xs font-medium ${
-                    preferences.remoteOnly ? 'bg-brand-50 border-brand-200 text-brand-700 shadow-sm' : 'bg-surface-50 border-outline-variant/10 text-gray-600 hover:bg-surface-100'
-                }`}>
-                    <input type="checkbox" checked={preferences.remoteOnly} onChange={e => setPreferences(prev => ({ ...prev, remoteOnly: e.target.checked }))} className="accent-brand-600" />
-                    Remote Only
-                    <Tooltip text="Only show jobs that are listed as remote or work-from-home. Filters out office-based roles.">
-                        <Info className="w-3.5 h-3.5 text-gray-400 ml-auto shrink-0" />
-                    </Tooltip>
-                </label>
-
-                <label className={`flex items-center gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all duration-200 text-xs ${
-                    preferences.premiumStartups ? 'bg-amber-50 border-amber-200 text-amber-900 shadow-sm' : 'bg-surface-50 border-outline-variant/10 text-gray-600 hover:bg-surface-100'
-                }`}>
-                    <input type="checkbox" checked={preferences.premiumStartups || false} onChange={handlePremiumToggle} className="accent-amber-600" />
-                    <span className="font-medium flex items-center gap-1.5 flex-1">
-                        <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                        Elite AI Startups
-                    </span>
-                    <Tooltip text="Target top-tier AI labs and startups like OpenAI, Anthropic, and Mistral directly.">
-                        <Info className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                    </Tooltip>
-                </label>
-
-                <label className={`flex items-center gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all duration-200 text-xs ${
-                    exploreAdjacent ? 'bg-brand-50 border-brand-200 text-brand-700 shadow-sm' : 'bg-surface-50 border-outline-variant/10 text-gray-600 hover:bg-surface-100'
-                }`}>
-                    <input type="checkbox" checked={exploreAdjacent} onChange={e => setExploreAdjacent(e.target.checked)} className="accent-brand-600" />
-                    <span className="font-medium flex items-center gap-1.5 flex-1">
-                        <Compass className="w-3.5 h-3.5" />
-                        Explore Adjacent Roles
-                    </span>
-                    <Tooltip text="Loosens matching to include roles outside your exact career track. Great for career pivots or discovering unexpected fits.">
-                        <Info className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                    </Tooltip>
-                </label>
-
-                {tokensLoading ? (
-                    <div className="flex items-center gap-2.5 p-2.5 rounded-lg border bg-surface-50 border-outline-variant/10 animate-pulse">
-                        <div className="w-4 h-4 rounded bg-surface-200" />
-                        <div className="h-3 bg-surface-200 rounded w-24" />
-                    </div>
-                ) : (
-                    <label className={`flex items-center gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all duration-200 text-xs ${
-                        midasSearch ? 'bg-brand-50 border-brand-200 text-brand-700 shadow-sm' : 'bg-surface-50 border-outline-variant/10 text-gray-600 hover:bg-surface-100'
-                    }`} onClick={(e) => { if (!isAdminUser && tokenBalance < 2) e.preventDefault(); }}>
-                        <input type="checkbox" checked={midasSearch}
-                            onChange={e => { if (isAdminUser || tokenBalance >= 2) setMidasSearch(e.target.checked); }}
-                            className="accent-brand-600"
-                        />
-                        <span className="font-medium flex-1">
-                            Super Search
-                            <span className="font-normal text-gray-400 ml-1">
-                                {isAdminUser ? '(admin)' : tokenBalance < 2 ? '(need 2)' : '(2 tokens)'}
-                            </span>
-                        </span>
-                        <Tooltip text="Fetches deeper results from job boards for wider coverage. Best for niche roles where page 1 results aren't enough.">
-                            <Info className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                        </Tooltip>
-                    </label>
-                )}
-            </div>
 
             {/* Pro Tips accordion */}
             <div className={`border rounded-xl transition-colors duration-200 ${showTips ? 'border-amber-200 bg-amber-50/30' : 'border-outline-variant/10 bg-transparent hover:bg-surface-50'}`}>
@@ -173,10 +110,9 @@ export function ScanControls({
                 >
                     {isMatching ? (
                         <span className="flex items-center justify-center gap-2"><Loader2 className="w-3.5 h-3.5 animate-spin" />Scanning...</span>
-                    ) : midasSearch
-                        ? <span>Super Scan {isAdminUser ? '(admin)' : '(2 tokens)'}</span>
-                        : <span>Scan {isAdminUser ? '(admin)' : '(1 token)'}</span>
-                    }
+                    ) : (
+                        <span>Scan {isAdminUser ? '(admin)' : '(1 token)'}</span>
+                    )}
                 </button>
             </div>
         </div>

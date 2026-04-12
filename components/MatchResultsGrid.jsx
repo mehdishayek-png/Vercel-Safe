@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Lock, Search, Download, BrainCircuit, Target, Zap, ShieldCheck, TrendingUp, Globe, FileText, ChevronDown, Building2, RefreshCw } from 'lucide-react';
+import { SignInButton } from '@clerk/nextjs';
+import Link from 'next/link';
 import { JobCard } from './JobCard';
 import { ScanningRadar } from './ScanningRadar';
 import { exportJobsToCSV } from '@/lib/export-csv';
@@ -119,7 +121,23 @@ export function MatchResultsGrid({
                         <div className="text-amber-500 mt-0.5 text-base">{searchError.type === 'resume' ? '📄' : '⚠️'}</div>
                         <div className="flex-1 min-w-0">
                             <p className="text-sm text-amber-800 font-medium">{searchError.message || searchError}</p>
-                            <div className="flex gap-2 mt-2">
+                            <div className="flex gap-2 mt-3">
+                                {/* Anonymous user — show Sign In CTA */}
+                                {searchError.requiresAuth && (
+                                    <SignInButton mode="modal">
+                                        <button className="text-xs px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold cursor-pointer shadow-sm">
+                                            Sign In for 3 Free Scans
+                                        </button>
+                                    </SignInButton>
+                                )}
+                                {/* Logged-in user — show pricing CTA */}
+                                {searchError.paywalled && (
+                                    <Link href="/pricing">
+                                        <button className="text-xs px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold cursor-pointer shadow-sm">
+                                            View Pricing
+                                        </button>
+                                    </Link>
+                                )}
                                 {searchError.canRetry && (
                                     <button
                                         onClick={() => { setSearchError(null); findJobs(); }}
@@ -252,7 +270,7 @@ export function MatchResultsGrid({
                     <div className="flex items-center justify-center gap-4 text-[10px] text-gray-400 py-2">
                         <span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-emerald-400" /> Resumes never stored</span>
                         <span className="w-px h-3 bg-surface-200" />
-                        <span className="flex items-center gap-1"><Zap className="w-3 h-3 text-brand-400" /> 5 free scans/day</span>
+                        <span className="flex items-center gap-1"><Zap className="w-3 h-3 text-brand-400" /> Token-powered scans</span>
                         <span className="w-px h-3 bg-surface-200" />
                         <span className="flex items-center gap-1"><Download className="w-3 h-3 text-gray-400" /> Export to CSV</span>
                     </div>

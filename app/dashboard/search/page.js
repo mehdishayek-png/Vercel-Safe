@@ -185,7 +185,14 @@ export default function SearchPage() {
         setActiveTab('matches');
 
         if (!midasSearch && tokenBalance <= 0 && !isAdminUser) {
-            setSearchError('Not enough tokens. Purchase tokens to continue.');
+            setSearchError({
+                type: 'tokens',
+                message: isSignedIn
+                    ? 'You\'ve used all your tokens. Purchase more to keep scanning!'
+                    : 'You\'ve used your free search! Sign in to get 3 free scans.',
+                requiresAuth: !isSignedIn,
+                paywalled: !!isSignedIn,
+            });
             setIsMatching(false);
             return;
         }
@@ -210,8 +217,22 @@ export default function SearchPage() {
             if (!res.ok) {
                 const errData = await res.json().catch(() => ({}));
                 if (res.status === 429) throw new Error(errData.error || 'Rate limit reached.');
-                if (res.status === 401 && errData.requiresAuth) { setSearchError('Sign in to scan for jobs.'); setIsMatching(false); return; }
-                if (res.status === 403) { setSearchError(errData.error || 'No tokens remaining.'); setIsMatching(false); return; }
+                if (res.status === 401 && errData.requiresAuth) {
+                    setSearchError({
+                        type: 'tokens',
+                        message: 'You\'ve used your free search! Sign in to get 3 free scans.',
+                        requiresAuth: true,
+                    });
+                    setIsMatching(false); return;
+                }
+                if (res.status === 403) {
+                    setSearchError({
+                        type: 'tokens',
+                        message: errData.error || 'No tokens remaining. Purchase more to continue.',
+                        paywalled: true,
+                    });
+                    setIsMatching(false); return;
+                }
                 throw new Error(errData.error || 'Failed to fetch jobs');
             }
 
