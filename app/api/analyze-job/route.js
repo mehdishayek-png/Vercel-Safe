@@ -50,14 +50,14 @@ Task: Analyze the fit between this candidate and job, then return structured JSO
 Candidate Profile:
 Headline: ${profile.headline}
 Experience Years: ${profile.experience_years || 'Not specified'} (THIS IS THE AUTHORITATIVE NUMBER — use this for ALL experience comparisons, do NOT infer a different number from context)
-Skills: ${profile.skills.join(', ')}${profile.whatIDo ? `
+Skills: ${(profile.skills || []).join(', ')}${profile.whatIDo ? `
 What They Do (in their own words): ${profile.whatIDo}` : ''}
 
 Job Description:
 Title: ${job.title}
 Company: ${job.company}
 Location: ${job.location}
-Summary: ${job.summary || job.description}
+Summary: ${(job.summary || job.description || '').slice(0, 2000)}
 
 CRITICAL INSTRUCTIONS - READ CAREFULLY:
 
