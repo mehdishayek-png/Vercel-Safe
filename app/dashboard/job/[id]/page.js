@@ -466,7 +466,18 @@ export default function JobDetailPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ job, profile }),
             });
-            if (!res.ok) throw new Error('Failed to generate');
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                if (res.status === 401 && errorData.requiresAuth) {
+                    toast('Sign in to generate cover letters', 'warning');
+                    return;
+                } else if (res.status === 403 && errorData.paywalled) {
+                    openPurchaseModal();
+                    toast('Tokens are required for AI generations', 'warning');
+                    return;
+                }
+                throw new Error(errorData.error || 'Failed to generate');
+            }
             const data = await res.json();
             setCoverLetter(data.letter);
         } catch (err) {
@@ -493,7 +504,18 @@ export default function JobDetailPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ job, profile, analysis }),
             });
-            if (!res.ok) throw new Error('Failed to generate negotiation playbook');
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                if (res.status === 401 && errorData.requiresAuth) {
+                    toast('Sign in to generate negotiation playbooks', 'warning');
+                    return;
+                } else if (res.status === 403 && errorData.paywalled) {
+                    openPurchaseModal();
+                    toast('Tokens are required for AI generations', 'warning');
+                    return;
+                }
+                throw new Error(errorData.error || 'Failed to generate negotiation playbook');
+            }
             const data = await res.json();
             setNegotiationData(data);
         } catch (err) {

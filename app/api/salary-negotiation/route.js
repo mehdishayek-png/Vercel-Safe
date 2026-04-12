@@ -2,16 +2,29 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { rateLimit } from '@/lib/rate-limit';
 import { callSonnet, parseJSON } from '@/lib/sonnet';
+import { deductToken, isAdmin } from '@/lib/tokens';
 
 export const maxDuration = 20;
 
 export async function POST(request) {
   try {
     const { userId } = await auth();
-    const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
+    if (!userId) {
+        return NextResponse.json({ error: 'Sign in to generate negotiation playbooks', requiresAuth: true }, { status: 401 });
+    }
 
+    const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
     const rl = await rateLimit(`salary-negotiation:${rateLimitId}`, 10, 3600);
-    if (!rl.allowed) return NextResponse.json({ error: 'Free limit reached, try again later' }, { status: 429, headers: { 'Retry-After': rl.retryAfter } });
+    if (!rl.allowed) return NextResponse.json({ error: 'Rate limit reached, try again later' }, { status: 429, headers: { 'Retry-After': rl.retryAfter } });
+
+    // Deduct 1 Token for AI generation
+    const adminUser = await isAdmin(userId);
+    if (!adminUser) {
+        const tokenCheck = await deductToken(userId, 1);
+        if (!tokenCheck.success) {
+            return NextResponse.json({ error: tokenCheck.error || 'Please top up your tokens to generate negotiation playbooks', paywalled: true }, { status: 403 });
+        }
+    }
 
     const { job, profile, analysis } = await request.json();
 

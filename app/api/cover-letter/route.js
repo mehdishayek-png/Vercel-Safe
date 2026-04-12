@@ -1,16 +1,29 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { rateLimit } from '@/lib/rate-limit';
+import { deductToken, isAdmin } from '@/lib/tokens';
 
 export const maxDuration = 15;
 
 export async function POST(request) {
   try {
     const { userId } = await auth();
-    const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
+    if (!userId) {
+        return NextResponse.json({ error: 'Sign in to generate tailored cover letters', requiresAuth: true }, { status: 401 });
+    }
 
+    const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
     const rl = await rateLimit(`cover-letter:${rateLimitId}`, 15, 3600); // 15 per hour max
-    if (!rl.allowed) return NextResponse.json({ error: 'Free limit reached, try tomorrow' }, { status: 429, headers: { 'Retry-After': rl.retryAfter } });
+    if (!rl.allowed) return NextResponse.json({ error: 'Rate limit reached, try tomorrow' }, { status: 429, headers: { 'Retry-After': rl.retryAfter } });
+
+    // Deduct 1 Token for AI generation
+    const adminUser = await isAdmin(userId);
+    if (!adminUser) {
+        const tokenCheck = await deductToken(userId, 1);
+        if (!tokenCheck.success) {
+            return NextResponse.json({ error: tokenCheck.error || 'Please top up your tokens to generate cover letters', paywalled: true }, { status: 403 });
+        }
+    }
 
     const { job, profile } = await request.json();
 
