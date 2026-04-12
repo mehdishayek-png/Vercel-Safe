@@ -53,7 +53,7 @@ export async function GET() {
           }}>
             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#818cf8', display: 'flex' }} />
             <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#a5b4fc', letterSpacing: '1.5px' }}>
-              AI-POWERED JOB MATCHING · BETA
+              AI-POWERED JOB MATCHING
             </span>
           </div>
           {/* Brand name */}
@@ -92,8 +92,8 @@ export async function GET() {
               <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#4b5563', letterSpacing: '1px', marginTop: '2px' }}>JOB SOURCES</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '32px', fontWeight: '900', color: '#ffffff' }}>Free</span>
-              <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#4b5563', letterSpacing: '1px', marginTop: '2px' }}>DURING BETA</span>
+              <span style={{ fontSize: '32px', fontWeight: '900', color: '#ffffff' }}>1</span>
+              <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#4b5563', letterSpacing: '1px', marginTop: '2px' }}>TOKEN / SEARCH</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <span style={{ fontSize: '32px', fontWeight: '900', color: '#ffffff' }}>5/day</span>

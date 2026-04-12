@@ -49,12 +49,6 @@ export async function GET() {
           <span style={{ fontSize: '28px', fontWeight: 'bold', color: 'white', letterSpacing: '-0.5px' }}>
             Midas Match
           </span>
-          <span style={{
-            fontSize: '11px', fontWeight: 'bold', color: '#f59e0b',
-            background: 'rgba(245,158,11,0.15)', padding: '3px 10px',
-            borderRadius: '20px', border: '1px solid rgba(245,158,11,0.3)',
-            marginLeft: '4px', letterSpacing: '1px',
-          }}>BETA</span>
         </div>
 
         <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '32px', marginTop: '4px' }}>

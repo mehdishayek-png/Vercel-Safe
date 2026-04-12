@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { getDeepScanCount, incrementDeepScan, deductToken, FREE_DEEP_SCANS, isAdmin as checkIsAdmin } from '@/lib/tokens';
+import { deductToken, isAdmin as checkIsAdmin } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 import { callSonnet, parseJSON } from '@/lib/sonnet';
 import { logMatch } from '@/lib/debug/match-logger';
@@ -13,32 +13,26 @@ export async function POST(request) {
 
         const adminUser = await checkIsAdmin(userId);
 
+        if (!userId) {
+            return NextResponse.json({ error: 'Sign in to use Deep Scan.', requiresAuth: true }, { status: 401 });
+        }
+
         // Rate limiting — 30 requests per minute per user
         if (!adminUser) {
-            const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
-            const rl = await rateLimit(rateLimitId, 30, 60);
+            const rl = await rateLimit(userId, 30, 60);
             if (!rl.allowed) {
                 return NextResponse.json({
                     error: `Too many requests. Try again in ${rl.retryAfter} seconds.`
                 }, { status: 429 });
             }
-        }
 
-        // Server-side deep scan enforcement
-        // During beta: allow anonymous users with IP-based rate limiting
-        if (userId && !adminUser) {
-            const usedCount = await getDeepScanCount(userId);
-            if (usedCount >= FREE_DEEP_SCANS) {
-                // Past free limit — need tokens
-                const deducted = await deductToken(userId, 1);
-                if (!deducted.success) {
-                    return NextResponse.json({
-                        error: 'No tokens remaining for deep scans. Purchase tokens to continue.',
-                        paywalled: true
-                    }, { status: 403 });
-                }
-            } else {
-                await incrementDeepScan(userId);
+            // Strictly require 1 token for a deep scan
+            const deducted = await deductToken(userId, 1);
+            if (!deducted.success) {
+                return NextResponse.json({
+                    error: 'Deep scan requires 1 token. Please purchase a package to continue.',
+                    paywalled: true
+                }, { status: 403 });
             }
         }
 

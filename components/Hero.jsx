@@ -33,7 +33,6 @@ export function Hero({ onStart, onDemo }) {
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-600"></span>
                             </span>
                             <span className="text-sm font-semibold text-gray-600 tracking-wide">AI-Powered Job Matching</span>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200 uppercase tracking-wider">Beta</span>
                         </motion.div>
 
                         {/* Headline */}
@@ -68,7 +67,7 @@ export function Hero({ onStart, onDemo }) {
                                 Start Matching
                             </Button>
                             <p className="text-[13px] text-gray-400 mt-4 ml-2">
-                                5 free searches per day. No credit card needed.
+                                1 token per search. Top up anytime.
                             </p>
                         </motion.div>
 

@@ -110,15 +110,15 @@ export function ScanControls({
                 ) : (
                     <label className={`flex items-center gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all duration-200 text-xs ${
                         midasSearch ? 'bg-brand-50 border-brand-200 text-brand-700 shadow-sm' : 'bg-surface-50 border-outline-variant/10 text-gray-600 hover:bg-surface-100'
-                    }`}>{/* Beta: no disabled state. Restore: onClick={(e) => { if (!isAdminUser && tokenBalance < 2 && weeklyMidasScanCount >= 1) e.preventDefault(); }} */}
+                    }`} onClick={(e) => { if (!isAdminUser && tokenBalance < 2) e.preventDefault(); }}>
                         <input type="checkbox" checked={midasSearch}
-                            onChange={e => setMidasSearch(e.target.checked)} /* Beta: always enabled. Restore: onChange={e => { if (isAdminUser || tokenBalance >= 2 || weeklyMidasScanCount < 1) setMidasSearch(e.target.checked); }} */
+                            onChange={e => { if (isAdminUser || tokenBalance >= 2) setMidasSearch(e.target.checked); }}
                             className="accent-brand-600"
                         />
                         <span className="font-medium flex-1">
                             Super Search
                             <span className="font-normal text-gray-400 ml-1">
-                                {'(free)'  /* Beta: all free. Restore: isAdminUser ? '(admin)' : weeklyMidasScanCount < 1 ? '(1 free/wk)' : tokenBalance < 2 ? '(need 2)' : '(2 tokens)' */}
+                                {isAdminUser ? '(admin)' : tokenBalance < 2 ? '(need 2)' : '(2 tokens)'}
                             </span>
                         </span>
                         <Tooltip text="Fetches deeper results from job boards for wider coverage. Best for niche roles where page 1 results aren't enough.">
@@ -174,8 +174,8 @@ export function ScanControls({
                     {isMatching ? (
                         <span className="flex items-center justify-center gap-2"><Loader2 className="w-3.5 h-3.5 animate-spin" />Scanning...</span>
                     ) : midasSearch
-                            ? <span className="flex items-center justify-center gap-1.5">Super Scan (Free) <span className="text-[9px] font-bold px-1.5 py-0 rounded-full bg-amber-100 text-amber-700 border border-amber-200 uppercase tracking-wider leading-relaxed">Beta</span></span>
-                            : <span className="flex items-center justify-center gap-1.5">Scan ({freeScansRemaining} free) <span className="text-[9px] font-bold px-1.5 py-0 rounded-full bg-amber-100 text-amber-700 border border-amber-200 uppercase tracking-wider leading-relaxed">Beta</span></span>
+                        ? <span>Super Scan {isAdminUser ? '(admin)' : '(2 tokens)'}</span>
+                        : <span>Scan {isAdminUser ? '(admin)' : '(1 token)'}</span>
                     }
                 </button>
             </div>

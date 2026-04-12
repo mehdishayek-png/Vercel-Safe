@@ -79,8 +79,8 @@ All numeric weights in `calculatePandaScore` must reference `SCORING_CONFIG`. No
 **C7 — LLM Timeout**
 `callFlash` uses `AbortSignal.timeout(25000)`. Intentional — Flash P50 on long prompts can hit 15-20s.
 
-**C8 — Anonymous Users Pass Through**
-`canScan` with `userId = null` returns `{ allowed: true, anonymousPass: true }`. Do not remove — intentional beta behavior.
+**C8 — Anonymous Users Blocked**
+`canScan` with `userId = null` returns `{ allowed: false, error: 'Sign in to use Midas Match.', requiresAuth: true }`. All scans require authentication.
 
 ---
 

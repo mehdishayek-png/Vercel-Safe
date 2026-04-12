@@ -20,8 +20,6 @@ export const maxDuration = 60;
 export async function POST(request) {
     try {
         const { userId } = await auth();
-        // Beta: allow anonymous users with IP-based rate limiting
-
         // Rate limit: 5 recommendation requests per minute
         const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
         const rl = await rateLimit(rateLimitId + ':recs', 5, 60);

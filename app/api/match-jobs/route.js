@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { fetchAllJobs } from '@/lib/job-fetcher';
 import { matchJobs } from '@/lib/matcher';
-import { canScan, incrementDailyScan, deductToken } from '@/lib/tokens';
+import { canScan, deductToken } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 import { getFeatureFlags } from '@/lib/feature-flags';
 import { preFilterJobs, validateFilters } from '@/lib/pre-filter';
@@ -70,19 +70,11 @@ export async function POST(request) {
       }, { status: scanCheck.requiresAuth ? 401 : 403 });
     }
 
-    // Deduct: free scan or token
-    if (!scanCheck.adminPass) {
-      if (scanCheck.isFree) {
-        if (scanCheck.isMidasSearchFree) {
-          await import('@/lib/tokens').then(m => m.incrementWeeklyMidasScan(userId));
-        } else {
-          await incrementDailyScan(userId);
-        }
-      } else {
-        const deducted = await deductToken(userId, scanCheck.tokenCost || 1);
-        if (!deducted.success) {
-          return NextResponse.json({ error: 'Failed to deduct token' }, { status: 403 });
-        }
+    // Deduct tokens (skip for admin)
+    if (scanCheck.source !== 'admin') {
+      const deducted = await deductToken(userId, scanCheck.tokenCost || 1);
+      if (!deducted.success) {
+        return NextResponse.json({ error: 'Failed to deduct token' }, { status: 403 });
       }
     }
 

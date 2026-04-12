@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { fetchAllJobsStreaming } from '@/lib/job-fetcher';
 import { calculatePandaScore } from '@/lib/panda-matcher';
-import { canScan, incrementDailyScan, deductToken } from '@/lib/tokens';
+import { canScan, deductToken } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 import { saveAlertProfile } from '@/lib/job-alerts';
 import { detectGhostSignals } from '@/lib/ghost-detector';
@@ -66,7 +66,6 @@ export async function POST(request) {
       });
     }
 
-    // Structured log for beta monitoring
     const ip = request.headers.get('x-forwarded-for') || 'unknown';
     console.log(JSON.stringify({
       event: 'scan_started',
@@ -91,21 +90,13 @@ export async function POST(request) {
       });
     }
 
-    // Deduct: free scan or token (skip for anonymous beta users)
-    if (!scanCheck.adminPass && !scanCheck.anonymousPass) {
-      if (scanCheck.isFree) {
-        if (scanCheck.isMidasSearchFree) {
-          await import('@/lib/tokens').then(m => m.incrementWeeklyMidasScan(userId));
-        } else {
-          await incrementDailyScan(userId);
-        }
-      } else {
-        const deducted = await deductToken(userId, scanCheck.tokenCost || 1);
-        if (!deducted.success) {
-          return new Response(JSON.stringify({ error: 'Failed to deduct token' }), {
-            status: 403, headers: { 'Content-Type': 'application/json' }
-          });
-        }
+    // Deduct tokens (skip for admin)
+    if (scanCheck.source !== 'admin') {
+      const deducted = await deductToken(userId, scanCheck.tokenCost || 1);
+      if (!deducted.success) {
+        return new Response(JSON.stringify({ error: 'Failed to deduct token' }), {
+          status: 403, headers: { 'Content-Type': 'application/json' }
+        });
       }
     }
 
@@ -150,14 +141,14 @@ export async function POST(request) {
           
           let totalJobsScored = 0;
           let burnedBonusTokens = 0;
-          let baseCost = scanCheck.tokenCost || (scanCheck.isFree ? 0 : 1);
+          let baseCost = scanCheck.tokenCost || 1;
           let isDepleted = false;
 
           const onSourceComplete = async (sourceName, jobs) => {
             if (isDepleted) return;
 
             // Burn rate deduction check
-            if (!scanCheck.isFree && !scanCheck.adminPass && !scanCheck.anonymousPass) {
+            if (scanCheck.source !== 'admin') {
                 const previousHundreds = Math.floor(totalJobsScored / 100);
                 const newTotal = totalJobsScored + jobs.length;
                 const newHundreds = Math.floor(newTotal / 100);
@@ -177,9 +168,9 @@ export async function POST(request) {
             totalJobsScored += jobs.length;
 
             // Send burn rate visualization update
-            send({ 
-                type: 'burn_update', 
-                tokensConsumed: scanCheck.isFree ? 0 : (baseCost + burnedBonusTokens + ((totalJobsScored % 100) / 100))
+            send({
+                type: 'burn_update',
+                tokensConsumed: scanCheck.source === 'admin' ? 0 : (baseCost + burnedBonusTokens + ((totalJobsScored % 100) / 100))
             });
 
             send({ type: 'progress', message: `Scoring ${sourceName}...` });
@@ -313,6 +304,7 @@ export async function POST(request) {
           diag.totalUnique = result.jobs.length;
           diag.queries = result.queries;
           diag.roleAnchor = result.roleAnchor;
+          diag.tokensConsumed = scanCheck.source === 'admin' ? 0 : (baseCost + burnedBonusTokens);
           // Aggregate totals
           diag.totals = Object.values(diag.sources).reduce((acc, s) => {
             acc.fetched += s.fetched; acc.displayed += s.displayed; acc.discarded += s.discarded; acc.zero += s.zero;
