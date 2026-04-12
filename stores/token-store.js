@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 export const useTokenStore = create((set, get) => ({
     tokenBalance: 0,
+    pendingVests: [],   // [{ amount, releaseAt }] — tokens vesting but not yet available
     isAdminUser: false,
     tokensLoading: true,
     sessionBurn: 0,
@@ -14,7 +15,6 @@ export const useTokenStore = create((set, get) => ({
     setSessionBurn: (sessionBurn) => set({ sessionBurn }),
     setTokenBalance: (tokenBalance) => set({ tokenBalance }),
 
-
     refreshTokens: async () => {
         try {
             const res = await fetch('/api/tokens', { cache: 'no-store' });
@@ -22,6 +22,7 @@ export const useTokenStore = create((set, get) => ({
             if (res.ok && typeof data.tokens === 'number') {
                 set({
                     tokenBalance: data.tokens,
+                    pendingVests: data.pendingVests || [],
                     tokensLoading: false,
                 });
                 if (data.isAdmin) set({ isAdminUser: true });

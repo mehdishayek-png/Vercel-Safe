@@ -22,6 +22,8 @@ const PAGE_TITLES = {
 export function DashboardHeader({ onMenuClick }) {
     const pathname = usePathname();
     const tokenBalance = useTokenStore(s => s.tokenBalance);
+    const pendingVests = useTokenStore(s => s.pendingVests);
+    const pendingTotal = pendingVests.reduce((sum, v) => sum + v.amount, 0);
     const { showReturnNotification, setShowReturnNotification } = useSearchStore();
     const { savedJobsData, appliedJobsData } = useJobsStore();
     const [showGuide, setShowGuide] = useState(false);
@@ -79,6 +81,14 @@ export function DashboardHeader({ onMenuClick }) {
                         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-100 text-[11px] font-semibold text-slate-500">
                             <Coins className="w-3 h-3 text-brand-500" />
                             {tokenBalance}
+                            {pendingTotal > 0 && (
+                                <span
+                                    title={`${pendingTotal} token${pendingTotal !== 1 ? 's' : ''} arriving over the next ${pendingVests.length} day${pendingVests.length !== 1 ? 's' : ''}`}
+                                    className="text-[9px] font-bold text-amber-600 bg-amber-100 px-1 py-0.5 rounded-full leading-none"
+                                >
+                                    +{pendingTotal}
+                                </span>
+                            )}
                         </div>
                     )}
                     <SignedIn><div className="relative" ref={notifRef}>

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { getTokenBalance, isAdmin } from '@/lib/tokens';
+import { getTokenBalance, isAdmin, getPendingVests } from '@/lib/tokens';
 
 export const dynamic = 'force-dynamic';
 /**
@@ -29,12 +29,12 @@ export async function GET(request) {
             });
         }
 
-        const { tokens, source } = await getTokenBalance(userId);
+        const [{ tokens, source }, pendingVests] = await Promise.all([
+            getTokenBalance(userId),
+            getPendingVests(userId),
+        ]);
 
-        return NextResponse.json({
-            tokens,
-            source,
-        });
+        return NextResponse.json({ tokens, source, pendingVests });
     } catch (error) {
         console.error('Token balance error:', error);
         return NextResponse.json({ error: 'Failed to fetch token balance' }, { status: 500 });
