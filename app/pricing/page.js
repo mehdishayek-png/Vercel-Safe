@@ -7,11 +7,11 @@ import { useTokenStore } from "@/stores/token-store";
 const faqs = [
     {
         q: "What\u2019s a token?",
-        a: "Tokens are credits that power every AI action on Midas \u2014 job scans, deep analyses, cover letters, salary negotiations, and more. Each action costs 1 token. New users get free starter tokens to try the platform.",
+        a: "Tokens are credits that power every AI action on Midas \u2014 job scans, deep analyses, cover letters, salary negotiations, and more. Each action costs 1 token.",
     },
     {
         q: "Do tokens expire?",
-        a: "No. Tokens never expire. Once purchased, they stay in your account until you use them.",
+        a: "No. Tokens never expire \u2014 starter tokens or purchased tokens. They stay in your account until you use them.",
     },
     {
         q: "Can I get a refund?",
@@ -23,16 +23,16 @@ const faqs = [
     },
     {
         q: "Do I need to pay to use Midas?",
-        a: "You can try Midas for free! New visitors get 1 free token to test the platform, and creating an account gives you 3 free tokens. After that, affordable token packs are available to keep you going.",
+        a: "No. Creating an account gives you 3 free starter tokens \u2014 1 immediately, then 1 each day for the next 2 days. After that, affordable token packs keep you going.",
     },
 ];
 
 const freePlan = [
-    "1 free token for new visitors",
-    "3 free tokens when you create an account",
+    "3 starter tokens on sign-up (1 now + 1/day for 2 days)",
     "All job sources (Google Jobs, LinkedIn, Indeed, 350+ ATS boards)",
     "Save & track applications",
     "AI deep analysis, cover letters & more",
+    "Tokens never expire",
     "Email & community support",
 ];
 
@@ -98,7 +98,7 @@ export default function PricingPage() {
                                     ₹0
                                 </span>
                                 <span className="text-gray-400 text-sm ml-1">
-                                    / up to 3 tokens
+                                    / 3 starter tokens
                                 </span>
                             </div>
                         </div>
@@ -216,13 +216,13 @@ export default function PricingPage() {
                             </thead>
                             <tbody className="text-gray-600">
                                 {[
-                                    ["Starter tokens", "1 (visitor) / 3 (account)", "50 per pack"],
+                                    ["Starter tokens", "3 on sign-up", "50 per pack"],
                                     ["Job scans", "1 token each", "1 token each"],
                                     ["AI deep analyses", "1 token each", "1 token each"],
                                     ["Job sources", "All sources", "All sources"],
                                     ["Cover letters & outreach", "1 token each", "1 token each"],
                                     ["Save & track applications", "\u2713", "\u2713"],
-                                    ["Tokens expire?", "\u2014", "Never"],
+                                    ["Tokens expire?", "Never", "Never"],
                                     ["Support", "Community", "Priority"],
                                 ].map(([feature, free, paid], i) => (
                                     <tr
