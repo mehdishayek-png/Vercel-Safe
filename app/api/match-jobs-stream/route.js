@@ -12,6 +12,7 @@ import { logMatch } from '@/lib/debug/match-logger';
 import { enrichThinJDs } from '@/lib/jd-enricher';
 import { getUserActions } from '@/lib/feedback-tracker';
 import { classifyProfile } from '@/lib/profile-classifier';
+import * as Sentry from '@sentry/nextjs';
 import { z } from 'zod';
 
 export const maxDuration = 90;
@@ -312,6 +313,26 @@ export async function POST(request) {
           }, { fetched: 0, displayed: 0, discarded: 0, zero: 0 });
           console.log(JSON.stringify({ event: 'scan_diagnostic', userId: userId || 'anon', headline: profile.headline, ...diag }));
 
+          Sentry.captureMessage('scan_diagnostic', {
+            level: 'info',
+            tags: {
+              headline: profile.headline?.slice(0, 60),
+              roleAnchor: result.roleAnchor,
+              userId: userId || 'anon',
+            },
+            extra: {
+              topDisplayed: diag.topDisplayed,
+              topDiscarded: diag.topDiscarded,
+              killers: diag.killers,
+              totals: diag.totals,
+              sources: diag.sources,
+              queries: diag.queries,
+              durationMs: diag.durationMs,
+              llmFamily: profile._llmFamily || null,
+              llmAntiFamilies: profile._llmAntiFamilies || null,
+            },
+          });
+
           // Save alert profile for daily job alerts (fire-and-forget)
           if (userId) {
               saveAlertProfile(userId, profile, preferences).catch(() => {});
@@ -320,6 +341,7 @@ export async function POST(request) {
           controller.close();
         } catch (err) {
           console.error('Stream error:', err);
+          Sentry.captureException(err, { tags: { headline: profile.headline?.slice(0, 60) } });
           send({ type: 'error', message: 'Search failed. Please try again.' });
           controller.close();
         }
