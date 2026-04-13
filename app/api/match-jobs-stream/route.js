@@ -11,6 +11,7 @@ import { predictSuccessProbability } from '@/lib/success-predictor';
 import { logMatch } from '@/lib/debug/match-logger';
 import { enrichThinJDs } from '@/lib/jd-enricher';
 import { getUserActions } from '@/lib/feedback-tracker';
+import { classifyProfile } from '@/lib/profile-classifier';
 import { z } from 'zod';
 
 export const maxDuration = 90;
@@ -143,6 +144,15 @@ export async function POST(request) {
 
           send({ type: 'progress', message: 'Starting job search...' });
 
+          const classifyPromise = classifyProfile(profile.headline, profile.skills)
+            .then(result => {
+              if (result) {
+                profile._llmFamily = result.family;
+                profile._llmAntiFamilies = result.antiFamilies;
+              }
+            })
+            .catch(() => {});
+
           const _logPromises = [];
           
           let totalJobsScored = 0;
@@ -152,6 +162,8 @@ export async function POST(request) {
 
           const onSourceComplete = async (sourceName, jobs) => {
             if (isDepleted) return;
+
+            await classifyPromise;
 
             totalJobsScored += jobs.length;
 
