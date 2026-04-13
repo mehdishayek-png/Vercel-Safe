@@ -22,7 +22,9 @@
       "Bash(node:*)",
       "Bash(git commit --no-verify -m ':*)",
       "Bash(xargs -I{} git show {} --name-only --format=\"%H %s\")",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "Bash(npm i:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
