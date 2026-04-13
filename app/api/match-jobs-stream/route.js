@@ -205,7 +205,12 @@ export async function POST(request) {
                   // Diagnostic accounting
                   sourceDiag.scored++;
                   const s = pandaScore?.score ?? 0;
-                  if (s >= 25) {
+                  // Dynamic display threshold: same-family matches (roleFamily ≥ 1.1) get a lower
+                  // bar to compensate for thin JDs that don't have enough keywords to score high.
+                  // A PwC Deal Advisory with only "M&A" in the snippet should still surface.
+                  const isSameFamily = parseFloat(pandaScore?.multipliers?.roleFamily || '1.0') >= 1.1;
+                  const displayThreshold = isSameFamily ? 20 : 25;
+                  if (s >= displayThreshold) {
                     sourceDiag.displayed++;
                     if (diag.topDisplayed.length < 10) {
                       diag.topDisplayed.push({ s, t: job.title?.slice(0, 60), c: job.company, src: sourceName });
@@ -233,7 +238,8 @@ export async function POST(request) {
                       if (parseFloat(m.recency) < 0.5) killers.push(`rec=${m.recency}`);
                       if (parseFloat(m.coherence) < 0.5) killers.push(`coh=${m.coherence}`);
                       const killer = killers.join(',') || 'low_raw';
-                      diag.topDiscarded.push({ s, t: job.title?.slice(0, 60), c: job.company, src: sourceName, killer });
+                      const topTokens = (pandaScore.matches || []).slice(0, 3).map(m => m.skill || m.keyword || m);
+                      diag.topDiscarded.push({ s, t: job.title?.slice(0, 60), c: job.company, src: sourceName, killer, tokens: topTokens });
                       diag.killers[killer] = (diag.killers[killer] || 0) + 1;
                     }
                     _logPromises.push(logMatch({
