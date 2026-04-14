@@ -16,6 +16,7 @@
     "@upstash/redis": "^1.36.3",
     "@vercel/analytics": "^1.6.1",
     "@vercel/speed-insights": "^2.0.0",
+    "apify-client": "^2.22.3",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "country-state-city": "^3.2.1",

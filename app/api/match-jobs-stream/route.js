@@ -237,7 +237,7 @@ export async function POST(request) {
                       if (parseFloat(m.seniority) < 0.3) killers.push(`sen=${m.seniority}`);
                       if (parseFloat(m.recency) < 0.5) killers.push(`rec=${m.recency}`);
                       if (parseFloat(m.coherence) < 0.5) killers.push(`coh=${m.coherence}`);
-                      const killer = killers.join(',') || 'low_raw';
+                      let killer = killers.join(',') || (isSameFamily ? 'same_fam:low_raw' : 'low_raw');
                       const topTokens = (pandaScore.matches || []).slice(0, 3).map(m => m.skill || m.keyword || m);
                       diag.topDiscarded.push({ s, t: job.title?.slice(0, 60), c: job.company, src: sourceName, killer, tokens: topTokens });
                       diag.killers[killer] = (diag.killers[killer] || 0) + 1;
