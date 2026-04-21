@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/Toast';
 import { useProfileStore } from '@/stores/profile-store';
 import { useSearchStore } from '@/stores/search-store';
 import { useJobsStore } from '@/stores/jobs-store';
+import { trackResumeUpload } from '@/lib/gtag';
 import { useTokenStore } from '@/stores/token-store';
 import { useAuth } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
@@ -89,6 +90,7 @@ export default function SearchPage() {
 
 
             addLog(`Profile extracted for ${data.profile.name}`);
+            trackResumeUpload();
         } catch (err) {
             const msg = err.message.toLowerCase();
             let userMessage;

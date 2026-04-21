@@ -1,7 +1,6 @@
 import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css';
 import { ToastProvider } from '@/components/ui/Toast';
-import Script from 'next/script';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@/components/GoogleAnalytics';
@@ -77,21 +76,6 @@ export default function RootLayout({ children }) {
             }}
           />
           <GoogleAnalytics />
-          <Script
-            strategy="afterInteractive"
-            src="https://www.googletagmanager.com/gtag/js?id=AW-10853288277"
-          />
-          <Script
-            id="google-ads-init"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{
-              __html: `
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('config', 'AW-10853288277');
-              `,
-            }}
-          />
           <ToastProvider>
             {children}
             <Analytics />

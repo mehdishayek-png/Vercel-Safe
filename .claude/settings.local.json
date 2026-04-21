@@ -24,7 +24,9 @@
       "Bash(xargs -I{} git show {} --name-only --format=\"%H %s\")",
       "Bash(npx next:*)",
       "Bash(npm i:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(vercel logs:*)",
+      "Bash(python3)"
     ]
   }
 }

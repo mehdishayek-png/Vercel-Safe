@@ -11,6 +11,7 @@ import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { safeBtoa } from '@/lib/safe-btoa';
 import { safe } from '@/lib/safe-render';
 import { trackSignup } from '@/lib/analytics';
+import { trackResumeUpload } from '@/lib/gtag';
 
 function DotIndicator({ filled, total = 5 }) {
     return (
@@ -151,6 +152,7 @@ export default function DashboardHome() {
             if (typeof data.profile.experience_years === 'number') setExperienceYears(data.profile.experience_years);
             if (data.profile.headline) setJobTitle(data.profile.headline);
             addLog(`Profile extracted for ${data.profile.name}`);
+            trackResumeUpload();
         } catch (err) {
             addLog(`Warning: ${err.message}`);
         } finally {

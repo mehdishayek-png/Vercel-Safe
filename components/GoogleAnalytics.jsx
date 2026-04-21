@@ -5,6 +5,8 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, Suspense } from 'react';
 import { GA_ID, pageview } from '@/lib/analytics';
 
+const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || '';
+
 function PageViewTracker() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -20,6 +22,10 @@ function PageViewTracker() {
 
 export function GoogleAnalytics() {
     if (!GA_ID) return null;
+
+    const adsConfigSnippet = GOOGLE_ADS_ID
+        ? `gtag('config', '${GOOGLE_ADS_ID}');`
+        : '';
 
     return (
         <>
@@ -38,6 +44,7 @@ export function GoogleAnalytics() {
                         gtag('config', '${GA_ID}', {
                             page_path: window.location.pathname,
                         });
+                        ${adsConfigSnippet}
                     `,
                 }}
             />
