@@ -5,7 +5,7 @@ import { rateLimit } from '@/lib/rate-limit';
 import { callSonnet, parseJSON } from '@/lib/sonnet';
 import { logMatch } from '@/lib/debug/match-logger';
 
-export const maxDuration = 30;
+
 
 export async function POST(request) {
     try {

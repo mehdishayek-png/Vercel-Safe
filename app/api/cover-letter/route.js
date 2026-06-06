@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { rateLimit } from '@/lib/rate-limit';
 import { deductToken, isAdmin } from '@/lib/tokens';
 
-export const maxDuration = 15;
+
 
 export async function POST(request) {
   try {

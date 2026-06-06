@@ -4,7 +4,7 @@ import { calculatePandaScore } from '@/lib/panda-matcher';
 import { learnPreferences } from '@/lib/preference-learner';
 import { rateLimit } from '@/lib/rate-limit';
 
-export const maxDuration = 60;
+
 
 /**
  * GET /api/recommendations

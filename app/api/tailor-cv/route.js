@@ -4,7 +4,7 @@ import { deductToken, isAdmin as checkIsAdmin } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 import { callFlash, parseJSON } from '@/lib/sonnet';
 
-export const maxDuration = 45;
+
 
 export async function POST(request) {
     try {

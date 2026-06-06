@@ -2,7 +2,7 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { sendWeeklyDigest } from '@/lib/email';
 
-export const maxDuration = 30;
+
 
 export async function POST(request) {
     try {

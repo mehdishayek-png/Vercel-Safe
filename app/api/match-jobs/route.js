@@ -8,7 +8,7 @@ import { getFeatureFlags } from '@/lib/feature-flags';
 import { preFilterJobs, validateFilters } from '@/lib/pre-filter';
 import { z } from 'zod';
 
-export const maxDuration = 90; // Generous enough for batching, tight enough to catch hangs
+
 
 const ScanPayloadSchema = z.object({
   profile: z.object({

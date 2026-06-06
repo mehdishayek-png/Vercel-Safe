@@ -1,8 +1,6 @@
 import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css';
 import { ToastProvider } from '@/components/ui/Toast';
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 
 
@@ -78,8 +76,7 @@ export default function RootLayout({ children }) {
           <GoogleAnalytics />
           <ToastProvider>
             {children}
-            <Analytics />
-            <SpeedInsights />
+
           </ToastProvider>
         </body>
       </html>

@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { fetchATSJobs } from '@/lib/ats-fetcher';
 import { getUniqueQueries, addJobsToPool } from '@/lib/job-alerts';
 
-export const maxDuration = 60;
+
 
 function verifyCronSecret(authHeader) {
     const expected = process.env.CRON_SECRET;

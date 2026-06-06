@@ -4,7 +4,7 @@ import { calculatePandaScore } from '@/lib/panda-matcher';
 import { getAllAlertUserIds, getAlertProfile, getJobPool, getSeenJobs, markJobsSeen } from '@/lib/job-alerts';
 import { sendJobAlerts } from '@/lib/email';
 
-export const maxDuration = 60;
+
 
 function verifyCronSecret(authHeader) {
     const expected = process.env.CRON_SECRET;

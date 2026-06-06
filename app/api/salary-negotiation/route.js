@@ -4,7 +4,7 @@ import { rateLimit } from '@/lib/rate-limit';
 import { callSonnet, parseJSON } from '@/lib/sonnet';
 import { deductToken, isAdmin } from '@/lib/tokens';
 
-export const maxDuration = 20;
+
 
 export async function POST(request) {
   try {

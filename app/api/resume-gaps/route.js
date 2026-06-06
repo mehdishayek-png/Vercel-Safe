@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { rateLimit } from '@/lib/rate-limit';
 import { callFlash, parseJSON } from '@/lib/sonnet';
 
-export const maxDuration = 30;
+
 
 export async function POST(request) {
   try {

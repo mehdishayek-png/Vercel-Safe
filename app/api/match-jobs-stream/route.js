@@ -15,7 +15,7 @@ import { classifyProfile } from '@/lib/profile-classifier';
 import * as Sentry from '@sentry/nextjs';
 import { z } from 'zod';
 
-export const maxDuration = 90;
+
 
 const ScanPayloadSchema = z.object({
   profile: z.object({

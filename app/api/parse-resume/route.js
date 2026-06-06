@@ -3,7 +3,7 @@ import { parseResumePDF, extractSearchStrategy } from '@/lib/resume-parser';
 import { auth } from '@clerk/nextjs/server';
 import { rateLimit } from '@/lib/rate-limit';
 
-export const maxDuration = 30;
+
 
 
 export async function POST(request) {
