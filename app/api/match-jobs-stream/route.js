@@ -12,6 +12,7 @@ import { logMatch } from '@/lib/debug/match-logger';
 import { enrichThinJDs } from '@/lib/jd-enricher';
 import { getUserActions } from '@/lib/feedback-tracker';
 import { classifyProfile } from '@/lib/profile-classifier';
+import { getJobEmbeddings, getRoleEmbedding, jobKey } from '@/lib/job-embeddings';
 import * as Sentry from '@sentry/nextjs';
 import { z } from 'zod';
 
@@ -155,7 +156,10 @@ export async function POST(request) {
             .catch(() => {});
 
           const _logPromises = [];
-          
+          // Accumulates scored jobs (score > 0) across all sources so the
+          // post-scan semantic re-rank can pick the top candidates to embed.
+          const allScored = [];
+
           let totalJobsScored = 0;
           let burnedBonusTokens = 0;
           let baseCost = scanCheck.tokenCost || 1;
@@ -271,6 +275,11 @@ export async function POST(request) {
             sourceCounts[sourceName] = scoredJobs.length;
             diag.sources[sourceName] = sourceDiag;
 
+            // Retain scored jobs for the post-scan semantic re-rank.
+            for (const sj of scoredJobs) {
+              if ((sj.pandaScore?.score ?? 0) > 0) allScored.push(sj);
+            }
+
             send({
               type: 'jobs',
               source: sourceName,
@@ -290,6 +299,50 @@ export async function POST(request) {
             onProgress,
             preferences
           );
+
+          // ── Semantic re-rank pass ──────────────────────────────────────
+          // Embed the top heuristic candidates + the user's role text, then
+          // re-score them through Panda's semantic block (which activates only
+          // when __precomputedJobEmb/__precomputedRoleEmb are present). Pure
+          // refinement: any failure leaves the streamed heuristic results intact.
+          try {
+            if (process.env.OPENAI_API_KEY && allScored.length) {
+              const TOP_K = 120;
+              const candidates = allScored
+                .filter((j) => (j.pandaScore?.score ?? 0) > 0)
+                .sort((a, b) => b.pandaScore.score - a.pandaScore.score)
+                .slice(0, TOP_K);
+
+              const [roleEmb, jobEmbMap] = await Promise.all([
+                getRoleEmbedding(profile, userId),
+                getJobEmbeddings(candidates),
+              ]);
+
+              if (roleEmb && jobEmbMap.size) {
+                send({ type: 'progress', message: 'Refining matches semantically...' });
+                const updates = [];
+                for (const j of candidates) {
+                  const jobEmb = jobEmbMap.get(jobKey(j));
+                  if (!jobEmb || !j.apply_url) continue;
+                  const rescored = await calculatePandaScore(
+                    { ...j, __precomputedJobEmb: jobEmb, __precomputedRoleEmb: roleEmb },
+                    profile,
+                    preferences,
+                    {}
+                  );
+                  if (rescored?.score != null) {
+                    updates.push({ apply_url: j.apply_url, score: rescored.score, breakdown: rescored });
+                  }
+                }
+                if (updates.length) {
+                  send({ type: 'rerank', jobs: updates });
+                  diag.reranked = updates.length;
+                }
+              }
+            }
+          } catch (e) {
+            console.warn('[RERANK] semantic pass failed:', e.message);
+          }
 
           // Final complete event with deduped totals
           send({

@@ -282,6 +282,17 @@ export default function SearchPage() {
                                     );
                                 });
                             }
+                        } else if (event.type === 'rerank') {
+                            // Semantic refinement: patch scores for the top candidates and re-sort.
+                            const updateByUrl = new Map((event.jobs || []).map(u => [u.apply_url, u]));
+                            addLog(`Refined ${event.jobs?.length || 0} matches with semantic ranking`);
+                            setJobs(prev => prev.map(j => {
+                                const u = updateByUrl.get(j.apply_url);
+                                if (!u) return j;
+                                return { ...j, match_score: u.score, heuristic_breakdown: u.breakdown || j.heuristic_breakdown };
+                            }).sort((a, b) =>
+                                (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0)
+                            ));
                         } else if (event.type === 'complete') {
                             addLog(`Search complete: ${event.totalUnique} unique jobs from ${Object.keys(event.sources || {}).length} sources`);
                         } else if (event.type === 'burn_update') {
