@@ -3,12 +3,11 @@ import { useState, useRef } from 'react';
 import { useProfileStore } from '@/stores/profile-store';
 import { useSearchStore } from '@/stores/search-store';
 import { useJobsStore } from '@/stores/jobs-store';
-import { useTokenStore } from '@/stores/token-store';
 import { useUser } from '@clerk/nextjs';
 import { LocationAutocomplete } from '@/components/ui/LocationAutocomplete';
 import {
     User, Briefcase, MapPin, Tag, Plus, X, Globe, ToggleLeft, ToggleRight,
-    Download, Trash2, Shield, CheckCircle, AlertTriangle, Coins, Zap, FileText,
+    Download, Trash2, Shield, CheckCircle, AlertTriangle, Zap, FileText,
     ChevronRight, Sparkles
 } from 'lucide-react';
 
@@ -77,7 +76,6 @@ export default function SettingsPage() {
     const { profile, setProfile, experienceYears, setExperienceYears, jobTitle, setJobTitle, whatIDo, setWhatIDo } = useProfileStore();
     const { preferences, setPreferences } = useSearchStore();
     const { savedJobsData, appliedJobsData } = useJobsStore();
-    const { tokenBalance } = useTokenStore();
 
     const [toast, setToast] = useState(null);
     const [skillInput, setSkillInput] = useState('');
@@ -349,23 +347,7 @@ export default function SettingsPage() {
                     {/* ---- Right column: Account + Privacy (4 cols) ---- */}
                     <div className="lg:col-span-4 space-y-6">
 
-                        {/* ---- Account Summary Gradient Card ---- */}
-                        <div className="bg-flow-gradient rounded-2xl p-6 shadow-glow overflow-hidden relative">
-                            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZyIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48Y2lyY2xlIGN4PSIxMCIgY3k9IjEwIiByPSIxIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCBmaWxsPSJ1cmwoI2cpIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIi8+PC9zdmc+')] opacity-50"></div>
-                            <div className="relative z-10">
-                                <div className="flex items-center gap-2 mb-5">
-                                    <Coins className="w-5 h-5 text-amber-300" />
-                                    <span className="text-[12px] font-semibold text-white/70 uppercase tracking-wider">Token Balance</span>
-                                </div>
-                                <p className="text-[42px] font-headline font-bold text-white leading-none mb-1">{tokenBalance}</p>
-                                <p className="text-[12px] text-white/50 mb-6">tokens remaining</p>
-
-
-                                <a href="/pricing" className="block w-full py-2.5 text-center text-[13px] font-semibold text-brand-700 bg-white hover:bg-white/90 rounded-xl transition-all shadow-button cursor-pointer">
-                                    Buy More Tokens
-                                </a>
-                            </div>
-                        </div>
+                        {/* Token balance card removed — unlimited access. */}
 
                         {/* ---- Account Details ---- */}
                         <GlassCard className="p-6">

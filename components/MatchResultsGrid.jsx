@@ -270,7 +270,7 @@ export function MatchResultsGrid({
                     <div className="flex items-center justify-center gap-4 text-[10px] text-gray-400 py-2">
                         <span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-emerald-400" /> Resumes never stored</span>
                         <span className="w-px h-3 bg-surface-200" />
-                        <span className="flex items-center gap-1"><Zap className="w-3 h-3 text-brand-400" /> Token-powered scans</span>
+                        <span className="flex items-center gap-1"><Zap className="w-3 h-3 text-brand-400" /> Free unlimited scans</span>
                         <span className="w-px h-3 bg-surface-200" />
                         <span className="flex items-center gap-1"><Download className="w-3 h-3 text-gray-400" /> Export to CSV</span>
                     </div>

@@ -67,7 +67,7 @@ export function Hero({ onStart, onDemo }) {
                                 Start Matching
                             </Button>
                             <p className="text-[13px] text-gray-400 mt-4 ml-2">
-                                1 token per search. Top up anytime.
+                                Free &amp; unlimited. Just sign in.
                             </p>
                         </motion.div>
 

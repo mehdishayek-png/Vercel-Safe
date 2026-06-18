@@ -80,7 +80,7 @@ export function ScanControls({
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />Scanning...
                         </span>
                     ) : (
-                        <span>Scan {isAdminUser ? '(admin)' : '(1 token)'}</span>
+                        <span>Scan</span>
                     )}
                 </button>
             </div>

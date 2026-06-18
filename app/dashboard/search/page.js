@@ -182,18 +182,7 @@ export default function SearchPage() {
         addLog("Streaming results as sources respond...");
         setActiveTab('matches');
 
-        if (!midasSearch && tokenBalance <= 0 && !isAdminUser) {
-            setSearchError({
-                type: 'tokens',
-                message: isSignedIn
-                    ? 'You\'ve used all your tokens. Purchase more to keep scanning!'
-                    : 'You\'ve used your free search! Sign in to get 3 free scans.',
-                requiresAuth: !isSignedIn,
-                paywalled: !!isSignedIn,
-            });
-            setIsMatching(false);
-            return;
-        }
+        // Token gating removed — all signed-in users have unlimited access.
 
         let locationQuery = '';
         if (!preferences.remoteOnly && preferences.location) {
@@ -218,7 +207,7 @@ export default function SearchPage() {
                 if (res.status === 401 && errData.requiresAuth) {
                     setSearchError({
                         type: 'tokens',
-                        message: 'You\'ve used your free search! Sign in to get 3 free scans.',
+                        message: 'Sign in to use Midas Match — free, unlimited.',
                         requiresAuth: true,
                     });
                     setIsMatching(false); return;
