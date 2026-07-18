@@ -6,13 +6,13 @@ const sections = [
     ['1. Information we process', [
         'Account information provided through Clerk, such as your account identifier and email address.',
         'Profile information derived from your resume or entered by you, including headline, skills, experience, location, and preferences. The original uploaded file is not retained after parsing.',
-        'Search queries, source diagnostics, ranked results, saved roles, application state, and feedback you provide.',
+        'Search queries, per-source performance, ranking and discard decisions, ranked results, saved roles, application state, and feedback you provide.',
         'Technical and usage information such as request identifiers, rate-limit keys, errors, page views, device information, and approximate network location.',
         'Historical payment records needed to verify and support prior Razorpay transactions. Midas does not receive full card or bank credentials.',
     ]],
     ['2. How we use information', [
         'To retrieve job listings, build and improve your ranked shortlist, and provide requested career tools.',
-        'To persist your workspace across devices, prevent abuse, diagnose source and matching failures, and maintain service security.',
+        'To persist your workspace across devices, prevent abuse, diagnose source and matching failures, measure false positives and false negatives, and maintain service security.',
         'To measure product usage, performance, and conversion events and to communicate service-related information.',
     ]],
     ['3. Service providers', [
@@ -23,7 +23,7 @@ const sections = [
     ]],
     ['4. Storage and retention', [
         'Signed-in profile data, searches, results, saved jobs, and pipeline activity may be stored in PostgreSQL. Some interface state may also be cached in your browser.',
-        'Operational logs and diagnostics are retained according to the applicable hosting and monitoring service settings. Data is retained only as long as reasonably needed for the product, security, legal obligations, and dispute resolution.',
+        'Search decision telemetry is retained for up to 90 days. Other operational logs and diagnostics follow the applicable hosting and monitoring service settings and are retained only as long as reasonably needed for the product, security, legal obligations, and dispute resolution.',
     ]],
     ['5. Your choices', [
         'You may edit profile data from the product and clear local browser data. You may request access to or deletion of account-linked data by contacting support.',

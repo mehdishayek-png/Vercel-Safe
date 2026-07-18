@@ -12,6 +12,12 @@ import { enrichThinJDs } from '@/lib/jd-enricher';
 import { getUserActions } from '@/lib/feedback-tracker';
 import { classifyProfile } from '@/lib/profile-classifier';
 import { getJobEmbeddings, getRoleEmbedding, jobKey } from '@/lib/job-embeddings';
+import {
+  buildCandidateObservation,
+  completeSearchTelemetry,
+  failSearchTelemetry,
+  startSearchTelemetry,
+} from '@/lib/search-telemetry';
 import * as Sentry from '@sentry/nextjs';
 import { z } from 'zod';
 
@@ -74,6 +80,9 @@ export async function POST(request) {
       });
     }
 
+    const searchRunId = crypto.randomUUID();
+    const searchStartedMs = Date.now();
+
     const ip = request.headers.get('x-forwarded-for') || 'unknown';
     const effectiveUserId = ip.split(',')[0].trim();
     
@@ -112,18 +121,29 @@ export async function POST(request) {
         };
 
         try {
-          const sourceCounts = {};
           // Diagnostic capture: per-source score distribution + sample discarded jobs
           const diag = {
-            scanId: `${Date.now()}-${(userId || 'anon').slice(-6)}`,
+            scanId: searchRunId,
             startMs: Date.now(),
             sources: {},
-            topDisplayed: [],   // top 10 jobs >= 25
-            topDiscarded: [],   // top 10 jobs in 15-24 range (almost-good)
+            topDisplayed: [],   // bounded samples for operational diagnostics
+            topDiscarded: [],
             killers: {},        // counts of which multipliers killed jobs
           };
 
+          send({ type: 'started', runId: searchRunId });
           send({ type: 'progress', message: 'Starting job search...' });
+
+          const telemetryStartPromise = startSearchTelemetry({
+            runId: searchRunId,
+            userId,
+            profile,
+            preferences,
+            locationResolution: {
+              raw: preferences.location || profile.location || '',
+              resolutionSource: 'pending',
+            },
+          });
 
           const classifyPromise = classifyProfile(profile.headline, profile.skills)
             .then(result => {
@@ -138,16 +158,31 @@ export async function POST(request) {
           // Accumulates scored jobs (score > 0) across all sources so the
           // post-scan semantic re-rank can pick the top candidates to embed.
           const allScored = [];
+          const candidateObservations = [];
+          const candidateByUrl = new Map();
 
-          let totalJobsScored = 0;
-          const onSourceComplete = async (sourceName, jobs) => {
+          const onSourceComplete = async (sourceName, jobs, sourceMeta = {}) => {
             await classifyPromise;
-
-            totalJobsScored += jobs.length;
 
             send({ type: 'progress', message: `Scoring ${sourceName}...` });
 
-            const sourceDiag = { fetched: jobs.length, scored: 0, displayed: 0, discarded: 0, zero: 0, enriched: 0 };
+            const sourceDiag = {
+              fetched: jobs.length,
+              scored: 0,
+              displayed: 0,
+              discarded: 0,
+              zero: 0,
+              errors: 0,
+              enriched: 0,
+              sourceType: sourceMeta.sourceType || 'unknown',
+              status: sourceMeta.status || 'success',
+              cacheHit: sourceMeta.cacheHit === true,
+              latencyMs: sourceMeta.latencyMs || 0,
+              rawCount: sourceMeta.rawCount ?? jobs.length,
+              uniqueCount: sourceMeta.uniqueCount ?? jobs.length,
+              duplicateCount: sourceMeta.duplicateCount || 0,
+              errorCode: sourceMeta.errorCode || null,
+            };
 
             // JD Enrichment: fetch full descriptions for thin-snippet jobs
             // BEFORE scoring so Panda has real text to match skills against.
@@ -181,6 +216,21 @@ export async function POST(request) {
                   // A PwC Deal Advisory with only "M&A" in the snippet should still surface.
                   const isSameFamily = parseFloat(pandaScore?.multipliers?.roleFamily || '1.0') >= 1.1;
                   const displayThreshold = isSameFamily ? 20 : 25;
+                  const observation = buildCandidateObservation({
+                    runId: searchRunId,
+                    sourceName,
+                    job,
+                    pandaScore,
+                    displayThreshold,
+                  });
+                  candidateObservations.push(observation);
+                  if (job.apply_url) candidateByUrl.set(job.apply_url, observation);
+                  const telemetry = {
+                    runId: searchRunId,
+                    jobKey: observation.job_key,
+                    decision: observation.decision,
+                    displayThreshold,
+                  };
                   if (s >= displayThreshold) {
                     sourceDiag.displayed++;
                     if (diag.topDisplayed.length < 10) {
@@ -199,16 +249,7 @@ export async function POST(request) {
                   } else if (s > 0) {
                     sourceDiag.discarded++;
                     if (s >= 15 && diag.topDiscarded.length < 10) {
-                      // Identify which multiplier killed it
-                      const m = pandaScore.multipliers || {};
-                      const killers = [];
-                      if (parseFloat(m.location) < 0.1) killers.push(`loc=${m.location}`);
-                      if (parseFloat(m.roleFamily) < 0.5) killers.push(`role=${m.roleFamily}`);
-                      if (parseFloat(m.domain) < 0.5) killers.push(`domain=${m.domain}`);
-                      if (parseFloat(m.seniority) < 0.3) killers.push(`sen=${m.seniority}`);
-                      if (parseFloat(m.recency) < 0.5) killers.push(`rec=${m.recency}`);
-                      if (parseFloat(m.coherence) < 0.5) killers.push(`coh=${m.coherence}`);
-                      let killer = killers.join(',') || (isSameFamily ? 'same_fam:low_raw' : 'low_raw');
+                      const killer = observation.killer || (isSameFamily ? 'same_family_low_raw' : 'low_raw');
                       const topTokens = (pandaScore.matches || []).slice(0, 3).map(m => m.skill || m.keyword || m);
                       diag.topDiscarded.push({ s, t: job.title?.slice(0, 60), c: job.company, src: sourceName, killer, tokens: topTokens });
                       diag.killers[killer] = (diag.killers[killer] || 0) + 1;
@@ -222,7 +263,7 @@ export async function POST(request) {
                       llmScore: null,
                       aiVerdict: null,
                       combinedScore: s,
-                      notes: `discarded:below_threshold(25)`,
+                      notes: `discarded:below_threshold(${displayThreshold})`,
                     }));
                   } else {
                     sourceDiag.zero++;
@@ -232,14 +273,16 @@ export async function POST(request) {
                     ...job,
                     pandaScore,
                     intelligence: { ghost, quality, salary, success },
+                    _telemetry: telemetry,
                   };
                 } catch {
+                  sourceDiag.errors++;
                   return { ...job, pandaScore: null, intelligence: null };
                 }
               })
             );
 
-            sourceCounts[sourceName] = scoredJobs.length;
+            const visibleJobs = scoredJobs.filter((job) => job._telemetry?.decision === 'displayed');
             diag.sources[sourceName] = sourceDiag;
 
             // Retain scored jobs for the post-scan semantic re-rank.
@@ -250,8 +293,8 @@ export async function POST(request) {
             send({
               type: 'jobs',
               source: sourceName,
-              jobs: scoredJobs,
-              total: scoredJobs.length
+              jobs: visibleJobs,
+              total: visibleJobs.length
             });
           };
 
@@ -298,6 +341,8 @@ export async function POST(request) {
                     {}
                   );
                   if (rescored?.score != null) {
+                    const observation = candidateByUrl.get(j.apply_url);
+                    if (observation) observation.final_score = rescored.score;
                     updates.push({ apply_url: j.apply_url, score: rescored.score, breakdown: rescored });
                   }
                 }
@@ -311,15 +356,19 @@ export async function POST(request) {
             console.warn('[RERANK] semantic pass failed:', e.message);
           }
 
+          const displayedTotal = Object.values(diag.sources).reduce((sum, item) => sum + item.displayed, 0);
+
           // Final complete event with deduped totals
           send({
             type: 'complete',
             totalRaw: result.totalRaw,
             totalUnique: result.jobs.length,
+            totalDisplayed: displayedTotal,
             sources: result.sources,
             queries: result.queries,
             roleAnchor: result.roleAnchor,
             dominantPlatform: result.dominantPlatform,
+            runId: searchRunId,
           });
 
           // Flush all match-log writes before closing stream
@@ -334,9 +383,30 @@ export async function POST(request) {
           diag.accessMode = 'included';
           // Aggregate totals
           diag.totals = Object.values(diag.sources).reduce((acc, s) => {
-            acc.fetched += s.fetched; acc.displayed += s.displayed; acc.discarded += s.discarded; acc.zero += s.zero;
+            acc.fetched += s.fetched; acc.scored += s.scored; acc.displayed += s.displayed; acc.discarded += s.discarded; acc.zero += s.zero;
             return acc;
-          }, { fetched: 0, displayed: 0, discarded: 0, zero: 0 });
+          }, { fetched: 0, scored: 0, displayed: 0, discarded: 0, zero: 0 });
+
+          await telemetryStartPromise;
+          await completeSearchTelemetry({
+            runId: searchRunId,
+            userId,
+            profile,
+            preferences,
+            locationResolution: result.locationResolution,
+            queries: result.queries,
+            roleFamily: profile._llmFamily || null,
+            antiFamilies: profile._llmAntiFamilies || [],
+            sourceMetrics: diag.sources,
+            candidates: candidateObservations,
+            totals: {
+              ...diag.totals,
+              raw: result.totalRaw,
+              unique: result.jobs.length,
+              sources: result.sources,
+            },
+            durationMs: diag.durationMs,
+          });
           console.log(JSON.stringify({ event: 'scan_diagnostic', userId: userId || 'anon', headline: profile.headline, ...diag }));
 
           Sentry.captureMessage('scan_diagnostic', {
@@ -368,6 +438,7 @@ export async function POST(request) {
         } catch (err) {
           console.error('Stream error:', err);
           Sentry.captureException(err, { tags: { headline: profile.headline?.slice(0, 60) } });
+          await failSearchTelemetry(searchRunId, userId, err, Date.now() - searchStartedMs);
           send({ type: 'error', message: 'Search failed. Please try again.' });
           controller.close();
         }

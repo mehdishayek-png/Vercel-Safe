@@ -216,6 +216,8 @@ export default function SearchPage() {
             const seenUrls = new Set(jobs.map(j => j.apply_url).filter(Boolean));
             let totalSourceJobs = 0;
             let completionSummary = null;
+            let activeRunId = null;
+            let streamedJobs = [];
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -230,7 +232,9 @@ export default function SearchPage() {
                     try {
                         const event = JSON.parse(line.slice(6));
 
-                        if (event.type === 'progress') {
+                        if (event.type === 'started') {
+                            activeRunId = event.runId || null;
+                        } else if (event.type === 'progress') {
                             addLog(event.message);
                         } else if (event.type === 'jobs') {
                             // Deduplicate against already-displayed jobs
@@ -246,6 +250,7 @@ export default function SearchPage() {
 
                             if (newJobs.length > 0) {
                                 totalSourceJobs += newJobs.length;
+                                streamedJobs = [...streamedJobs, ...newJobs];
                                 addLog(`+${newJobs.length} from ${event.source} (${totalSourceJobs} total)`);
                                 // Merge and sort by score
                                 setJobs(prev => {
@@ -258,6 +263,10 @@ export default function SearchPage() {
                         } else if (event.type === 'rerank') {
                             // Semantic refinement: patch scores for the top candidates and re-sort.
                             const updateByUrl = new Map((event.jobs || []).map(u => [u.apply_url, u]));
+                            streamedJobs = streamedJobs.map(j => {
+                                const update = updateByUrl.get(j.apply_url);
+                                return update ? { ...j, match_score: update.score, heuristic_breakdown: update.breakdown || j.heuristic_breakdown } : j;
+                            });
                             addLog(`Refined ${event.jobs?.length || 0} matches with semantic ranking`);
                             setJobs(prev => prev.map(j => {
                                 const u = updateByUrl.get(j.apply_url);
@@ -268,7 +277,8 @@ export default function SearchPage() {
                             ));
                         } else if (event.type === 'complete') {
                             completionSummary = event;
-                            addLog(`Search complete: ${event.totalUnique} unique jobs from ${Object.keys(event.sources || {}).length} sources`);
+                            activeRunId = event.runId || activeRunId;
+                            addLog(`Search complete: ${event.totalDisplayed ?? totalSourceJobs} matches from ${Object.keys(event.sources || {}).length} sources`);
                         } else if (event.type === 'error') {
                             addLog(`Warning: ${event.message}`);
                             setSearchError({ type: 'search', message: `Search error: ${event.message}`, canRetry: true });
@@ -277,7 +287,9 @@ export default function SearchPage() {
                 }
             }
 
-            const completedJobs = useSearchStore.getState().jobs.slice(0, 150);
+            const completedJobs = streamedJobs
+                .sort((a, b) => (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0))
+                .slice(0, 150);
             if (completedJobs.length > 0) {
                 try {
                     await fetch('/api/search-history', {
@@ -288,6 +300,7 @@ export default function SearchPage() {
                             preferences: { ...preferences, location: locationQuery },
                             jobs: completedJobs,
                             summary: {
+                                runId: activeRunId,
                                 sources: completionSummary?.sources || {},
                                 totalFetched: completionSummary?.totalUnique || totalSourceJobs,
                                 durationMs: Date.now() - searchStartedAt,

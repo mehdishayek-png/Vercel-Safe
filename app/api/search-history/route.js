@@ -16,6 +16,7 @@ const SearchHistorySchema = z.object({
     preferences: z.record(z.string(), z.unknown()).optional().default({}),
     jobs: z.array(z.record(z.string(), z.unknown())).max(150),
     summary: z.object({
+        runId: z.string().uuid().nullable().optional(),
         sources: z.record(z.string(), z.number()).optional().default({}),
         totalFetched: z.number().int().min(0).optional().default(0),
         durationMs: z.number().int().min(0).max(600_000).optional().default(0),
@@ -75,7 +76,7 @@ export async function POST(request) {
     }
 
     const { profile, preferences, jobs, summary } = parsed.data;
-    const runId = crypto.randomUUID();
+    const runId = summary.runId || crypto.randomUUID();
     const profileContext = {
         headline: profile.headline,
         skills: profile.skills.slice(0, 30),
@@ -91,13 +92,25 @@ export async function POST(request) {
 
     try {
         await query('INSERT INTO users (id) VALUES ($1) ON CONFLICT (id) DO NOTHING', [userId], { throwOnError: true });
-        await query(
+        const persistedRun = await query(
             `INSERT INTO search_runs
                 (id, user_id, profile_context, preferences, sources, total_fetched, total_displayed, duration_ms)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+             ON CONFLICT (id) DO UPDATE SET
+                profile_context = EXCLUDED.profile_context,
+                preferences = EXCLUDED.preferences,
+                sources = EXCLUDED.sources,
+                total_fetched = EXCLUDED.total_fetched,
+                total_displayed = EXCLUDED.total_displayed,
+                duration_ms = EXCLUDED.duration_ms
+             WHERE search_runs.user_id = EXCLUDED.user_id
+             RETURNING id`,
             [runId, userId, profileContext, preferences, summary.sources, summary.totalFetched, rows.length, summary.durationMs],
             { throwOnError: true },
         );
+        if (persistedRun.length === 0) {
+            return NextResponse.json({ error: 'Search run does not belong to this account' }, { status: 403 });
+        }
         if (rows.length > 0) {
             await query(
                 `INSERT INTO search_results (run_id, job_key, job, score, rank)

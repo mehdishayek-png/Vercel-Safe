@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
 import { trackInteraction, getFeedbackStats } from '@/lib/feedback-tracker';
+import { recordSearchOutcome } from '@/lib/search-telemetry';
 import { z } from 'zod';
 
 const FeedbackSchema = z.object({
@@ -9,6 +10,8 @@ const FeedbackSchema = z.object({
     }).passthrough(),
     action: z.enum(['click', 'save', 'apply', 'dismiss', 'skip']),
     pandaScore: z.number().min(0).max(100),
+    eventId: z.string().max(100).optional(),
+    rank: z.number().int().positive().max(5000).optional(),
     profile: z.object({
         headline: z.string().optional().default(''),
     }).passthrough().optional().default({}),
@@ -31,8 +34,12 @@ export async function POST(request) {
             });
         }
 
-        const { job, action, pandaScore, profile } = result.data;
-        await trackInteraction(userId, job, action, pandaScore, profile);
+        const { job, action, pandaScore, profile, eventId, rank } = result.data;
+        const writes = [trackInteraction(userId, job, action, pandaScore, profile)];
+        if (['click', 'dismiss', 'skip'].includes(action)) {
+            writes.push(recordSearchOutcome({ eventId, userId, job, action, score: pandaScore, rank }));
+        }
+        await Promise.all(writes);
 
         return new Response(JSON.stringify({ ok: true }), {
             status: 200, headers: { 'Content-Type': 'application/json' },

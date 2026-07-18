@@ -3,6 +3,8 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { query, isDbEnabled } from '@/lib/db';
 import { sendApplicationConfirmation } from '@/lib/email';
 import { validateOrigin } from '@/lib/csrf';
+import { recordSearchOutcome } from '@/lib/search-telemetry';
+import { trackInteraction } from '@/lib/feedback-tracker';
 
 // Saved/applied jobs are persisted in Postgres (saved_jobs / applications),
 // replacing the previous ephemeral Redis storage. The request/response contract
@@ -81,6 +83,26 @@ export async function POST(request) {
                 }
             }).catch(() => {});
         }
+
+        const telemetryWrites = [];
+        if (['save', 'unsave', 'apply', 'unapply'].includes(action)) {
+            telemetryWrites.push(recordSearchOutcome({
+                userId,
+                job,
+                action,
+                score: job.analysis?.fit_score || job.match_score || job._localScore || 0,
+            }));
+        }
+        if (action === 'save' || action === 'apply') {
+            telemetryWrites.push(trackInteraction(
+                userId,
+                job,
+                action,
+                job.analysis?.fit_score || job.match_score || job._localScore || 0,
+                {},
+            ));
+        }
+        await Promise.all(telemetryWrites);
 
         return NextResponse.json({ success: true, count });
     } catch (err) {

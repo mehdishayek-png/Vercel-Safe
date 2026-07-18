@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles, BrainCircuit, AlertCircle, Loader2, Lock, FileText, Copy, CheckCheck, Send, FileEdit } from 'lucide-react';
+import { MapPin, Building2, ExternalLink, ChevronDown, Check, Bookmark, Sparkles, BrainCircuit, AlertCircle, Loader2, Lock, FileText, Copy, CheckCheck, Send, FileEdit, ThumbsDown } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import Link from 'next/link';
 import { Button } from './ui/Button';
@@ -13,13 +13,21 @@ import { safeBtoa } from '@/lib/safe-btoa';
 export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApplied, autoAnalyze }) {
     const toast = useToast();
     const [showFullDescription, setShowFullDescription] = useState(false);
+    const [isDismissed, setIsDismissed] = useState(false);
     const sendFeedback = (action) => {
         try {
             fetch('/api/feedback', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    job: { title: job.title || '', company: job.company || '' },
+                    eventId: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : undefined,
+                    job: {
+                        title: job.title || '',
+                        company: job.company || '',
+                        apply_url: job.apply_url || '',
+                        source: job.source || '',
+                        _telemetry: job._telemetry || undefined,
+                    },
                     action,
                     pandaScore: job.match_score || job._localScore || 0,
                     profile: { headline: profile?.headline || '' }
@@ -30,10 +38,22 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
 
     const handleSaveWrapper = () => {
         onSave(job);
-        if (!isSaved) sendFeedback('save');
         if (!isSaved && job.match_score >= 80) {
             confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 }, colors: ['#4f46e5', '#7c3aed', '#10b981'] });
         }
+    };
+
+    const handleView = () => {
+        try {
+            const key = `job_detail_${safeBtoa(job.apply_url || job.title)}`;
+            localStorage.setItem(key, JSON.stringify(job));
+        } catch (e) { /* ignore quota errors */ }
+        sendFeedback('click');
+    };
+
+    const handleDismiss = () => {
+        sendFeedback('dismiss');
+        setIsDismissed(true);
     };
 
 
@@ -68,6 +88,8 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
     const cleanSummary = stripHtml(job.summary || job.description);
 
 
+    if (isDismissed) return null;
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -89,12 +111,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                                 <h3 className="text-sm sm:text-[15px] font-semibold text-gray-900 line-clamp-2 sm:truncate leading-snug">
                                     <Link
                                         href={`/dashboard/job/${encodeURIComponent(safeBtoa(job.apply_url || job.title))}`}
-                                        onClick={() => {
-                                            try {
-                                                const key = `job_detail_${safeBtoa(job.apply_url || job.title)}`;
-                                                localStorage.setItem(key, JSON.stringify(job));
-                                            } catch (e) { /* ignore quota errors */ }
-                                        }}
+                                        onClick={handleView}
                                         className="hover:text-brand-600 transition-colors"
                                     >
                                         {cleanTitle}
@@ -204,12 +221,19 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                             >
                                 <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-brand-600' : ''}`} />
                             </button>
+                            <button
+                                onClick={(event) => { event.stopPropagation(); handleDismiss(); }}
+                                aria-label="Not relevant"
+                                title="Not relevant"
+                                className="p-1.5 rounded-lg border border-transparent bg-white/60 text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                            >
+                                <ThumbsDown className="w-3.5 h-3.5" />
+                            </button>
                             {onApply && (
                                 <button
-                                    onClick={(e) => { 
-                                        e.stopPropagation(); 
-                                        onApply(job); 
-                                        if (!isApplied) sendFeedback('apply');
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onApply(job);
                                     }}
                                     aria-label={isApplied ? 'Remove from applied' : 'Mark as applied'}
                                     className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
@@ -224,12 +248,7 @@ export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApp
                             )}
                             <Link
                                 href={`/dashboard/job/${encodeURIComponent(safeBtoa(job.apply_url || job.title))}`}
-                                onClick={() => {
-                                    try {
-                                        const key = `job_detail_${safeBtoa(job.apply_url || job.title)}`;
-                                        localStorage.setItem(key, JSON.stringify(job));
-                                    } catch (e) { /* ignore */ }
-                                }}
+                                onClick={handleView}
                                 className="inline-flex items-center gap-1.5 bg-gray-900 hover:bg-gray-800 text-white text-[13px] px-4 py-2 rounded-xl font-medium transition-all shadow-sm hover:shadow"
                             >
                                 <BrainCircuit className="w-3.5 h-3.5 text-teal-400" />
