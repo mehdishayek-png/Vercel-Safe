@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useProfileStore } from '@/stores/profile-store';
 import { useSearchStore } from '@/stores/search-store';
 import { useJobsStore } from '@/stores/jobs-store';
-import { useTokenStore } from '@/stores/token-store';
 import { useToast } from '@/components/ui/Toast';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import { safeBtoa } from '@/lib/safe-btoa';
@@ -272,8 +271,6 @@ export default function JobDetailPage() {
     const [showNegotiation, setShowNegotiation] = useState(false);
     const [expandedScripts, setExpandedScripts] = useState({});
     
-    const { openPurchaseModal, refreshTokens } = useTokenStore();
-
     useEffect(() => {
         try {
             const id = decodeURIComponent(params.id);
@@ -433,9 +430,6 @@ export default function JobDetailPage() {
                 const errorData = await res.json().catch(() => ({}));
                 if (res.status === 401 && errorData.requiresAuth) {
                     setAnalysisError('Sign in to use Deep Scan.');
-                } else if (res.status === 403 && errorData.paywalled) {
-                    openPurchaseModal();
-                    setAnalysisError('Please top up your tokens to proceed.');
                 } else {
                     throw new Error(errorData.error || 'Failed to analyze job');
                 }
@@ -454,7 +448,6 @@ export default function JobDetailPage() {
             setAnalysisError(err.message || 'Error communicating with AI service.');
         } finally {
             setIsAnalyzing(false);
-            refreshTokens();
         }
     };
 
@@ -472,10 +465,6 @@ export default function JobDetailPage() {
                 if (res.status === 401 && errorData.requiresAuth) {
                     toast('Sign in to generate cover letters', 'warning');
                     return;
-                } else if (res.status === 403 && errorData.paywalled) {
-                    openPurchaseModal();
-                    toast('Tokens are required for AI generations', 'warning');
-                    return;
                 }
                 throw new Error(errorData.error || 'Failed to generate');
             }
@@ -485,7 +474,6 @@ export default function JobDetailPage() {
             toast(err.message || 'Cover letter failed', 'error');
         } finally {
             setIsLoadingCoverLetter(false);
-            refreshTokens();
         }
     };
 
@@ -511,10 +499,6 @@ export default function JobDetailPage() {
                 if (res.status === 401 && errorData.requiresAuth) {
                     toast('Sign in to generate negotiation playbooks', 'warning');
                     return;
-                } else if (res.status === 403 && errorData.paywalled) {
-                    openPurchaseModal();
-                    toast('Tokens are required for AI generations', 'warning');
-                    return;
                 }
                 throw new Error(errorData.error || 'Failed to generate negotiation playbook');
             }
@@ -524,7 +508,6 @@ export default function JobDetailPage() {
             toast(err.message || 'Negotiation playbook failed', 'error');
         } finally {
             setIsLoadingNegotiation(false);
-            refreshTokens();
         }
     };
 
@@ -738,7 +721,7 @@ export default function JobDetailPage() {
                                     <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center mx-auto mb-4">
                                         <BrainCircuit className="w-6 h-6 text-teal-500" />
                                     </div>
-                                    <h3 className="text-base font-semibold text-gray-900 mb-2">Unlock AI Deep Scan</h3>
+                                    <h3 className="text-base font-semibold text-gray-900 mb-2">Run AI role analysis</h3>
                                     <p className="text-[13px] text-gray-500 mb-5 leading-relaxed">
                                         Uncover hidden signals, red flags, and exact salary leverage for this role using your profile context.
                                     </p>
@@ -757,7 +740,7 @@ export default function JobDetailPage() {
                                         {isAnalyzing ? (
                                             <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing Requirements...</>
                                         ) : (
-                                            <><Sparkles className="w-3.5 h-3.5 text-amber-400" /> Deep Scan (1 Token)</>
+                                            <><Sparkles className="w-3.5 h-3.5 text-amber-400" /> Analyze role</>
                                         )}
                                     </button>
                                 </div>

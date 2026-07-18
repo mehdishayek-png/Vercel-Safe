@@ -7,7 +7,7 @@ const TIPS = [
     "Tip: Try the Interview Prep page after finding a match",
     "Tip: Use the \"What I Do\" box to improve match accuracy",
     "Tip: Direct career page links skip aggregator sign-up walls",
-    "Tip: Your resume is processed in memory and never stored",
+    "Tip: Your original resume file is not retained after parsing",
 ];
 
 // We compute nodes differently now to avoid collisions

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { deductToken, isAdmin as checkIsAdmin } from '@/lib/tokens';
+import { isAdmin as checkIsAdmin } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 import { callFlash, parseJSON } from '@/lib/sonnet';
 
@@ -9,25 +9,13 @@ import { callFlash, parseJSON } from '@/lib/sonnet';
 export async function POST(request) {
     try {
         const { userId } = await auth();
+        if (!userId) return NextResponse.json({ error: 'Sign in to tailor a CV.', requiresAuth: true }, { status: 401 });
         const adminUser = await checkIsAdmin(userId);
 
-        const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'anonymous';
-        const effectiveUserId = userId || ip;
-
         if (!adminUser) {
-            const rl = await rateLimit(`tailor-cv:${effectiveUserId}`, 10, 60);
+            const rl = await rateLimit(`tailor-cv:${userId}`, 10, 60);
             if (!rl.allowed) {
                 return NextResponse.json({ error: `Too many requests. Try again in ${rl.retryAfter} seconds.` }, { status: 429 });
-            }
-
-            // Costs 3 tokens
-            const deducted = await deductToken(effectiveUserId, 3);
-            if (!deducted.success) {
-                return NextResponse.json({
-                    error: userId ? 'Tailoring an ATS CV costs 3 tokens. Purchase more to proceed.' : 'Tailoring CVs requires 3 tokens. Sign in to get more!',
-                    paywalled: !!userId,
-                    requiresAuth: !userId
-                }, { status: userId ? 403 : 401 });
             }
         }
 

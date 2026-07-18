@@ -1,84 +1,47 @@
-export default function About() {
+import Link from 'next/link';
+
+const principles = [
+    ['Search the market, not one board', 'Midas combines direct employer systems, public feeds, aggregators, and specialist sources. Source eligibility is decided per search using geography, health, and time budgets.'],
+    ['Rank with evidence', 'Recommendations combine role family, seniority, domain, location, recency, skill evidence, and semantic similarity. The interface shows why a role surfaced instead of presenting an unexplained score.'],
+    ['Degrade without collapsing', 'Core retrieval and deterministic scoring do not depend on an LLM. Optional classification and semantic passes have strict timeouts and fall back cleanly.'],
+    ['Keep the workspace useful', 'Profiles, completed searches, saved roles, and application state can persist for signed-in users, so the product is more than a one-off scan.'],
+];
+
+export const metadata = { title: 'About', description: 'How Midas Match approaches evidence-led job search.' };
+
+export default function AboutPage() {
     return (
-        <main className="min-h-screen bg-white py-16 px-4" style={{ fontFamily: "'Inter', sans-serif" }}>
-            <div className="max-w-3xl mx-auto">
-                <a href="/" className="text-sm text-brand-600 hover:underline mb-8 block">&larr; Back to Midas</a>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">About Midas Match</h1>
-                <p className="text-lg text-gray-500 mb-10">AI-powered job matching, built for job seekers who value their time.</p>
-
-                <div className="prose prose-gray max-w-none space-y-8">
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">Our Mission</h2>
-                        <p className="text-gray-600 text-sm leading-relaxed">
-                            We believe job searching shouldn&apos;t feel like a second job. Midas Match uses AI to scan thousands of openings across 8+ sources, score each one against your unique profile, and surface only the roles worth your time.
-                        </p>
-                        <p className="text-gray-600 text-sm leading-relaxed mt-3">
-                            No more scrolling through irrelevant listings. No more guessing if you&apos;re qualified. Just clear, data-driven matches.
-                        </p>
-                    </section>
-
-                    <hr className="border-gray-100" />
-
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">How It Works</h2>
-                        <ol className="list-decimal pl-5 text-sm text-gray-600 space-y-2 mt-2">
-                            <li><strong>Upload your resume</strong> &mdash; Our AI extracts your skills, experience, and preferences.</li>
-                            <li><strong>We scan the market</strong> &mdash; Google Jobs, LinkedIn, Indeed, 350+ company career pages, and more.</li>
-                            <li><strong>Every job is scored</strong> &mdash; 7+ signals including skills match, seniority fit, location, and role alignment.</li>
-                            <li><strong>You review only the best matches</strong> &mdash; No noise, just opportunities that fit.</li>
-                        </ol>
-                    </section>
-
-                    <hr className="border-gray-100" />
-
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">What Makes Us Different</h2>
-                        <div className="space-y-4 mt-2">
-                            <div>
-                                <h3 className="text-sm font-semibold text-gray-800">Direct ATS Access</h3>
-                                <p className="text-gray-600 text-sm leading-relaxed mt-1">
-                                    We query 350+ company career pages directly through API integrations &mdash; surfacing jobs that never appear on traditional aggregator sites.
-                                </p>
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-semibold text-gray-800">Privacy First</h3>
-                                <p className="text-gray-600 text-sm leading-relaxed mt-1">
-                                    Your resume is parsed in-memory and never stored on our servers. We explicitly opt out of AI training with all providers.
-                                </p>
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-semibold text-gray-800">Transparent Scoring</h3>
-                                <p className="text-gray-600 text-sm leading-relaxed mt-1">
-                                    Every match score breaks down into skills, experience, and title fit &mdash; so you know exactly why a job was recommended.
-                                </p>
-                            </div>
-                        </div>
-                    </section>
-
-                    <hr className="border-gray-100" />
-
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">Built With</h2>
-                        <p className="text-gray-600 text-sm leading-relaxed">
-                            Next.js, Tailwind CSS, Clerk Auth, Upstash Redis, Vercel, Resend.
-                        </p>
-                        <p className="text-gray-600 text-sm leading-relaxed mt-3">
-                            Powered by AI models from Anthropic and Google for deep job analysis.
-                        </p>
-                    </section>
-
-                    <hr className="border-gray-100" />
-
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">Contact</h2>
-                        <p className="text-gray-600 text-sm leading-relaxed">
-                            Questions or feedback? Reach us at <a href="mailto:support@midasmatch.com" className="text-brand-600 hover:underline">support@midasmatch.com</a>.
-                        </p>
-                        <p className="text-gray-600 text-sm leading-relaxed mt-3">
-                            We read every message and typically respond within 24 hours.
-                        </p>
-                    </section>
+        <main className="min-h-screen bg-surface-50 px-4 py-16 text-slate-900">
+            <div className="mx-auto max-w-4xl">
+                <Link href="/" className="text-sm font-semibold text-brand-700 hover:text-brand-900">&larr; Back to Midas</Link>
+                <div className="mt-14 grid gap-10 border-b border-slate-900/10 pb-14 lg:grid-cols-[0.75fr_1.25fr]">
+                    <span className="mm-kicker h-fit w-fit">About Midas</span>
+                    <div>
+                        <h1 className="font-headline text-5xl font-extrabold tracking-[-0.05em] text-slate-950 md:text-6xl">A job search system built to show its work.</h1>
+                        <p className="mt-6 max-w-2xl text-base leading-7 text-slate-600">Job seekers should not have to choose between endless listings and opaque recommendations. Midas retrieves broadly, ranks conservatively, and exposes the evidence behind the shortlist.</p>
+                    </div>
                 </div>
+
+                <section className="py-14">
+                    <h2 className="font-headline text-2xl font-extrabold text-slate-950">Product principles</h2>
+                    <div className="mt-7 grid gap-px overflow-hidden rounded-2xl border border-slate-900/10 bg-slate-900/10 md:grid-cols-2">
+                        {principles.map(([title, body], index) => (
+                            <article key={title} className="bg-white p-7">
+                                <span className="font-mono text-[10px] font-bold text-brand-700">0{index + 1}</span>
+                                <h3 className="mt-4 text-base font-bold text-slate-950">{title}</h3>
+                                <p className="mt-3 text-sm leading-6 text-slate-600">{body}</p>
+                            </article>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="grid gap-8 border-y border-slate-900/10 py-12 md:grid-cols-3">
+                    <div><p className="font-mono text-[9px] font-bold uppercase tracking-wider text-slate-500">Application</p><p className="mt-2 text-sm leading-6">Next.js App Router, React, Tailwind CSS, Clerk</p></div>
+                    <div><p className="font-mono text-[9px] font-bold uppercase tracking-wider text-slate-500">Data and runtime</p><p className="mt-2 text-sm leading-6">PostgreSQL with pgvector, Upstash Redis, Railway</p></div>
+                    <div><p className="font-mono text-[9px] font-bold uppercase tracking-wider text-slate-500">Operations</p><p className="mt-2 text-sm leading-6">Sentry diagnostics, GA4, bounded Apify actors, health-gated deploys</p></div>
+                </section>
+
+                <div className="py-12 text-sm text-slate-600">Questions or feedback? <a href="mailto:midasmatchsupport@gmail.com" className="font-bold text-brand-700 hover:text-brand-900">midasmatchsupport@gmail.com</a></div>
             </div>
         </main>
     );

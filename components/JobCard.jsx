@@ -7,11 +7,10 @@ import { Button } from './ui/Button';
 
 import { CompanyLogo } from './ui/CompanyLogo';
 import { getMatchColor as getMatchColorUtil, getMatchGradient as getMatchGradientUtil } from '@/lib/match-colors';
-import { useRazorpay } from '../lib/useRazorpay';
 import { useToast } from './ui/Toast';
 import { safeBtoa } from '@/lib/safe-btoa';
 
-export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApplied, onTokensUpdated, autoAnalyze }) {
+export function JobCard({ job, profile, apiKeys, onSave, isSaved, onApply, isApplied, autoAnalyze }) {
     const toast = useToast();
     const [showFullDescription, setShowFullDescription] = useState(false);
     const sendFeedback = (action) => {

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { deductToken, isAdmin as checkIsAdmin } from '@/lib/tokens';
+import { isAdmin as checkIsAdmin } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 import { callSonnet, parseJSON } from '@/lib/sonnet';
 import { logMatch } from '@/lib/debug/match-logger';
@@ -10,30 +10,21 @@ import { logMatch } from '@/lib/debug/match-logger';
 export async function POST(request) {
     try {
         const { userId } = await auth();
+        if (!userId) {
+            return NextResponse.json({ error: 'Sign in to analyze a role.', requiresAuth: true }, { status: 401 });
+        }
 
         const adminUser = await checkIsAdmin(userId);
 
-        const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'anonymous';
-        const effectiveUserId = userId || ip;
-
         // Rate limiting — 30 requests per minute per user/ip
         if (!adminUser) {
-            const rl = await rateLimit(effectiveUserId, 30, 60);
+            const rl = await rateLimit(`analysis:${userId}`, 30, 60);
             if (!rl.allowed) {
                 return NextResponse.json({
                     error: `Too many requests. Try again in ${rl.retryAfter} seconds.`
                 }, { status: 429 });
             }
 
-            // Strictly require 1 token for a deep scan
-            const deducted = await deductToken(effectiveUserId, 1);
-            if (!deducted.success) {
-                return NextResponse.json({
-                    error: userId ? 'Deep scan requires 1 token. Please purchase a package to continue.' : 'You have used your free token. Sign in to get more!',
-                    paywalled: !!userId,
-                    requiresAuth: !userId
-                }, { status: userId ? 403 : 401 });
-            }
         }
 
         const { job, profile } = await request.json();

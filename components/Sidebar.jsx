@@ -1,121 +1,84 @@
 'use client';
-import { usePathname } from 'next/navigation';
+
 import Link from 'next/link';
-import { Home, Search, Bookmark, Briefcase, User, Settings, LogOut, ChevronLeft, X, GraduationCap, HelpCircle, Sparkles } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { BarChart3, Bookmark, BriefcaseBusiness, Home, LifeBuoy, Search, Settings, Sparkles, X } from 'lucide-react';
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { useJobsStore } from '@/stores/jobs-store';
 
 const NAV_ITEMS = [
-    { href: '/dashboard', icon: Home, label: 'Dashboard' },
-    { href: '/dashboard/search', icon: Search, label: 'Search Jobs' },
-    { href: '/dashboard/saved', icon: Bookmark, label: 'Saved Jobs' },
-    { href: '/dashboard/applications', icon: Briefcase, label: 'Applications' },
-    { href: '/dashboard/prep', icon: GraduationCap, label: 'Interview Prep' },
-    { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
+    { href: '/dashboard', icon: Home, label: 'Overview' },
+    { href: '/dashboard/search', icon: Search, label: 'Discover' },
+    { href: '/dashboard/saved', icon: Bookmark, label: 'Shortlist' },
+    { href: '/dashboard/applications', icon: BriefcaseBusiness, label: 'Pipeline' },
+    { href: '/dashboard/prep', icon: BarChart3, label: 'Interview lab' },
+    { href: '/dashboard/settings', icon: Settings, label: 'Profile & settings' },
 ];
 
 export function Sidebar({ isOpen, onClose }) {
     const pathname = usePathname();
     const { user } = useUser();
-    const savedJobIds = useJobsStore(s => s.savedJobIds);
-    const appliedJobIds = useJobsStore(s => s.appliedJobIds);
+    const savedCount = useJobsStore(state => state.savedJobIds.size);
+    const appliedCount = useJobsStore(state => state.appliedJobIds.size);
 
-    const isActive = (href) => {
-        if (href === '/dashboard') return pathname === '/dashboard';
-        return pathname.startsWith(href);
-    };
-
-    const getBadge = (href) => {
-        if (href === '/dashboard/saved') return savedJobIds.size || null;
-        if (href === '/dashboard/applications') return appliedJobIds.size || null;
-        return null;
+    const badgeFor = href => {
+        if (href === '/dashboard/saved') return savedCount;
+        if (href === '/dashboard/applications') return appliedCount;
+        return 0;
     };
 
     return (
         <>
-            {isOpen && (
-                <div className="fixed inset-0 bg-black/30 z-50 md:hidden" onClick={onClose} />
-            )}
-
-            <aside className={`fixed inset-y-0 left-0 z-50 w-[264px] bg-slate-50/70 backdrop-blur-xl shadow-sidebar flex flex-col p-6 space-y-2 min-h-screen transform transition-transform duration-200 ease-in-out md:static md:translate-x-0 md:w-[264px] md:z-auto md:sticky md:top-0 md:shrink-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                {/* Logo */}
-                <div className="mb-10 px-2">
-                    <div className="text-xl font-bold bg-gradient-to-br from-brand-600 to-accent-600 bg-clip-text text-transparent font-headline">Midas Match</div>
-                    <div className="text-xs text-slate-500 font-medium tracking-tight">AI Career Concierge</div>
-                    <button onClick={onClose} className="absolute top-6 right-4 p-1 text-gray-400 hover:text-gray-600 md:hidden cursor-pointer">
-                        <X className="w-5 h-5" />
-                    </button>
+            {isOpen && <button className="fixed inset-0 z-40 bg-slate-950/35 md:hidden" onClick={onClose} aria-label="Close navigation" />}
+            <aside className={`fixed inset-y-0 left-0 z-50 flex w-[252px] flex-col border-r border-slate-900/10 bg-[#f1f0eb] px-4 py-5 transition-transform md:sticky md:top-0 md:z-auto md:h-screen md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                <div className="flex items-center justify-between px-2">
+                    <Link href="/" className="flex items-center gap-3" onClick={onClose}>
+                        <span className="grid h-9 w-9 place-items-center rounded-[11px] bg-slate-900 font-headline text-sm font-extrabold text-white">M</span>
+                        <span>
+                            <span className="block font-headline text-[14px] font-extrabold leading-none text-slate-900">Midas Match</span>
+                            <span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.15em] text-slate-500">Career intelligence</span>
+                        </span>
+                    </Link>
+                    <button onClick={onClose} className="grid h-8 w-8 place-items-center text-slate-500 md:hidden" aria-label="Close navigation"><X className="h-5 w-5" /></button>
                 </div>
 
-                {/* Navigation */}
-                <nav className="flex-1 space-y-1">
+                <div className="mx-2 my-6 rounded-xl border border-brand-200/70 bg-brand-50 p-3.5">
+                    <div className="mb-1.5 flex items-center gap-2 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-brand-700">
+                        <Sparkles className="h-3.5 w-3.5" /> Intelligence layer
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-600">Multi-source search, deterministic scoring, and semantic re-ranking.</p>
+                </div>
+
+                <nav className="space-y-1" aria-label="Dashboard navigation">
                     {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
-                        const active = isActive(href);
-                        const badge = getBadge(href);
+                        const active = href === '/dashboard' ? pathname === href : pathname.startsWith(href);
+                        const badge = badgeFor(href);
                         return (
-                            <Link
-                                key={href}
-                                href={href}
-                                onClick={onClose}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-headline tracking-tight text-sm transition-all duration-300 ${
-                                    active
-                                        ? 'bg-brand-50 text-brand-700 font-semibold'
-                                        : 'text-slate-500 hover:bg-slate-200/50'
-                                }`}
-                            >
-                                <Icon className={`w-[18px] h-[18px] ${active ? 'text-brand-600' : ''}`} />
+                            <Link key={href} href={href} onClick={onClose} className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition ${active ? 'bg-white text-slate-950 shadow-sm ring-1 ring-slate-900/5' : 'text-slate-600 hover:bg-white/60 hover:text-slate-950'}`}>
+                                <Icon className={`h-[17px] w-[17px] ${active ? 'text-brand-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
                                 <span className="flex-1">{label}</span>
-                                {badge && (
-                                    <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-lg ${
-                                        active ? 'bg-brand-100 text-brand-600' : 'bg-slate-100 text-slate-400'
-                                    }`}>
-                                        {badge}
-                                    </span>
-                                )}
+                                {badge > 0 && <span className="rounded-md bg-slate-900 px-1.5 py-0.5 font-mono text-[9px] text-white">{badge}</span>}
                             </Link>
                         );
                     })}
                 </nav>
 
-                {/* Bottom */}
-                <div className="mt-auto pt-6 border-t border-slate-100">
-                    {/* User */}
-                    <div className="mb-4 px-2">
-                        <SignedIn>
-                            <div className="flex items-center gap-2.5">
-                                <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: "w-8 h-8" } }} />
-                                <div className="min-w-0">
-                                    <p className="text-[12px] font-medium text-gray-900 truncate">{user?.firstName || 'User'}</p>
-                                    <p className="text-[10px] text-gray-400 truncate">{user?.primaryEmailAddress?.emailAddress || ''}</p>
-                                </div>
+                <div className="mt-auto border-t border-slate-900/10 pt-4">
+                    <a href="mailto:midasmatchsupport@gmail.com" className="mb-3 flex items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-semibold text-slate-600 hover:bg-white/60">
+                        <LifeBuoy className="h-4 w-4 text-slate-400" /> Support
+                    </a>
+                    <SignedIn>
+                        <div className="flex items-center gap-3 rounded-xl bg-white/70 p-3 ring-1 ring-slate-900/5">
+                            <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: 'h-8 w-8' } }} />
+                            <div className="min-w-0">
+                                <p className="truncate text-[12px] font-bold text-slate-900">{user?.fullName || user?.firstName || 'Your account'}</p>
+                                <p className="truncate text-[10px] text-slate-500">{user?.primaryEmailAddress?.emailAddress}</p>
                             </div>
-                        </SignedIn>
-                        <SignedOut>
-                            <SignInButton mode="modal">
-                                <button className="w-full px-4 py-2 text-[12px] font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-colors cursor-pointer">Sign In</button>
-                            </SignInButton>
-                        </SignedOut>
-                    </div>
-
-                    <Link href="/" onClick={onClose} className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200/50 transition-all duration-300 rounded-xl font-headline tracking-tight text-sm">
-                        <HelpCircle className="w-[18px] h-[18px]" />
-                        <span>Help Center</span>
-                    </Link>
-
-                    {/* Support banner */}
-                    <div className="mt-4 mx-0 px-3 py-2.5 rounded-xl bg-amber-50 border border-amber-200/60">
-                        <p className="text-[11px] text-amber-700 leading-snug">
-                            Issue?{' '}
-                            <a href="mailto:midasmatchsupport@gmail.com" className="font-semibold underline underline-offset-2">Contact support</a>
-                        </p>
-                    </div>
-
-                    {/* Footer links */}
-                    <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-gray-300 px-2">
-                        <a href="/privacy" className="hover:text-gray-500 transition-colors">Privacy</a>
-                        <a href="/terms" className="hover:text-gray-500 transition-colors">Terms</a>
-                        <a href="/refund" className="hover:text-gray-500 transition-colors">Refund</a>
-                    </div>
+                        </div>
+                    </SignedIn>
+                    <SignedOut>
+                        <SignInButton mode="modal"><button className="w-full rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white">Sign in</button></SignInButton>
+                    </SignedOut>
                 </div>
             </aside>
         </>

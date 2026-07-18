@@ -4,7 +4,6 @@ import { useAuth } from '@clerk/nextjs';
 import { useProfileStore } from '../stores/profile-store';
 import { useSearchStore } from '../stores/search-store';
 import { useJobsStore } from '../stores/jobs-store';
-import { useTokenStore } from '../stores/token-store';
 
 /**
  * AppProvider — thin initializer that hydrates Zustand stores on mount.
@@ -23,7 +22,6 @@ export function AppProvider({ children }) {
         useProfileStore.getState().init();
         useSearchStore.getState().init();
         useJobsStore.getState().init();
-        useTokenStore.getState().init();
 
         // Send welcome email on first visit
         try {

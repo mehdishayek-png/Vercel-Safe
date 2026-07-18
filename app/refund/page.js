@@ -1,59 +1,23 @@
-export default function RefundPolicy() {
+import Link from 'next/link';
+
+export const metadata = { title: 'Refund Policy' };
+
+export default function RefundPage() {
     return (
-        <main className="min-h-screen bg-white py-16 px-4" style={{ fontFamily: "'Inter', sans-serif" }}>
-            <div className="max-w-3xl mx-auto">
-                <a href="/" className="text-sm text-brand-600 hover:underline mb-8 block">&larr; Back to Midas</a>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">Refund & Cancellation Policy</h1>
-                <p className="text-sm text-gray-400 mb-8">Last updated: March 2, 2026</p>
+        <main className="min-h-screen bg-surface-50 px-4 py-16 text-slate-900">
+            <article className="mx-auto max-w-3xl">
+                <Link href="/" className="text-sm font-semibold text-brand-700 hover:text-brand-900">&larr; Back to Midas</Link>
+                <span className="mm-kicker mt-12">Legal</span>
+                <h1 className="mt-5 font-headline text-4xl font-extrabold tracking-[-0.04em] text-slate-950 md:text-5xl">Refund policy</h1>
+                <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-slate-500">Last updated: July 18, 2026</p>
 
-                <div className="prose prose-gray max-w-none space-y-6">
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Token Purchases</h2>
-                        <p className="text-gray-600 text-sm leading-relaxed">
-                            Midas operates on a prepaid token system. Tokens are purchased in packs of 50 for ₹399 (or equivalent) via Razorpay.
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">2. Refund Eligibility</h2>
-                        <ul className="list-disc pl-5 text-sm text-gray-600 space-y-2">
-                            <li><strong>Unused tokens:</strong> If no tokens from a purchased pack have been used, you may request a full refund within 7 days of purchase.</li>
-                            <li><strong>Partially used tokens:</strong> If some tokens have been consumed, the remaining unused tokens are non-refundable.</li>
-                            <li><strong>Failed transactions:</strong> If your payment was debited but tokens were not credited to your account, contact us immediately for a full refund or manual credit.</li>
-                            <li><strong>Duplicate charges:</strong> If you were charged twice for the same purchase, the duplicate charge will be refunded in full.</li>
-                        </ul>
-                    </section>
-
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">3. How to Request a Refund</h2>
-                        <p className="text-gray-600 text-sm leading-relaxed">
-                            Email <a href="mailto:support@midasmatch.com" className="text-brand-600 hover:underline">support@midasmatch.com</a> with:
-                        </p>
-                        <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1 mt-2">
-                            <li>Your registered email address</li>
-                            <li>Razorpay payment ID (starts with <code className="text-xs bg-gray-100 px-1 rounded">pay_</code>)</li>
-                            <li>Reason for refund</li>
-                        </ul>
-                        <p className="text-gray-600 text-sm leading-relaxed mt-2">
-                            Refunds are processed within 5-7 business days to the original payment method.
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Cancellation</h2>
-                        <p className="text-gray-600 text-sm leading-relaxed">
-                            Midas does not have recurring subscriptions. Token purchases are one-time transactions. There is nothing to cancel. Unused tokens remain in your account indefinitely and do not expire.
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Contact</h2>
-                        <p className="text-gray-600 text-sm leading-relaxed">
-                            For billing or refund inquiries, contact us at <a href="mailto:support@midasmatch.com" className="text-brand-600 hover:underline">support@midasmatch.com</a>.
-                        </p>
-                    </section>
+                <div className="mt-10 space-y-9 text-sm leading-6 text-slate-600">
+                    <section><h2 className="text-lg font-bold text-slate-950">Current access</h2><p className="mt-3">New purchases are currently paused. The active Midas search and career workspace is included for signed-in users, so there is no new checkout to cancel or refund.</p></section>
+                    <section><h2 className="text-lg font-bold text-slate-950">Historical purchases</h2><p className="mt-3">If you completed a Razorpay purchase before checkout was paused, contact support within seven days of the transaction. Include the account email, payment date, amount, and Razorpay payment or order ID. We will verify the transaction and review the request under the terms shown at the time of purchase.</p></section>
+                    <section><h2 className="text-lg font-bold text-slate-950">Duplicate or failed payments</h2><p className="mt-3">For a duplicate charge, a debit without a confirmed order, or an incorrect amount, contact us promptly. Verified duplicate or failed transactions will be refunded to the original payment method where possible. Bank processing times are outside our control.</p></section>
+                    <section><h2 className="text-lg font-bold text-slate-950">Request support</h2><p className="mt-3">Email <a href="mailto:midasmatchsupport@gmail.com" className="font-bold text-brand-700">midasmatchsupport@gmail.com</a>. Do not send card numbers, UPI credentials, passwords, or one-time codes.</p></section>
                 </div>
-            </div>
+            </article>
         </main>
     );
 }

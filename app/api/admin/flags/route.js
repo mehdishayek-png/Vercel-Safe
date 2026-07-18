@@ -14,24 +14,10 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { setFlagOverride, clearFlagOverride, getFeatureFlags } from '@/lib/feature-flags';
+import { isAdmin } from '@/lib/tokens';
+import { validateOrigin } from '@/lib/csrf';
 
 const VALID_FLAGS = ['ADVANCED_FILTERS', 'SALARY_FILTER', 'COMPANY_SIZE_FILTER', 'MULTI_REGION'];
-
-// ---------------------------------------------------------------------------
-// Admin check — env var for single admin or extend as needed
-// ---------------------------------------------------------------------------
-
-async function isAdmin(userId) {
-    if (!userId) return false;
-    // Option 1: env var (single admin user)
-    if (process.env.ADMIN_USER_ID && userId === process.env.ADMIN_USER_ID) return true;
-    // Option 2: comma-separated list (multiple admins)
-    if (process.env.ADMIN_USER_IDS) {
-        const ids = process.env.ADMIN_USER_IDS.split(',').map(s => s.trim());
-        if (ids.includes(userId)) return true;
-    }
-    return false;
-}
 
 // ---------------------------------------------------------------------------
 // GET — Read current flag state
@@ -54,6 +40,7 @@ export async function POST(request) {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     if (!(await isAdmin(userId))) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!validateOrigin(request)) return NextResponse.json({ error: 'Invalid request origin' }, { status: 403 });
 
     let body;
     try {

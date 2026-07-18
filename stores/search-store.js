@@ -129,6 +129,7 @@ export const useSearchStore = create((set, get) => ({
 
     // Called once on mount
     init: async () => {
+        let localResultsTimestamp = 0;
         // Load preferences
         try {
             const stored = localStorage.getItem('midas_preferences');
@@ -140,11 +141,29 @@ export const useSearchStore = create((set, get) => ({
             const storedResults = localStorage.getItem('midas_results');
             if (storedResults) {
                 const { jobs: savedJobs, timestamp } = JSON.parse(storedResults);
+                localResultsTimestamp = Number(timestamp) || 0;
                 const ageInMinutes = (Date.now() - timestamp) / 1000 / 60;
                 if (ageInMinutes < 60) {
                     set({ jobs: savedJobs });
                 } else {
                     localStorage.removeItem('midas_results');
+                }
+            }
+        } catch {}
+
+        // Prefer a newer server-persisted search so results survive device changes.
+        try {
+            const res = await fetch('/api/search-history?limit=1', { cache: 'no-store' });
+            if (res.ok) {
+                const data = await res.json();
+                const serverTimestamp = data.runs?.[0]?.created_at
+                    ? new Date(data.runs[0].created_at).getTime()
+                    : 0;
+                if (data.source === 'server' && data.jobs?.length > 0 && serverTimestamp > localResultsTimestamp) {
+                    set({ jobs: data.jobs, hasSearched: true });
+                    try {
+                        localStorage.setItem('midas_results', JSON.stringify({ jobs: data.jobs, timestamp: serverTimestamp }));
+                    } catch {}
                 }
             }
         } catch {}

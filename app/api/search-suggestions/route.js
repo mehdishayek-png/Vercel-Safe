@@ -7,8 +7,8 @@ import { rateLimit } from '@/lib/rate-limit';
 export async function POST(request) {
   try {
     const { userId } = await auth();
-    const identifier = userId || request.headers.get('x-forwarded-for') || 'anonymous';
-    const rl = await rateLimit(`search-suggestions:${identifier}`, 10, 60); // 10 per minute
+    if (!userId) return NextResponse.json({ error: 'Sign in to refine a search.', requiresAuth: true }, { status: 401 });
+    const rl = await rateLimit(`search-suggestions:${userId}`, 10, 60); // 10 per minute
     if (!rl.allowed) return NextResponse.json({ error: 'Too many requests. Please slow down.' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } });
 
     const { title, skills } = await request.json();

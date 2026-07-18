@@ -6,14 +6,17 @@ import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.midasmatch.com'),
-  title: 'Midas — AI-Powered Job Matching Engine',
-  description: 'Upload your resume and instantly match with jobs from 8+ sources. AI-powered scoring, deep analysis, and location-aware matching across India, US, UK, and 190+ countries.',
+  title: {
+    default: 'Midas Match — Evidence-led job search',
+    template: '%s | Midas Match',
+  },
+  description: 'Turn your resume into a focused market search and a defensible shortlist with multi-source retrieval, explainable scoring, and semantic ranking.',
   keywords: ['job matching', 'AI job search', 'resume matching', 'job finder', 'career', 'job search engine', 'AI resume'],
   authors: [{ name: 'Midas' }],
   openGraph: {
-    title: 'Midas — Find Your Perfect Job with AI',
-    description: '1,000 jobs scanned. Only the best delivered. Upload your resume and get AI-matched with jobs from 8+ sources and 350+ company career pages.',
-    siteName: 'Midas',
+    title: 'Midas Match — Evidence-led job search',
+    description: 'Search beyond one job board and understand why every recommended role fits your profile.',
+    siteName: 'Midas Match',
     type: 'website',
     images: [
       {
@@ -26,8 +29,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Midas — AI Job Matching',
-    description: 'Upload your resume and get AI-matched with jobs from 8+ sources.',
+    title: 'Midas Match — Evidence-led job search',
+    description: 'Search beyond one job board and understand why every recommended role fits your profile.',
     images: ['https://www.midasmatch.com/og-image.png'],
   },
   robots: {
@@ -39,7 +42,7 @@ export const metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
+  themeColor: '#f7f6f2',
 };
 
 export default function RootLayout({ children }) {
@@ -56,19 +59,13 @@ export default function RootLayout({ children }) {
                 "@context": "https://schema.org",
                 "@type": "WebApplication",
                 "name": "Midas Match",
-                "description": "AI-powered job matching engine. Upload your resume and match with jobs from 8+ sources.",
+                "description": "Evidence-led job search with multi-source retrieval and explainable ranking.",
                 "url": "https://midasmatch.com",
                 "applicationCategory": "BusinessApplication",
                 "operatingSystem": "Web",
-                "offers": {
-                  "@type": "Offer",
-                  "price": "0",
-                  "priceCurrency": "USD",
-                  "description": "Free starter tokens for new users, token packs from $4.99"
-                },
                 "author": {
                   "@type": "Organization",
-                  "name": "Midas"
+                  "name": "Midas Match"
                 }
               })
             }}

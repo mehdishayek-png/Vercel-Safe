@@ -23,11 +23,11 @@ function Tooltip({ text, children }) {
 export function ScanControls({
     experienceYears, setExperienceYears,
     preferences, setPreferences,
-    isAdminUser, isMatching,
+    isMatching,
     findJobs, onReset,
 }) {
     return (
-        <div className="glass-panel rounded-[2rem] border border-transparent p-5 space-y-5">
+        <div className="rounded-2xl border border-slate-900/10 bg-white p-5 shadow-sm space-y-5">
             {/* Experience */}
             <div>
                 <div className="flex justify-between items-baseline mb-2">
@@ -65,7 +65,7 @@ export function ScanControls({
             <div className="flex gap-2">
                 <button
                     onClick={onReset}
-                    className="flex-1 py-2.5 rounded-full border-none bg-transparent text-xs font-medium text-gray-500 hover:text-brand-600 hover:bg-brand-50 cursor-pointer transition-all duration-200"
+                    className="flex-1 rounded-xl border border-slate-900/10 py-2.5 text-xs font-semibold text-slate-600 hover:bg-surface-50 cursor-pointer transition-colors"
                 >
                     Reset
                 </button>
@@ -73,14 +73,14 @@ export function ScanControls({
                     id="scan-btn"
                     onClick={() => findJobs()}
                     disabled={isMatching}
-                    className="flex-[2.5] py-2.5 rounded-full border-none text-xs font-semibold text-white cursor-pointer bg-flow-gradient shadow-xl shadow-brand-500/30 hover:shadow-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    className="flex-[2.5] rounded-xl bg-slate-900 py-2.5 text-xs font-bold text-white cursor-pointer shadow-sm hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {isMatching ? (
                         <span className="flex items-center justify-center gap-2">
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />Scanning...
                         </span>
                     ) : (
-                        <span>Scan</span>
+                        <span>Search the market</span>
                     )}
                 </button>
             </div>

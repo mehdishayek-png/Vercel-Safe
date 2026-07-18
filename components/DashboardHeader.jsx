@@ -1,161 +1,83 @@
 'use client';
-import { usePathname } from 'next/navigation';
-import { HelpCircle, ChevronRight, Menu, Bell, Settings, ArrowRight, X } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import Link from 'next/link';
-import { GuideModal } from './GuideModal';
-import { useSearchStore } from '@/stores/search-store';
-import { useJobsStore } from '@/stores/jobs-store';
-import { UserButton, SignedIn, SignedOut } from '@clerk/nextjs';
 
-const PAGE_TITLES = {
-    '/dashboard': 'Dashboard',
-    '/dashboard/search': 'Search Jobs',
-    '/dashboard/saved': 'Saved Jobs',
-    '/dashboard/applications': 'Applications',
-    '/dashboard/prep': 'Interview Prep',
-    '/dashboard/settings': 'Settings',
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Bell, CircleHelp, Menu, Search, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { useJobsStore } from '@/stores/jobs-store';
+
+const PAGE_META = {
+    '/dashboard': ['Overview', 'Your search activity and next actions'],
+    '/dashboard/search': ['Discover', 'Search the market against your profile'],
+    '/dashboard/saved': ['Shortlist', 'Review the roles worth pursuing'],
+    '/dashboard/applications': ['Pipeline', 'Track every active application'],
+    '/dashboard/prep': ['Interview lab', 'Turn job context into a preparation plan'],
+    '/dashboard/settings': ['Profile & settings', 'Keep your matching context current'],
 };
 
 export function DashboardHeader({ onMenuClick }) {
     const pathname = usePathname();
-    const { showReturnNotification, setShowReturnNotification } = useSearchStore();
-    const { savedJobsData, appliedJobsData } = useJobsStore();
-    const [showGuide, setShowGuide] = useState(false);
-    const [showNotifications, setShowNotifications] = useState(false);
-    const notifRef = useRef(null);
-
-    const savedCount = savedJobsData?.length ?? 0;
-    const appliedCount = appliedJobsData?.length ?? 0;
-    const hasActivity = savedCount > 0 || appliedCount > 0;
+    const [notificationsOpen, setNotificationsOpen] = useState(false);
+    const panelRef = useRef(null);
+    const saved = useJobsStore(state => state.savedJobsData.length);
+    const applied = useJobsStore(state => state.appliedJobsData.length);
+    const metaKey = Object.keys(PAGE_META).find(key => key !== '/dashboard' && pathname.startsWith(key)) || '/dashboard';
+    const [title, subtitle] = PAGE_META[metaKey];
 
     useEffect(() => {
-        function handleClickOutside(e) {
-            if (notifRef.current && !notifRef.current.contains(e.target)) {
-                setShowNotifications(false);
-            }
-        }
-        if (showNotifications) document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [showNotifications]);
+        if (!notificationsOpen) return undefined;
+        const close = event => {
+            if (panelRef.current && !panelRef.current.contains(event.target)) setNotificationsOpen(false);
+        };
+        document.addEventListener('mousedown', close);
+        return () => document.removeEventListener('mousedown', close);
+    }, [notificationsOpen]);
 
     return (
-        <>
-            <header className="sticky top-0 w-full z-40 bg-white/60 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.03)] h-16 px-8 flex justify-between items-center">
-                <div className="flex items-center gap-8 flex-1">
-                    <button onClick={onMenuClick} className="p-2 -ml-1 mr-1 text-gray-500 hover:text-gray-700 md:hidden cursor-pointer">
-                        <Menu className="w-5 h-5" />
-                    </button>
-                    <div className="relative w-full max-w-md">
-                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                        <input
-                            className="w-full pl-10 pr-4 py-2 bg-surface-100 border-none rounded-full text-sm focus:ring-2 focus:ring-brand-500/20 transition-all"
-                            placeholder="Search roles, companies, or skills..."
-                            type="text"
-                        />
-                    </div>
-                    <nav className="hidden lg:flex items-center gap-6 font-headline font-medium text-sm">
-                        {Object.entries(PAGE_TITLES).slice(0, 4).map(([href, label]) => (
-                            <Link
-                                key={href}
-                                href={href}
-                                className={`transition-colors ${
-                                    pathname === href || (href !== '/dashboard' && pathname.startsWith(href + '/'))
-                                        ? 'text-brand-600 border-b-2 border-brand-600 pb-1'
-                                        : 'text-slate-500 hover:text-brand-500'
-                                }`}
-                            >
-                                {label}
-                            </Link>
-                        ))}
-                    </nav>
+        <header className="sticky top-0 z-30 flex h-[72px] items-center justify-between border-b border-slate-900/10 bg-[#f7f6f2]/92 px-4 backdrop-blur-xl md:px-7">
+            <div className="flex min-w-0 items-center gap-3">
+                <button onClick={onMenuClick} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-900/10 text-slate-600 md:hidden" aria-label="Open navigation"><Menu className="h-5 w-5" /></button>
+                <div className="min-w-0">
+                    <p className="truncate font-headline text-[16px] font-extrabold tracking-tight text-slate-900">{title}</p>
+                    <p className="hidden truncate text-[10px] text-slate-500 sm:block">{subtitle}</p>
                 </div>
+            </div>
 
-                <div className="flex items-center gap-4">
-                    {/* Token balance chip removed — unlimited access. */}
-                    <SignedIn><div className="relative" ref={notifRef}>
-                        <button
-                            onClick={() => setShowNotifications(v => !v)}
-                            className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors relative cursor-pointer"
-                        >
-                            <Bell className="w-5 h-5" />
-                            {(showReturnNotification || hasActivity) && (
-                                <span className="absolute top-2 right-2 w-2 h-2 bg-accent-500 rounded-full"></span>
-                            )}
-                        </button>
-                        <AnimatePresence>
-                            {showNotifications && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                                    transition={{ duration: 0.15 }}
-                                    className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50"
-                                >
-                                    <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-                                        <span className="text-sm font-semibold text-slate-700">Notifications</span>
-                                        <button
-                                            onClick={() => setShowNotifications(false)}
-                                            className="p-1 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-                                        >
-                                            <X className="w-4 h-4 text-slate-400" />
-                                        </button>
-                                    </div>
-                                    {hasActivity ? (
-                                        <div className="px-4 py-4 space-y-3">
-                                            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Activity</p>
-                                            {savedCount > 0 && (
-                                                <Link
-                                                    href="/dashboard/saved"
-                                                    onClick={() => setShowNotifications(false)}
-                                                    className="flex items-center justify-between p-3 bg-surface-50 hover:bg-surface-100 rounded-xl transition-colors group"
-                                                >
-                                                    <div>
-                                                        <p className="text-sm font-medium text-slate-700">{savedCount} saved job{savedCount !== 1 ? 's' : ''}</p>
-                                                        <p className="text-xs text-slate-400 mt-0.5">Review your saved listings</p>
-                                                    </div>
-                                                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-brand-500 transition-colors" />
-                                                </Link>
-                                            )}
-                                            {appliedCount > 0 && (
-                                                <Link
-                                                    href="/dashboard/applications"
-                                                    onClick={() => setShowNotifications(false)}
-                                                    className="flex items-center justify-between p-3 bg-surface-50 hover:bg-surface-100 rounded-xl transition-colors group"
-                                                >
-                                                    <div>
-                                                        <p className="text-sm font-medium text-slate-700">{appliedCount} application{appliedCount !== 1 ? 's' : ''}</p>
-                                                        <p className="text-xs text-slate-400 mt-0.5">Track your progress</p>
-                                                    </div>
-                                                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-brand-500 transition-colors" />
-                                                </Link>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <div className="px-4 py-8 text-center">
-                                            <Bell className="w-8 h-8 text-slate-200 mx-auto mb-2" />
-                                            <p className="text-sm text-slate-400">No notifications yet</p>
-                                            <p className="text-xs text-slate-300 mt-0.5">Activity will appear here</p>
-                                        </div>
-                                    )}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div></SignedIn>
-
-                    <button onClick={() => setShowGuide(true)} className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
-                        <HelpCircle className="w-5 h-5" />
+            <div className="flex items-center gap-2">
+                {pathname !== '/dashboard/search' && (
+                    <Link href="/dashboard/search" className="hidden items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-[12px] font-bold text-white transition hover:bg-brand-600 sm:flex">
+                        <Search className="h-3.5 w-3.5" /> New search
+                    </Link>
+                )}
+                <a href="mailto:midasmatchsupport@gmail.com" className="grid h-9 w-9 place-items-center rounded-xl text-slate-500 transition hover:bg-white hover:text-slate-900" aria-label="Contact support"><CircleHelp className="h-[18px] w-[18px]" /></a>
+                <div className="relative" ref={panelRef}>
+                    <button onClick={() => setNotificationsOpen(value => !value)} className="relative grid h-9 w-9 place-items-center rounded-xl text-slate-500 transition hover:bg-white hover:text-slate-900" aria-label="Activity summary">
+                        <Bell className="h-[18px] w-[18px]" />
+                        {(saved + applied) > 0 && <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-accent-500 ring-2 ring-[#f7f6f2]" />}
                     </button>
-                    <SignedIn>
-                        <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: "w-8 h-8" } }} />
-                    </SignedIn>
+                    <AnimatePresence>
+                        {notificationsOpen && (
+                            <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="absolute right-0 mt-2 w-[min(88vw,320px)] overflow-hidden rounded-2xl border border-slate-900/10 bg-white shadow-elevated">
+                                <div className="flex items-center justify-between border-b border-slate-900/10 px-4 py-3">
+                                    <p className="text-xs font-bold text-slate-900">Search activity</p>
+                                    <button onClick={() => setNotificationsOpen(false)} className="text-slate-400" aria-label="Close activity summary"><X className="h-4 w-4" /></button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-px bg-slate-900/10">
+                                    <Link href="/dashboard/saved" onClick={() => setNotificationsOpen(false)} className="bg-white p-4 hover:bg-surface-50">
+                                        <span className="font-mono text-xl font-semibold text-slate-900">{saved}</span>
+                                        <span className="mt-1 block text-[10px] text-slate-500">Shortlisted roles</span>
+                                    </Link>
+                                    <Link href="/dashboard/applications" onClick={() => setNotificationsOpen(false)} className="bg-white p-4 hover:bg-surface-50">
+                                        <span className="font-mono text-xl font-semibold text-slate-900">{applied}</span>
+                                        <span className="mt-1 block text-[10px] text-slate-500">Applications</span>
+                                    </Link>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
-            </header>
-
-            <AnimatePresence>
-                {showGuide && <GuideModal onClose={() => setShowGuide(false)} />}
-            </AnimatePresence>
-        </>
+            </div>
+        </header>
     );
 }

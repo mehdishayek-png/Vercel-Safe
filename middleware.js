@@ -1,9 +1,11 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from 'next/server';
 
 export default clerkMiddleware((auth, req) => {
     // Security headers applied to all responses
     const response = NextResponse.next();
+    const requestId = req.headers.get('x-request-id') || crypto.randomUUID();
+    response.headers.set('X-Request-Id', requestId);
     response.headers.set('X-Content-Type-Options', 'nosniff');
     response.headers.set('X-Frame-Options', 'DENY');
     response.headers.set('X-XSS-Protection', '1; mode=block');

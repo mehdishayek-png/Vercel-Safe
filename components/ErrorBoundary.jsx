@@ -15,7 +15,7 @@ export class ErrorBoundary extends React.Component {
     componentDidCatch(error, errorInfo) {
         console.error('ErrorBoundary caught:', error, errorInfo);
 
-        // Report to server so it shows in Vercel logs
+        // Report to the server log stream; Sentry captures uncaught client errors too.
         try {
             const payload = {
                 message: error?.message || 'Unknown error',

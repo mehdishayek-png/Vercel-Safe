@@ -1,7 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
 import { fetchAllJobsStreaming } from '@/lib/job-fetcher';
 import { calculatePandaScore } from '@/lib/panda-matcher';
-import { canScan, deductToken } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 import { saveAlertProfile } from '@/lib/job-alerts';
 import { detectGhostSignals } from '@/lib/ghost-detector';
@@ -32,12 +31,18 @@ const ScanPayloadSchema = z.object({
 });
 
 export async function POST(request) {
-  // ---- Auth, rate-limit, token checks (same as /api/match-jobs) ----
+  // ---- Auth, validation, and rate limiting ----
   try {
     const { userId } = await auth();
 
-    const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
-    const rl = await rateLimit(rateLimitId, 10, 60);
+    if (!userId) {
+      return new Response(JSON.stringify({
+        error: 'Sign in to search and keep your results available across devices.',
+        requiresAuth: true,
+      }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    const rl = await rateLimit(userId, 10, 60);
 
     if (!rl.allowed) {
       const minutes = Math.ceil(rl.retryAfter / 60);
@@ -70,7 +75,7 @@ export async function POST(request) {
     }
 
     const ip = request.headers.get('x-forwarded-for') || 'unknown';
-    const effectiveUserId = userId || ip.split(',')[0].trim();
+    const effectiveUserId = ip.split(',')[0].trim();
     
     console.log(JSON.stringify({
       event: 'scan_started',
@@ -82,32 +87,6 @@ export async function POST(request) {
       midasSearch: preferences?.midasSearch || false,
       timestamp: new Date().toISOString(),
     }));
-
-    const scanCheck = await canScan(effectiveUserId, preferences?.midasSearch);
-    if (!scanCheck.allowed) {
-      return new Response(JSON.stringify({
-        error: scanCheck.error,
-        requiresAuth: scanCheck.requiresAuth || (!userId && scanCheck.paywalled),
-        paywalled: !!userId && scanCheck.paywalled,
-      }), {
-        status: (scanCheck.requiresAuth || !userId) ? 401 : 403,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    // Deduct tokens (skip for admin)
-    if (scanCheck.source !== 'admin') {
-      const deducted = await deductToken(effectiveUserId, scanCheck.tokenCost || 1);
-      if (!deducted.success) {
-        return new Response(JSON.stringify({ 
-            error: userId ? 'Failed to deduct token' : 'You have used your free token. Sign in to get more!',
-            requiresAuth: !userId,
-            paywalled: !!userId 
-        }), {
-          status: userId ? 403 : 401, headers: { 'Content-Type': 'application/json' }
-        });
-      }
-    }
 
     // Fetch historical feedback actions to close the RLHF loop
     let feedbackHistory = [];
@@ -161,22 +140,10 @@ export async function POST(request) {
           const allScored = [];
 
           let totalJobsScored = 0;
-          let burnedBonusTokens = 0;
-          let baseCost = scanCheck.tokenCost || 1;
-          let isDepleted = false;
-
           const onSourceComplete = async (sourceName, jobs) => {
-            if (isDepleted) return;
-
             await classifyPromise;
 
             totalJobsScored += jobs.length;
-
-            // Send burn rate visualization update
-            send({
-                type: 'burn_update',
-                tokensConsumed: scanCheck.source === 'admin' ? 0 : baseCost
-            });
 
             send({ type: 'progress', message: `Scoring ${sourceName}...` });
 
@@ -358,13 +325,13 @@ export async function POST(request) {
           // Flush all match-log writes before closing stream
           await Promise.all(_logPromises);
 
-          // Emit comprehensive diagnostic log — single line, structured JSON, reliably captured by Vercel
+          // Emit a structured diagnostic event for Railway logs and Sentry.
           diag.durationMs = Date.now() - diag.startMs;
           diag.totalRaw = result.totalRaw;
           diag.totalUnique = result.jobs.length;
           diag.queries = result.queries;
           diag.roleAnchor = result.roleAnchor;
-          diag.tokensConsumed = scanCheck.source === 'admin' ? 0 : baseCost;
+          diag.accessMode = 'included';
           // Aggregate totals
           diag.totals = Object.values(diag.sources).reduce((acc, s) => {
             acc.fetched += s.fetched; acc.displayed += s.displayed; acc.discarded += s.discarded; acc.zero += s.zero;

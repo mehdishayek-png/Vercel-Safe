@@ -8,10 +8,10 @@ import { callFlash, parseJSON } from '@/lib/sonnet';
 export async function POST(request) {
   try {
     const { userId } = await auth();
-    const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
+    if (!userId) return NextResponse.json({ error: 'Sign in to generate career insights.', requiresAuth: true }, { status: 401 });
 
-    const rl = await rateLimit(`career-insights:${rateLimitId}`, 5, 3600);
-    if (!rl.allowed) return NextResponse.json({ error: 'Free limit reached, try again later' }, { status: 429, headers: { 'Retry-After': rl.retryAfter } });
+    const rl = await rateLimit(`career-insights:${userId}`, 5, 3600);
+    if (!rl.allowed) return NextResponse.json({ error: 'Analysis limit reached, try again later' }, { status: 429, headers: { 'Retry-After': rl.retryAfter } });
 
     const { profile, savedJobs, recentScanJobs } = await request.json();
 

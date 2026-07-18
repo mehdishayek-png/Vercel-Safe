@@ -1,61 +1,30 @@
-export default function TermsOfService() {
+import Link from 'next/link';
+
+export const metadata = { title: 'Terms of Service' };
+
+const sections = [
+    ['1. Service', 'Midas Match provides job retrieval, ranking, saved-workspace, and AI-assisted career tools. Results are informational and do not guarantee an interview, offer, compensation level, or job availability. Listings may be changed or removed by their original publishers.'],
+    ['2. Accounts and access', 'You must provide accurate account information and protect access to your account. The current workspace is included for signed-in users and new token checkout is paused. Midas may apply reasonable rate limits, suspend abusive traffic, or change future access terms with clear notice.'],
+    ['3. Acceptable use', 'Do not probe or bypass security controls, automate excessive requests, resell retrieved data, interfere with job sources, impersonate another person, upload content you do not have the right to use, or use generated content unlawfully or deceptively.'],
+    ['4. Your content', 'You retain ownership of profile and resume information you provide. You grant Midas the limited permission needed to process that information to operate, secure, and improve the service. You are responsible for reviewing generated applications and messages before using them.'],
+    ['5. Third-party services', 'Midas relies on third-party authentication, hosting, database, job data, AI, analytics, monitoring, email, and historical payment services. Their availability and policies may affect portions of the product. External job links are governed by the destination site.'],
+    ['6. Availability and changes', 'Sources can time out, rate-limit, return thin data, or become unavailable. Midas may change, pause, or discontinue features and integrations. We aim to preserve partial results and provide fallbacks, but uninterrupted operation is not guaranteed.'],
+    ['7. Disclaimer and liability', 'The service is provided on an as-available basis. To the fullest extent permitted by law, Midas disclaims implied warranties and is not liable for indirect, incidental, consequential, or employment-related losses arising from use of the service.'],
+    ['8. Termination', 'You may stop using the service at any time. Midas may restrict or terminate access for material breach, abuse, security risk, or legal requirements. Provisions that by nature should survive termination will continue to apply.'],
+];
+
+export default function TermsPage() {
     return (
-        <main className="min-h-screen bg-white py-16 px-4" style={{ fontFamily: "'Inter', sans-serif" }}>
-            <div className="max-w-3xl mx-auto">
-                <a href="/" className="text-sm text-brand-600 hover:underline mb-8 block">&larr; Back to Midas</a>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">Terms of Service</h1>
-                <p className="text-sm text-gray-400 mb-8">Last updated: March 2, 2026</p>
-
-                <div className="prose prose-gray max-w-none space-y-6">
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Service Description</h2>
-                        <p className="text-gray-600 text-sm leading-relaxed">
-                            Midas is an AI-powered job matching platform that analyzes your resume and preferences to find relevant job opportunities from multiple job databases and company career pages.
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">2. Token System &amp; Payments</h2>
-                        <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
-                            <li>New visitors receive 1 free starter token. Creating an account grants 3 free starter tokens.</li>
-                            <li>Each AI action (job scan, deep analysis, cover letter, etc.) costs 1 token. ATS-tailored CVs cost 3 tokens.</li>
-                            <li>Additional scans and analyses require tokens, available for purchase at ₹399 for 50 tokens.</li>
-                            <li>See our <a href="/refund" className="text-brand-600 hover:underline">Refund & Cancellation Policy</a> for details on refunds.</li>
-                            <li>Payments are processed by Razorpay.</li>
-                        </ul>
-                    </section>
-
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">3. Accuracy Disclaimer</h2>
-                        <p className="text-gray-600 text-sm leading-relaxed">
-                            Job listings are sourced from third-party platforms and may not reflect real-time availability. Match scores and AI verdicts are estimates based on algorithmic analysis and should not be the sole basis for career decisions. We do not guarantee job placement or interview outcomes.
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Acceptable Use</h2>
-                        <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
-                            <li>Do not use automated tools or bots to interact with the service.</li>
-                            <li>Do not attempt to bypass the token/paywall system.</li>
-                            <li>Do not scrape or redistribute job listing data obtained through our platform.</li>
-                        </ul>
-                    </section>
-
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Limitation of Liability</h2>
-                        <p className="text-gray-600 text-sm leading-relaxed">
-                            Midas is provided &quot;as is&quot; without warranties of any kind. We are not liable for any damages arising from the use of this service, including but not limited to missed job opportunities, inaccurate match scores, or service interruptions.
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Contact</h2>
-                        <p className="text-gray-600 text-sm leading-relaxed">
-                            For questions regarding these terms, contact us at <a href="mailto:support@midasmatch.com" className="text-brand-600 hover:underline">support@midasmatch.com</a>.
-                        </p>
-                    </section>
-                </div>
-            </div>
+        <main className="min-h-screen bg-surface-50 px-4 py-16 text-slate-900">
+            <article className="mx-auto max-w-3xl">
+                <Link href="/" className="text-sm font-semibold text-brand-700 hover:text-brand-900">&larr; Back to Midas</Link>
+                <span className="mm-kicker mt-12">Legal</span>
+                <h1 className="mt-5 font-headline text-4xl font-extrabold tracking-[-0.04em] text-slate-950 md:text-5xl">Terms of service</h1>
+                <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-slate-500">Last updated: July 18, 2026</p>
+                <p className="mt-8 text-sm leading-6 text-slate-600">By accessing Midas Match, you agree to these terms. If you do not agree, do not use the service.</p>
+                <div className="mt-10 space-y-9">{sections.map(([title, body]) => <section key={title}><h2 className="text-lg font-bold text-slate-950">{title}</h2><p className="mt-3 text-sm leading-6 text-slate-600">{body}</p></section>)}</div>
+                <p className="mt-10 border-t border-slate-900/10 pt-8 text-sm text-slate-600">Questions: <a href="mailto:midasmatchsupport@gmail.com" className="font-bold text-brand-700">midasmatchsupport@gmail.com</a></p>
+            </article>
         </main>
     );
 }

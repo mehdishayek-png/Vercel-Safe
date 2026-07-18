@@ -2,8 +2,9 @@ const { withSentryConfig } = require("@sentry/nextjs");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  outputFileTracingRoot: __dirname,
+  serverExternalPackages: ['pdf-parse'],
   experimental: {
-    serverComponentsExternalPackages: ['pdf-parse'],
     serverActions: {
       bodySizeLimit: '10mb',
     },

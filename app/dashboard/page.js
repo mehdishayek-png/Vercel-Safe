@@ -160,6 +160,24 @@ export default function DashboardHome() {
         }
     };
 
+    const handleQuickStart = (title, skills, location) => {
+        const nextProfile = {
+            name: user?.firstName || 'Candidate',
+            headline: title,
+            skills,
+            experience_years: 0,
+            location,
+        };
+        setProfile(nextProfile);
+        setJobTitle(title);
+        setPreferences(current => ({ ...current, location, remoteOnly: /remote/i.test(location) }));
+        try {
+            localStorage.setItem('midas_profile', JSON.stringify(nextProfile));
+            localStorage.setItem('midas_preferences', JSON.stringify({ ...preferences, location, remoteOnly: /remote/i.test(location) }));
+        } catch {}
+        window.location.href = '/dashboard/search';
+    };
+
     const totalMatches = jobs.length;
     const savedCount = savedJobsData.length;
     const appliedCount = appliedJobsData.length;
@@ -188,7 +206,7 @@ export default function DashboardHome() {
     return (
         <div className="max-w-[1000px] space-y-6">
             {/* Greeting */}
-            <div className="flex items-end justify-between">
+            <div>
                 <div>
                     <h1 className="text-[22px] font-semibold text-gray-900 tracking-tight">
                         {user?.firstName ? `Hi, ${user.firstName}` : profile ? `Hi, ${profile.name?.split(' ')[0] || 'there'}` : 'Welcome to Midas Match'}
@@ -199,18 +217,12 @@ export default function DashboardHome() {
                             : 'Upload your resume to get started.'}
                     </p>
                 </div>
-                <Link
-                    href="/dashboard/search"
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-[13px] font-medium hover:bg-gray-800 transition-colors"
-                >
-                    <Search className="w-3.5 h-3.5" /> New Search
-                </Link>
             </div>
 
             {/* Upload panel for new users */}
             {!profile && (
                 <div className="glass-card rounded-xl border border-outline-variant/10 p-6">
-                    <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} />
+                    <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} handleQuickStart={handleQuickStart} />
                 </div>
             )}
 

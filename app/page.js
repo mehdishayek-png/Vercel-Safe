@@ -1,144 +1,234 @@
-'use client';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-import { Hero } from '@/components/Hero';
+import {
+    ArrowRight, Bookmark, BriefcaseBusiness, Check, Database, FileSearch,
+    Fingerprint, Layers3, MapPin, Radar, Search, ShieldCheck, Sparkles, Target,
+} from 'lucide-react';
 import { Header } from '@/components/Header';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
 
-const Features = dynamic(() => import('@/components/Features').then(mod => ({ default: mod.Features })), {
-    loading: () => <div className="h-96" />,
-});
-const HowItWorks = dynamic(() => import('@/components/HowItWorks').then(mod => ({ default: mod.HowItWorks })), {
-    loading: () => <div className="h-64" />,
-});
-const DashboardPreview = dynamic(() => import('@/components/DashboardPreview').then(mod => ({ default: mod.DashboardPreview })), {
-    loading: () => <div className="h-96" />,
-});
+const MATCHES = [
+    { score: 92, title: 'Strategy & Transactions Consultant', company: 'Global advisory firm', location: 'Bengaluru', signal: 'Role family aligned' },
+    { score: 84, title: 'M&A Advisory Associate', company: 'Corporate finance team', location: 'Mumbai', signal: '6 evidence signals' },
+    { score: 76, title: 'Due Diligence Analyst', company: 'Professional services', location: 'Hybrid', signal: 'Strong skill overlap' },
+];
 
-export default function Home() {
+const CAPABILITIES = [
+    {
+        icon: Radar,
+        index: '01',
+        title: 'Search beyond one job board',
+        body: 'One profile becomes focused queries across direct employer systems, public feeds, aggregators, and specialist sources.',
+    },
+    {
+        icon: Fingerprint,
+        index: '02',
+        title: 'Score career fit, not keyword noise',
+        body: 'Role family, seniority, location, domain, recency, and skill depth are evaluated before semantic refinement.',
+    },
+    {
+        icon: FileSearch,
+        index: '03',
+        title: 'Read the evidence behind a match',
+        body: 'Full job descriptions power explainable score signals, role analysis, salary context, and interview preparation.',
+    },
+];
+
+function ProductPreview() {
     return (
-        <ErrorBoundary>
-            <main className="min-h-screen bg-surface-50 text-gray-900 overflow-x-hidden selection:bg-brand-100">
-                <Header />
-                <Hero
-                    onStart={() => window.location.href = '/dashboard/search'}
-                    onDemo={() => document.getElementById('preview')?.scrollIntoView({ behavior: 'smooth' })}
-                />
-
-                {/* Stats strip */}
-                <section className="py-16 bg-white border-y border-outline-variant/10">
-                    <div className="container mx-auto px-4">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 max-w-5xl mx-auto text-center">
-                            <div>
-                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-gray-900">1,000+</div>
-                                <div className="text-sm text-gray-500 mt-2 font-medium">Jobs Per Search</div>
-                            </div>
-                            <div>
-                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-gray-900">350+</div>
-                                <div className="text-sm text-gray-500 mt-2 font-medium">Company Career Pages</div>
-                            </div>
-                            <div>
-                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-gray-900">8+</div>
-                                <div className="text-sm text-gray-500 mt-2 font-medium">Sources Aggregated</div>
-                            </div>
-                            <div>
-                                <div className="font-headline text-4xl md:text-5xl font-extrabold text-brand-600">&lt;60s</div>
-                                <div className="text-sm text-gray-500 mt-2 font-medium">Average Scan Time</div>
-                            </div>
-                        </div>
+        <div className="relative mx-auto min-w-0 w-full max-w-[720px]">
+            <div className="absolute -inset-4 -z-10 rotate-1 rounded-[30px] border border-brand-200 bg-brand-100/60" />
+            <div className="overflow-hidden rounded-[22px] border border-slate-900/10 bg-white shadow-[0_32px_90px_rgba(24,31,46,0.16)]">
+                <div className="flex h-12 items-center justify-between border-b border-slate-900/10 bg-surface-50 px-4">
+                    <div className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-[#ef6a5b]" />
+                        <span className="h-2 w-2 rounded-full bg-[#e8a23a]" />
+                        <span className="h-2 w-2 rounded-full bg-accent-500" />
                     </div>
-                </section>
-
-                <div id="preview">
-                    <DashboardPreview />
+                    <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-slate-500">Match evidence / live view</span>
+                    <span className="h-2 w-2 rounded-full bg-accent-500 ai-pulse" />
                 </div>
-
-                <Features />
-                <HowItWorks />
-
-                {/* Final CTA */}
-                <section className="py-28 text-center relative overflow-hidden bg-gray-900">
-                    <div className="absolute inset-0 -z-0">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-brand-600/15 via-transparent to-accent-600/10" />
-                        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-brand-500/10 rounded-full blur-[120px]" />
-                        <div className="absolute top-1/3 right-1/4 w-[175px] md:w-[350px] h-[175px] md:h-[350px] bg-brand-500/10 rounded-full blur-[100px]" />
-                    </div>
-
-                    <div className="container mx-auto px-4 relative z-10">
-                        <h2 className="font-headline text-4xl md:text-6xl font-extrabold mb-6 tracking-tight text-white">
-                            Ready to find your <span className="text-gradient">next role?</span>
-                        </h2>
-                        <p className="text-gray-400 mb-10 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                            Join thousands of job seekers who stopped scrolling job boards and started getting matched.
-                        </p>
-                        <div className="flex flex-col sm:flex-row justify-center gap-4">
-                            <Link
-                                href="/dashboard/search"
-                                className="px-10 py-5 bg-white text-gray-900 rounded-full font-bold text-lg hover:bg-gray-100 transition-all inline-block shadow-lg shadow-white/10 hover:shadow-white/20 hover:scale-[1.02] active:scale-95"
-                            >
-                                Get Started Free
-                            </Link>
-                            <Link
-                                href="/pricing"
-                                className="px-10 py-5 border-2 border-white/20 text-white rounded-full font-bold text-lg hover:bg-white/10 transition-all inline-block"
-                            >
-                                View Pricing
-                            </Link>
+                <div className="grid min-h-[430px] md:grid-cols-[155px_1fr]">
+                    <aside className="hidden border-r border-slate-900/10 bg-[#f1f0eb] p-4 md:block">
+                        <div className="mb-8 flex items-center gap-2">
+                            <span className="grid h-7 w-7 place-items-center rounded-lg bg-slate-900 text-[10px] font-bold text-white">M</span>
+                            <span className="text-[10px] font-bold text-slate-800">Midas Match</span>
                         </div>
-                        <p className="text-sm text-gray-500 mt-6">Try free with starter tokens. No credit card needed.</p>
-                    </div>
-                </section>
-
-                <footer className="py-12 bg-gray-950 text-sm">
-                    <div className="container mx-auto px-4">
-                        <div className="text-center mb-8">
-                            <div className="flex items-center justify-center gap-2.5 mb-2">
-                                <div className="w-8 h-8 rounded-xl bg-flow-gradient flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-brand-600/20">
-                                    M
-                                </div>
-                                <span className="font-headline text-lg font-bold text-white tracking-tight">Midas Match</span>
+                        {[['Discover', Search], ['Shortlist', Bookmark], ['Pipeline', BriefcaseBusiness]].map(([label, Icon], index) => (
+                            <div key={label} className={`mb-1 flex items-center gap-2 rounded-lg px-2.5 py-2 text-[9px] font-semibold ${index === 0 ? 'bg-white text-brand-700 shadow-sm' : 'text-slate-500'}`}>
+                                <Icon className="h-3 w-3" /> {label}
                             </div>
-                            <p className="text-gray-500 text-sm">AI-powered job matching that actually works.</p>
+                        ))}
+                        <div className="mt-28 border-t border-slate-900/10 pt-4">
+                            <p className="font-mono text-[7px] uppercase tracking-widest text-slate-400">Profile signal</p>
+                            <p className="mt-2 text-[9px] font-bold text-slate-800">Deal advisory</p>
+                            <p className="mt-1 text-[8px] text-slate-500">5 years experience</p>
                         </div>
-
-                        <div className="flex flex-wrap justify-center gap-6 mb-8">
-                            {[
-                                { icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', label: 'Encrypted & Secure', color: 'text-emerald-500' },
-                                { icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', label: 'Resume Not Stored', color: 'text-brand-400' },
-                                { icon: 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636', label: 'No AI Training on Your Data', color: 'text-accent-400' },
-                                { icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', label: 'Razorpay Secured Payments', color: 'text-amber-500' },
-                            ].map(({ icon, label, color }) => (
-                                <div key={label} className="flex items-center gap-2 text-gray-400 text-xs">
-                                    <svg className={`w-4 h-4 ${color}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icon} /></svg>
-                                    {label}
+                    </aside>
+                    <div className="p-4 sm:p-6">
+                        <div className="mb-5 flex items-end justify-between gap-4">
+                            <div>
+                                <p className="font-mono text-[8px] uppercase tracking-[0.18em] text-brand-600">Ranked for your profile</p>
+                                <h3 className="mt-1.5 font-headline text-lg font-extrabold tracking-tight text-slate-900">Evidence-led matches</h3>
+                            </div>
+                            <span className="rounded-full bg-accent-50 px-2.5 py-1 font-mono text-[8px] font-semibold text-accent-700">Search complete</span>
+                        </div>
+                        <div className="space-y-2.5">
+                            {MATCHES.map((match, index) => (
+                                <article key={match.title} className={`grid grid-cols-[48px_1fr] gap-3 border p-3.5 sm:grid-cols-[48px_1fr_auto] ${index === 0 ? 'border-brand-200 bg-brand-50/55' : 'border-slate-900/10 bg-white'}`}>
+                                    <div className="grid h-11 w-11 place-items-center rounded-full border-4 border-white bg-slate-900 font-mono text-[11px] font-bold text-white shadow-sm">{match.score}</div>
+                                    <div className="min-w-0">
+                                        <h4 className="truncate text-[11px] font-bold text-slate-900 sm:text-xs">{match.title}</h4>
+                                        <p className="mt-1 truncate text-[9px] text-slate-500">{match.company} · {match.location}</p>
+                                        <p className="mt-2 flex items-center gap-1 text-[8px] font-semibold text-accent-700"><Check className="h-3 w-3" /> {match.signal}</p>
+                                    </div>
+                                    <button className="hidden self-center border-l border-slate-900/10 pl-3 text-[9px] font-bold text-brand-700 sm:block">View evidence</button>
+                                </article>
+                            ))}
+                        </div>
+                        <div className="mt-4 grid grid-cols-3 gap-2 border-t border-slate-900/10 pt-4">
+                            {[['Role family', 'Aligned'], ['Location', 'Exact'], ['Recency', 'Current']].map(([label, value]) => (
+                                <div key={label}>
+                                    <p className="font-mono text-[7px] uppercase tracking-wider text-slate-400">{label}</p>
+                                    <p className="mt-1 text-[9px] font-bold text-slate-700">{value}</p>
                                 </div>
                             ))}
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
-                        <div className="border-t border-gray-800 pt-8">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                                <div className="flex flex-wrap items-center justify-center gap-6 text-gray-500">
-                                    <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
-                                    <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
-                                    <a href="/refund" className="hover:text-white transition-colors">Refund Policy</a>
-                                    <a href="/pricing" className="hover:text-white transition-colors">Pricing</a>
-                                    <a href="/faq" className="hover:text-white transition-colors">FAQ</a>
-                                    <a href="/about" className="hover:text-white transition-colors">About</a>
-                                    <a href="mailto:midasmatchsupport@gmail.com" className="hover:text-white transition-colors">Contact Support</a>
-                                </div>
+export default function Home() {
+    return (
+        <main className="overflow-hidden bg-surface-50 text-slate-900">
+            <Header />
 
-                                <a href="mailto:midasmatchsupport@gmail.com" className="text-gray-500 hover:text-white transition-colors">
-                                    midasmatchsupport@gmail.com
-                                </a>
-                            </div>
-
-                            <p className="text-gray-600 text-center mt-6">
-                                &copy; 2026 Midas Match. All rights reserved.
-                            </p>
+            <section className="relative pb-24 pt-32 md:pb-32 md:pt-44">
+                <div className="absolute inset-0 -z-0 mm-grid opacity-45 [mask-image:linear-gradient(to_bottom,black,transparent_82%)]" />
+                <div className="mm-shell relative z-10 grid min-w-0 grid-cols-[minmax(0,1fr)] items-center gap-16 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
+                    <div className="min-w-0">
+                        <span className="mm-kicker">Search with evidence</span>
+                        <h1 className="mt-7 max-w-[660px] break-words font-headline text-[clamp(2.5rem,11.5vw,5.7rem)] font-extrabold leading-[0.97] tracking-[-0.055em] text-slate-950">
+                            Stop browsing jobs. <span className="text-brand-600">Interrogate the market.</span>
+                        </h1>
+                        <p className="mt-7 max-w-xl text-base leading-7 text-slate-600 md:text-lg">
+                            Midas turns your resume into a precise search strategy, scans across the market, and shows why each role belongs in your next move.
+                        </p>
+                        <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                            <Link href="/dashboard/search" className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-brand-600">
+                                Build my match profile <ArrowRight className="h-4 w-4" />
+                            </Link>
+                            <a href="#product" className="inline-flex items-center justify-center rounded-xl border border-slate-900/15 bg-white/70 px-6 py-3.5 text-sm font-bold text-slate-700 transition hover:bg-white">See the evidence model</a>
+                        </div>
+                        <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 border-t border-slate-900/10 pt-5 text-[11px] font-medium text-slate-500">
+                            <span className="flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-accent-600" /> Resume privacy controls</span>
+                            <span className="flex items-center gap-1.5"><Database className="h-3.5 w-3.5 text-brand-600" /> Cross-device profile</span>
+                            <span className="flex items-center gap-1.5"><Target className="h-3.5 w-3.5 text-[#d48724]" /> Explainable ranking</span>
                         </div>
                     </div>
-                </footer>
-            </main>
-        </ErrorBoundary>
+                    <ProductPreview />
+                </div>
+            </section>
+
+            <section id="product" className="border-y border-slate-900/10 bg-white py-20 md:py-28">
+                <div className="mm-shell">
+                    <div className="grid gap-8 border-b border-slate-900/10 pb-14 lg:grid-cols-[0.65fr_1fr] lg:items-end">
+                        <div>
+                            <span className="mm-kicker">The product</span>
+                            <h2 className="mt-5 font-headline text-4xl font-extrabold tracking-[-0.04em] text-slate-950 md:text-5xl">A decision system, not a list of links.</h2>
+                        </div>
+                        <p className="max-w-2xl text-base leading-7 text-slate-600 lg:justify-self-end">Every result carries context: where it came from, how current it is, which skills support the score, whether the seniority fits, and what evidence weakened the match.</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3">
+                        {CAPABILITIES.map((capability, index) => {
+                            const Icon = capability.icon;
+                            return (
+                                <article key={capability.title} className={`relative py-10 md:px-8 md:py-14 ${index > 0 ? 'border-t border-slate-900/10 md:border-l md:border-t-0' : ''}`}>
+                                    <div className="flex items-center justify-between">
+                                        <Icon className="h-6 w-6 text-brand-600" />
+                                        <span className="font-mono text-[10px] text-slate-400">{capability.index}</span>
+                                    </div>
+                                    <h3 className="mt-10 font-headline text-xl font-extrabold tracking-tight text-slate-900">{capability.title}</h3>
+                                    <p className="mt-3 text-sm leading-6 text-slate-600">{capability.body}</p>
+                                </article>
+                            );
+                        })}
+                    </div>
+                </div>
+            </section>
+
+            <section id="method" className="bg-slate-950 py-24 text-white md:py-32">
+                <div className="mm-shell grid gap-14 lg:grid-cols-[0.8fr_1.2fr]">
+                    <div>
+                        <span className="mm-kicker !text-brand-300">How it works</span>
+                        <h2 className="mt-6 max-w-lg font-headline text-4xl font-extrabold tracking-[-0.04em] md:text-5xl">From resume to a defensible shortlist.</h2>
+                        <p className="mt-6 max-w-lg text-sm leading-7 text-slate-400">The engine separates retrieval from ranking. That matters: finding more jobs should never mean lowering the standard for what reaches you.</p>
+                    </div>
+                    <ol className="border-t border-white/15">
+                        {[
+                            ['Profile model', 'Extract role, skills, experience, domain, and location intent from your resume.'],
+                            ['Market retrieval', 'Generate focused queries and run eligible sources concurrently within strict budgets.'],
+                            ['Constraint scoring', 'Reject career-family bleed and measure title, seniority, location, domain, and recency.'],
+                            ['Semantic refinement', 'Re-rank the strongest candidates against your profile and retain the evidence.'],
+                        ].map(([title, body], index) => (
+                            <li key={title} className="grid gap-3 border-b border-white/15 py-6 sm:grid-cols-[54px_180px_1fr] sm:items-start">
+                                <span className="font-mono text-xs text-brand-300">0{index + 1}</span>
+                                <h3 className="text-sm font-bold text-white">{title}</h3>
+                                <p className="text-sm leading-6 text-slate-400">{body}</p>
+                            </li>
+                        ))}
+                    </ol>
+                </div>
+            </section>
+
+            <section id="trust" className="bg-[#e8ece5] py-20 md:py-28">
+                <div className="mm-shell grid gap-12 lg:grid-cols-[1fr_0.9fr] lg:items-center">
+                    <div>
+                        <span className="mm-kicker !text-accent-700">Built for trust</span>
+                        <h2 className="mt-5 max-w-2xl font-headline text-4xl font-extrabold tracking-[-0.04em] text-slate-950 md:text-5xl">Your career data should work for you, not disappear into a black box.</h2>
+                    </div>
+                    <div className="border-l border-slate-900/15 pl-6 md:pl-10">
+                        {[
+                            ['Clear score evidence', 'See the signals supporting every recommendation.'],
+                            ['Portable job pipeline', 'Keep shortlists and applications available across devices.'],
+                            ['Graceful degradation', 'Core matching still works when an external AI or data source is unavailable.'],
+                        ].map(([title, body]) => (
+                            <div key={title} className="flex gap-3 border-b border-slate-900/10 py-4 first:pt-0 last:border-0 last:pb-0">
+                                <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent-700" />
+                                <div><h3 className="text-sm font-bold text-slate-900">{title}</h3><p className="mt-1 text-xs leading-5 text-slate-600">{body}</p></div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            <section className="bg-brand-600 py-20 text-white">
+                <div className="mm-shell flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
+                    <div>
+                        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-brand-100">Your next search can be better</p>
+                        <h2 className="mt-3 max-w-3xl font-headline text-3xl font-extrabold tracking-[-0.03em] md:text-4xl">Bring your resume. Leave with a reasoned shortlist.</h2>
+                    </div>
+                    <Link href="/dashboard/search" className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-brand-700 transition hover:bg-surface-50">Start matching <ArrowRight className="h-4 w-4" /></Link>
+                </div>
+            </section>
+
+            <footer className="bg-slate-950 py-12 text-slate-400">
+                <div className="mm-shell flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+                    <div>
+                        <div className="flex items-center gap-3"><span className="grid h-8 w-8 place-items-center rounded-lg bg-white text-xs font-extrabold text-slate-950">M</span><span className="font-headline text-sm font-extrabold text-white">Midas Match</span></div>
+                        <p className="mt-4 max-w-sm text-xs leading-5">Career intelligence for people who want fewer, better job decisions.</p>
+                    </div>
+                    <div className="flex flex-wrap gap-x-6 gap-y-3 text-xs">
+                        <Link href="/privacy" className="hover:text-white">Privacy</Link>
+                        <Link href="/terms" className="hover:text-white">Terms</Link>
+                        <Link href="/faq" className="hover:text-white">FAQ</Link>
+                        <Link href="/about" className="hover:text-white">About</Link>
+                        <a href="mailto:midasmatchsupport@gmail.com" className="hover:text-white">Support</a>
+                    </div>
+                </div>
+            </footer>
+        </main>
     );
 }

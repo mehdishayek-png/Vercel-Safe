@@ -6,27 +6,18 @@ import { MatchResultsGrid } from '@/components/MatchResultsGrid';
 import { OnboardingPanel } from '@/components/dashboard/OnboardingPanel';
 import { CandidatePanel } from '@/components/dashboard/CandidatePanel';
 import { ScanControls } from '@/components/dashboard/ScanControls';
-import { ActivityLog } from '@/components/dashboard/ActivityLog';
-
-import { useToast } from '@/components/ui/Toast';
 import { useProfileStore } from '@/stores/profile-store';
 import { useSearchStore } from '@/stores/search-store';
 import { useJobsStore } from '@/stores/jobs-store';
 import { trackResumeUpload } from '@/lib/gtag';
-import { useTokenStore } from '@/stores/token-store';
-import { useAuth } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
 
 export default function SearchPage() {
-    const { isSignedIn } = useAuth();
-    const toast = useToast();
     const resultsRef = useRef(null);
 
     const [newSkill, setNewSkill] = useState('');
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [readinessOpen, setReadinessOpen] = useState(false);
-    const [confirmClear, setConfirmClear] = useState(false);
-    const [whatIDoOpen, setWhatIDoOpen] = useState(false);
 
     const {
         profile, setProfile, isParsing, setIsParsing,
@@ -38,18 +29,12 @@ export default function SearchPage() {
         searchError, setSearchError, logs, setLogs, addLog,
         activeTab, setActiveTab, sortBy, setSortBy,
         deepAnalysisProgress, setDeepAnalysisProgress,
-        midasSearch, setMidasSearch, exploreAdjacent, setExploreAdjacent,
         preferences, setPreferences, hasSearched, setHasSearched
     } = useSearchStore();
     const {
         savedJobIds, savedJobsData, toggleSaveJob,
         toggleAppliedJob, appliedJobIds,
     } = useJobsStore();
-    const {
-        tokenBalance, dailyScanCount, weeklyMidasScanCount,
-        isAdminUser, tokensLoading, refreshTokens, sessionBurn, setSessionBurn,
-    } = useTokenStore();
-
     const [searchSuggestions, setSearchSuggestions] = useState(null);
 
     const generateSearchSuggestions = async (currentTitle, currentProfile) => {
@@ -176,11 +161,11 @@ export default function SearchPage() {
         setHasSearched(true);
         // Don't clear previous jobs — new results will merge in via streaming
         setLogs([]);
-        setSessionBurn(0);
         setSearchError(null);
         addLog("Starting job search agent...");
         addLog("Streaming results as sources respond...");
         setActiveTab('matches');
+        const searchStartedAt = Date.now();
 
         // Token gating removed — all signed-in users have unlimited access.
 
@@ -206,17 +191,17 @@ export default function SearchPage() {
                 if (res.status === 429) throw new Error(errData.error || 'Rate limit reached.');
                 if (res.status === 401 && errData.requiresAuth) {
                     setSearchError({
-                        type: 'tokens',
-                        message: 'Sign in to use Midas Match — free, unlimited.',
+                        type: 'auth',
+                        message: 'Sign in to search and keep your profile and shortlist available across devices.',
                         requiresAuth: true,
                     });
                     setIsMatching(false); return;
                 }
                 if (res.status === 403) {
                     setSearchError({
-                        type: 'tokens',
-                        message: errData.error || 'No tokens remaining. Purchase more to continue.',
-                        paywalled: true,
+                        type: 'request',
+                        message: errData.error || 'This search could not be started. Please refresh and try again.',
+                        canRetry: true,
                     });
                     setIsMatching(false); return;
                 }
@@ -230,6 +215,7 @@ export default function SearchPage() {
             // Seed with existing job URLs to avoid duplicates across scans
             const seenUrls = new Set(jobs.map(j => j.apply_url).filter(Boolean));
             let totalSourceJobs = 0;
+            let completionSummary = null;
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -246,8 +232,6 @@ export default function SearchPage() {
 
                         if (event.type === 'progress') {
                             addLog(event.message);
-                        } else if (event.type === 'burn_update') {
-                            setSessionBurn(event.tokensConsumed);
                         } else if (event.type === 'jobs') {
                             // Deduplicate against already-displayed jobs
                             const newJobs = (event.jobs || []).filter(j => {
@@ -258,7 +242,7 @@ export default function SearchPage() {
                                 ...j,
                                 match_score: j.pandaScore?.score ?? j.match_score ?? 0,
                                 heuristic_breakdown: j.pandaScore || j.heuristic_breakdown,
-                            })).filter(j => j.match_score >= 25); // Quality threshold
+                            })); // The server already applies the family-aware display threshold.
 
                             if (newJobs.length > 0) {
                                 totalSourceJobs += newJobs.length;
@@ -283,19 +267,35 @@ export default function SearchPage() {
                                 (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0)
                             ));
                         } else if (event.type === 'complete') {
+                            completionSummary = event;
                             addLog(`Search complete: ${event.totalUnique} unique jobs from ${Object.keys(event.sources || {}).length} sources`);
-                        } else if (event.type === 'burn_update') {
-                            setSessionBurn(event.tokensConsumed);
                         } else if (event.type === 'error') {
-                            if (event.message?.includes('TOKEN_DEPLETED')) {
-                                addLog('⚠️ Search halted: Token balance depleted mid-stream.');
-                                setSearchError({ type: 'search', message: 'You ran out of tokens. Purchase more to view additional matches.', canRetry: true });
-                            } else {
-                                addLog(`Warning: ${event.message}`);
-                                setSearchError({ type: 'search', message: `Search error: ${event.message}`, canRetry: true });
-                            }
+                            addLog(`Warning: ${event.message}`);
+                            setSearchError({ type: 'search', message: `Search error: ${event.message}`, canRetry: true });
                         }
                     } catch { /* skip malformed SSE lines */ }
+                }
+            }
+
+            const completedJobs = useSearchStore.getState().jobs.slice(0, 150);
+            if (completedJobs.length > 0) {
+                try {
+                    await fetch('/api/search-history', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            profile: { ...profile, experience_years: experienceYears, headline: jobTitle },
+                            preferences: { ...preferences, location: locationQuery },
+                            jobs: completedJobs,
+                            summary: {
+                                sources: completionSummary?.sources || {},
+                                totalFetched: completionSummary?.totalUnique || totalSourceJobs,
+                                durationMs: Date.now() - searchStartedAt,
+                            },
+                        }),
+                    });
+                } catch {
+                    // Local result caching remains available if server persistence is unavailable.
                 }
             }
 
@@ -329,11 +329,8 @@ export default function SearchPage() {
             setSearchError({ type: 'search', message: userMessage, canRetry: true });
         } finally {
             setIsMatching(false);
-            refreshTokens();
         }
     };
-
-    const isPaywalled = !isAdminUser && tokenBalance <= 0;
 
     const displayedJobs = (() => {
         let list = activeTab === 'saved' ? savedJobsData : [...jobs];
@@ -379,7 +376,7 @@ export default function SearchPage() {
                 {/* Privacy */}
                 <div className="flex items-center gap-1.5 text-[11px] text-gray-500 p-2.5 px-3.5 glass-panel rounded-[2rem] border border-transparent">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                    Resumes processed in-memory only. Never stored or used for training.
+                    Your resume creates a private match profile that you can review and edit.
                 </div>
 
                 {/* Profile Readiness */}
@@ -431,7 +428,7 @@ export default function SearchPage() {
                         <ScanControls
                             experienceYears={experienceYears} setExperienceYears={setExperienceYears}
                             preferences={preferences} setPreferences={setPreferences}
-                            isAdminUser={isAdminUser} isMatching={isMatching}
+                            isMatching={isMatching}
                             findJobs={findJobs} onReset={() => setProfile(null)}
                         />
 
@@ -449,7 +446,6 @@ export default function SearchPage() {
                     hasSearched={hasSearched}
                     deepAnalysisProgress={deepAnalysisProgress} savedJobIds={savedJobIds} profile={profile} apiKeys={apiKeys}
                     toggleSaveJob={toggleSaveJob} toggleAppliedJob={toggleAppliedJob} appliedJobIds={appliedJobIds}
-                    refreshTokens={refreshTokens} isPaywalled={isPaywalled}
                     findJobs={findJobs}
                     searchSuggestions={searchSuggestions} onSuggestionClick={(title) => { setJobTitle(title); setSearchSuggestions(null); }}
                 />
@@ -479,11 +475,6 @@ export default function SearchPage() {
                                         : logs.length > 0 ? logs[logs.length - 1].message : 'Initializing...'}
                                 </div>
                             </div>
-                            {!deepAnalysisProgress && sessionBurn > 0 && (
-                                <div className="shrink-0 bg-brand-50 border border-brand-200 text-brand-700 px-2 py-1 rounded text-[11px] font-mono font-semibold animate-pulse origin-right">
-                                    🔥 {sessionBurn.toFixed(2)}
-                                </div>
-                            )}
                         </div>
                     </motion.div>
                 )}

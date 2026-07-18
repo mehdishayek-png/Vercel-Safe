@@ -1,7 +1,7 @@
 /**
  * Match Logs Ring Buffer — production-side log capture for scoring debugging.
  *
- * POST: append a log entry (called from lib/debug/match-logger.js on Vercel)
+ * POST: append a log entry from the matching diagnostics pipeline.
  * GET:  drain entries (pulled by scripts/pull-match-logs.mjs to local disk)
  *
  * Backed by Redis to survive across serverless lambda instances.
@@ -19,7 +19,7 @@ const memoryBuffer = [];
 
 function authorized(request) {
     const expected = process.env.MATCH_LOGS_TOKEN;
-    if (!expected) return true; // no token configured = open in dev
+    if (!expected) return process.env.NODE_ENV !== 'production';
     const provided = request.headers.get('x-debug-token');
     return provided === expected;
 }

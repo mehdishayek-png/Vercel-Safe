@@ -2,31 +2,16 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { rateLimit } from '@/lib/rate-limit';
 import { callSonnet, parseJSON } from '@/lib/sonnet';
-import { deductToken, isAdmin } from '@/lib/tokens';
 
 
 
 export async function POST(request) {
   try {
     const { userId } = await auth();
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'anonymous';
-    const effectiveUserId = userId || ip;
+    if (!userId) return NextResponse.json({ error: 'Sign in to generate a negotiation plan.', requiresAuth: true }, { status: 401 });
 
-    const rl = await rateLimit(`salary-negotiation:${effectiveUserId}`, 10, 3600);
+    const rl = await rateLimit(`salary-negotiation:${userId}`, 10, 3600);
     if (!rl.allowed) return NextResponse.json({ error: 'Rate limit reached, try again later' }, { status: 429, headers: { 'Retry-After': rl.retryAfter } });
-
-    // Deduct 1 Token for AI generation
-    const adminUser = await isAdmin(userId);
-    if (!adminUser) {
-        const tokenCheck = await deductToken(effectiveUserId, 1);
-        if (!tokenCheck.success) {
-            return NextResponse.json({ 
-                error: userId ? tokenCheck.error || 'Please top up your tokens to generate negotiation playbooks' : 'You have used your free token. Sign in to get more!', 
-                paywalled: !!userId,
-                requiresAuth: !userId 
-            }, { status: userId ? 403 : 401 });
-        }
-    }
 
     const { job, profile, analysis } = await request.json();
 

@@ -78,8 +78,7 @@ export async function GET() {
 
           {/* Subtitle */}
           <span style={{ fontSize: '16px', color: '#6b7280', lineHeight: 1.6, marginTop: '16px', maxWidth: '600px' }}>
-            Upload your resume. Our AI scores every job against your profile across 8+ sources
-            and surfaces only the matches worth your time.
+            Search beyond one job board. See the evidence behind every recommended role.
           </span>
         </div>
 
@@ -88,16 +87,16 @@ export async function GET() {
           {/* Stats */}
           <div style={{ display: 'flex', gap: '40px', alignItems: 'flex-end' }}>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '32px', fontWeight: '900', color: '#ffffff' }}>8+</span>
-              <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#4b5563', letterSpacing: '1px', marginTop: '2px' }}>JOB SOURCES</span>
+              <span style={{ fontSize: '32px', fontWeight: '900', color: '#ffffff' }}>LIVE</span>
+              <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#4b5563', letterSpacing: '1px', marginTop: '2px' }}>MULTI-SOURCE</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '32px', fontWeight: '900', color: '#ffffff' }}>1</span>
-              <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#4b5563', letterSpacing: '1px', marginTop: '2px' }}>TOKEN / SEARCH</span>
+              <span style={{ fontSize: '32px', fontWeight: '900', color: '#ffffff' }}>7+</span>
+              <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#4b5563', letterSpacing: '1px', marginTop: '2px' }}>FIT SIGNALS</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '32px', fontWeight: '900', color: '#ffffff' }}>{'<60s'}</span>
-              <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#4b5563', letterSpacing: '1px', marginTop: '2px' }}>SCAN TIME</span>
+              <span style={{ fontSize: '32px', fontWeight: '900', color: '#ffffff' }}>CLEAR</span>
+              <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#4b5563', letterSpacing: '1px', marginTop: '2px' }}>MATCH EVIDENCE</span>
             </div>
           </div>
 

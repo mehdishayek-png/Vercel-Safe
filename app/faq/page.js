@@ -1,154 +1,69 @@
 "use client";
 
-import { useState } from "react";
+import Link from 'next/link';
+import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 
 const categories = [
     {
-        title: "Getting Started",
+        title: 'Getting started',
         items: [
-            {
-                q: "How does Midas Match work?",
-                a: "Upload your resume and tell us your preferences. Our AI scans 8+ job sources simultaneously \u2014 including Google Jobs, LinkedIn, Indeed, and 350+ company career pages \u2014 then scores each listing against your profile using 7+ matching signals like skills, seniority, location, and role fit.",
-            },
-            {
-                q: "Is it free to use?",
-                a: "Yes! New visitors get 1 free token to try the platform, and creating an account gives you 3 free tokens. Each AI action (job scan, deep analysis, cover letter, etc.) costs 1 token. After your starter tokens, affordable token packs are available.",
-            },
-            {
-                q: "What job sources do you scan?",
-                a: "We scan multiple job databases simultaneously — including major search engines, professional networks, free job boards, and 350+ company career pages through direct API integrations. This means you see jobs that often don\u2019t appear on traditional aggregators.",
-            },
+            ['How does Midas Match work?', 'Create a profile from your resume, choose a location, and start a search. Midas queries the eligible job sources in parallel, enriches thin descriptions, removes duplicates, and ranks each role using role family, seniority, location, domain, recency, skills, and semantic fit.'],
+            ['What sources are searched?', 'The active mix changes by location, credentials, source health, and response budget. It can include direct employer systems, public feeds, search providers, aggregators, and specialist boards. The results screen reports which sources completed for your search.'],
+            ['Is access included?', 'Yes. The current search and career workspace is included for signed-in users. New token purchases are paused while this version is rolled out. Reasonable rate limits still apply to protect source and AI capacity.'],
         ],
     },
     {
-        title: "Privacy & Security",
+        title: 'Matching and results',
         items: [
-            {
-                q: "What happens to my resume after I upload it?",
-                a: "Your resume is parsed in-memory to extract skills, experience, and preferences. We never store your resume file on our servers. A cached copy is kept locally in your browser\u2019s storage for convenience, but it never leaves your device unless you initiate a search.",
-            },
-            {
-                q: "Is my data used for AI training?",
-                a: "No. We explicitly opt out of LLM training with all AI providers we use. Your data is only used to generate your personal match results and is never shared for model training purposes.",
-            },
-            {
-                q: "Can I delete my data?",
-                a: "Yes. Go to Settings \u2192 Data & Privacy to export or permanently delete all your data. Local browser data can also be cleared from the same page.",
-            },
+            ['What does a match score mean?', 'The score is a ranking aid, not a hiring probability. It combines deterministic profile signals with semantic refinement and shows the strongest evidence behind a recommendation. Review the job description before applying.'],
+            ['Why might a relevant role score lower?', 'Thin job descriptions, unusual titles, missing profile context, seniority differences, or a different role family can reduce confidence. Add concrete skills and a clear headline, then use role analysis to inspect the evidence and gaps.'],
+            ['What is role analysis?', 'Role analysis uses your profile and the job description to explain strengths, concerns, likely gaps, salary context, and application positioning. It is available from a job record and remains subject to rate limits.'],
         ],
     },
     {
-        title: "Matching & Scoring",
+        title: 'Data and privacy',
         items: [
-            {
-                q: "How accurate are match scores?",
-                a: "Match scores use 7+ signals including skills overlap, seniority level, location compatibility, role family, industry fit, and job recency. They\u2019re well-calibrated estimates designed to save you time, but they\u2019re not guarantees \u2014 always review listings that interest you.",
-            },
-            {
-                q: "What is Deep Analysis?",
-                a: "Deep Analysis is an AI-powered detailed fit assessment for a specific job. It provides a comprehensive verdict, estimated salary range, skill gap analysis, and personalized recommendations to improve your candidacy. Each deep analysis costs 1 token.",
-            },
-            {
-                q: "Why did I get a low score for a job I think I\u2019m qualified for?",
-                a: "Common reasons include: seniority mismatch (e.g., the listing targets a different experience level), missing specific keywords or skills in your resume, location mismatch, or the role belonging to a different job family than your background. Try running a Deep Analysis for a detailed breakdown.",
-            },
+            ['What happens to my resume?', 'The uploaded file is parsed to create an editable profile. The original file is not retained after parsing. The resulting profile fields may be stored for signed-in users so the workspace works across devices.'],
+            ['Are searches saved?', 'Completed searches and their ranked results may be stored for signed-in users. This keeps recent work available across devices and supports saved roles and application tracking. You can request deletion of account-linked data.'],
+            ['Is AI always involved?', 'No. Retrieval and core scoring continue without an LLM. AI is used selectively for profile classification, semantic refinement, and requested career tools, with timeouts and deterministic fallbacks.'],
         ],
     },
     {
-        title: "Tokens & Billing",
+        title: 'Reliability and support',
         items: [
-            {
-                q: "How do I buy tokens?",
-                a: "Click the token badge in the dashboard header or visit the pricing page. You\u2019ll be taken through a quick Razorpay checkout \u2014 50 tokens for \u20b9399 (~$4.99). Supports UPI, cards, net banking, and wallets.",
-            },
-            {
-                q: "Do tokens expire?",
-                a: "No. Tokens never expire. Once purchased, they remain in your account until you use them.",
-            },
-            {
-                q: "What can I spend tokens on?",
-                a: "Every AI-powered action costs 1 token: job scans, deep analyses, cover letter generation, salary negotiation playbooks, cold outreach messages, and ATS-tailored CVs (3 tokens).",
-            },
-            {
-                q: "Can I get a refund?",
-                a: "Yes. Unused tokens are refundable within 7 days of purchase. See our refund policy for complete details and how to request a refund.",
-            },
+            ['Why do source counts vary?', 'Job sources have different geographic coverage, quotas, response times, and availability. Slow paid actors are stopped at a defined budget and any partial results already collected are retained.'],
+            ['Can I still use a previous purchase?', 'New checkout is paused. Historical verified purchases remain recorded and are handled under the refund policy that applied to those transactions.'],
+            ['How do I report a bad match?', 'Use the feedback controls on a job where available, or email the role title, company, and why it is wrong to midasmatchsupport@gmail.com. Match diagnostics let us trace the signals without changing your result manually.'],
         ],
     },
 ];
 
 export default function FAQPage() {
-    const [openItems, setOpenItems] = useState({});
-
-    const toggle = (categoryIdx, itemIdx) => {
-        const key = `${categoryIdx}-${itemIdx}`;
-        setOpenItems((prev) => ({ ...prev, [key]: !prev[key] }));
-    };
+    const [open, setOpen] = useState('0-0');
 
     return (
-        <main
-            className="min-h-screen bg-surface-50 py-16 px-4"
-            
-        >
-            <div className="max-w-3xl mx-auto">
-                <a
-                    href="/"
-                    className="text-sm text-brand-600 hover:underline mb-8 block"
-                >
-                    &larr; Back to Midas
-                </a>
+        <main className="min-h-screen bg-surface-50 px-4 py-16 text-slate-900">
+            <div className="mx-auto max-w-3xl">
+                <Link href="/" className="text-sm font-semibold text-brand-700 hover:text-brand-900">&larr; Back to Midas</Link>
+                <span className="mm-kicker mt-12">Product guide</span>
+                <h1 className="mt-5 font-headline text-4xl font-extrabold tracking-[-0.04em] text-slate-950 md:text-5xl">Frequently asked questions</h1>
+                <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600">Clear answers about retrieval, scoring, access, and your data.</p>
 
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                    Frequently Asked Questions
-                </h1>
-                <p className="text-gray-500 text-sm mb-12">
-                    Everything you need to know about Midas Match. Can&apos;t
-                    find what you&apos;re looking for? Reach out to us at{" "}
-                    <a
-                        href="mailto:support@midasmatch.com"
-                        className="text-brand-600 hover:underline"
-                    >
-                        support@midasmatch.com
-                    </a>
-                    .
-                </p>
-
-                <div className="space-y-10">
-                    {categories.map((category, ci) => (
-                        <section key={ci}>
-                            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                                {category.title}
-                            </h2>
-                            <div className="divide-y divide-gray-200 border-t border-b border-gray-200">
-                                {category.items.map((item, ii) => {
-                                    const key = `${ci}-${ii}`;
-                                    const isOpen = !!openItems[key];
+                <div className="mt-12 space-y-10">
+                    {categories.map((category, categoryIndex) => (
+                        <section key={category.title}>
+                            <h2 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">{category.title}</h2>
+                            <div className="overflow-hidden rounded-2xl border border-slate-900/10 bg-white">
+                                {category.items.map(([question, answer], itemIndex) => {
+                                    const key = `${categoryIndex}-${itemIndex}`;
+                                    const isOpen = open === key;
                                     return (
-                                        <div key={ii}>
-                                            <button
-                                                onClick={() => toggle(ci, ii)}
-                                                className="w-full flex items-center justify-between py-4 text-left text-sm font-medium text-gray-900 hover:text-brand-600 transition-colors"
-                                            >
-                                                {item.q}
-                                                <svg
-                                                    className={`w-5 h-5 shrink-0 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M19 9l-7 7-7-7"
-                                                    />
-                                                </svg>
+                                        <div key={question} className="border-b border-slate-900/10 last:border-0">
+                                            <button type="button" onClick={() => setOpen(isOpen ? '' : key)} className="flex w-full items-center justify-between gap-6 px-5 py-4 text-left text-sm font-bold text-slate-900 hover:bg-surface-50" aria-expanded={isOpen}>
+                                                {question}<ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                                             </button>
-                                            {isOpen && (
-                                                <p className="pb-4 text-sm text-gray-600 leading-relaxed">
-                                                    {item.a}
-                                                </p>
-                                            )}
+                                            {isOpen && <p className="px-5 pb-5 text-sm leading-6 text-slate-600">{answer}</p>}
                                         </div>
                                     );
                                 })}
@@ -157,40 +72,9 @@ export default function FAQPage() {
                     ))}
                 </div>
 
-                {/* Cross-links */}
-                <div className="mt-16 bg-gray-50 rounded-2xl p-8 text-center">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        Still have questions?
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-6">
-                        Check our legal pages or get in touch.
-                    </p>
-                    <div className="flex flex-wrap justify-center gap-4 text-sm">
-                        <a
-                            href="/pricing"
-                            className="px-4 py-2 rounded-lg bg-brand-600 text-white hover:bg-brand-700 transition-colors"
-                        >
-                            View Pricing
-                        </a>
-                        <a
-                            href="/terms"
-                            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
-                        >
-                            Terms of Service
-                        </a>
-                        <a
-                            href="/privacy"
-                            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
-                        >
-                            Privacy Policy
-                        </a>
-                        <a
-                            href="/refund"
-                            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
-                        >
-                            Refund Policy
-                        </a>
-                    </div>
+                <div className="mt-14 rounded-2xl bg-slate-950 p-7 text-white sm:flex sm:items-center sm:justify-between">
+                    <div><h2 className="font-headline text-xl font-extrabold">Still need help?</h2><p className="mt-1 text-sm text-slate-400">Send the search context and the result you expected.</p></div>
+                    <a href="mailto:midasmatchsupport@gmail.com" className="mt-5 inline-flex rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-slate-950 sm:mt-0">Contact support</a>
                 </div>
             </div>
         </main>

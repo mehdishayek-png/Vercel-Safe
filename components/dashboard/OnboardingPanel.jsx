@@ -9,7 +9,7 @@ export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload, han
 
     const onQuickSubmit = (e) => {
         e.preventDefault();
-        if (!quickTitle.trim()) return;
+        if (!quickTitle.trim() || !quickLocation.trim()) return;
         const skillsArray = quickSkills.split(',').map(s => s.trim()).filter(Boolean);
         handleQuickStart(quickTitle, skillsArray, quickLocation.trim());
     };
@@ -59,12 +59,12 @@ export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload, han
                                 <LocationAutocomplete
                                     value={quickLocation}
                                     onChange={(val) => setQuickLocation(val)}
-                                    placeholder="Location (e.g. Austin, TX or Remote)"
+                                    placeholder="Location required (e.g. Austin, TX or Remote)"
                                 />
                             </div>
                             <button
                                 type="submit"
-                                disabled={!quickTitle.trim()}
+                                disabled={!quickTitle.trim() || !quickLocation.trim()}
                                 className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gray-900 text-white font-medium text-sm hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                             >
                                 <Search className="w-4 h-4" />
@@ -103,7 +103,7 @@ export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload, han
                         </div>
                         <div>
                             <p className="text-[13px] font-semibold text-gray-900">Scan the market</p>
-                            <p className="text-[11px] text-gray-400 mt-0.5 leading-relaxed">Midas scores thousands of live jobs against your profile in under a minute.</p>
+                            <p className="text-[11px] text-gray-400 mt-0.5 leading-relaxed">Eligible sources stream live roles while Midas ranks each one against your profile.</p>
                         </div>
                     </div>
                 </div>
@@ -127,7 +127,7 @@ export function OnboardingPanel({ isParsing, fileInputRef, handleFileUpload, han
                     </li>
                     <li className="flex gap-2 items-start">
                         <TrendingUp className="w-3.5 h-3.5 text-brand-500 shrink-0 mt-0.5" />
-                        <span>Try <strong>Explore Adjacent Roles</strong> to discover opportunities outside your exact title</span>
+                        <span>Use a <strong>real city, region, or Remote</strong> so sources receive a clear location constraint</span>
                     </li>
                 </ul>
             </div>

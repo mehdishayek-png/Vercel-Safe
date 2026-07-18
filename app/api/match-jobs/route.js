@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { fetchAllJobs } from '@/lib/job-fetcher';
 import { matchJobs } from '@/lib/matcher';
-import { canScan, deductToken } from '@/lib/tokens';
 import { rateLimit } from '@/lib/rate-limit';
 import { getFeatureFlags } from '@/lib/feature-flags';
 import { preFilterJobs, validateFilters } from '@/lib/pre-filter';
@@ -27,9 +26,15 @@ export async function POST(request) {
   try {
     const { userId } = await auth();
 
+    if (!userId) {
+      return NextResponse.json({
+        error: 'Sign in to search and keep your results available across devices.',
+        requiresAuth: true,
+      }, { status: 401 });
+    }
+
     // Rate limiting — 10 requests per minute per user
-    const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
-    const rl = await rateLimit(rateLimitId, 10, 60);
+    const rl = await rateLimit(userId, 10, 60);
 
     if (!rl.allowed) {
       const minutes = Math.ceil(rl.retryAfter / 60);
@@ -58,31 +63,6 @@ export async function POST(request) {
 
     if (!profile || !profile.skills || profile.skills.length === 0) {
       return NextResponse.json({ error: 'Profile with skills required' }, { status: 400 });
-    }
-
-    const ip = request.headers.get('x-forwarded-for') || 'unknown';
-    const effectiveUserId = userId || ip.split(',')[0].trim();
-
-    // Server-side scan limit enforcement — applies to ALL users
-    const scanCheck = await canScan(effectiveUserId, preferences?.midasSearch);
-    if (!scanCheck.allowed) {
-      return NextResponse.json({
-        error: scanCheck.error,
-        requiresAuth: scanCheck.requiresAuth || (!userId && scanCheck.paywalled),
-        paywalled: !!userId && scanCheck.paywalled,
-      }, { status: (scanCheck.requiresAuth || !userId) ? 401 : 403 });
-    }
-
-    // Deduct tokens (skip for admin)
-    if (scanCheck.source !== 'admin') {
-      const deducted = await deductToken(effectiveUserId, scanCheck.tokenCost || 1);
-      if (!deducted.success) {
-        return NextResponse.json({ 
-            error: userId ? 'Failed to deduct token' : 'You have used your free token. Sign in to get more!',
-            requiresAuth: !userId,
-            paywalled: !!userId  
-        }, { status: userId ? 403 : 401 });
-      }
     }
 
     const logs = [];

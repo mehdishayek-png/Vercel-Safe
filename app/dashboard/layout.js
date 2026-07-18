@@ -12,16 +12,13 @@ export default function DashboardLayout({ children }) {
     return (
         <ErrorBoundary>
             <AppProvider>
-                <div className="flex min-h-screen bg-surface-50">
+                <div className="flex min-h-screen bg-surface-50 text-slate-900">
                     <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
                     <div className="flex-1 flex flex-col min-w-0">
                         <DashboardHeader onMenuClick={() => setSidebarOpen(true)} />
                         <ReturnNotification />
-                        <main className="flex-1 px-4 py-4 md:px-6 md:py-5 dashboard-bg relative overflow-hidden">
-                            {/* Ambient AI glow blobs */}
-                            <div className="absolute -top-[20%] -right-[10%] w-[600px] h-[600px] bg-brand-500/30 blur-[120px] rounded-full pointer-events-none" />
-                            <div className="absolute top-[40%] -left-[10%] w-[400px] h-[400px] bg-brand-500/10 blur-[100px] rounded-full pointer-events-none" />
-                            <div className="relative z-10">
+                        <main className="dashboard-bg relative flex-1 overflow-hidden px-3 py-4 md:px-6 md:py-6">
+                            <div className="relative z-10 mx-auto w-full max-w-[1440px]">
                                 {children}
                             </div>
                         </main>

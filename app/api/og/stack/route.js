@@ -95,8 +95,8 @@ export async function GET() {
             }}>BACKEND + AI</div>
 
             {[
-              { name: 'Vercel', desc: 'Edge + Serverless' },
-              { name: 'Redis', desc: 'Caching + Rate Limiting' },
+              { name: 'Railway', desc: 'Application Runtime' },
+              { name: 'PostgreSQL', desc: 'Workspace + Vectors' },
               { name: 'LLM Pipeline', desc: 'Query Planning + Scoring' },
               { name: 'AI Models', desc: 'Deep Analysis + Reasoning' },
               { name: 'Email Service', desc: 'Transactional Alerts' },

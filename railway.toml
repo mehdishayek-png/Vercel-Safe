@@ -1,10 +1,13 @@
 [build]
-builder = "nixpacks"
-buildCommand = "npm install && npm run build"
+builder = "RAILPACK"
+buildCommand = "npm ci && npm run build"
 
 [deploy]
+preDeployCommand = ["npm run db:migrate"]
 startCommand = "npm start"
-healthcheckPath = "/"
+healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
+overlapSeconds = 30
+drainingSeconds = 15

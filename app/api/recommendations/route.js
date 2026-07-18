@@ -14,15 +14,16 @@ import { rateLimit } from '@/lib/rate-limit';
  * 2. Learned preferences from saved/applied jobs
  * 3. Panda-matcher scoring
  *
- * This is a lightweight endpoint — it uses cached results when possible
- * and limits to fast sources (RSS + cached SerpAPI). No tokens deducted.
+ * This is a lightweight endpoint that prefers cached and fast sources.
  */
 export async function POST(request) {
     try {
         const { userId } = await auth();
+        if (!userId) {
+            return Response.json({ error: 'Sign in to load recommendations.', requiresAuth: true }, { status: 401 });
+        }
         // Rate limit: 5 recommendation requests per minute
-        const rateLimitId = userId || request.headers.get('x-forwarded-for') || 'anonymous';
-        const rl = await rateLimit(rateLimitId + ':recs', 5, 60);
+        const rl = await rateLimit(`${userId}:recs`, 5, 60);
 
         if (!rl.allowed) {
             return Response.json(

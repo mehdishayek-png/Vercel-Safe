@@ -1,4 +1,6 @@
-# 🏗️ Midas Match: Technical Audit & Story (100+ Deployments)
+# Midas Match: Historical Technical Audit (Archive)
+
+> This document captures an earlier Vercel and token-economy phase. It is retained as project history, not current architecture. See `HANDOVER.md` for the live system.
 
 This document synthesizes the architectural journey of Midas Match, a solo-built AI job matching engine. It captures the exhaustive tech stack, the hardest engineering hurdles, and the "vibe coder" breakthroughs that turned a hobby project into a production-ready SaaS.
 

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Lock, Search, Download, BrainCircuit, Target, Zap, ShieldCheck, TrendingUp, Globe, FileText, ChevronDown, Building2, RefreshCw } from 'lucide-react';
+import { Sparkles, Search, Download, BrainCircuit, Target, ShieldCheck, TrendingUp, Globe, FileText, ChevronDown, RefreshCw } from 'lucide-react';
 import { SignInButton } from '@clerk/nextjs';
-import Link from 'next/link';
 import { JobCard } from './JobCard';
 import { ScanningRadar } from './ScanningRadar';
 import { exportJobsToCSV } from '@/lib/export-csv';
@@ -26,10 +25,6 @@ export function MatchResultsGrid({
     toggleSaveJob,
     toggleAppliedJob,
     appliedJobIds,
-    refreshTokens,
-    isPaywalled,
-    initiatePayment,
-    isPaymentProcessing,
     findJobs,
     searchSuggestions,
     onSuggestionClick,
@@ -43,22 +38,22 @@ export function MatchResultsGrid({
     return (
         <>
             {/* Tab bar */}
-            <div className="flex items-center gap-1.5 mb-5 overflow-x-auto p-1">
+                <div className="mb-5 flex items-center gap-1.5 overflow-x-auto border-b border-slate-900/10 px-1 pb-3">
                 {tabs.map((tab) => (
                     <button
                         key={tab.key}
                         onClick={() => setActiveTab(tab.key)}
                         className={`px-4 py-2 text-sm font-medium flex items-center gap-1.5 rounded-full transition-all duration-200 cursor-pointer ${
                             activeTab === tab.key
-                                ? 'bg-surface-300 text-gray-800 shadow-sm'
-                                : 'text-gray-500 hover:text-gray-700 hover:bg-white/60'
+                                ? 'bg-slate-900 text-white'
+                                : 'text-slate-500 hover:bg-white hover:text-slate-800'
                         }`}
                     >
                         {tab.label}
                         <span className={`text-[11px] font-semibold px-1.5 py-px rounded-full ${
                             activeTab === tab.key
-                                ? 'bg-surface-400/20 text-gray-700'
-                                : 'bg-surface-200 text-gray-400'
+                                ? 'bg-white/15 text-white'
+                                : 'bg-surface-200 text-slate-500'
                         }`}>
                             {tab.count}
                         </span>
@@ -122,21 +117,12 @@ export function MatchResultsGrid({
                         <div className="flex-1 min-w-0">
                             <p className="text-sm text-amber-800 font-medium">{searchError.message || searchError}</p>
                             <div className="flex gap-2 mt-3">
-                                {/* Anonymous user — show Sign In CTA */}
                                 {searchError.requiresAuth && (
                                     <SignInButton mode="modal">
                                         <button className="text-xs px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold cursor-pointer shadow-sm">
-                                            Sign In for 3 Free Scans
+                                            Sign in to continue
                                         </button>
                                     </SignInButton>
-                                )}
-                                {/* Logged-in user — show pricing CTA */}
-                                {searchError.paywalled && (
-                                    <Link href="/pricing">
-                                        <button className="text-xs px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-semibold cursor-pointer shadow-sm">
-                                            View Pricing
-                                        </button>
-                                    </Link>
                                 )}
                                 {searchError.canRetry && (
                                     <button
@@ -185,18 +171,15 @@ export function MatchResultsGrid({
             {displayedJobs.length === 0 && !isMatching && !searchError && !hasSearched && (
                 <div className="space-y-5 mt-2 relative z-10">
                     {/* Hero card */}
-                    <div className="relative overflow-hidden glass-panel rounded-[2rem] border border-transparent p-8 text-center">
-                        {/* Flow-gradient background element */}
-                        <div className="absolute inset-x-0 top-0 h-1.5 bg-flow-gradient" />
-                        <div className="absolute -top-16 -right-16 w-48 h-48 bg-flow-gradient opacity-10 rounded-full blur-3xl pointer-events-none" />
-                        <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-flow-gradient opacity-[0.07] rounded-full blur-3xl pointer-events-none" />
+                    <div className="relative overflow-hidden rounded-2xl border border-slate-900/10 bg-white p-8 text-center shadow-sm">
+                        <div className="absolute inset-x-0 top-0 h-1 bg-brand-600" />
                         <div className="relative">
-                            <div className="w-14 h-14 bg-flow-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow">
+                            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900">
                                 <Search className="w-7 h-7 text-white" />
                             </div>
                             <h2 className="font-headline text-xl font-bold text-gray-900 mb-2">Ready to find your next role</h2>
                             <p className="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">
-                                Upload your resume on the left, set your preferences, and hit Scan. Midas will score thousands of live jobs against your profile in under a minute.
+                                Add a resume or role profile, choose a location, and search. Results appear as each source responds, with the strongest evidence ranked first.
                             </p>
                         </div>
                     </div>
@@ -216,9 +199,9 @@ export function MatchResultsGrid({
                             <div className="w-9 h-9 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center mb-3">
                                 <Globe className="w-4.5 h-4.5 text-emerald-600" />
                             </div>
-                            <h3 className="text-[13px] font-semibold text-gray-900 mb-1">4 Job Sources</h3>
+                            <h3 className="text-[13px] font-semibold text-gray-900 mb-1">Multi-source retrieval</h3>
                             <p className="text-[11px] text-gray-400 leading-relaxed">
-                                We aggregate from LinkedIn, Indeed, Glassdoor, and Fantastic.Jobs — casting a wide net so you don't miss opportunities.
+                                Direct ATS search, public feeds, job boards, and specialist sources are selected for your target location.
                             </p>
                         </div>
                         <div className="bg-surface-50/80 rounded-[2rem] border border-transparent p-5 hover:shadow-xl transition-shadow">
@@ -249,9 +232,9 @@ export function MatchResultsGrid({
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                             <div className="bg-brand-50/50 rounded-lg py-3 px-2">
-                                <div className="text-2xl font-bold text-brand-600 mb-1">7</div>
-                                <div className="text-[11px] text-gray-500 font-medium">Scoring Signals</div>
-                                <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Keywords, seniority, location, role family, depth, recency, prestige</div>
+                                <div className="text-2xl font-bold text-brand-600 mb-1">Multi</div>
+                                <div className="text-[11px] text-gray-500 font-medium">Evidence signals</div>
+                                <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Skills, seniority, location, role family, domain, depth, and recency</div>
                             </div>
                             <div className="bg-emerald-50/50 rounded-lg py-3 px-2">
                                 <div className="text-2xl font-bold text-emerald-600 mb-1">0-100</div>
@@ -259,18 +242,18 @@ export function MatchResultsGrid({
                                 <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Scores are based on real keywords, no arbitrary tiers</div>
                             </div>
                             <div className="bg-accent-50/50 rounded-lg py-3 px-2">
-                                <div className="text-2xl font-bold text-brand-600 mb-1">&lt;60s</div>
-                                <div className="text-[11px] text-gray-500 font-medium">Scan Time</div>
-                                <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Fetches and scores hundreds of jobs in under a minute</div>
+                                <div className="text-2xl font-bold text-brand-600 mb-1">Live</div>
+                                <div className="text-[11px] text-gray-500 font-medium">Streaming results</div>
+                                <div className="text-[10px] text-gray-400 mt-1 leading-relaxed">Useful matches appear without waiting for the slowest source</div>
                             </div>
                         </div>
                     </div>
 
                     {/* Privacy footer */}
                     <div className="flex items-center justify-center gap-4 text-[10px] text-gray-400 py-2">
-                        <span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-emerald-400" /> Resumes never stored</span>
+                        <span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3 text-emerald-400" /> Privacy controls</span>
                         <span className="w-px h-3 bg-surface-200" />
-                        <span className="flex items-center gap-1"><Zap className="w-3 h-3 text-brand-400" /> Free unlimited scans</span>
+                        <span className="flex items-center gap-1"><Target className="w-3 h-3 text-brand-400" /> Explainable ranking</span>
                         <span className="w-px h-3 bg-surface-200" />
                         <span className="flex items-center gap-1"><Download className="w-3 h-3 text-gray-400" /> Export to CSV</span>
                     </div>
@@ -329,7 +312,6 @@ export function MatchResultsGrid({
                 appliedJobIds={appliedJobIds}
                 toggleSaveJob={toggleSaveJob}
                 toggleAppliedJob={toggleAppliedJob}
-                refreshTokens={refreshTokens}
             />
         </>
     );
@@ -357,7 +339,7 @@ function CompanyGroupHeader({ company, jobs, isOpen, onToggle }) {
     );
 }
 
-function GroupedJobList({ displayedJobs, profile, apiKeys, savedJobIds, appliedJobIds, toggleSaveJob, toggleAppliedJob, refreshTokens }) {
+function GroupedJobList({ displayedJobs, profile, apiKeys, savedJobIds, appliedJobIds, toggleSaveJob, toggleAppliedJob }) {
     const [expandedGroups, setExpandedGroups] = useState({});
     const GROUP_THRESHOLD = 3; // Group companies with 3+ jobs
 
@@ -432,7 +414,6 @@ function GroupedJobList({ displayedJobs, profile, apiKeys, savedJobIds, appliedJ
                                                     isSaved={savedJobIds.has(job.apply_url)}
                                                     onApply={toggleAppliedJob}
                                                     isApplied={appliedJobIds?.has(job.apply_url)}
-                                                    onTokensUpdated={refreshTokens}
                                                     autoAnalyze={topJobId && (job.id === topJobId || job.apply_url === topJobId)}
                                                 />
                                             ))}
@@ -454,7 +435,6 @@ function GroupedJobList({ displayedJobs, profile, apiKeys, savedJobIds, appliedJ
                             isSaved={savedJobIds.has(item.job.apply_url)}
                             onApply={toggleAppliedJob}
                             isApplied={appliedJobIds?.has(item.job.apply_url)}
-                            onTokensUpdated={refreshTokens}
                             autoAnalyze={topJobId && (item.job.id === topJobId || item.job.apply_url === topJobId)}
                         />
                     );
