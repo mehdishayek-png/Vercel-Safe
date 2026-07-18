@@ -28,6 +28,7 @@ export function MatchResultsGrid({
     findJobs,
     searchSuggestions,
     onSuggestionClick,
+    activity,
 }) {
     const tabs = [
         { key: 'matches', label: 'Matches', count: jobs.length },
@@ -37,16 +38,16 @@ export function MatchResultsGrid({
 
     return (
         <>
-            {/* Tab bar */}
-                <div className="mb-5 flex items-center gap-1.5 overflow-x-auto border-b border-slate-900/10 px-1 pb-3">
+            {/* Results toolbar */}
+            <div className="mb-4 flex flex-wrap items-center gap-1.5 overflow-hidden rounded-2xl border border-slate-900/[0.08] bg-white/80 p-1.5 shadow-[0_12px_35px_-30px_rgba(15,23,42,0.8)] backdrop-blur sm:flex-nowrap sm:overflow-x-auto">
                 {tabs.map((tab) => (
                     <button
                         key={tab.key}
                         onClick={() => setActiveTab(tab.key)}
-                        className={`px-4 py-2 text-sm font-medium flex items-center gap-1.5 rounded-full transition-all duration-200 cursor-pointer ${
+                        className={`px-3.5 py-2 text-sm font-semibold flex items-center gap-1.5 rounded-xl transition-all duration-200 cursor-pointer ${
                             activeTab === tab.key
                                 ? 'bg-slate-900 text-white'
-                                : 'text-slate-500 hover:bg-white hover:text-slate-800'
+                                : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
                         }`}
                     >
                         {tab.label}
@@ -61,11 +62,11 @@ export function MatchResultsGrid({
                 ))}
 
                 {jobs.length > 0 && (
-                    <div className="ml-auto flex items-center gap-2">
+                    <div className="flex w-full items-center justify-end gap-1 border-t border-slate-900/[0.08] pt-1.5 sm:ml-auto sm:w-auto sm:border-l sm:border-t-0 sm:pl-1.5 sm:pt-0">
                     <button
                         onClick={() => findJobs(true)}
                         disabled={isMatching}
-                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-gray-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                         title="Fetch fresh results (bypasses cache)"
                     >
                         <RefreshCw className="w-3.5 h-3.5" />
@@ -73,25 +74,25 @@ export function MatchResultsGrid({
                     </button>
                     <button
                         onClick={() => exportJobsToCSV(displayedJobs)}
-                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-gray-500 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
+                        className="flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
                         title="Export to CSV"
                     >
                         <Download className="w-3.5 h-3.5" />
                         CSV
                     </button>
-                    <div className="flex items-center gap-0.5 rounded-full p-0.5">
+                    <div className="flex items-center gap-0.5 rounded-xl bg-slate-100 p-0.5">
                         <button
                             onClick={() => setSortBy('score')}
-                            className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer ${
-                                sortBy === 'score' ? 'bg-surface-300 text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                            className={`px-3 py-1.5 rounded-[0.6rem] text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                                sortBy === 'score' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                             }`}
                         >
                             Score
                         </button>
                         <button
                             onClick={() => setSortBy('latest')}
-                            className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer ${
-                                sortBy === 'latest' ? 'bg-surface-300 text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                            className={`px-3 py-1.5 rounded-[0.6rem] text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                                sortBy === 'latest' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                             }`}
                         >
                             Latest
@@ -104,7 +105,7 @@ export function MatchResultsGrid({
             {/* Status Area */}
             <div className="space-y-4">
                 {isMatching && !deepAnalysisProgress && (
-                    <ScanningRadar jobs={jobs} />
+                    <ScanningRadar jobs={jobs} activity={activity} />
                 )}
 
                 {searchError && !isMatching && (

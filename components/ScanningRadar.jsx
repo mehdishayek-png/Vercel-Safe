@@ -1,224 +1,184 @@
-import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Check } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Activity, Building2, Clock3, Layers3, Radio, Sparkles } from 'lucide-react';
 
-const TIPS = [
-    "Tip: Save jobs you like — it helps us learn your preferences",
-    "Tip: Try the Interview Prep page after finding a match",
-    "Tip: Use the \"What I Do\" box to improve match accuracy",
-    "Tip: Direct career page links skip aggregator sign-up walls",
-    "Tip: Your original resume file is not retained after parsing",
-];
+const MAX_VISIBLE_SOURCES = 4;
+const MAX_VISIBLE_MATCHES = 3;
 
-// We compute nodes differently now to avoid collisions
-// (removed standalone jobToNode function)
+function getScore(job) {
+    return Math.round(job.analysis?.fit_score || job.match_score || 0);
+}
 
-export function ScanningRadar({ jobs = [] }) {
-    const [tipIndex, setTipIndex] = useState(0);
+function normalizeCompany(company = '') {
+    return company
+        .replace(/\b(inc|llc|ltd|corp|corporation|company)\b\.?/gi, '')
+        .replace(/[^a-zA-Z0-9]/g, '')
+        .toLowerCase();
+}
+
+function formatTime(seconds) {
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+}
+
+export function ScanningRadar({ jobs = [], activity }) {
     const [elapsed, setElapsed] = useState(0);
 
     useEffect(() => {
-        const interval = setInterval(() => setTipIndex(prev => (prev + 1) % TIPS.length), 8000);
+        const interval = setInterval(() => setElapsed((previous) => previous + 1), 1000);
         return () => clearInterval(interval);
     }, []);
 
-    useEffect(() => {
-        const interval = setInterval(() => setElapsed(prev => prev + 1), 1000);
-        return () => clearInterval(interval);
-    }, []);
+    const scanSummary = useMemo(() => {
+        const companies = new Set();
+        const sources = new Set();
 
-    const formatTime = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-
-    const { nodes, totalDetected } = useMemo(() => {
-        const companyMap = new Map();
         for (const job of jobs) {
-            // Aggressive normalization to prevent duplicate entities (e.g. "Salesforce" vs "Salesforce, Inc.")
-            const rawName = (job.company || 'Unknown')
-                .replace(/\\b(inc|llc|ltd|corp|corporation|company)\\b\\.?/gi, '')
-                .replace(/[^a-zA-Z0-9]/g, '')
-                .toLowerCase();
-                
-            const score = job.analysis?.fit_score || job.match_score || 0;
-            const existing = companyMap.get(rawName);
-            if (!existing || score > (existing.analysis?.fit_score || existing.match_score || 0)) {
-                companyMap.set(rawName, job);
-            }
+            companies.add(normalizeCompany(job.company || 'Unknown'));
+            if (job.source) sources.add(job.source);
         }
-        
-        const sortedJobs = Array.from(companyMap.values())
-            .sort((a, b) => (b.analysis?.fit_score || b.match_score || 0) - (a.analysis?.fit_score || a.match_score || 0));
 
-        // Use a perfectly distributed star pattern to guarantee no overlapping bubbles
-        const STAGGERED_ANGLES = [0, 135, 270, 45, 180, 315, 90, 225, 18, 198];
-        
-        const topNodes = sortedJobs.slice(0, 8).map((job, i) => {
-            const score = job.analysis?.fit_score || job.match_score || 0;
-            // Radius: high scores near center, low scores near edge
-            // Scale to 15–42% of container so nodes + labels stay inside the outermost ring
-            const normalizedScore = Math.max(0, Math.min(1, (score - 20) / 80));
-            const radiusPct = 42 - normalizedScore * 27; // 42% (edge) → 15% (center)
-            return {
-                company: job.company || 'Unknown',
-                score: Math.round(score),
-                angle: STAGGERED_ANGLES[i % STAGGERED_ANGLES.length],
-                radius: radiusPct,
-                source: job.source || '',
-            };
-        });
+        const strongestMatches = [...jobs]
+            .sort((a, b) => getScore(b) - getScore(a))
+            .slice(0, MAX_VISIBLE_MATCHES);
 
-        return { nodes: topNodes, totalDetected: companyMap.size };
+        return {
+            companyCount: companies.size,
+            sources: Array.from(sources),
+            strongestMatches,
+        };
     }, [jobs]);
 
-    return (
-        <div className="flex flex-col items-center justify-center py-6 overflow-hidden relative">
-            {/* Radar container */}
-            <div className="relative w-[min(100%,500px)] aspect-square flex items-center justify-center mb-6 overflow-hidden">
+    const visibleSources = scanSummary.sources.slice(0, MAX_VISIBLE_SOURCES);
+    const additionalSources = Math.max(0, scanSummary.sources.length - visibleSources.length);
+    const statusMessage = activity || (jobs.length > 0
+        ? 'Ranking new matches as each source responds.'
+        : 'Connecting to the best sources for this search.');
 
-                {/* Radar grid rings */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-40">
-                    {[1, 2, 3, 4].map((i) => (
-                        <div
-                            key={i}
-                            className="absolute rounded-full border border-brand-500/20"
-                            style={{
-                                width: `${i * 25}%`,
-                                height: `${i * 25}%`,
-                                borderStyle: i % 2 === 0 ? 'dashed' : 'solid'
-                            }}
+    return (
+        <section className="relative overflow-hidden rounded-[1.75rem] border border-slate-900/10 bg-slate-950 text-white shadow-[0_24px_70px_-42px_rgba(15,23,42,0.8)]">
+            <div className="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full bg-brand-500/20 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-28 left-1/3 h-56 w-56 rounded-full bg-amber-400/10 blur-3xl" />
+
+            <div className="relative grid gap-0 md:grid-cols-[minmax(0,1.05fr)_minmax(280px,0.95fr)]">
+                <div className="p-5 sm:p-6">
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0">
+                            <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-300">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-300 opacity-60" />
+                                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-300" />
+                                </span>
+                                Live market scan
+                            </div>
+                            <h2 className="font-headline text-xl font-bold tracking-tight sm:text-2xl">
+                                {jobs.length > 0 ? `${jobs.length} matches surfaced` : 'Searching across the market'}
+                            </h2>
+                            <p className="mt-1 max-w-xl truncate text-xs text-slate-400 sm:text-sm" title={statusMessage}>
+                                {statusMessage}
+                            </p>
+                        </div>
+
+                        <div className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 font-mono text-xs text-slate-300">
+                            <Clock3 className="h-3.5 w-3.5 text-slate-500" />
+                            {formatTime(elapsed)}
+                        </div>
+                    </div>
+
+                    <div className="relative my-5 h-8 overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.035]">
+                        <div className="absolute inset-x-3 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                        {[12, 32, 55, 76, 91].map((position, index) => (
+                            <motion.span
+                                key={position}
+                                className="absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-brand-300"
+                                style={{ left: `${position}%` }}
+                                animate={{ opacity: [0.2, 1, 0.2], scale: [0.75, 1.35, 0.75] }}
+                                transition={{ duration: 2.4, repeat: Infinity, delay: index * 0.28 }}
+                            />
+                        ))}
+                        <motion.div
+                            className="absolute inset-y-0 w-24 bg-gradient-to-r from-transparent via-brand-300/25 to-transparent"
+                            animate={{ x: ['-100%', '620%'] }}
+                            transition={{ duration: 3.2, repeat: Infinity, ease: 'linear' }}
                         />
-                    ))}
-                    {/* Crosshairs */}
-                    <div className="absolute w-full h-[1px] bg-brand-500/15" />
-                    <div className="absolute h-full w-[1px] bg-brand-500/15" />
+                    </div>
+
+                    <div className="grid grid-cols-3 divide-x divide-white/10 rounded-2xl border border-white/[0.07] bg-white/[0.04]">
+                        <ScanMetric icon={Activity} value={jobs.length} label="Matches" />
+                        <ScanMetric icon={Building2} value={scanSummary.companyCount} label="Companies" />
+                        <ScanMetric icon={Layers3} value={scanSummary.sources.length} label="Sources live" />
+                    </div>
+
+                    {visibleSources.length > 0 && (
+                        <div className="mt-4 flex min-w-0 items-center gap-2">
+                            <Radio className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+                            <div className="flex min-w-0 flex-wrap gap-1.5">
+                                {visibleSources.map((source) => (
+                                    <span key={source} className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-[10px] font-medium text-slate-400">
+                                        {source}
+                                    </span>
+                                ))}
+                                {additionalSources > 0 && (
+                                    <span className="px-1 py-1 text-[10px] font-semibold text-slate-500">+{additionalSources} more</span>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                {/* Radar sweep */}
-                <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-0 flex items-start justify-center origin-center"
-                >
-                    {/* Gradient tail */}
-                    <div className="absolute inset-0 rounded-full" style={{
-                        background: 'conic-gradient(from 0deg at 50% 50%, transparent 0%, rgba(79, 70, 229, 0.03) 60%, rgba(139, 92, 246, 0.15) 90%, rgba(251, 191, 36, 0.3) 98%, rgba(251, 191, 36, 0.6) 100%)'
-                    }} />
-                    {/* Golden leading edge */}
-                    <motion.div
-                        animate={{
-                            boxShadow: [
-                                "0 0 15px 2px rgba(251, 191, 36, 0.4)",
-                                "0 0 40px 5px rgba(251, 191, 36, 0.8)",
-                                "0 0 15px 2px rgba(251, 191, 36, 0.4)"
-                            ]
-                        }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                        className="w-[3px] h-[50%] bg-gradient-to-t from-transparent via-amber-400 to-amber-400 rounded-full origin-bottom relative z-10"
-                    />
-                </motion.div>
+                <div className="border-t border-white/10 bg-white/[0.035] p-5 sm:p-6 md:border-l md:border-t-0">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                        <div>
+                            <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Best incoming</div>
+                            <div className="mt-1 text-sm font-semibold text-slate-200">Ranked while the scan continues</div>
+                        </div>
+                        <Sparkles className="h-4 w-4 text-amber-300" />
+                    </div>
 
-                {/* Floating Job Nodes */}
-                <AnimatePresence>
-                    {nodes.map((node, i) => {
-                        const delay = (node.angle / 360) * 4;
-                        // node.radius is already a % value (15–42%)
-                        const x = node.radius * Math.sin(node.angle * Math.PI / 180);
-                        const y = -node.radius * Math.cos(node.angle * Math.PI / 180);
-
-                        return (
-                            <div
-                                key={node.company}
-                                className="absolute z-20"
-                                style={{
-                                    left: `calc(50% + ${x}%)`,
-                                    top: `calc(50% + ${y}%)`,
-                                    transform: 'translate(-50%, -50%)'
-                                }}
-                            >
+                    {scanSummary.strongestMatches.length > 0 ? (
+                        <div className="space-y-2">
+                            {scanSummary.strongestMatches.map((job, index) => (
                                 <motion.div
-                                    initial={{ opacity: 0, scale: 0.3 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.3 }}
-                                    transition={{ delay: 0.1, duration: 0.5, type: "spring", bounce: 0.3 }}
-                                    className="flex flex-col items-center gap-1.5"
+                                    key={job.id || job.apply_url || `${job.company}-${job.title}`}
+                                    initial={{ opacity: 0, x: 8 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.05 }}
+                                    className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-slate-900/60 px-3 py-2.5"
                                 >
-                                    {/* Node dot */}
-                                    <motion.div
-                                        animate={{
-                                            boxShadow: [
-                                                "0px 0px 0px rgba(251, 191, 36, 0)",
-                                                "0px 0px 25px 6px rgba(251, 191, 36, 0.6)",
-                                                "0px 0px 8px 2px rgba(251, 191, 36, 0.15)"
-                                            ],
-                                            backgroundColor: ["#4f46e5", "#fbbf24", "#fbbf24"]
-                                        }}
-                                        transition={{ duration: 4, repeat: Infinity, delay, times: [0, 0.1, 1] }}
-                                        className="w-3 h-3 rounded-full"
-                                    />
-
-                                    {/* Job card */}
-                                    <motion.div
-                                        animate={{
-                                            borderColor: [
-                                                "rgba(255, 255, 255, 0.1)",
-                                                "rgba(251, 191, 36, 0.6)",
-                                                "rgba(255, 255, 255, 0.1)"
-                                            ]
-                                        }}
-                                        transition={{ duration: 4, repeat: Infinity, delay, times: [0, 0.1, 1] }}
-                                        className="glass-card px-3 py-1.5 rounded-xl border text-center shadow-sm whitespace-nowrap max-w-[140px]"
-                                    >
-                                        <div className="text-[11px] font-bold text-gray-900 truncate">{node.company}</div>
-                                        <div className="text-[10px] font-black text-amber-500">{node.score}%</div>
-                                    </motion.div>
+                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/[0.07] text-[10px] font-bold text-slate-400">
+                                        {String(index + 1).padStart(2, '0')}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="truncate text-xs font-semibold text-white">{job.title || 'Untitled role'}</div>
+                                        <div className="mt-0.5 truncate text-[10px] text-slate-500">{job.company || 'Company unavailable'}</div>
+                                    </div>
+                                    <div className="shrink-0 text-right">
+                                        <div className="text-sm font-bold text-amber-300">{getScore(job)}</div>
+                                        <div className="text-[8px] font-bold uppercase tracking-wider text-slate-600">score</div>
+                                    </div>
                                 </motion.div>
-                            </div>
-                        );
-                    })}
-                </AnimatePresence>
-
-                {/* Center logo */}
-                <motion.div
-                    animate={{
-                        boxShadow: [
-                            "0 0 30px rgba(79,70,229,0.2)",
-                            "0 0 60px rgba(79,70,229,0.5)",
-                            "0 0 30px rgba(79,70,229,0.2)"
-                        ]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute w-16 h-16 rounded-full bg-surface-50 border-2 border-brand-500 flex items-center justify-center z-30"
-                >
-                    <span className="text-brand-600 font-bold text-2xl font-headline">M</span>
-                </motion.div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex min-h-32 flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-slate-900/40 px-6 text-center">
+                            <Radio className="mb-3 h-5 w-5 text-brand-300" />
+                            <p className="text-xs font-medium text-slate-300">Waiting for the first source</p>
+                            <p className="mt-1 text-[10px] leading-relaxed text-slate-500">Strong matches will appear here as soon as they are verified.</p>
+                        </div>
+                    )}
+                </div>
             </div>
+        </section>
+    );
+}
 
-            {/* Status text */}
-            <motion.h3
-                animate={{ opacity: [0.7, 1, 0.7] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="text-lg font-bold text-gradient mb-1 font-headline"
-            >
-                {jobs.length > 0 ? `Found ${jobs.length} matches` : 'Scanning Job Market...'}
-            </motion.h3>
-            <p className="text-xs text-gray-400 mb-4">
-                {formatTime(elapsed)} elapsed
-                {totalDetected > 0 && ` · ${totalDetected} companies detected`}
-            </p>
-
-            {/* Rotating tips */}
-            <AnimatePresence mode="wait">
-                <motion.p
-                    key={tipIndex}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.3 }}
-                    className="text-[11px] text-gray-400 text-center max-w-xs flex items-center gap-1.5"
-                >
-                    <Sparkles className="w-3 h-3 text-amber-400 shrink-0" />
-                    {TIPS[tipIndex]}
-                </motion.p>
-            </AnimatePresence>
+function ScanMetric({ icon: Icon, value, label }) {
+    return (
+        <div className="flex min-w-0 items-center gap-2.5 px-3 py-3 sm:px-4">
+            <Icon className="hidden h-4 w-4 shrink-0 text-slate-500 sm:block" />
+            <div className="min-w-0">
+                <div className="font-headline text-lg font-bold leading-none text-white">{value}</div>
+                <div className="mt-1 truncate text-[9px] font-bold uppercase tracking-wider text-slate-500">{label}</div>
+            </div>
         </div>
     );
 }

@@ -457,6 +457,7 @@ export default function SearchPage() {
                     toggleSaveJob={toggleSaveJob} toggleAppliedJob={toggleAppliedJob} appliedJobIds={appliedJobIds}
                     findJobs={findJobs}
                     searchSuggestions={searchSuggestions} onSuggestionClick={(title) => { setJobTitle(title); setSearchSuggestions(null); }}
+                    activity={logs.length > 0 ? logs[logs.length - 1].message : ''}
                 />
             </div>
 
