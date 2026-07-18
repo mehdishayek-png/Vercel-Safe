@@ -28,13 +28,37 @@ if (!connectionString) {
 
 const isPublicProxy = /proxy\.rlwy\.net|\.railway\.app/.test(connectionString);
 
-const client = new pg.Client({
+const clientConfig = {
     connectionString,
     ssl: isPublicProxy ? { rejectUnauthorized: false } : undefined,
-});
+};
+
+let client = null;
+
+const RETRYABLE_CONNECTION_CODES = new Set(['57P03', 'ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND']);
+
+async function connectWithRetry(maxAttempts = 6) {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        const candidate = new pg.Client(clientConfig);
+        try {
+            await candidate.connect();
+            client = candidate;
+            return;
+        } catch (error) {
+            await candidate.end().catch(() => {});
+            const retryable = RETRYABLE_CONNECTION_CODES.has(error.code)
+                || /starting up|connection refused|timeout|terminated/i.test(error.message);
+            if (!retryable || attempt === maxAttempts) throw error;
+
+            const delayMs = Math.min(10_000, attempt * 2_000);
+            console.warn(`Database unavailable during startup; retrying in ${delayMs / 1000}s (${attempt}/${maxAttempts})`);
+            await new Promise((resolve) => setTimeout(resolve, delayMs));
+        }
+    }
+}
 
 async function main() {
-    await client.connect();
+    await connectWithRetry();
 
     await client.query(`
         CREATE TABLE IF NOT EXISTS _migrations (
@@ -81,4 +105,4 @@ main()
         console.error(err.message);
         process.exitCode = 1;
     })
-    .finally(() => client.end());
+    .finally(() => client?.end());
