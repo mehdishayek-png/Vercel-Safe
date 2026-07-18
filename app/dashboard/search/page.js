@@ -385,52 +385,49 @@ export default function SearchPage() {
     return (
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-[1280px] w-full search-bg rounded-2xl p-3 md:p-6 -m-3 md:-m-5 min-h-[calc(100vh-100px)]">
             {/* Left Panel */}
-            <div className="w-full lg:w-[380px] shrink-0 space-y-4 relative z-10">
-                {/* Privacy */}
-                <div className="flex items-center gap-1.5 text-[11px] text-gray-500 p-2.5 px-3.5 glass-panel rounded-[2rem] border border-transparent">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                    Your resume creates a private match profile that you can review and edit.
-                </div>
-
-                {/* Profile Readiness */}
-                {profile && (
-                    <button
-                        onClick={() => setReadinessOpen(!readinessOpen)}
-                        className="w-full flex items-center justify-between p-2.5 px-3.5 glass-panel rounded-[2rem] border border-transparent cursor-pointer hover:bg-surface-50 transition-colors"
-                    >
-                        <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-emerald-100 border-2 border-emerald-500 flex items-center justify-center">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
-                            </div>
-                            <span className="text-[13px] font-semibold text-gray-900">Profile Ready</span>
-                            <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">{readinessScore}</span>
-                        </div>
-                        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${readinessOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                )}
-
-                {readinessOpen && profile && (
-                    <div className="glass-panel rounded-[2rem] border border-transparent p-3 -mt-2 space-y-1">
-                        {readinessChecks.map((check, i) => (
-                            <div key={i} className="flex items-center justify-between py-1 text-[13px] text-gray-600">
-                                <div className="flex items-center gap-2">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={check.passed ? '#059669' : '#d1d5db'} strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                    {check.label}
-                                </div>
-                                {check.passed && <span className="text-[10px] text-emerald-500 font-semibold">+{check.points}</span>}
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {/* Resume Upload & Onboarding */}
+            <div className="relative z-10 w-full shrink-0 space-y-4 lg:w-[390px]">
                 {!profile && (
-                    <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} handleQuickStart={handleQuickStart} />
+                    <>
+                        <div className="flex items-center gap-2 rounded-xl border border-slate-900/[0.07] bg-white/80 px-3.5 py-3 text-[11px] text-slate-500 shadow-sm backdrop-blur-xl">
+                            <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-accent-600" />
+                            Your resume becomes an editable, private match profile.
+                        </div>
+                        <OnboardingPanel isParsing={isParsing} fileInputRef={fileInputRef} handleFileUpload={handleFileUpload} handleQuickStart={handleQuickStart} />
+                    </>
                 )}
 
-
                 {profile && (
-                    <>
+                    <section className="relative overflow-hidden rounded-[24px] border border-slate-900/10 bg-white shadow-[0_22px_60px_-34px_rgba(24,31,46,0.42)] before:absolute before:bottom-0 before:left-0 before:top-0 before:z-20 before:w-1 before:bg-gradient-to-b before:from-brand-600 before:via-brand-400 before:to-accent-500">
+                        <header className="border-b border-slate-900/[0.07] bg-gradient-to-r from-surface-50 to-white px-5 py-4 sm:px-6">
+                            <div className="flex items-center justify-between gap-4">
+                                <div>
+                                    <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-brand-700">Search brief</p>
+                                    <p className="mt-1 text-[11px] text-slate-500">The signals your ranking engine will use.</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setReadinessOpen(!readinessOpen)}
+                                    aria-expanded={readinessOpen}
+                                    className="inline-flex items-center gap-2 whitespace-nowrap rounded-xl border border-accent-200 bg-accent-50 px-2.5 py-2 text-[10px] font-bold text-accent-700 transition-colors hover:bg-accent-100"
+                                >
+                                    <span className="grid h-4 w-4 place-items-center rounded-full bg-accent-600 text-[9px] text-white">✓</span>
+                                    {readinessScore}% ready
+                                    <ChevronDown className={`h-3 w-3 transition-transform ${readinessOpen ? 'rotate-180' : ''}`} />
+                                </button>
+                            </div>
+
+                            {readinessOpen && (
+                                <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-slate-900/[0.07] pt-3">
+                                    {readinessChecks.map((check) => (
+                                        <div key={check.label} className="flex min-w-0 items-center gap-1.5 text-[10px] text-slate-500">
+                                            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${check.passed ? 'bg-accent-500' : 'bg-slate-300'}`} />
+                                            <span className="truncate">{check.label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </header>
+
                         <CandidatePanel
                             profile={profile} jobTitle={jobTitle} setJobTitle={setJobTitle}
                             isEditingTitle={isEditingTitle} setIsEditingTitle={setIsEditingTitle}
@@ -444,8 +441,7 @@ export default function SearchPage() {
                             isMatching={isMatching}
                             findJobs={findJobs} onReset={() => setProfile(null)}
                         />
-
-                    </>
+                    </section>
                 )}
 
                 {/* Activity log removed — internal/dev only */}

@@ -331,6 +331,59 @@ input[type="checkbox"] {
   background: conic-gradient(#18b889 var(--score, 78%), #e9e7df 0);
 }
 
+.mm-search-range {
+  height: 18px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background: transparent;
+}
+
+.mm-search-range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    #354fc7 0,
+    #354fc7 var(--range-progress),
+    #dedbd1 var(--range-progress),
+    #dedbd1 100%
+  );
+}
+
+.mm-search-range::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: #dedbd1;
+}
+
+.mm-search-range::-moz-range-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: #354fc7;
+}
+
+.mm-search-range::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  background: #354fc7;
+  box-shadow: 0 0 0 1px rgba(53, 79, 199, 0.2), 0 3px 8px rgba(24, 31, 46, 0.18);
+}
+
+.mm-search-range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  background: #354fc7;
+  box-shadow: 0 0 0 1px rgba(53, 79, 199, 0.2), 0 3px 8px rgba(24, 31, 46, 0.18);
+}
+
 @media (max-width: 640px) {
   .mm-shell { width: min(100% - 24px, 1240px); }
 }

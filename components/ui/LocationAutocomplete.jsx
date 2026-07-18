@@ -54,7 +54,7 @@ const LOCATIONS = [
     'Worldwide',
 ];
 
-export function LocationAutocomplete({ value, onChange, placeholder = 'e.g. San Francisco, CA or Remote' }) {
+export function LocationAutocomplete({ value, onChange, placeholder = 'e.g. San Francisco, CA or Remote', variant = 'default' }) {
     const [query, setQuery] = useState(value || '');
     const [isOpen, setIsOpen] = useState(false);
     const [highlightIdx, setHighlightIdx] = useState(-1);
@@ -150,6 +150,10 @@ export function LocationAutocomplete({ value, onChange, placeholder = 'e.g. San 
         return () => document.removeEventListener('mousedown', handle);
     }, []);
 
+    const inputClassName = variant === 'searchBrief'
+        ? 'w-full py-3 pl-10 pr-9 rounded-xl border border-slate-900/10 bg-white text-[13px] font-medium text-slate-900 shadow-[0_1px_2px_rgba(24,31,46,0.03)] outline-none transition-all placeholder:font-normal placeholder:text-slate-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-100'
+        : 'w-full text-sm py-2.5 pl-9 pr-8 rounded-lg border border-gray-200 bg-surface-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-gray-400 text-gray-900';
+
     return (
         <div ref={containerRef} className="relative">
             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" />
@@ -160,7 +164,7 @@ export function LocationAutocomplete({ value, onChange, placeholder = 'e.g. San 
                 onFocus={() => setIsOpen(true)}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
-                className="w-full text-sm py-2.5 pl-9 pr-8 rounded-lg border border-gray-200 bg-surface-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-gray-400 text-gray-900"
+                className={inputClassName}
                 autoComplete="off"
             />
             {query && (
