@@ -14,7 +14,7 @@ export async function GET() {
         try {
             await Promise.race([
                 query('SELECT 1 AS ready', [], { throwOnError: true }),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('database health timeout')), 4_000)),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('database health timeout')), 8_000)),
             ]);
             checks.database = 'ok';
         } catch {

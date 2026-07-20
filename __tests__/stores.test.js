@@ -30,6 +30,34 @@ describe('profileStore', () => {
         useProfileStore.getState().setProfile(prev => ({ ...prev, skills: [...prev.skills, 'React'] }));
         expect(useProfileStore.getState().profile.skills).toEqual(['JS', 'React']);
     });
+
+    it('waits for the server when explicitly saving a profile', async () => {
+        global.fetch.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ success: true }) });
+        useProfileStore.setState({
+            profile: { name: 'Alice', skills: ['JS'] },
+            experienceYears: 4,
+            jobTitle: 'Engineer',
+            whatIDo: 'Builds products',
+        });
+
+        const result = await useProfileStore.getState().saveToServer();
+
+        expect(result).toEqual({ success: true });
+        expect(global.fetch).toHaveBeenLastCalledWith('/api/profile', expect.objectContaining({ method: 'POST' }));
+    });
+
+    it('resets all profile data after account clearing', () => {
+        useProfileStore.setState({
+            profile: { name: 'Alice' }, experienceYears: 4, jobTitle: 'Engineer',
+            whatIDo: 'Builds products', apiKeys: { test: 'secret' },
+        });
+
+        useProfileStore.getState().reset();
+
+        expect(useProfileStore.getState()).toEqual(expect.objectContaining({
+            profile: null, experienceYears: 0, jobTitle: '', whatIDo: '', apiKeys: {},
+        }));
+    });
 });
 
 describe('searchStore', () => {
@@ -55,6 +83,16 @@ describe('searchStore', () => {
         expect(logs).toHaveLength(1);
         expect(logs[0].message).toBe('test message');
         expect(logs[0].time).toBeDefined();
+    });
+
+    it('persists search preferences to the server', async () => {
+        global.fetch.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ success: true }) });
+        useSearchStore.setState({ preferences: { location: 'Bengaluru, India', remoteOnly: false } });
+
+        const result = await useSearchStore.getState().savePreferencesToServer();
+
+        expect(result).toEqual({ success: true });
+        expect(global.fetch).toHaveBeenLastCalledWith('/api/preferences', expect.objectContaining({ method: 'POST' }));
     });
 });
 

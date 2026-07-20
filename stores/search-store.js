@@ -136,6 +136,17 @@ export const useSearchStore = create((set, get) => ({
             if (stored) set({ preferences: JSON.parse(stored) });
         } catch {}
 
+        try {
+            const res = await fetch('/api/preferences', { cache: 'no-store' });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.source === 'server' && data.preferences && typeof data.preferences === 'object') {
+                    set({ preferences: data.preferences });
+                    localStorage.setItem('midas_preferences', JSON.stringify(data.preferences));
+                }
+            }
+        } catch {}
+
         // Load cached results
         try {
             const storedResults = localStorage.getItem('midas_results');
@@ -188,6 +199,23 @@ export const useSearchStore = create((set, get) => ({
         }
     },
 
+    savePreferencesToServer: async () => {
+        try {
+            const res = await fetch('/api/preferences', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ preferences: get().preferences }),
+            });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                return { success: false, error: data.error || 'Failed to save preferences.' };
+            }
+            return { success: true };
+        } catch {
+            return { success: false, error: 'Failed to save preferences.' };
+        }
+    },
+
     // Persist job results
     persistJobs: () => {
         const { jobs, isMatching } = get();
@@ -196,4 +224,22 @@ export const useSearchStore = create((set, get) => ({
             catch {}
         }
     },
+
+    reset: () => set({
+        jobs: [],
+        isMatching: false,
+        hasSearched: false,
+        searchError: null,
+        logs: [],
+        deepAnalysisProgress: null,
+        sortBy: 'score',
+        activeTab: 'matches',
+        midasSearch: false,
+        exploreAdjacent: false,
+        preferences: { location: '', remoteOnly: false },
+        recommendations: [],
+        isLoadingRecs: false,
+        recsError: null,
+        recsLastFetched: null,
+    }),
 }));

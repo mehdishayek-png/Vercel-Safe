@@ -67,18 +67,25 @@ export const useProfileStore = create((set, get) => ({
         } catch {}
     },
 
-    // Push the current profile to the server (best-effort).
-    saveToServer: () => {
+    // Push the current profile to the server.
+    saveToServer: async () => {
         const { profile, experienceYears, jobTitle, whatIDo } = get();
-        if (!profile) return;
+        if (!profile) return { success: false, error: 'Create a profile before saving.' };
         const payload = { ...profile, experience_years: experienceYears, headline: jobTitle, whatIDo };
         try {
-            fetch('/api/profile', {
+            const res = await fetch('/api/profile', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ profile: payload }),
-            }).catch(() => {});
-        } catch {}
+            });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                return { success: false, error: data.error || 'Failed to save profile.' };
+            }
+            return { success: true };
+        } catch {
+            return { success: false, error: 'Failed to save profile.' };
+        }
     },
 
     // Persist profile to localStorage + server
@@ -89,7 +96,7 @@ export const useProfileStore = create((set, get) => ({
                 const profileToSave = { ...profile, experience_years: experienceYears, headline: jobTitle };
                 localStorage.setItem('midas_profile', JSON.stringify(profileToSave));
             } catch {}
-            get().saveToServer();
+            get().saveToServer().catch(() => {});
         }
     },
 
@@ -98,7 +105,16 @@ export const useProfileStore = create((set, get) => ({
         const { whatIDo } = get();
         if (whatIDo) {
             try { localStorage.setItem('midas_what_i_do', whatIDo); } catch {}
-            get().saveToServer();
+            get().saveToServer().catch(() => {});
         }
     },
+
+    reset: () => set({
+        profile: null,
+        experienceYears: 0,
+        jobTitle: '',
+        whatIDo: '',
+        apiKeys: {},
+        isParsing: false,
+    }),
 }));

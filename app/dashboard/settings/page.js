@@ -6,15 +6,34 @@ import { useJobsStore } from '@/stores/jobs-store';
 import { useUser } from '@clerk/nextjs';
 import { LocationAutocomplete } from '@/components/ui/LocationAutocomplete';
 import {
-    User, Briefcase, MapPin, Tag, Plus, X, Globe, ToggleLeft, ToggleRight,
-    Download, Trash2, Shield, CheckCircle, AlertTriangle, Zap, FileText,
+    User, Briefcase, Tag, Plus, X, Globe, ToggleLeft, ToggleRight,
+    Download, Trash2, Shield, CheckCircle, AlertTriangle, FileText,
     ChevronRight, Sparkles
 } from 'lucide-react';
 
-function Toast({ message, onClose }) {
+const LOCAL_DATA_PREFIXES = ['midas_', 'job_detail_', 'jobbot_'];
+const LOCAL_DATA_KEYS = new Set(['print_cv_data']);
+
+function clearLocalWorkspaceData() {
+    const keys = [];
+    for (let index = 0; index < localStorage.length; index++) {
+        const key = localStorage.key(index);
+        if (key) keys.push(key);
+    }
+    for (const key of keys) {
+        if (LOCAL_DATA_KEYS.has(key) || LOCAL_DATA_PREFIXES.some((prefix) => key.startsWith(prefix))) {
+            localStorage.removeItem(key);
+        }
+    }
+}
+
+function Toast({ message, tone = 'success', onClose }) {
+    const isError = tone === 'error';
     return (
         <div className="fixed top-6 right-6 z-50 flex items-center gap-3 bg-gray-900/95 backdrop-blur-sm text-white text-[13px] px-5 py-3 rounded-2xl shadow-elevated animate-fade-in">
-            <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+            {isError
+                ? <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+                : <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />}
             <span className="font-medium">{message}</span>
             <button onClick={onClose} className="ml-1 text-gray-400 hover:text-white cursor-pointer transition-colors">
                 <X className="w-3.5 h-3.5" />
@@ -73,18 +92,18 @@ function SelectInput({ value, onChange, children }) {
 
 export default function SettingsPage() {
     const { user } = useUser();
-    const { profile, setProfile, experienceYears, setExperienceYears, jobTitle, setJobTitle, whatIDo, setWhatIDo } = useProfileStore();
-    const { preferences, setPreferences } = useSearchStore();
-    const { savedJobsData, appliedJobsData } = useJobsStore();
+    const { profile, setProfile, experienceYears, setExperienceYears, jobTitle, setJobTitle, saveToServer } = useProfileStore();
+    const { preferences, setPreferences, savePreferencesToServer } = useSearchStore();
 
     const [toast, setToast] = useState(null);
     const [skillInput, setSkillInput] = useState('');
     const [showClearConfirm, setShowClearConfirm] = useState(false);
     const [showDeleteResumeConfirm, setShowDeleteResumeConfirm] = useState(false);
+    const [pendingAction, setPendingAction] = useState(null);
     const skillInputRef = useRef(null);
 
-    const showToast = (message) => {
-        setToast(message);
+    const showToast = (message, tone = 'success') => {
+        setToast({ message, tone });
         setTimeout(() => setToast(null), 3000);
     };
 
@@ -114,52 +133,88 @@ export default function SettingsPage() {
     };
 
     // Save profile
-    const handleSaveProfile = () => {
-        showToast('Profile updated');
+    const handleSaveProfile = async () => {
+        setPendingAction('profile');
+        const result = await saveToServer();
+        setPendingAction(null);
+        showToast(result.success ? 'Profile saved across devices' : result.error, result.success ? 'success' : 'error');
     };
 
     // Save preferences
-    const handleSavePreferences = () => {
-        showToast('Preferences saved');
+    const handleSavePreferences = async () => {
+        setPendingAction('preferences');
+        const result = await savePreferencesToServer();
+        setPendingAction(null);
+        showToast(result.success ? 'Preferences saved across devices' : result.error, result.success ? 'success' : 'error');
     };
 
     // Export data
-    const handleExportData = () => {
-        const data = {
-            exportedAt: new Date().toISOString(),
-            profile: profile || {},
-            savedJobs: savedJobsData || [],
-            appliedJobs: appliedJobsData || [],
-            preferences,
-        };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `midas-match-export-${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('Data exported');
+    const handleExportData = async () => {
+        setPendingAction('export');
+        try {
+            const res = await fetch('/api/account/data', { cache: 'no-store' });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || 'Failed to export data.');
+            }
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `midas-match-export-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Complete account data exported');
+        } catch (error) {
+            showToast(error.message, 'error');
+        } finally {
+            setPendingAction(null);
+        }
     };
 
     // Clear all data
-    const handleClearAllData = () => {
-        localStorage.clear();
-        setProfile(null);
-        setShowClearConfirm(false);
-        window.location.reload();
+    const handleClearAllData = async () => {
+        setPendingAction('clear');
+        try {
+            const res = await fetch('/api/account/data', { method: 'DELETE' });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || 'Failed to clear account data.');
+
+            clearLocalWorkspaceData();
+            useProfileStore.getState().reset();
+            useSearchStore.getState().reset();
+            useJobsStore.getState().reset();
+            setShowClearConfirm(false);
+            setPendingAction(null);
+            showToast(data.cacheCleared === false
+                ? 'Account data cleared; temporary cache records will expire automatically'
+                : 'Account data cleared from the server and this device');
+        } catch (error) {
+            setPendingAction(null);
+            showToast(error.message, 'error');
+        }
     };
 
     // Delete resume text
-    const handleDeleteResumeData = () => {
-        updateProfile('resume_text', '');
-        setShowDeleteResumeConfirm(false);
-        showToast('Resume data deleted');
+    const handleDeleteResumeData = async () => {
+        setPendingAction('resume');
+        try {
+            const res = await fetch('/api/profile', { method: 'DELETE' });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || 'Failed to delete resume data.');
+            updateProfile('resume_text', '');
+            setShowDeleteResumeConfirm(false);
+            showToast('Resume text deleted from the server and this device');
+        } catch (error) {
+            showToast(error.message, 'error');
+        } finally {
+            setPendingAction(null);
+        }
     };
 
     return (
         <div className="min-h-screen bg-surface-50/50">
-            {toast && <Toast message={toast} onClose={() => setToast(null)} />}
+            {toast && <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} />}
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
                 {/* Page header */}
@@ -238,9 +293,10 @@ export default function SettingsPage() {
                                 <div className="flex justify-end pt-2">
                                     <button
                                         onClick={handleSaveProfile}
-                                        className="px-5 py-2.5 text-[13px] font-semibold text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-all shadow-button hover:shadow-card cursor-pointer"
+                                        disabled={Boolean(pendingAction)}
+                                        className="px-5 py-2.5 text-[13px] font-semibold text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-all shadow-button hover:shadow-card cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        Save Profile
+                                        {pendingAction === 'profile' ? 'Saving...' : 'Save Profile'}
                                     </button>
                                 </div>
                             </div>
@@ -335,9 +391,10 @@ export default function SettingsPage() {
                                 <div className="flex justify-end pt-2">
                                     <button
                                         onClick={handleSavePreferences}
-                                        className="px-5 py-2.5 text-[13px] font-semibold text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-all shadow-button hover:shadow-card cursor-pointer"
+                                        disabled={Boolean(pendingAction)}
+                                        className="px-5 py-2.5 text-[13px] font-semibold text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-all shadow-button hover:shadow-card cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        Save Preferences
+                                        {pendingAction === 'preferences' ? 'Saving...' : 'Save Preferences'}
                                     </button>
                                 </div>
                             </div>
@@ -380,7 +437,7 @@ export default function SettingsPage() {
                                         <div className="p-3.5 bg-red-50 rounded-xl space-y-3">
                                             <div className="flex items-start gap-2">
                                                 <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                                                <p className="text-[12px] text-red-600 leading-relaxed">This will clear all local data including your profile, saved jobs, and preferences. This cannot be undone.</p>
+                                                <p className="text-[12px] text-red-600 leading-relaxed">This permanently removes your profile, preferences, searches, saved jobs, applications, outcomes, and Midas Match browser data. Your sign-in account remains active.</p>
                                             </div>
                                             <div className="flex gap-2">
                                                 <button
@@ -391,9 +448,10 @@ export default function SettingsPage() {
                                                 </button>
                                                 <button
                                                     onClick={handleClearAllData}
-                                                    className="flex-1 px-3 py-1.5 text-[12px] font-medium text-white bg-red-500 rounded-xl hover:bg-red-600 transition-colors cursor-pointer"
+                                                    disabled={Boolean(pendingAction)}
+                                                    className="flex-1 px-3 py-1.5 text-[12px] font-medium text-white bg-red-500 rounded-xl hover:bg-red-600 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
-                                                    Confirm
+                                                    {pendingAction === 'clear' ? 'Clearing...' : 'Confirm'}
                                                 </button>
                                             </div>
                                         </div>
@@ -409,14 +467,15 @@ export default function SettingsPage() {
                                 {/* Export */}
                                 <button
                                     onClick={handleExportData}
-                                    className="w-full flex items-center gap-3 p-3.5 bg-surface-50/80/60 hover:bg-surface-100 rounded-xl transition-all cursor-pointer group hover:translate-x-0.5"
+                                    disabled={Boolean(pendingAction)}
+                                    className="w-full flex items-center gap-3 p-3.5 bg-surface-50/80/60 hover:bg-surface-100 rounded-xl transition-all cursor-pointer group hover:translate-x-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <div className="w-9 h-9 rounded-xl bg-accent-50 flex items-center justify-center group-hover:bg-accent-100 transition-colors shrink-0">
                                         <Download className="w-4 h-4 text-accent-500" />
                                     </div>
                                     <div className="text-left flex-1 min-w-0">
                                         <p className="text-[13px] font-semibold text-gray-700">Export My Data</p>
-                                        <p className="text-[11px] text-gray-400 truncate">Download as JSON</p>
+                                        <p className="text-[11px] text-gray-400 truncate">{pendingAction === 'export' ? 'Preparing complete export...' : 'Profile, searches, jobs, outcomes, and telemetry'}</p>
                                     </div>
                                     <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-400 transition-colors shrink-0" />
                                 </button>
@@ -451,9 +510,10 @@ export default function SettingsPage() {
                                             </button>
                                             <button
                                                 onClick={handleDeleteResumeData}
-                                                className="flex-1 px-3 py-1.5 text-[12px] font-medium text-white bg-red-500 rounded-xl hover:bg-red-600 transition-colors cursor-pointer"
+                                                disabled={Boolean(pendingAction)}
+                                                className="flex-1 px-3 py-1.5 text-[12px] font-medium text-white bg-red-500 rounded-xl hover:bg-red-600 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                                Delete
+                                                {pendingAction === 'resume' ? 'Deleting...' : 'Delete'}
                                             </button>
                                         </div>
                                     </div>

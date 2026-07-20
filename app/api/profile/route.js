@@ -47,3 +47,23 @@ export async function POST(request) {
         return NextResponse.json({ error: 'Failed to save profile.' }, { status: 500 });
     }
 }
+
+export async function DELETE(request) {
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!validateOrigin(request)) return NextResponse.json({ error: 'Invalid request origin' }, { status: 403 });
+    if (!isDbEnabled()) return NextResponse.json({ error: 'Storage unavailable' }, { status: 503 });
+
+    try {
+        await query(
+            `UPDATE profiles
+             SET data = data - 'resume_text', updated_at = now()
+             WHERE user_id = $1`,
+            [userId], { throwOnError: true },
+        );
+        return NextResponse.json({ success: true });
+    } catch (err) {
+        console.error('Failed to delete resume data:', err);
+        return NextResponse.json({ error: 'Failed to delete resume data.' }, { status: 500 });
+    }
+}

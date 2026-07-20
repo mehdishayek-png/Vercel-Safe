@@ -11,13 +11,15 @@ import { useJobsStore } from '../stores/jobs-store';
  * State is consumed via individual store hooks (useProfileStore, useSearchStore, etc.)
  */
 export function AppProvider({ children }) {
-    const { isSignedIn } = useAuth();
-    const initialized = useRef(false);
+    const { isLoaded, isSignedIn } = useAuth();
+    const initializedFor = useRef(null);
 
     // One-time initialization
     useEffect(() => {
-        if (initialized.current) return;
-        initialized.current = true;
+        if (!isLoaded) return;
+        const identityState = isSignedIn ? 'signed-in' : 'guest';
+        if (initializedFor.current === identityState) return;
+        initializedFor.current = identityState;
 
         useProfileStore.getState().init();
         useSearchStore.getState().init();
@@ -34,7 +36,7 @@ export function AppProvider({ children }) {
                 }, 3000);
             }
         } catch {}
-    }, []);
+    }, [isLoaded, isSignedIn]);
 
     // Persist profile changes
     const profile = useProfileStore(s => s.profile);

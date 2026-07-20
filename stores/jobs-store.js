@@ -113,6 +113,14 @@ export const useJobsStore = create((set, get) => ({
             loadFromLocal('applied');
         }
     },
+
+    reset: () => set({
+        savedJobIds: new Set(),
+        savedJobsData: [],
+        appliedJobIds: new Set(),
+        appliedJobsData: [],
+        jobActionError: null,
+    }),
 }));
 
 function loadFromLocal(type) {
